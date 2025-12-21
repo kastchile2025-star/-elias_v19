@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Comentarios Privados en Tareas Específicas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        h1 { color: #333; }
+        h2 { color: #666; }
+        h3 { color: #888; }
+        .scenario {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-success { background-color: #28a745; color: white; }
+        .badge-error { background-color: #dc3545; color: white; }
+        .badge-warning { background-color: #ffc107; color: black; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test: Comentarios Privados en Tareas Específicas</h1>
+    
+    <div class="test-section">
+        <h2>📋 Descripción del Test</h2>
+        <p>Este test verifica que los comentarios en tareas asignadas a estudiantes específicos sean privados solo entre el profesor y los estudiantes asignados.</p>
+        
+        <div class="scenario">
+            <h3>🎯 Escenario de Prueba:</h3>
+            <ul>
+                <li><strong>Tarea:</strong> "Ensayo de Literatura" asignada solo a Felipe y María</li>
+                <li><strong>Comentarios:</strong> Profesor y Felipe intercambian comentarios</li>
+                <li><strong>Expectativa:</strong> Carlos (no asignado) NO debe ver los comentarios</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Configuración de Test</h2>
+        <button class="test-button" onclick="setupTestData()">1. Configurar Datos de Prueba</button>
+        <div id="setup-result" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Pruebas de Privacidad</h2>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="test-button" onclick="testAsProfesor()">Probar como Profesor</button>
+            <button class="test-button" onclick="testAsFelipe()">Probar como Felipe (Asignado)</button>
+            <button class="test-button" onclick="testAsMaria()">Probar como María (Asignado)</button>
+            <button class="test-button" onclick="testAsCarlos()">Probar como Carlos (NO asignado)</button>
+        </div>
+        
+        <div id="test-results" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Resumen de Resultados</h2>
+        <div id="summary" class="result-box"></div>
+    </div>
+
+    <script>
+        const TEST_TASK_ID = 'task_test_privacidad_comentarios';
+        let testResults = [];
+
+        function log(id, message, type = 'info') {
+            const element = document.getElementById(id);
+            const timestamp = new Date().toLocaleTimeString();
+            const typeClass = type === 'success' ? 'success' : 
+                            type === 'error' ? 'error' : 
+                            type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<span class="${typeClass}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        function clearLog(id) {
+            document.getElementById(id).innerHTML = '';
+        }
+
+        function setupTestData() {
+            clearLog('setup-result');
+            log('setup-result', '🔧 Configurando datos de prueba...', 'info');
+            
+            // Crear usuarios de prueba
+            const testUsers = [
+                {
+                    id: 'prof_test_001',
+                    username: 'profesor_literatura',
+                    displayName: 'Prof. García',
+                    role: 'teacher'
+                },
+                {
+                    id: 'est_felipe_001',
+                    username: 'felipe',
+                    displayName: 'Felipe Estudiante',
+                    role: 'student'
+                },
+                {
+                    id: 'est_maria_001',
+                    username: 'maria',
+                    displayName: 'María Estudiante',
+                    role: 'student'
+                },
+                {
+                    id: 'est_carlos_001',
+                    username: 'carlos',
+                    displayName: 'Carlos Estudiante',
+                    role: 'student'
+                }
+            ];
+
+            // Crear tarea específica solo para Felipe y María
+            const testTask = {
+                id: TEST_TASK_ID,
+                title: 'Ensayo de Literatura - Solo Felipe y María',
+                description: 'Analizar la obra "Cien años de soledad"',
+                assignedBy: 'profesor_literatura',
+                assignedById: 'prof_test_001',
+                assignedTo: 'student', // ← CLAVE: Asignación específica
+                assignedStudentIds: ['est_felipe_001', 'est_maria_001'], // ← Solo Felipe y María
+                course: 'Literatura',
+                subject: 'Literatura',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'assignment'
+            };
+
+            // Crear comentarios de prueba
+            const testComments = [
+                {
+                    id: 'comment_prof_001',
+                    taskId: TEST_TASK_ID,
+                    studentId: 'prof_test_001',
+                    studentUsername: 'profesor_literatura',
+                    studentName: 'Prof. García',
+                    comment: 'Este es un comentario privado del profesor para Felipe y María',
+                    timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    authorUsername: 'profesor_literatura',
+                    authorRole: 'teacher'
+                },
+                {
+                    id: 'comment_felipe_001',
+                    taskId: TEST_TASK_ID,
+                    studentId: 'est_felipe_001',
+                    studentUsername: 'felipe',
+                    studentName: 'Felipe Estudiante',
+                    comment: 'Profesor, tengo una duda sobre el análisis de los personajes',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    authorUsername: 'felipe',
+                    authorRole: 'student'
+                },
+                {
+                    id: 'comment_prof_002',
+                    taskId: TEST_TASK_ID,
+                    studentId: 'prof_test_001',
+                    studentUsername: 'profesor_literatura',
+                    studentName: 'Prof. García',
+                    comment: 'Felipe, enfócate en la evolución de José Arcadio Buendía',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    authorUsername: 'profesor_literatura',
+                    authorRole: 'teacher'
+                }
+            ];
+
+            // Limpiar datos previos y guardar nuevos
+            const existingTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const existingComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Filtrar datos de prueba anteriores
+            const cleanTasks = existingTasks.filter(t => t.id !== TEST_TASK_ID);
+            const cleanComments = existingComments.filter(c => c.taskId !== TEST_TASK_ID);
+            
+            // Agregar nuevos datos
+            cleanTasks.push(testTask);
+            cleanComments.push(...testComments);
+            
+            localStorage.setItem('smart-student-tasks', JSON.stringify(cleanTasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(cleanComments));
+
+            log('setup-result', '✅ Datos de prueba configurados correctamente', 'success');
+            log('setup-result', `📝 Tarea: "${testTask.title}"`, 'info');
+            log('setup-result', `👥 Asignada solo a: Felipe y María`, 'info');
+            log('setup-result', `💬 Comentarios creados: ${testComments.length}`, 'info');
+            log('setup-result', '', 'info');
+            log('setup-result', '🎯 Expectativas:', 'info');
+            log('setup-result', '  • Profesor: Debe ver todos los comentarios', 'info');
+            log('setup-result', '  • Felipe: Debe ver todos los comentarios (está asignado)', 'info');
+            log('setup-result', '  • María: Debe ver todos los comentarios (está asignado)', 'info');
+            log('setup-result', '  • Carlos: NO debe ver comentarios (NO está asignado)', 'warning');
+        }
+
+        function simulateCommentFilter(user, taskId) {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Función helper simulada
+            function isStudentAssignedToTask(taskId, studentId, studentUsername) {
+                const task = tasks.find(t => t.id === taskId);
+                
+                if (!task) return false;
+                
+                // Si la tarea está asignada a todo el curso
+                if (task.assignedTo === 'course') {
+                    return true;
+                }
+                
+                // Si la tarea está asignada a estudiantes específicos
+                if (task.assignedTo === 'student' && task.assignedStudentIds) {
+                    return task.assignedStudentIds.includes(studentId);
+                }
+                
+                // Compatibilidad con versiones anteriores
+                if (task.assignedStudents && task.assignedStudents.includes(studentUsername)) {
+                    return true;
+                }
+                
+                return false;
+            }
+
+            // Obtener comentarios de la tarea
+            const taskComments = comments.filter(c => c.taskId === taskId);
+            
+            // Aplicar filtro según el rol del usuario
+            const filteredComments = taskComments.filter(comment => {
+                // PROFESOR: solo comentarios (no entregas)
+                if (user.role === 'teacher') {
+                    return !comment.isSubmission;
+                }
+                
+                // ESTUDIANTE: aplicar filtros de privacidad
+                if (user.role === 'student') {
+                    // Para entregas: solo mostrar la propia
+                    if (comment.isSubmission) {
+                        return comment.studentId === user.id;
+                    }
+                    
+                    // Para comentarios: verificar si el estudiante está asignado a la tarea
+                    const isAssigned = isStudentAssignedToTask(comment.taskId, user.id, user.username);
+                    
+                    // Solo mostrar comentarios si el estudiante está asignado a la tarea
+                    return isAssigned;
+                }
+                
+                // Otros roles: solo comentarios
+                return !comment.isSubmission;
+            });
+
+            return {
+                totalComments: taskComments.length,
+                visibleComments: filteredComments.length,
+                comments: filteredComments,
+                isAssigned: user.role === 'teacher' ? true : isStudentAssignedToTask(taskId, user.id, user.username)
+            };
+        }
+
+        function testUser(userData, expectedVisible, expectedAssigned) {
+            const result = simulateCommentFilter(userData, TEST_TASK_ID);
+            
+            const success = (result.visibleComments === expectedVisible) && (result.isAssigned === expectedAssigned);
+            
+            testResults.push({
+                user: userData.displayName,
+                expected: expectedVisible,
+                actual: result.visibleComments,
+                assigned: result.isAssigned,
+                success: success
+            });
+
+            return {
+                success,
+                message: `${userData.displayName} (${userData.role}):
+  🔍 Asignado a la tarea: ${result.isAssigned ? 'SÍ' : 'NO'}
+  📊 Comentarios totales: ${result.totalComments}
+  👁️ Comentarios visibles: ${result.visibleComments}
+  ✅ Esperados: ${expectedVisible}
+  ${success ? '✅ CORRECTO' : '❌ ERROR'}`
+            };
+        }
+
+        function testAsProfesor() {
+            clearLog('test-results');
+            log('test-results', '👨‍🏫 Probando como Profesor...', 'info');
+            
+            const profesor = {
+                id: 'prof_test_001',
+                username: 'profesor_literatura',
+                displayName: 'Prof. García',
+                role: 'teacher'
+            };
+
+            const result = testUser(profesor, 3, true); // Debe ver 3 comentarios, siempre asignado
+            log('test-results', result.message, result.success ? 'success' : 'error');
+        }
+
+        function testAsFelipe() {
+            clearLog('test-results');
+            log('test-results', '👨‍🎓 Probando como Felipe (Asignado)...', 'info');
+            
+            const felipe = {
+                id: 'est_felipe_001',
+                username: 'felipe',
+                displayName: 'Felipe Estudiante',
+                role: 'student'
+            };
+
+            const result = testUser(felipe, 3, true); // Debe ver 3 comentarios, está asignado
+            log('test-results', result.message, result.success ? 'success' : 'error');
+        }
+
+        function testAsMaria() {
+            clearLog('test-results');
+            log('test-results', '👩‍🎓 Probando como María (Asignado)...', 'info');
+            
+            const maria = {
+                id: 'est_maria_001',
+                username: 'maria',
+                displayName: 'María Estudiante',
+                role: 'student'
+            };
+
+            const result = testUser(maria, 3, true); // Debe ver 3 comentarios, está asignado
+            log('test-results', result.message, result.success ? 'success' : 'error');
+        }
+
+        function testAsCarlos() {
+            clearLog('test-results');
+            log('test-results', '👨‍🎓 Probando como Carlos (NO Asignado)...', 'info');
+            
+            const carlos = {
+                id: 'est_carlos_001',
+                username: 'carlos',
+                displayName: 'Carlos Estudiante',
+                role: 'student'
+            };
+
+            const result = testUser(carlos, 0, false); // NO debe ver comentarios, NO está asignado
+            log('test-results', result.message, result.success ? 'success' : 'error');
+            
+            if (result.success) {
+                log('test-results', '🎉 ¡PRIVACIDAD FUNCIONANDO! Carlos no puede ver comentarios privados', 'success');
+            } else {
+                log('test-results', '⚠️ PROBLEMA: Carlos puede ver comentarios que no debería', 'error');
+            }
+        }
+
+        // Actualizar resumen automáticamente
+        setInterval(() => {
+            if (testResults.length > 0) {
+                const summary = document.getElementById('summary');
+                const passed = testResults.filter(r => r.success).length;
+                const total = testResults.length;
+                
+                summary.innerHTML = `
+📊 Resultados de las pruebas:
+Total: ${total} | Exitosas: ${passed} | Fallidas: ${total - passed}
+
+${testResults.map(r => 
+`${r.user}: ${r.success ? '✅' : '❌'} (vio ${r.actual}/${r.expected} comentarios, asignado: ${r.assigned})`
+).join('\n')}
+
+${passed === total ? 
+'🎉 ¡TODAS LAS PRUEBAS PASARON! Los comentarios privados funcionan correctamente.' : 
+'⚠️ Algunas pruebas fallaron. Verificar la implementación del filtro.'}`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

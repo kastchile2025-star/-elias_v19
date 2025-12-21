@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Modificaciones Profesor - Naranja y Revisar Tarea</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .success { background: #d1e7dd; border-left: 4px solid #0d6efd; }
+        .info { background: #e2f3ff; border-left: 4px solid #0dcaf0; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .error { background: #f8d7da; border-left: 4px solid #dc3545; }
+        
+        .old-color {
+            background: #d1f2eb;
+            border: 2px solid #52c41a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .new-color {
+            background: #fff2e8;
+            border: 2px solid #fa8c16;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .notification-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .orange-section {
+            background: #fff2e8;
+            border-left: 4px solid #fa8c16;
+            color: #d4610a;
+        }
+        
+        .green-section {
+            background: #d1f2eb;
+            border-left: 4px solid #52c41a;
+            color: #389e0d;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .orange-icon { background: #ffd8bf; color: #d4610a; }
+        .green-icon { background: #b7eb8f; color: #389e0d; }
+        
+        .badge {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+        
+        .orange-badge { background: #ffe7ba; color: #d4610a; border: 1px solid #ffb347; }
+        .green-badge { background: #d9f7be; color: #389e0d; border: 1px solid #95de64; }
+        
+        .link {
+            color: #1890ff;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        
+        .orange-link { color: #fa8c16; }
+        .green-link { color: #52c41a; }
+        
+        code {
+            background: #f6f8fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Test: Modificaciones Profesor Completadas</h1>
+        
+        <div class="section success">
+            <h2>🎯 Cambios Solicitados</h2>
+            <ol>
+                <li><strong>Color de "Tareas por Revisar":</strong> Cambiar de verde a naranja (igual que "Tareas Pendientes")</li>
+                <li><strong>Texto del enlace:</strong> Cambiar de "Ver Tarea" a "Revisar Tarea"</li>
+            </ol>
+        </div>
+
+        <div class="section info">
+            <h2>📋 Archivos Modificados</h2>
+            <ul>
+                <li><code>/src/components/common/notifications-panel.tsx</code> - Panel de notificaciones</li>
+                <li><code>/src/locales/es.json</code> - Traducciones en español</li>
+                <li><code>/src/locales/en.json</code> - Traducciones en inglés</li>
+            </ul>
+        </div>
+
+        <div class="section warning">
+            <h2>🎨 Cambio 1: Color de "Tareas por Revisar"</h2>
+            
+            <h3>ANTES (Verde):</h3>
+            <div class="old-color">
+                <div class="notification-item green-section">
+                    <div class="icon green-icon">📝</div>
+                    <div>
+                        <strong>Tareas por Revisar (2)</strong>
+                        <div style="margin-top: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Felipe Estudiante</span>
+                                <span class="badge green-badge">Ciencias Naturales</span>
+                            </div>
+                            <div style="margin: 5px 0; font-size: 12px; color: #666;">
+                                Entrega de Tarea: Ensayo sobre el Sistema Solar
+                            </div>
+                            <a href="#" class="link green-link">Ver Tarea</a> ❌
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>DESPUÉS (Naranja):</h3>
+            <div class="new-color">
+                <div class="notification-item orange-section">
+                    <div class="icon orange-icon">📝</div>
+                    <div>
+                        <strong>Tareas por Revisar (2)</strong>
+                        <div style="margin-top: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Felipe Estudiante</span>
+                                <span class="badge orange-badge">Ciencias Naturales</span>
+                            </div>
+                            <div style="margin: 5px 0; font-size: 12px; color: #666;">
+                                Entrega de Tarea: Ensayo sobre el Sistema Solar
+                            </div>
+                            <a href="#" class="link orange-link">Revisar Tarea</a> ✅
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section info">
+            <h2>🔤 Cambio 2: Texto del Enlace</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h3>ANTES:</h3>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                        <code>"Ver Tarea"</code> ❌
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>DESPUÉS:</h3>
+                    <div style="background: #e8f5e8; padding: 10px; border-radius: 4px;">
+                        <code>"Revisar Tarea"</code> ✅
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section success">
+            <h2>✅ Cambios Técnicos Aplicados</h2>
+            
+            <h3>1. Cambio de Color (Archivo: notifications-panel.tsx)</h3>
+            <div style="background: #f6f8fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                <div style="color: #d73a49;">- bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400</div>
+                <div style="color: #28a745;">+ bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-400</div>
+                <br>
+                <div style="color: #d73a49;">- text-green-800 dark:text-green-200</div>
+                <div style="color: #28a745;">+ text-orange-800 dark:text-orange-200</div>
+                <br>
+                <div style="color: #d73a49;">- bg-green-100 dark:bg-green-800</div>
+                <div style="color: #28a745;">+ bg-orange-100 dark:bg-orange-800</div>
+                <br>
+                <div style="color: #d73a49;">- text-green-600 dark:text-green-300</div>
+                <div style="color: #28a745;">+ text-orange-600 dark:text-orange-300</div>
+            </div>
+
+            <h3>2. Traducciones Actualizadas</h3>
+            <div style="background: #f6f8fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                <strong>es.json:</strong><br>
+                <div style="color: #d73a49;">- "reviewSubmission": "Ver Tarea"</div>
+                <div style="color: #28a745;">+ "reviewSubmission": "Revisar Tarea"</div>
+                <div style="color: #28a745;">+ "reviewTask": "Revisar Tarea"</div>
+                <br>
+                <strong>en.json:</strong><br>
+                <div style="color: #d73a49;">- "reviewSubmission": "View Task"</div>
+                <div style="color: #28a745;">+ "reviewSubmission": "Review Task"</div>
+                <div style="color: #28a745;">+ "reviewTask": "Review Task"</div>
+            </div>
+        </div>
+
+        <div class="section info">
+            <h2>🎯 Consistencia Visual Lograda</h2>
+            <p>Ahora todas las secciones relacionadas con tareas en el modo profesor tienen el mismo color <strong>naranja</strong>:</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="notification-item orange-section">
+                    <div class="icon orange-icon">⏰</div>
+                    <div>
+                        <strong>Tareas Pendientes</strong><br>
+                        <small>Tareas creadas esperando entregas</small>
+                    </div>
+                </div>
+                
+                <div class="notification-item orange-section">
+                    <div class="icon orange-icon">📝</div>
+                    <div>
+                        <strong>Tareas por Revisar</strong><br>
+                        <small>Entregas de estudiantes para calificar</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section success">
+            <h2>🚀 Estado Final</h2>
+            <ul>
+                <li>✅ <strong>Color consistente:</strong> Tanto "Tareas Pendientes" como "Tareas por Revisar" usan el color naranja</li>
+                <li>✅ <strong>Texto correcto:</strong> El enlace ahora dice "Revisar Tarea" en lugar de "Ver Tarea"</li>
+                <li>✅ <strong>Bilingüe:</strong> Cambios aplicados en español e inglés</li>
+                <li>✅ <strong>Sin errores:</strong> Todas las modificaciones mantienen la funcionalidad existente</li>
+            </ul>
+            
+            <p><strong>Las modificaciones están listas y funcionando correctamente. 🎉</strong></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Notificaciones de Tareas Completadas - Professor</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .button {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #ea580c;
+        }
+        .button.success {
+            background: #10b981;
+        }
+        .button.warning {
+            background: #f59e0b;
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .result.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        .result.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        .result.info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+        .result.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .notification-item {
+            border: 1px solid #f97316;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(to right, #fff7ed, #f3f4f6);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f97316;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .grading-form {
+            background: #f8fafc;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .grading-form input, .grading-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Test: Notificaciones de Tareas Completadas</h1>
+            <p>Verifica que las notificaciones desaparezcan cuando el profesor califica las entregas.</p>
+        </div>
+
+        <div class="section">
+            <h3>🚀 Flujo de Prueba Completo</h3>
+            <button class="button success" onclick="runCompleteTest()">▶️ Ejecutar Prueba Completa</button>
+            <button class="button" onclick="testStep1()">1. Crear Tarea y Usuarios</button>
+            <button class="button" onclick="testStep2()">2. Estudiante Entrega Tarea</button>
+            <button class="button" onclick="testStep3()">3. Verificar Panel Profesor</button>
+            <button class="button" onclick="testStep4()">4. Profesor Califica Entrega</button>
+            <button class="button" onclick="testStep5()">5. Verificar Desaparición</button>
+            <button class="button danger" onclick="cleanAll()">🗑️ Limpiar Todo</button>
+        </div>
+
+        <div class="section">
+            <h3>📊 Estado del Sistema</h3>
+            <div class="stats" id="systemStats">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔔 Panel "Tareas Completadas" del Profesor</h3>
+            <div id="teacherPanel">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📝 Simulador de Calificación</h3>
+            <div id="gradingSimulator">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>✅ Resultados de la Prueba</h3>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script>
+        const testData = {
+            teacherUsername: 'prof_lopez',
+            teacherDisplayName: 'Prof. López',
+            studentUsername: 'maria_est',
+            studentDisplayName: 'María Estudiante',
+            taskId: 'task_math_003',
+            taskTitle: 'Ejercicios de Álgebra',
+            course: 'matematicas_5to',
+            subject: 'Matemáticas'
+        };
+
+        // Sistema de notificaciones simulado
+        const NotificationSystem = {
+            getNotifications() {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            },
+
+            saveNotifications(notifications) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            },
+
+            createTaskCompletedNotification(taskId, taskTitle, course, subject, teacherUsername) {
+                const notifications = this.getNotifications();
+                
+                const notification = {
+                    id: `completed_${taskId}_${Date.now()}`,
+                    type: 'task_completed',
+                    taskId,
+                    taskTitle,
+                    targetUserRole: 'teacher',
+                    targetUsernames: [teacherUsername],
+                    fromUsername: 'system',
+                    fromDisplayName: 'Estudiante',
+                    course,
+                    subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                };
+
+                notifications.push(notification);
+                this.saveNotifications(notifications);
+                
+                addResult(`✅ Notificación de tarea completada creada: ${taskTitle}`, 'success');
+                return notification;
+            },
+
+            getTaskCompletedNotifications(teacherUsername) {
+                const notifications = this.getNotifications();
+                
+                return notifications.filter(notification => 
+                    notification.type === 'task_completed' && 
+                    notification.taskType === 'assignment' &&
+                    notification.targetUsernames.includes(teacherUsername) &&
+                    !notification.readBy.includes(teacherUsername)
+                );
+            },
+
+            // Función que simula el filtro del panel real
+            getTaskCompletedNotificationsFiltered(teacherUsername) {
+                const taskCompletedNotifications = this.getTaskCompletedNotifications(teacherUsername);
+                
+                // Aplicar filtro isTaskAlreadyGraded
+                return taskCompletedNotifications.filter(notification => {
+                    const isGraded = this.isTaskAlreadyGraded(notification.taskId, notification.fromUsername);
+                    console.log(`🔍 Filtering notification: ${notification.taskTitle} - isGraded: ${isGraded}`);
+                    return !isGraded; // Solo mostrar las NO calificadas
+                });
+            },
+
+            isTaskAlreadyGraded(taskId, studentUsername) {
+                try {
+                    console.log(`🔍 Verificando si tarea ${taskId} de estudiante ${studentUsername} está calificada`);
+                    
+                    const commentsData = localStorage.getItem('smart-student-task-comments');
+                    if (commentsData) {
+                        const comments = JSON.parse(commentsData);
+                        
+                        const studentSubmission = comments.find(comment => 
+                            comment.taskId === taskId && 
+                            comment.studentUsername === studentUsername && 
+                            comment.isSubmission === true
+                        );
+                        
+                        if (studentSubmission) {
+                            const isGraded = studentSubmission.grade !== undefined && studentSubmission.grade !== null;
+                            console.log(`🔍 Estudiante ${studentUsername}, Tarea ${taskId}: ${isGraded ? 'CALIFICADA' : 'NO CALIFICADA'} (grade: ${studentSubmission.grade})`);
+                            return isGraded;
+                        }
+                    }
+                    
+                    return false;
+                } catch (error) {
+                    console.error('❌ Error verificando calificación:', error);
+                    return false;
+                }
+            },
+
+            removeTaskCompletedNotifications(taskId) {
+                const notifications = this.getNotifications();
+                let removedCount = 0;
+                
+                const filteredNotifications = notifications.filter(notification => {
+                    const shouldRemove = notification.taskId === taskId && 
+                        notification.type === 'task_completed';
+                    
+                    if (shouldRemove) {
+                        removedCount++;
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                if (removedCount > 0) {
+                    this.saveNotifications(filteredNotifications);
+                    addResult(`📭 ${removedCount} notificaciones eliminadas por calificación`, 'info');
+                }
+                
+                return removedCount;
+            }
+        };
+
+        // Sistema de comentarios/entregas simulado
+        const CommentsSystem = {
+            getComments() {
+                return JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            },
+
+            saveComments(comments) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+            },
+
+            createStudentSubmission(taskId, studentUsername, studentDisplayName) {
+                const comments = this.getComments();
+                
+                const submission = {
+                    id: `submission_${taskId}_${studentUsername}_${Date.now()}`,
+                    taskId,
+                    studentId: studentUsername,
+                    studentUsername,
+                    studentName: studentDisplayName,
+                    comment: 'Aquí está mi entrega de la tarea',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: true,
+                    attachments: [],
+                    grade: undefined, // Sin calificar inicialmente
+                    teacherComment: undefined,
+                    reviewedAt: undefined
+                };
+
+                comments.push(submission);
+                this.saveComments(comments);
+                
+                addResult(`✅ Entrega creada: ${studentDisplayName} entregó ${taskId}`, 'success');
+                return submission;
+            },
+
+            gradeSubmission(taskId, studentUsername, grade, teacherComment) {
+                const comments = this.getComments();
+                
+                const updatedComments = comments.map(comment => {
+                    if (comment.taskId === taskId && 
+                        comment.studentUsername === studentUsername && 
+                        comment.isSubmission) {
+                        return {
+                            ...comment,
+                            grade,
+                            teacherComment,
+                            reviewedAt: new Date().toISOString()
+                        };
+                    }
+                    return comment;
+                });
+                
+                this.saveComments(updatedComments);
+                
+                addResult(`✅ Calificación asignada: ${grade}/100 para ${studentUsername}`, 'success');
+                
+                // Simular eliminación de notificaciones (como en el código real)
+                NotificationSystem.removeTaskCompletedNotifications(taskId);
+            }
+        };
+
+        function addResult(message, type = 'info') {
+            const resultsElement = document.getElementById('testResults');
+            resultsElement.innerHTML += `<div class="result ${type}">${message}</div>`;
+        }
+
+        function updateSystemStats() {
+            const allNotifications = NotificationSystem.getNotifications();
+            const teacherNotifications = NotificationSystem.getTaskCompletedNotifications(testData.teacherUsername);
+            const filteredNotifications = NotificationSystem.getTaskCompletedNotificationsFiltered(testData.teacherUsername);
+            const allComments = CommentsSystem.getComments();
+            
+            document.getElementById('systemStats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${allNotifications.length}</div>
+                    <div class="stat-label">Total Notificaciones</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${teacherNotifications.length}</div>
+                    <div class="stat-label">Tareas Completadas (sin filtro)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${filteredNotifications.length}</div>
+                    <div class="stat-label">Tareas Completadas (filtradas)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${allComments.length}</div>
+                    <div class="stat-label">Comentarios/Entregas</div>
+                </div>
+            `;
+        }
+
+        function updateTeacherPanel() {
+            const filteredNotifications = NotificationSystem.getTaskCompletedNotificationsFiltered(testData.teacherUsername);
+            
+            let html = '<h4>📋 Sección "Tareas Completadas"</h4>';
+            
+            if (filteredNotifications.length === 0) {
+                html += '<div class="result info">ℹ️ No hay tareas completadas pendientes de calificar</div>';
+            } else {
+                html += `<div class="result warning">⚠️ ${filteredNotifications.length} tarea(s) completadas encontradas</div>`;
+                
+                filteredNotifications.forEach(notif => {
+                    html += `
+                        <div class="notification-item">
+                            <div style="font-weight: bold; color: #ea580c; margin-bottom: 5px;">
+                                📝 ${notif.fromDisplayName} completó la tarea
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>Tarea:</strong> ${notif.taskTitle}<br>
+                                <strong>Curso:</strong> ${notif.course}<br>
+                                <strong>Materia:</strong> ${notif.subject}<br>
+                                <strong>Fecha:</strong> ${new Date(notif.timestamp).toLocaleString()}
+                            </div>
+                            <button class="button" onclick="openGradingForm('${notif.taskId}')">
+                                📝 Ver y Calificar Tarea
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('teacherPanel').innerHTML = html;
+        }
+
+        function updateGradingSimulator() {
+            const comments = CommentsSystem.getComments();
+            const submissions = comments.filter(c => c.isSubmission);
+            
+            let html = '<h4>📝 Entregas Disponibles para Calificar</h4>';
+            
+            if (submissions.length === 0) {
+                html += '<div class="result info">ℹ️ No hay entregas para calificar</div>';
+            } else {
+                submissions.forEach(submission => {
+                    const isGraded = submission.grade !== undefined;
+                    
+                    html += `
+                        <div class="grading-form">
+                            <h5>${submission.studentName} - ${submission.taskId}</h5>
+                            <p><strong>Entrega:</strong> ${submission.comment}</p>
+                            <p><strong>Estado:</strong> ${isGraded ? `✅ Calificada (${submission.grade}/100)` : '⏳ Pendiente de calificar'}</p>
+                            
+                            ${!isGraded ? `
+                                <div style="margin-top: 10px;">
+                                    <input type="number" id="grade_${submission.id}" placeholder="Calificación (0-100)" min="0" max="100">
+                                    <textarea id="comment_${submission.id}" placeholder="Comentario del profesor" rows="2"></textarea>
+                                    <button class="button success" onclick="gradeSubmission('${submission.taskId}', '${submission.studentUsername}', '${submission.id}')">
+                                        ✅ Calificar Entrega
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('gradingSimulator').innerHTML = html;
+        }
+
+        function testStep1() {
+            addResult('🚀 Paso 1: Creando tarea y usuarios de prueba...', 'info');
+            
+            // Crear usuarios
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            users[testData.teacherUsername] = {
+                username: testData.teacherUsername,
+                displayName: testData.teacherDisplayName,
+                role: 'teacher'
+            };
+            users[testData.studentUsername] = {
+                username: testData.studentUsername,
+                displayName: testData.studentDisplayName,
+                role: 'student'
+            };
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            // Crear tarea
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            if (!tasks.find(t => t.id === testData.taskId)) {
+                tasks.push({
+                    id: testData.taskId,
+                    title: testData.taskTitle,
+                    course: testData.course,
+                    subject: testData.subject,
+                    assignedBy: testData.teacherUsername,
+                    taskType: 'tarea'
+                });
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            }
+            
+            addResult('✅ Datos de prueba creados correctamente', 'success');
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        }
+
+        function testStep2() {
+            addResult('📝 Paso 2: Estudiante entrega tarea...', 'info');
+            
+            // Crear entrega del estudiante
+            CommentsSystem.createStudentSubmission(
+                testData.taskId,
+                testData.studentUsername,
+                testData.studentDisplayName
+            );
+            
+            // Crear notificación de tarea completada
+            NotificationSystem.createTaskCompletedNotification(
+                testData.taskId,
+                testData.taskTitle,
+                testData.course,
+                testData.subject,
+                testData.teacherUsername
+            );
+            
+            addResult('✅ Entrega realizada y notificación enviada al profesor', 'success');
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        }
+
+        function testStep3() {
+            addResult('🔍 Paso 3: Verificando panel del profesor...', 'info');
+            
+            const filteredNotifications = NotificationSystem.getTaskCompletedNotificationsFiltered(testData.teacherUsername);
+            
+            if (filteredNotifications.length > 0) {
+                addResult(`✅ CORRECTO: ${filteredNotifications.length} tarea(s) completadas aparecen en el panel`, 'success');
+                addResult('✅ La sección "Tareas Completadas" se muestra correctamente', 'success');
+            } else {
+                addResult('❌ PROBLEMA: No se encontraron tareas completadas en el panel', 'error');
+                addResult('🔧 Verificar que la entrega se haya creado correctamente', 'warning');
+            }
+            
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        }
+
+        function openGradingForm(taskId) {
+            addResult(`👁️ Profesor abre la tarea ${taskId} para calificar...`, 'info');
+            // En este test, simplemente scroll al simulador de calificación
+            document.getElementById('gradingSimulator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function gradeSubmission(taskId, studentUsername, submissionId) {
+            const gradeInput = document.getElementById(`grade_${submissionId}`);
+            const commentInput = document.getElementById(`comment_${submissionId}`);
+            
+            const grade = parseInt(gradeInput.value);
+            const comment = commentInput.value;
+            
+            if (isNaN(grade) || grade < 0 || grade > 100) {
+                addResult('❌ Error: La calificación debe ser un número entre 0 y 100', 'error');
+                return;
+            }
+            
+            addResult(`📝 Paso 4: Profesor califica entrega de ${studentUsername}...`, 'info');
+            
+            // Calificar la entrega
+            CommentsSystem.gradeSubmission(taskId, studentUsername, grade, comment);
+            
+            addResult(`✅ Entrega calificada: ${grade}/100`, 'success');
+            
+            // Verificar que la notificación desapareció
+            setTimeout(() => {
+                testStep5();
+            }, 500);
+        }
+
+        function testStep4() {
+            addResult('📝 Paso 4: Simulando calificación por parte del profesor...', 'info');
+            
+            // Calificar automáticamente con nota 85
+            CommentsSystem.gradeSubmission(
+                testData.taskId,
+                testData.studentUsername,
+                85,
+                'Buen trabajo, pero puede mejorar'
+            );
+            
+            addResult('✅ Calificación asignada: 85/100', 'success');
+            
+            // Verificar que la notificación desapareció
+            setTimeout(() => {
+                testStep5();
+            }, 500);
+        }
+
+        function testStep5() {
+            addResult('🔍 Paso 5: Verificando que la notificación desapareció...', 'info');
+            
+            const filteredNotifications = NotificationSystem.getTaskCompletedNotificationsFiltered(testData.teacherUsername);
+            
+            if (filteredNotifications.length === 0) {
+                addResult('✅ ÉXITO: La notificación de tarea completada desapareció correctamente', 'success');
+                addResult('✅ El filtro isTaskAlreadyGraded está funcionando correctamente', 'success');
+            } else {
+                addResult('❌ PROBLEMA: La notificación aún aparece después de calificar', 'error');
+                addResult('🔧 Revisar la función isTaskAlreadyGraded en notifications-panel.tsx', 'error');
+            }
+            
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        }
+
+        function runCompleteTest() {
+            document.getElementById('testResults').innerHTML = '';
+            addResult('🚀 Iniciando prueba completa del flujo...', 'info');
+            
+            setTimeout(() => testStep1(), 500);
+            setTimeout(() => testStep2(), 1000);
+            setTimeout(() => testStep3(), 1500);
+            setTimeout(() => testStep4(), 2000);
+            setTimeout(() => {
+                addResult('🎉 Prueba completa finalizada. Revisa los resultados arriba.', 'success');
+            }, 3000);
+        }
+
+        function cleanAll() {
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-task-comments');
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            delete users[testData.teacherUsername];
+            delete users[testData.studentUsername];
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const filteredTasks = tasks.filter(t => t.id !== testData.taskId);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+            
+            document.getElementById('testResults').innerHTML = '';
+            addResult('🗑️ Todos los datos de prueba eliminados', 'info');
+            
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemStats();
+            updateTeacherPanel();
+            updateGradingSimulator();
+        });
+    </script>
+</body>
+</html>

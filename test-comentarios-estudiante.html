@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test: Comentarios No Leídos - Estudiante</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        button { padding: 10px 15px; margin: 5px; border: none; border-radius: 3px; cursor: pointer; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico: Comentarios No Leídos - Estudiante</h1>
+        
+        <div class="section">
+            <h2>Paso 1: Configurar Datos de Prueba</h2>
+            <button class="btn-primary" onclick="setupTestData()">📝 Configurar Usuario y Comentarios</button>
+            <div id="setup-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Paso 2: Verificar Conteo Inicial</h2>
+            <button class="btn-primary" onclick="checkInitialCount()">📊 Verificar Comentarios No Leídos</button>
+            <div id="initial-count-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Paso 3: Simular Navegación a Tarea</h2>
+            <button class="btn-warning" onclick="simulateTaskNavigation()">👁️ Simular Abrir Tarea</button>
+            <div id="navigation-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Paso 4: Verificar Evento de Actualización</h2>
+            <button class="btn-success" onclick="testEventHandling()">🔄 Probar Evento commentsUpdated</button>
+            <div id="event-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Paso 5: Verificar Conteo Final</h2>
+            <button class="btn-primary" onclick="checkFinalCount()">📊 Verificar Conteo Final</button>
+            <div id="final-count-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Paso 6: Diagnóstico del Problema</h2>
+            <button class="btn-danger" onclick="diagnoseProblems()">🔧 Diagnosticar Problemas</button>
+            <div id="diagnosis-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = 'task_test_comentarios_' + Date.now();
+        let testUser = {
+            username: 'felipe_estudiante',
+            role: 'student',
+            id: 'felipe_123'
+        };
+        let initialCount = 0;
+        let finalCount = 0;
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const className = type === 'error' ? 'error' : 
+                             type === 'success' ? 'success' : 
+                             type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<div class="${className}">${message}</div>`;
+        }
+
+        function setupTestData() {
+            log('setup-result', '🔧 Configurando datos de prueba...', 'info');
+            
+            // Configurar usuario de prueba
+            localStorage.setItem('smart-student-user', JSON.stringify(testUser));
+            
+            // Configurar tarea de prueba
+            const testTask = {
+                id: testTaskId,
+                title: 'Ensayo sobre la Revolución Industrial',
+                assignedBy: 'profesor_martinez',
+                course: '10A',
+                subject: 'Historia',
+                taskType: 'tarea'
+            };
+            
+            const existingTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            existingTasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(existingTasks));
+            
+            // Configurar comentarios de prueba (NO LEÍDOS)
+            const testComments = [
+                {
+                    id: 'comment_test_1',
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_martinez',
+                    studentName: 'Prof. Martínez',
+                    comment: 'Muy buen trabajo Felipe, pero necesitas mejorar las conclusiones.',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                },
+                {
+                    id: 'comment_test_2',
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_martinez',
+                    studentName: 'Prof. Martínez',
+                    comment: 'Revisa las fuentes bibliográficas que te mencioné.',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                }
+            ];
+            
+            const existingComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            testComments.forEach(comment => existingComments.push(comment));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(existingComments));
+            
+            log('setup-result', '✅ Datos configurados correctamente', 'success');
+            log('setup-result', `📝 Tarea: ${testTask.title}`, 'info');
+            log('setup-result', `👤 Usuario: ${testUser.username} (${testUser.role})`, 'info');
+            log('setup-result', `💬 Comentarios: ${testComments.length} sin leer`, 'info');
+        }
+
+        function checkInitialCount() {
+            log('initial-count-result', '📊 Verificando conteo inicial...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Simular la lógica del dashboard
+            let unread = comments.filter((comment) => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+
+            // Eliminar duplicados
+            unread = unread.filter((comment, idx, arr) =>
+                arr.findIndex(c =>
+                    c.taskId === comment.taskId &&
+                    c.comment === comment.comment &&
+                    c.timestamp === comment.timestamp &&
+                    c.studentUsername === comment.studentUsername
+                ) === idx
+            );
+            
+            initialCount = unread.length;
+            
+            log('initial-count-result', `📩 Comentarios no leídos encontrados: ${initialCount}`, 'info');
+            
+            if (initialCount > 0) {
+                log('initial-count-result', '📝 Detalles de comentarios no leídos:', 'info');
+                unread.forEach((comment, index) => {
+                    log('initial-count-result', `   ${index + 1}. "${comment.comment}" por ${comment.studentName}`, 'info');
+                });
+            } else {
+                log('initial-count-result', '⚠️ No hay comentarios no leídos para probar', 'warning');
+            }
+        }
+
+        function simulateTaskNavigation() {
+            log('navigation-result', '👁️ Simulando navegación a tarea...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Simular la función markCommentsAsReadForTask
+            let updated = false;
+            
+            const updatedComments = comments.map((comment) => {
+                if (
+                    comment.taskId === testTaskId && 
+                    !comment.isSubmission &&
+                    comment.studentUsername !== user.username &&
+                    (!comment.readBy?.includes(user.username))
+                ) {
+                    updated = true;
+                    log('navigation-result', `✅ Marcando como leído: "${comment.comment}"`, 'success');
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), user.username]
+                    };
+                }
+                return comment;
+            });
+            
+            if (updated) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                log('navigation-result', '💾 Comentarios actualizados en localStorage', 'success');
+            } else {
+                log('navigation-result', '⚠️ No se encontraron comentarios para marcar como leídos', 'warning');
+            }
+        }
+
+        function testEventHandling() {
+            log('event-result', '🔄 Probando manejo de eventos...', 'info');
+            
+            // Simular el evento commentsUpdated
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Simular handleCommentsUpdated del dashboard
+            if (user?.role === 'student') {
+                log('event-result', '📚 Recargando comentarios no leídos para estudiante...', 'info');
+                
+                let unread = comments.filter((comment) => 
+                    comment.studentUsername !== user.username && 
+                    (!comment.readBy?.includes(user.username)) &&
+                    !comment.isSubmission
+                );
+
+                unread = unread.filter((comment, idx, arr) =>
+                    arr.findIndex((c) =>
+                        c.taskId === comment.taskId &&
+                        c.comment === comment.comment &&
+                        c.timestamp === comment.timestamp &&
+                        c.studentUsername === comment.studentUsername
+                    ) === idx
+                );
+                
+                log('event-result', `📊 Comentarios no leídos después del evento: ${unread.length}`, 'info');
+                
+                // Simular el disparo del evento
+                document.dispatchEvent(new Event('commentsUpdated'));
+                log('event-result', '📡 Evento "commentsUpdated" disparado', 'success');
+            }
+        }
+
+        function checkFinalCount() {
+            log('final-count-result', '📊 Verificando conteo final...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Repetir la lógica del dashboard
+            let unread = comments.filter((comment) => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+
+            unread = unread.filter((comment, idx, arr) =>
+                arr.findIndex(c =>
+                    c.taskId === comment.taskId &&
+                    c.comment === comment.comment &&
+                    c.timestamp === comment.timestamp &&
+                    c.studentUsername === comment.studentUsername
+                ) === idx
+            );
+            
+            finalCount = unread.length;
+            
+            log('final-count-result', `📩 Comentarios no leídos final: ${finalCount}`, 'info');
+            
+            if (finalCount === 0) {
+                log('final-count-result', '✅ Todos los comentarios fueron marcados como leídos', 'success');
+            } else {
+                log('final-count-result', '❌ Algunos comentarios siguen sin leer', 'error');
+                unread.forEach((comment, index) => {
+                    log('final-count-result', `   ${index + 1}. "${comment.comment}" por ${comment.studentName}`, 'error');
+                });
+            }
+        }
+
+        function diagnoseProblems() {
+            log('diagnosis-result', '🔧 Ejecutando diagnóstico...', 'info');
+            
+            log('diagnosis-result', `📊 Comentarios no leídos INICIAL: ${initialCount}`, 'info');
+            log('diagnosis-result', `📊 Comentarios no leídos FINAL: ${finalCount}`, 'info');
+            
+            if (initialCount > 0 && finalCount === 0) {
+                log('diagnosis-result', '✅ PROBLEMA RESUELTO: Los comentarios se marcaron correctamente como leídos', 'success');
+                log('diagnosis-result', '💡 La lógica funciona, el problema podría estar en:', 'info');
+                log('diagnosis-result', '   1. El evento no se dispara en el momento correcto en la aplicación real', 'info');
+                log('diagnosis-result', '   2. El dashboard no escucha el evento en el momento correcto', 'info');
+                log('diagnosis-result', '   3. Hay problemas de timing o race conditions', 'info');
+            } else if (initialCount > 0 && finalCount > 0) {
+                log('diagnosis-result', '❌ PROBLEMA PERSISTENTE: Los comentarios no se marcaron como leídos', 'error');
+                log('diagnosis-result', '🔍 Posibles causas:', 'info');
+                log('diagnosis-result', '   1. La función markCommentsAsReadForTask no se está ejecutando', 'error');
+                log('diagnosis-result', '   2. Los parámetros no coinciden (taskId, username)', 'error');
+                log('diagnosis-result', '   3. El evento commentsUpdated no se dispara', 'error');
+                log('diagnosis-result', '   4. El dashboard no recibe el evento correctamente', 'error');
+            } else if (initialCount === 0) {
+                log('diagnosis-result', '⚠️ NO HAY COMENTARIOS PARA PROBAR', 'warning');
+                log('diagnosis-result', '   Configura primero los datos de prueba', 'warning');
+            }
+            
+            // Mostrar información adicional
+            log('diagnosis-result', '', 'info');
+            log('diagnosis-result', '📋 PARA VERIFICAR EN LA APLICACIÓN REAL:', 'info');
+            log('diagnosis-result', '   1. Abre la consola del navegador', 'info');
+            log('diagnosis-result', '   2. Busca mensajes de "[TaskNotificationManager]"', 'info');
+            log('diagnosis-result', '   3. Verifica si se ejecuta "markCommentsAsReadForTask"', 'info');
+            log('diagnosis-result', '   4. Verifica si se dispara el evento "commentsUpdated"', 'info');
+            log('diagnosis-result', '   5. Verifica si el dashboard recibe el evento', 'info');
+        }
+
+        // Limpiar datos de prueba al cargar
+        function cleanup() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const filteredComments = comments.filter(c => !c.id.startsWith('comment_test_'));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const filteredTasks = tasks.filter(t => !t.id.startsWith('task_test_comentarios_'));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+        }
+
+        // Limpiar al cargar la página
+        window.addEventListener('beforeunload', cleanup);
+    </script>
+</body>
+</html>

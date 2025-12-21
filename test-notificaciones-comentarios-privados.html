@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Filtro de Notificaciones de Comentarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .test-button.danger {
+            background-color: #dc3545;
+        }
+        .test-button.danger:hover {
+            background-color: #c82333;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-line;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        h1 { color: #333; }
+        h2 { color: #666; }
+        h3 { color: #888; }
+        .notification-item {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #fff;
+        }
+        .notification-item.should-see {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .notification-item.should-not-see {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .user-section {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .user-section.active {
+            border-color: #007bff;
+            background-color: #e7f3ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Test: Filtro de Notificaciones de Comentarios</h1>
+    
+    <div class="test-section">
+        <h2>📋 Objetivo del Test</h2>
+        <p>Verificar que las notificaciones de comentarios respeten la privacidad por curso, sección y estudiante asignado.</p>
+        
+        <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;">
+            <h3>🎯 Escenario de Prueba:</h3>
+            <ul>
+                <li><strong>Profesor Carlos:</strong> Crea comentario en tarea solo para Felipe y María</li>
+                <li><strong>Felipe (4to A):</strong> Debe recibir notificación ✅</li>
+                <li><strong>María (4to A):</strong> Debe recibir notificación ✅</li>
+                <li><strong>Carlos (4to B):</strong> NO debe recibir notificación ❌</li>
+                <li><strong>Ana (5to A):</strong> NO debe recibir notificación ❌</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Configuración de Test</h2>
+        <button class="test-button" onclick="setupNotificationTestData()">1. Configurar Datos de Notificaciones</button>
+        <button class="test-button danger" onclick="clearNotificationData()">Limpiar Datos</button>
+        <div id="setup-result" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>👥 Simulación de Notificaciones por Usuario</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+            <div class="user-section">
+                <h3>👨‍🎓 Felipe (4to A)</h3>
+                <button class="test-button" onclick="testNotificationsForUser('felipe_4a', 'Felipe (4to A)')">Verificar Notificaciones</button>
+                <div id="felipe-notifications" class="result-box"></div>
+            </div>
+            
+            <div class="user-section">
+                <h3>👩‍🎓 María (4to A)</h3>
+                <button class="test-button" onclick="testNotificationsForUser('maria_4a', 'María (4to A)')">Verificar Notificaciones</button>
+                <div id="maria-notifications" class="result-box"></div>
+            </div>
+            
+            <div class="user-section">
+                <h3>👨‍🎓 Carlos (4to B)</h3>
+                <button class="test-button" onclick="testNotificationsForUser('carlos_4b', 'Carlos (4to B)')">Verificar Notificaciones</button>
+                <div id="carlos-notifications" class="result-box"></div>
+            </div>
+            
+            <div class="user-section">
+                <h3>👩‍🎓 Ana (5to A)</h3>
+                <button class="test-button" onclick="testNotificationsForUser('ana_5a', 'Ana (5to A)')">Verificar Notificaciones</button>
+                <div id="ana-notifications" class="result-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Resumen de Resultados</h2>
+        <div id="test-summary" class="result-box"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function log(id, message, type = 'info') {
+            const element = document.getElementById(id);
+            const timestamp = new Date().toLocaleTimeString();
+            const typeClass = type === 'success' ? 'success' : 
+                            type === 'error' ? 'error' : 
+                            type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<span class="${typeClass}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        function clearLog(id) {
+            document.getElementById(id).innerHTML = '';
+        }
+
+        function clearNotificationData() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-student-assignments');
+            localStorage.removeItem('smart-student-sections');
+            localStorage.removeItem('smart-student-courses');
+            
+            clearLog('setup-result');
+            log('setup-result', '🧹 Todos los datos de notificaciones eliminados', 'warning');
+        }
+
+        function setupNotificationTestData() {
+            clearLog('setup-result');
+            log('setup-result', '🔧 Configurando datos de test para notificaciones...', 'info');
+            
+            // === USUARIOS ===
+            const testUsers = [
+                {
+                    id: 'prof_carlos_001',
+                    username: 'profesor_carlos',
+                    displayName: 'Prof. Carlos',
+                    role: 'teacher',
+                    activeCourses: ['4to_basico_a', '4to_basico_b', '5to_basico_a']
+                },
+                {
+                    id: 'est_felipe_4a',
+                    username: 'felipe_4a',
+                    displayName: 'Felipe (4to A)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_a']
+                },
+                {
+                    id: 'est_maria_4a',
+                    username: 'maria_4a',
+                    displayName: 'María (4to A)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_a']
+                },
+                {
+                    id: 'est_carlos_4b',
+                    username: 'carlos_4b',
+                    displayName: 'Carlos (4to B)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_b']
+                },
+                {
+                    id: 'est_ana_5a',
+                    username: 'ana_5a',
+                    displayName: 'Ana (5to A)',
+                    role: 'student',
+                    activeCourses: ['5to_basico_a']
+                }
+            ];
+
+            // === CURSOS Y SECCIONES ===
+            const testCourses = [
+                { id: 'course_4to_basico', name: '4to Básico', description: 'Cuarto año básico' },
+                { id: 'course_5to_basico', name: '5to Básico', description: 'Quinto año básico' }
+            ];
+
+            const testSections = [
+                { id: 'section_4a', courseId: 'course_4to_basico', name: 'A', description: '4to Básico Sección A' },
+                { id: 'section_4b', courseId: 'course_4to_basico', name: 'B', description: '4to Básico Sección B' },
+                { id: 'section_5a', courseId: 'course_5to_basico', name: 'A', description: '5to Básico Sección A' }
+            ];
+
+            // === ASIGNACIONES DE ESTUDIANTES ===
+            const testStudentAssignments = [
+                { studentId: 'est_felipe_4a', courseId: 'course_4to_basico', sectionId: 'section_4a' },
+                { studentId: 'est_maria_4a', courseId: 'course_4to_basico', sectionId: 'section_4a' },
+                { studentId: 'est_carlos_4b', courseId: 'course_4to_basico', sectionId: 'section_4b' },
+                { studentId: 'est_ana_5a', courseId: 'course_5to_basico', sectionId: 'section_5a' }
+            ];
+
+            // === TAREA ESPECÍFICA PARA FELIPE Y MARÍA ===
+            const testTasks = [
+                {
+                    id: 'task_specific_felipe_maria',
+                    title: 'Proyecto Especial - Solo Felipe y María',
+                    description: 'Proyecto de investigación que requiere trabajo en equipo',
+                    assignedBy: 'profesor_carlos',
+                    assignedById: 'prof_carlos_001',
+                    assignedTo: 'student', // ← CLAVE: Asignación específica
+                    assignedStudentIds: ['est_felipe_4a', 'est_maria_4a'], // ← Solo Felipe y María
+                    course: '4to_basico_a',
+                    subject: 'Ciencias',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending'
+                }
+            ];
+
+            // === COMENTARIOS DEL PROFESOR (DEBEN SER PRIVADOS) ===
+            const testComments = [
+                {
+                    id: 'comment_prof_private_1',
+                    taskId: 'task_specific_felipe_maria',
+                    studentId: 'prof_carlos_001',
+                    studentUsername: 'profesor_carlos',
+                    studentName: 'Prof. Carlos',
+                    comment: 'Este comentario es PRIVADO y solo Felipe y María deben verlo',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [], // Nadie lo ha leído aún
+                    authorUsername: 'profesor_carlos',
+                    authorRole: 'teacher'
+                },
+                {
+                    id: 'comment_prof_private_2',
+                    taskId: 'task_specific_felipe_maria',
+                    studentId: 'prof_carlos_001',
+                    studentUsername: 'profesor_carlos',
+                    studentName: 'Prof. Carlos',
+                    comment: 'Instrucciones adicionales para el proyecto - Solo para ustedes dos',
+                    timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    authorUsername: 'profesor_carlos',
+                    authorRole: 'teacher'
+                }
+            ];
+
+            // Guardar en localStorage
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            localStorage.setItem('smart-student-courses', JSON.stringify(testCourses));
+            localStorage.setItem('smart-student-sections', JSON.stringify(testSections));
+            localStorage.setItem('smart-student-student-assignments', JSON.stringify(testStudentAssignments));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testTasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+
+            log('setup-result', '✅ Datos de notificaciones configurados correctamente', 'success');
+            log('setup-result', `👥 ${testUsers.length} usuarios creados`, 'info');
+            log('setup-result', `📝 1 tarea específica para Felipe y María`, 'info');
+            log('setup-result', `💬 ${testComments.length} comentarios PRIVADOS del profesor`, 'info');
+            log('setup-result', '', 'info');
+            log('setup-result', '🎯 Expectativas:', 'info');
+            log('setup-result', '  ✅ Felipe: Debe ver las 2 notificaciones', 'success');
+            log('setup-result', '  ✅ María: Debe ver las 2 notificaciones', 'success');
+            log('setup-result', '  ❌ Carlos (4to B): NO debe ver notificaciones', 'error');
+            log('setup-result', '  ❌ Ana (5to A): NO debe ver notificaciones', 'error');
+        }
+
+        // Función simulada para verificar asignación (misma lógica que en el componente)
+        function checkStudentAssignmentToTask(task, studentId, studentUsername) {
+            console.log(`🔍 Verificando acceso para estudiante ${studentUsername} (ID: ${studentId}) a tarea "${task.title}"`);
+            
+            // Si la tarea está asignada a estudiantes específicos
+            if (task.assignedTo === 'student' && task.assignedStudentIds) {
+                const isDirectlyAssigned = task.assignedStudentIds.includes(studentId);
+                console.log(`🎯 Estudiante directamente asignado: ${isDirectlyAssigned ? '✅' : '❌'}`);
+                return isDirectlyAssigned;
+            }
+            
+            // Si la tarea está asignada a todo el curso
+            if (task.assignedTo === 'course') {
+                const taskCourseId = task.courseSectionId || task.course;
+                
+                if (!taskCourseId) {
+                    console.log(`⚠️ Tarea sin courseId definido`);
+                    return false;
+                }
+                
+                // Obtener información del estudiante actual
+                const usersText = localStorage.getItem('smart-student-users');
+                const allUsers = usersText ? JSON.parse(usersText) : [];
+                const studentData = allUsers.find(u => u.id === studentId || u.username === studentUsername);
+                
+                if (!studentData) {
+                    console.log(`❌ Datos del estudiante no encontrados: ${studentUsername}`);
+                    return false;
+                }
+                
+                // Fallback: verificar por activeCourses (sistema legacy)
+                const isInActiveCourses = studentData.activeCourses?.includes(taskCourseId) || false;
+                console.log(`🔄 Fallback activeCourses para ${studentUsername}: ${isInActiveCourses ? '✅' : '❌'}`);
+                
+                return isInActiveCourses;
+            }
+            
+            console.log(`❌ Estudiante ${studentUsername} no tiene acceso a la tarea "${task.title}"`);
+            return false;
+        }
+
+        // Simular carga de notificaciones filtradas
+        function simulateNotificationFilter(username) {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const currentUser = users.find(u => u.username === username);
+            
+            if (!currentUser) {
+                return { notifications: [], error: `Usuario ${username} no encontrado` };
+            }
+
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+
+            const notifications = comments.filter(comment => {
+                // No mostrar comentarios propios
+                if (comment.studentUsername === currentUser.username) {
+                    return false;
+                }
+                
+                // No mostrar entregas de otros estudiantes
+                if (comment.isSubmission) {
+                    return false;
+                }
+                
+                // Verificar si ya fue leído
+                if (comment.readBy?.includes(currentUser.username)) {
+                    return false;
+                }
+                
+                // Verificar si el estudiante está asignado a la tarea
+                const task = tasks.find(t => t.id === comment.taskId);
+                if (!task) {
+                    return false;
+                }
+                
+                const isAssignedToTask = checkStudentAssignmentToTask(task, currentUser.id, currentUser.username);
+                return isAssignedToTask;
+            });
+
+            return { notifications, user: currentUser };
+        }
+
+        function testNotificationsForUser(username, displayName) {
+            const elementId = username.replace('_', '-') + '-notifications';
+            clearLog(elementId);
+            
+            log(elementId, `🔍 Probando notificaciones para: ${displayName}`, 'info');
+            
+            const result = simulateNotificationFilter(username);
+            
+            if (result.error) {
+                log(elementId, `❌ Error: ${result.error}`, 'error');
+                return;
+            }
+
+            const { notifications, user } = result;
+            
+            log(elementId, `👤 Usuario: ${user.displayName} (${user.role})`, 'info');
+            log(elementId, `🏫 Cursos activos: ${user.activeCourses?.join(', ') || 'Ninguno'}`, 'info');
+            log(elementId, '', 'info');
+            
+            if (notifications.length === 0) {
+                log(elementId, '📭 Sin notificaciones de comentarios', 'warning');
+            } else {
+                log(elementId, `🔔 ${notifications.length} notificaciones encontradas:`, 'info');
+                notifications.forEach((notification, index) => {
+                    log(elementId, `  ${index + 1}. "${notification.comment}"`, 'success');
+                    log(elementId, `     Autor: ${notification.studentName}`, 'info');
+                    log(elementId, `     Fecha: ${new Date(notification.timestamp).toLocaleString()}`, 'info');
+                });
+            }
+
+            // Verificar expectativas
+            const expectedNotifications = getExpectedNotifications(username);
+            const isCorrect = notifications.length === expectedNotifications;
+            
+            log(elementId, '', 'info');
+            log(elementId, `🎯 Esperado: ${expectedNotifications} notificaciones`, 'info');
+            log(elementId, `📊 Obtenido: ${notifications.length} notificaciones`, 'info');
+            log(elementId, `${isCorrect ? '✅ CORRECTO' : '❌ INCORRECTO'}`, isCorrect ? 'success' : 'error');
+
+            // Actualizar resultados globales
+            testResults.push({
+                user: displayName,
+                expected: expectedNotifications,
+                actual: notifications.length,
+                success: isCorrect
+            });
+
+            updateTestSummary();
+        }
+
+        function getExpectedNotifications(username) {
+            // Felipe y María deben ver 2 notificaciones
+            if (username === 'felipe_4a' || username === 'maria_4a') {
+                return 2;
+            }
+            // Carlos y Ana NO deben ver notificaciones
+            return 0;
+        }
+
+        function updateTestSummary() {
+            const summary = document.getElementById('test-summary');
+            
+            if (testResults.length === 0) {
+                summary.innerHTML = 'No hay resultados de tests aún. Ejecuta las pruebas individuales arriba.';
+                return;
+            }
+
+            const passed = testResults.filter(r => r.success).length;
+            const total = testResults.length;
+            
+            let summaryText = `📊 Resultados de Tests de Notificaciones:\n`;
+            summaryText += `Total: ${total} | Exitosos: ${passed} | Fallidos: ${total - passed}\n\n`;
+            
+            testResults.forEach(result => {
+                const status = result.success ? '✅' : '❌';
+                summaryText += `${status} ${result.user}: ${result.actual}/${result.expected} notificaciones\n`;
+            });
+
+            summaryText += '\n';
+            if (passed === total) {
+                summaryText += '🎉 ¡TODOS LOS TESTS PASARON! Las notificaciones están correctamente filtradas.\n';
+                summaryText += '✅ Los comentarios privados solo llegan a los estudiantes asignados.';
+            } else {
+                summaryText += '⚠️ Algunos tests fallaron. El filtro de notificaciones necesita ajustes.\n';
+                summaryText += '❌ Revisar la implementación del filtro de privacidad.';
+            }
+
+            summary.innerHTML = `<span class="${passed === total ? 'success' : 'error'}">${summaryText}</span>`;
+        }
+
+        // Limpiar resultados al cargar la página
+        testResults = [];
+    </script>
+</body>
+</html>

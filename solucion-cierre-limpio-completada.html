@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ SOLUCIONADO - Cierre Limpio de Evaluación</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        .header h1 {
+            color: #4CAF50;
+            font-size: 2.8em;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .success-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .section h2 {
+            color: #4CAF50;
+            margin-top: 0;
+            font-size: 1.6em;
+        }
+        
+        .problem-box {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .solution-box {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .before-box {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border: 2px solid #f44336;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .after-box {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .code-change {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .highlight-new {
+            background: rgba(76, 175, 80, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .highlight-removed {
+            background: rgba(244, 67, 54, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #f44336;
+            text-decoration: line-through;
+        }
+        
+        .step-list {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .step-number {
+            background: #4CAF50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .final-result {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .emoji {
+            font-size: 1.4em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji">✅</span>PROBLEMAS SOLUCIONADOS</h1>
+            <p style="font-size: 1.3em; color: #666; margin: 15px 0;">Cierre Limpio de Evaluación de Tarea</p>
+            <div class="success-badge">🎉 PANTALLA DE CARGA ELIMINADA + CAMPOS LIMPIOS</div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🎯</span>Problemas Identificados y Resueltos</h2>
+            
+            <div class="problem-box">
+                <h3>❌ PROBLEMAS ANTERIORES:</h3>
+                <ol>
+                    <li><strong>Pantalla de carga no deseada:</strong> Después de hacer clic en "Cerrar" en la revisión, aparecía una pantalla "Preparando tu Evaluación..." que confundía al usuario</li>
+                    <li><strong>Campos pre-llenados:</strong> Los campos de curso, libro y tema aparecían llenos con los datos de la evaluación anterior</li>
+                    <li><strong>Experiencia inconsistente:</strong> El usuario esperaba volver limpiamente a la pestaña de evaluación</li>
+                </ol>
+            </div>
+            
+            <div class="solution-box">
+                <h3>✅ SOLUCIONES IMPLEMENTADAS:</h3>
+                <ol>
+                    <li><strong>Eliminación de pantalla de carga:</strong> Se agregó validación adicional para evitar que aparezca cuando no hay parámetros de tarea</li>
+                    <li><strong>Limpieza completa de campos:</strong> Al cerrar una evaluación de tarea, se limpian todos los campos del formulario</li>
+                    <li><strong>Navegación directa:</strong> El usuario va directamente a la pestaña evaluación con campos en blanco</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🔄</span>Comparación: Antes vs Después</h2>
+            <div class="comparison">
+                <div class="before-box">
+                    <h3 style="color: #f44336; margin-top: 0;">❌ ANTES</h3>
+                    <div style="text-align: left; margin: 15px 0;">
+                        1. Usuario hace clic en "Cerrar"<br>
+                        2. <strong style="color: #f44336;">Aparece pantalla "Preparando evaluación..."</strong><br>
+                        3. <strong style="color: #f44336;">Campos aparecen pre-llenados:</strong><br>
+                        &nbsp;&nbsp;&nbsp;• Curso: 4to Básico<br>
+                        &nbsp;&nbsp;&nbsp;• Libro: Ciencias Naturales<br>
+                        &nbsp;&nbsp;&nbsp;• Tema: sistema respiratorio<br>
+                        4. Usuario confundido
+                    </div>
+                </div>
+                
+                <div class="after-box">
+                    <h3 style="color: #4CAF50; margin-top: 0;">✅ DESPUÉS</h3>
+                    <div style="text-align: left; margin: 15px 0;">
+                        1. Usuario hace clic en "Cerrar"<br>
+                        2. <strong style="color: #4CAF50;">Navegación directa (sin pantallas intermedias)</strong><br>
+                        3. <strong style="color: #4CAF50;">Campos aparecen limpios:</strong><br>
+                        &nbsp;&nbsp;&nbsp;• Curso: [Seleccionar]<br>
+                        &nbsp;&nbsp;&nbsp;• Libro: [Selecciona un Libro...]<br>
+                        &nbsp;&nbsp;&nbsp;• Tema: [Campo vacío]<br>
+                        4. Listo para nueva evaluación
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">⚡</span>Cambios Técnicos Implementados</h2>
+            
+            <h3>1. Modificación en handleCloseTaskEvaluation</h3>
+            <div class="code-change">
+<strong style="color: #61dafb;">// ANTES - Solo limpiaba estados básicos</strong>
+const handleCloseTaskEvaluation = useCallback(() => {
+    setShowResultDialog(false);
+    setIsTaskEvaluationSession(false);
+    setIsAutoStartMode(false);
+    // ... otros estados básicos ...
+    
+    localStorage.removeItem('isTaskEvaluation');
+    sessionStorage.removeItem('isTaskEvaluation');
+    
+    router.push('/dashboard/evaluacion');
+}, [router]);
+
+<strong style="color: #61dafb;">// DESPUÉS - Limpieza completa</strong>
+const handleCloseTaskEvaluation = useCallback(() => {
+    // ... estados básicos existentes ...
+    
+    <span class="highlight-new">// NUEVO: Limpiar campos del formulario</span>
+    <span class="highlight-new">setSelectedCourse('');</span>
+    <span class="highlight-new">setSelectedBook('');</span>
+    <span class="highlight-new">setTopic('');</span>
+    <span class="highlight-new">setCurrentTopicForDisplay('');</span>
+    <span class="highlight-new">setInitialBookFromQuery(undefined);</span>
+    
+    <span class="highlight-new">// NUEVO: Evitar pantalla de "Preparando evaluación"</span>
+    <span class="highlight-new">setShowReadyTransition(false);</span>
+    
+    <span class="highlight-new">// NUEVO: Resetear timer</span>
+    <span class="highlight-new">setTimeLeft(INITIAL_TIME_LIMIT);</span>
+    <span class="highlight-new">setTimerActive(false);</span>
+    
+    // ... resto del código ...
+}, [router]);
+            </div>
+
+            <h3>2. Validación Adicional para Pantalla de Carga</h3>
+            <div class="code-change">
+<strong style="color: #61dafb;">// ANTES - Condición demasiado amplia</strong>
+<span class="highlight-removed">if (!evaluationStarted && isAutoStartMode) {</span>
+
+<strong style="color: #61dafb;">// DESPUÉS - Condición más específica</strong>
+<span class="highlight-new">if (!evaluationStarted && isAutoStartMode && 
+    (searchParams.get('autoStart') === 'true' || searchParams.get('taskId'))) {</span>
+    
+    // Solo mostrar pantalla de carga si REALMENTE hay parámetros de tarea
+            </div>
+
+            <h3>3. Limpieza en useEffect cuando no es tarea</h3>
+            <div class="code-change">
+<strong style="color: #61dafb;">// NUEVO: Limpieza adicional en useEffect</strong>
+} else {
+    localStorage.removeItem('isTaskEvaluation');
+    sessionStorage.removeItem('isTaskEvaluation');
+    <span class="highlight-new">localStorage.removeItem('evaluationFinished');</span>
+    
+    <span class="highlight-new">// NUEVO: Limpiar campos si venimos de cerrar una tarea</span>
+    <span class="highlight-new">if (isTaskEvaluationSession || isAutoStartMode) {</span>
+    <span class="highlight-new">    setSelectedCourse('');</span>
+    <span class="highlight-new">    setSelectedBook('');</span>
+    <span class="highlight-new">    setTopic('');</span>
+    <span class="highlight-new">    setCurrentTopicForDisplay('');</span>
+    <span class="highlight-new">    setInitialBookFromQuery(undefined);</span>
+    <span class="highlight-new">}</span>
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">📋</span>Flujo Mejorado Paso a Paso</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Usuario completa evaluación de tarea</strong><br>
+                        <span style="color: #666;">Responde preguntas y ve sus resultados</span>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Usuario ve pantalla de revisión</strong><br>
+                        <span style="color: #666;">Revisa preguntas, respuestas y explicaciones</span>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Usuario hace clic en "Cerrar"</strong><br>
+                        <span style="color: #666;">Se ejecuta handleCloseTaskEvaluation mejorado</span>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Limpieza completa del estado</strong><br>
+                        <span style="color: #666;">Se limpian todos los campos y estados relacionados con la tarea</span>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Navegación directa</strong><br>
+                        <span style="color: #666;">Va directamente a /dashboard/evaluacion sin pantallas intermedias</span>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div>
+                        <strong>Pestaña evaluación con campos limpios</strong><br>
+                        <span style="color: #666;">Usuario ve formulario vacío, listo para nueva evaluación</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="final-result">
+            <h2 style="margin-top: 0;">🎉 RESULTADO FINAL</h2>
+            <div style="font-size: 1.2em; margin: 20px 0;">
+                <div style="margin: 10px 0;">✅ <strong>Eliminada</strong> pantalla "Preparando evaluación..." no deseada</div>
+                <div style="margin: 10px 0;">✅ <strong>Campos limpios</strong> al volver a la pestaña evaluación</div>
+                <div style="margin: 10px 0;">✅ <strong>Navegación directa</strong> sin confusión para el usuario</div>
+                <div style="margin: 10px 0;">✅ <strong>Experiencia consistente</strong> y profesional</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <strong style="font-size: 1.3em;">
+                    Los usuarios ahora tienen una transición limpia y clara después de completar evaluaciones de tarea
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="text-align: center; padding: 30px;">
+        <h2 style="color: #4CAF50; margin: 0; font-size: 2em;">
+            <span class="emoji">🎊</span>
+            ¡Ambos Problemas Resueltos!
+        </h2>
+        <p style="color: #666; margin: 15px 0 0 0; font-size: 1.1em;">
+            Pantalla de carga eliminada + Campos del formulario limpios
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Orden de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .step {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .step-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .priority-1 {
+            border-left-color: #ff6b35;
+            background: #fff3e0;
+        }
+        .priority-2 {
+            border-left-color: #2196f3;
+            background: #e3f2fd;
+        }
+        .item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border-left: 3px solid #ddd;
+        }
+        .task-item {
+            border-left-color: #ff6b35;
+            background: #fff3e0;
+        }
+        .comment-item {
+            border-left-color: #2196f3;
+            background: #e3f2fd;
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Prueba - Orden de Notificaciones</h1>
+    <p>Esta prueba verifica que las notificaciones se muestren en el orden correcto: <strong>Tareas Pendientes primero</strong>, luego <strong>Comentarios no leídos</strong>.</p>
+
+    <div class="step">
+        <h2 class="step-title">Orden Esperado de Notificaciones</h2>
+        <div class="result priority-1">
+            <strong>1º Prioridad: Tareas Pendientes</strong><br>
+            Las tareas pendientes de entrega deben aparecer primero en el panel
+        </div>
+        <div class="result priority-2">
+            <strong>2º Prioridad: Comentarios no leídos</strong><br>
+            Los comentarios no leídos deben aparecer después de las tareas pendientes
+        </div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">1. Estado Actual</h2>
+        <button class="button" onclick="checkCurrentState()">🔍 Verificar Estado</button>
+        <div id="current-state"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">2. Crear Datos de Prueba</h2>
+        <p>Crear tareas pendientes y comentarios no leídos para probar el orden:</p>
+        <button class="button" onclick="createTestData()">➕ Crear Datos de Prueba</button>
+        <div id="test-data-result"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">3. Verificar Orden de Visualización</h2>
+        <p>Simular cómo aparecerían las notificaciones en el panel:</p>
+        <button class="button success" onclick="simulateNotificationOrder()">🎯 Simular Orden</button>
+        <div id="order-simulation"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">Acciones de Limpieza</h2>
+        <button class="button danger" onclick="cleanupTestData()">🗑️ Limpiar Datos de Prueba</button>
+    </div>
+
+    <script>
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+        }
+
+        function checkCurrentState() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('current-state').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            // Obtener tareas pendientes
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+
+            let pendingTasks = [];
+            if (user.role === 'student') {
+                const studentTasks = tasks.filter(task => {
+                    if (task.assignedTo === 'course' && task.course === user.course) {
+                        return true;
+                    }
+                    if (task.assignedTo === 'specific' && task.assignedStudents?.includes(user.username)) {
+                        return true;
+                    }
+                    return false;
+                });
+                
+                pendingTasks = studentTasks.filter(task => {
+                    const submissions = comments.filter(comment => 
+                        comment.taskId === task.id && 
+                        comment.studentUsername === user.username && 
+                        comment.isSubmission
+                    );
+                    
+                    if (submissions.length === 0) return true;
+                    
+                    const latestSubmission = submissions[submissions.length - 1];
+                    return !latestSubmission.grade;
+                });
+            }
+
+            // Obtener comentarios no leídos
+            const unreadComments = comments.filter(comment => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+
+            document.getElementById('current-state').innerHTML = `
+                <div class="result">
+                    <strong>Usuario:</strong> ${user.username} (${user.role})<br>
+                    <strong>Curso:</strong> ${user.course || 'No definido'}<br><br>
+                    <strong>Tareas pendientes:</strong> ${pendingTasks.length}<br>
+                    <strong>Comentarios no leídos:</strong> ${unreadComments.length}
+                </div>
+            `;
+        }
+
+        function createTestData() {
+            const user = getCurrentUser();
+            if (!user.username || user.role !== 'student') {
+                document.getElementById('test-data-result').innerHTML = '<div class="result">❌ Esta prueba es solo para estudiantes</div>';
+                return;
+            }
+
+            // Crear tarea pendiente de prueba
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const testTaskId = `test_order_${Date.now()}`;
+            
+            const newTask = {
+                id: testTaskId,
+                title: 'Tarea de Prueba - Orden',
+                description: 'Tarea para probar el orden de notificaciones',
+                subject: 'Ciencias Naturales',
+                course: user.course,
+                assignedTo: 'course',
+                assignedBy: 'profesor_test',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+            // Crear comentario no leído de prueba
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const testCommentId = `test_comment_${Date.now()}`;
+            
+            const newComment = {
+                id: testCommentId,
+                taskId: testTaskId,
+                studentUsername: 'profesor_test',
+                studentName: 'Profesor Test',
+                comment: 'Este es un comentario de prueba para verificar el orden',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                readBy: [] // No leído por el usuario actual
+            };
+
+            comments.push(newComment);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+
+            document.getElementById('test-data-result').innerHTML = `
+                <div class="result">
+                    ✅ Tarea de prueba creada (ID: ${testTaskId})<br>
+                    ✅ Comentario no leído creado<br>
+                    <em>Estos datos aparecerán en el panel de notificaciones</em>
+                </div>
+            `;
+        }
+
+        function simulateNotificationOrder() {
+            const user = getCurrentUser();
+            if (!user.username || user.role !== 'student') {
+                document.getElementById('order-simulation').innerHTML = '<div class="result">❌ Esta prueba es solo para estudiantes</div>';
+                return;
+            }
+
+            // Simular la lógica del panel de notificaciones
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+
+            // Obtener tareas pendientes
+            const studentTasks = tasks.filter(task => {
+                if (task.assignedTo === 'course' && task.course === user.course) {
+                    return true;
+                }
+                if (task.assignedTo === 'specific' && task.assignedStudents?.includes(user.username)) {
+                    return true;
+                }
+                return false;
+            });
+            
+            const pendingTasks = studentTasks.filter(task => {
+                const submissions = comments.filter(comment => 
+                    comment.taskId === task.id && 
+                    comment.studentUsername === user.username && 
+                    comment.isSubmission
+                );
+                
+                if (submissions.length === 0) return true;
+                
+                const latestSubmission = submissions[submissions.length - 1];
+                return !latestSubmission.grade;
+            });
+
+            // Obtener comentarios no leídos
+            const unreadComments = comments.filter(comment => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+
+            let html = '<div class="result">';
+            html += '<strong>Orden de notificaciones en el panel:</strong><br><br>';
+
+            // Primero: Tareas pendientes
+            if (pendingTasks.length > 0) {
+                html += '<strong>🎯 1º SECCIÓN: Tareas Pendientes</strong><br>';
+                pendingTasks.slice(0, 3).forEach((task, index) => {
+                    html += `
+                        <div class="item task-item">
+                            ${index + 1}. ${task.title} (${task.subject})<br>
+                            <small>Vence: ${new Date(task.dueDate).toLocaleDateString()}</small>
+                        </div>
+                    `;
+                });
+                if (pendingTasks.length > 3) {
+                    html += `<div class="item task-item"><small>... y ${pendingTasks.length - 3} más</small></div>`;
+                }
+                html += '<br>';
+            }
+
+            // Segundo: Comentarios no leídos
+            if (unreadComments.length > 0) {
+                html += '<strong>💬 2º SECCIÓN: Comentarios no leídos</strong><br>';
+                unreadComments.forEach((comment, index) => {
+                    html += `
+                        <div class="item comment-item">
+                            ${index + 1}. De: ${comment.studentName}<br>
+                            <small>${comment.comment.substring(0, 50)}...</small>
+                        </div>
+                    `;
+                });
+            }
+
+            if (pendingTasks.length === 0 && unreadComments.length === 0) {
+                html += '<em>No hay notificaciones que mostrar</em>';
+            }
+
+            html += '</div>';
+
+            document.getElementById('order-simulation').innerHTML = html;
+        }
+
+        function cleanupTestData() {
+            // Limpiar tareas de prueba
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const filteredTasks = tasks.filter(task => !task.id.includes('test_order_'));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+
+            // Limpiar comentarios de prueba
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const filteredComments = comments.filter(comment => !comment.id.includes('test_comment_'));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+
+            alert('Datos de prueba limpiados');
+        }
+
+        // Auto-verificar estado inicial al cargar
+        window.onload = () => {
+            checkCurrentState();
+        };
+    </script>
+</body>
+</html>

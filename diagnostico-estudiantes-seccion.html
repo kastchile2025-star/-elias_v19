@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Estudiantes por Sección</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .student-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        .course-info {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico de Estudiantes por Sección</h1>
+        <p>Esta herramienta analiza la estructura de datos de estudiantes y cursos para diagnosticar problemas de filtrado por sección.</p>
+        
+        <button onclick="diagnosticar()">Ejecutar Diagnóstico</button>
+        <button onclick="clearResults()">Limpiar Resultados</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function diagnosticar() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>🔍 Iniciando diagnóstico...</h2>';
+            
+            try {
+                // Obtener datos del localStorage
+                const usersText = localStorage.getItem('smart-student-users');
+                const coursesText = localStorage.getItem('smart-student-courses');
+                const assignmentsText = localStorage.getItem('smart-student-teacher-assignments');
+                
+                if (!usersText) {
+                    resultsDiv.innerHTML += '<div class="error">❌ No se encontraron usuarios en localStorage</div>';
+                    return;
+                }
+                
+                const allUsers = JSON.parse(usersText);
+                const courses = coursesText ? JSON.parse(coursesText) : [];
+                const assignments = assignmentsText ? JSON.parse(assignmentsText) : [];
+                
+                resultsDiv.innerHTML += `<div class="success">✅ Datos cargados: ${allUsers.length} usuarios, ${courses.length} cursos</div>`;
+                
+                // Filtrar estudiantes
+                const students = allUsers.filter(u => u.role === 'student');
+                resultsDiv.innerHTML += `<div class="section"><h3>👥 Estudiantes en el sistema (${students.length})</h3>`;
+                
+                students.forEach(student => {
+                    const cardClass = (student.username === 'felipe' || student.username === 'maria' || 
+                                    student.username === 'gustavo' || student.username === 'max') ? 'highlight' : '';
+                    
+                    resultsDiv.innerHTML += `
+                        <div class="student-card ${cardClass}">
+                            <strong>${student.displayName || student.username}</strong> (${student.username})
+                            <br><strong>Sección:</strong> ${student.sectionName || 'No definida'}
+                            <br><strong>Cursos activos:</strong> [${(student.activeCourses || []).join(', ')}]
+                            <br><strong>Profesor asignado:</strong> ${student.assignedTeacher || 'No definido'}
+                            <br><strong>Profesores asignados:</strong> ${JSON.stringify(student.assignedTeachers || {})}
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML += '</div>';
+                
+                // Analizar cursos
+                resultsDiv.innerHTML += '<div class="section"><h3>📚 Cursos disponibles</h3>';
+                courses.forEach(course => {
+                    resultsDiv.innerHTML += `
+                        <div class="course-info">
+                            <strong>${course.name}</strong>
+                            <br><strong>ID:</strong> ${course.id}
+                            <br><strong>Secciones:</strong> ${JSON.stringify(course.sections || [])}
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML += '</div>';
+                
+                // Buscar estudiantes de "4to Básico Sección A"
+                resultsDiv.innerHTML += '<div class="section"><h3>🎯 Análisis específico: 4to Básico Sección A</h3>';
+                
+                const targetCourse = "4to Básico";
+                const targetSection = "A";
+                
+                // Método 1: Por sectionName exacto
+                const bySection = students.filter(s => s.sectionName === targetSection);
+                resultsDiv.innerHTML += `<h4>Método 1 - Por sectionName === "${targetSection}": ${bySection.length} estudiantes</h4>`;
+                bySection.forEach(s => {
+                    resultsDiv.innerHTML += `<div>• ${s.displayName} (${s.username})</div>`;
+                });
+                
+                // Método 2: Por activeCourses que contenga el curso
+                const byCourse = students.filter(s => 
+                    s.activeCourses && s.activeCourses.some(course => course.includes(targetCourse))
+                );
+                resultsDiv.innerHTML += `<h4>Método 2 - Por activeCourses que contenga "${targetCourse}": ${byCourse.length} estudiantes</h4>`;
+                byCourse.forEach(s => {
+                    resultsDiv.innerHTML += `<div>• ${s.displayName} (${s.username}) - Cursos: [${s.activeCourses.join(', ')}]</div>`;
+                });
+                
+                // Método 3: Combinado - curso + sección
+                const combined = students.filter(s => {
+                    const hasTargetCourse = s.activeCourses && s.activeCourses.some(course => course.includes(targetCourse));
+                    const hasTargetSection = s.sectionName === targetSection;
+                    return hasTargetCourse && hasTargetSection;
+                });
+                resultsDiv.innerHTML += `<h4>Método 3 - Curso "${targetCourse}" + Sección "${targetSection}": ${combined.length} estudiantes</h4>`;
+                combined.forEach(s => {
+                    resultsDiv.innerHTML += `<div>• ${s.displayName} (${s.username})</div>`;
+                });
+                
+                // Método 4: Buscar variaciones del nombre completo
+                const fullCourseVariations = [
+                    `${targetCourse} - ${targetSection}`,
+                    `${targetCourse} - Sección ${targetSection}`,
+                    `${targetCourse} Sección ${targetSection}`,
+                    `${targetCourse}-${targetSection}`
+                ];
+                
+                resultsDiv.innerHTML += '<h4>Método 4 - Por variaciones del nombre completo:</h4>';
+                fullCourseVariations.forEach(variation => {
+                    const found = students.filter(s => 
+                        s.activeCourses && s.activeCourses.includes(variation)
+                    );
+                    resultsDiv.innerHTML += `<div>• "${variation}": ${found.length} estudiantes</div>`;
+                    found.forEach(s => {
+                        resultsDiv.innerHTML += `  - ${s.displayName} (${s.username})<br>`;
+                    });
+                });
+                
+                resultsDiv.innerHTML += '</div>';
+                
+                // Mostrar datos raw de algunos estudiantes clave
+                resultsDiv.innerHTML += '<div class="section"><h3>🔬 Datos Raw de Estudiantes Clave</h3>';
+                const keyStudents = ['felipe', 'maria', 'gustavo', 'max', 'sofia', 'karla'];
+                keyStudents.forEach(username => {
+                    const student = students.find(s => s.username === username);
+                    if (student) {
+                        resultsDiv.innerHTML += `<h4>${student.displayName} (${username})</h4>`;
+                        resultsDiv.innerHTML += `<pre>${JSON.stringify(student, null, 2)}</pre>`;
+                    }
+                });
+                resultsDiv.innerHTML += '</div>';
+                
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('Error en diagnóstico:', error);
+            }
+        }
+    </script>
+</body>
+</html>

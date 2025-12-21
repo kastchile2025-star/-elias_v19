@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Estado Evaluación Pendiente a Completada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center">🔍 Debug: Estado Evaluación Pendiente → Completada</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Panel de Control -->
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">🎮 Panel de Control</h2>
+                <div class="space-y-2">
+                    <button onclick="initializeData()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+                        🏗️ Inicializar Datos
+                    </button>
+                    <button onclick="simulateEvaluationStart()" 
+                            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm">
+                        ▶️ Iniciar Evaluación
+                    </button>
+                    <button onclick="simulateEvaluationComplete()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                        ✅ Completar Evaluación
+                    </button>
+                    <button onclick="checkAllData()" 
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm">
+                        🔍 Verificar Datos
+                    </button>
+                    <button onclick="clearAllData()" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                        🗑️ Limpiar Todo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Estado Actual -->
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">📊 Estado Actual</h2>
+                <div class="space-y-2 text-sm">
+                    <div><strong>Usuario:</strong> <span id="currentUser">sdasd</span></div>
+                    <div><strong>Tarea ID:</strong> <span id="taskId">task_1719786374527</span></div>
+                    <div><strong>Estado Global:</strong> <span id="globalStatus" class="px-2 py-1 rounded">-</span></div>
+                    <div><strong>Estado Usuario:</strong> <span id="userStatus" class="px-2 py-1 rounded">-</span></div>
+                    <div><strong>Puntaje:</strong> <span id="score">-</span></div>
+                    <div><strong>Porcentaje:</strong> <span id="percentage">-</span></div>
+                </div>
+            </div>
+            
+            <!-- UI Preview -->
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">🎨 Vista Previa UI</h2>
+                <div id="uiPreview" class="text-sm">
+                    <!-- Se actualizará dinámicamente -->
+                    <div class="p-2 bg-purple-100 border border-purple-200 rounded">
+                        Estado inicial
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Datos de LocalStorage -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">📦 Tareas Globales (smart-student-tasks)</h2>
+                <pre id="globalTasks" class="text-xs bg-white p-2 rounded max-h-48 overflow-y-auto">-</pre>
+            </div>
+            
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">👤 Tareas Usuario (userTasks_sdasd)</h2>
+                <pre id="userTasks" class="text-xs bg-white p-2 rounded max-h-48 overflow-y-auto">-</pre>
+            </div>
+        </div>
+        
+        <!-- Consola de Debug -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold mb-4">🖥️ Consola de Debug</h2>
+            <div id="debugConsole" class="bg-black text-green-400 p-3 rounded text-sm font-mono h-64 overflow-y-auto">
+                <div>🔍 Debug Console iniciado - Esperando comandos...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const USERNAME = 'sdasd';
+        const TASK_ID = 'task_1719786374527'; // ID real de la tarea sdasd
+        
+        function log(message, type = 'info') {
+            const console = document.getElementById('debugConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '📝';
+            console.innerHTML += `<div>[${timestamp}] ${emoji} ${message}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function initializeData() {
+            log('🏗️ Inicializando datos de prueba...', 'info');
+            
+            // Crear tarea global (como haría el profesor)
+            const globalTask = {
+                id: TASK_ID,
+                title: 'sdasd',
+                description: 'asdasd',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'Jorge Profesor',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: '2025-07-02T13:59:00.000Z',
+                createdAt: '2025-06-30T20:46:14.527Z',
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'sistema respiratorio',
+                    questionCount: 2,
+                    timeLimit: 1
+                }
+            };
+            
+            // Guardar en tareas globales
+            const globalTasks = [globalTask];
+            localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+            
+            // Crear copia inicial en userTasks (esto debería pasar automáticamente)
+            const userTasksKey = `userTasks_${USERNAME}`;
+            const userTasks = [globalTask];
+            localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+            
+            log('✅ Datos inicializados correctamente', 'success');
+            log(`   - Tarea ID: ${TASK_ID}`, 'info');
+            log(`   - Estado inicial: pending`, 'info');
+            log(`   - Tipo: evaluation`, 'info');
+            
+            updateDisplay();
+        }
+
+        function simulateEvaluationStart() {
+            log('▶️ Simulando inicio de evaluación...', 'info');
+            log('   - Usuario abre modal de tarea', 'info');
+            log('   - Hace clic en "Realizar Evaluación"', 'info');
+            log('   - Navega a /dashboard/evaluacion?taskId=' + TASK_ID, 'info');
+            log('✅ Evaluación iniciada (simulado)', 'success');
+        }
+
+        function simulateEvaluationComplete() {
+            log('✅ Simulando completación de evaluación...', 'info');
+            
+            const userTasksKey = `userTasks_${USERNAME}`;
+            let userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            const taskIndex = userTasks.findIndex(task => task.id === TASK_ID);
+            
+            if (taskIndex !== -1) {
+                const oldStatus = userTasks[taskIndex].status;
+                
+                // Actualizar estado como lo haría la página de evaluación
+                userTasks[taskIndex].status = 'completed';
+                userTasks[taskIndex].completedAt = new Date().toISOString();
+                userTasks[taskIndex].score = 2;
+                userTasks[taskIndex].completionPercentage = 100.0;
+                
+                localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+                
+                log(`✅ Estado actualizado: ${oldStatus} → completed`, 'success');
+                log(`   - Puntaje: 2/2`, 'info');
+                log(`   - Porcentaje: 100.0%`, 'info');
+                log(`   - Completado: ${new Date().toLocaleString()}`, 'info');
+                
+                // Disparar evento como lo haría la página de evaluación
+                window.dispatchEvent(new CustomEvent('evaluationCompleted', {
+                    detail: {
+                        taskId: TASK_ID,
+                        studentUsername: USERNAME,
+                        score: 2,
+                        completionPercentage: 100.0,
+                        completedAt: new Date().toISOString()
+                    }
+                }));
+                
+                log('🚀 Evento evaluationCompleted disparado', 'success');
+            } else {
+                log('❌ Tarea no encontrada en userTasks', 'error');
+                log('   Disponibles: ' + userTasks.map(t => t.id).join(', '), 'info');
+            }
+            
+            updateDisplay();
+        }
+
+        function checkAllData() {
+            log('🔍 Verificando todos los datos...', 'info');
+            
+            // Verificar tareas globales
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const globalTask = globalTasks.find(t => t.id === TASK_ID);
+            
+            if (globalTask) {
+                log(`📦 Tarea global encontrada:`, 'success');
+                log(`   - Estado: ${globalTask.status}`, 'info');
+                log(`   - Tipo: ${globalTask.taskType}`, 'info');
+            } else {
+                log('❌ Tarea NO encontrada en tareas globales', 'error');
+            }
+            
+            // Verificar tareas de usuario
+            const userTasksKey = `userTasks_${USERNAME}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            const userTask = userTasks.find(t => t.id === TASK_ID);
+            
+            if (userTask) {
+                log(`👤 Tarea usuario encontrada:`, 'success');
+                log(`   - Estado: ${userTask.status}`, 'info');
+                log(`   - Completado: ${userTask.completedAt || 'No'}`, 'info');
+                log(`   - Puntaje: ${userTask.score || 'No disponible'}`, 'info');
+                log(`   - Porcentaje: ${userTask.completionPercentage || 'No disponible'}`, 'info');
+            } else {
+                log('❌ Tarea NO encontrada en userTasks', 'error');
+                log(`   Tareas disponibles: ${userTasks.length}`, 'info');
+                userTasks.forEach(t => log(`     - ${t.id}: ${t.title}`, 'info'));
+            }
+            
+            // Simular las funciones de detección de la UI
+            simulateUIDetection(globalTask, userTask);
+            
+            updateDisplay();
+        }
+
+        function simulateUIDetection(globalTask, userTask) {
+            log('🎨 Simulando detección de UI...', 'info');
+            
+            // Simular getTaskStatusForStudent
+            let taskStatus = 'pending';
+            if (userTask && userTask.status === 'completed') {
+                taskStatus = 'completed';
+                log('✅ getTaskStatusForStudent() → completed', 'success');
+            } else {
+                log('❌ getTaskStatusForStudent() → pending', 'warning');
+            }
+            
+            // Simular getEvaluationResults
+            let evaluationResults = null;
+            if (userTask && userTask.status === 'completed') {
+                evaluationResults = {
+                    score: userTask.score || 0,
+                    completionPercentage: userTask.completionPercentage || 0,
+                    completedAt: userTask.completedAt,
+                    totalQuestions: 2
+                };
+                log('✅ getEvaluationResults() → datos encontrados', 'success');
+                log(`   - Puntaje: ${evaluationResults.score}/${evaluationResults.totalQuestions}`, 'info');
+                log(`   - Porcentaje: ${evaluationResults.completionPercentage}%`, 'info');
+            } else {
+                log('❌ getEvaluationResults() → null', 'warning');
+            }
+            
+            // Determinar qué UI mostrar
+            const shouldShowResults = taskStatus === 'completed' && evaluationResults;
+            if (shouldShowResults) {
+                log('🎯 UI a mostrar: RESULTADOS DE EVALUACIÓN COMPLETADA', 'success');
+                updateUIPreview('completed', evaluationResults);
+            } else {
+                log('🔄 UI a mostrar: BOTÓN REALIZAR EVALUACIÓN', 'info');
+                updateUIPreview('pending', null);
+            }
+        }
+
+        function updateUIPreview(status, results) {
+            const preview = document.getElementById('uiPreview');
+            
+            if (status === 'completed' && results) {
+                preview.innerHTML = `
+                    <div class="text-center p-2 bg-green-50 border border-green-200 rounded">
+                        <div class="flex items-center justify-center mb-2">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                🎓
+                            </div>
+                        </div>
+                        <h4 class="font-semibold text-green-800 mb-1 text-sm">
+                            ✅ Evaluación Realizada
+                        </h4>
+                        
+                        <!-- Información original de la evaluación -->
+                        <div class="text-xs text-green-600 mb-2 space-y-1">
+                            <div>📚 Tema: sistema respiratorio</div>
+                            <div>❓ Preguntas: 2</div>
+                            <div>⏱️ Tiempo límite: 1 minutos</div>
+                        </div>
+                        
+                        <!-- Resultados de la evaluación -->
+                        <div class="bg-white rounded p-2 space-y-1">
+                            <div class="text-lg font-bold text-green-600">
+                                ${results.completionPercentage}% Completado
+                            </div>
+                            <div class="text-xs text-gray-600">
+                                Puntaje: ${results.score}/${results.totalQuestions}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                ${new Date(results.completedAt).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                preview.innerHTML = `
+                    <div class="p-2 bg-purple-50 border border-purple-200 rounded">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-xs text-purple-700 mb-1">
+                                    📝 Esta es una evaluación. Haz clic en el botón para comenzar.
+                                </p>
+                                <div class="text-xs text-purple-600 space-y-1">
+                                    <div>📚 Tema: sistema respiratorio</div>
+                                    <div>❓ Preguntas: 2</div>
+                                    <div>⏱️ Tiempo límite: 1 minutos</div>
+                                </div>
+                            </div>
+                            <button class="ml-2 bg-purple-600 text-white px-2 py-1 rounded text-xs">
+                                Realizar Evaluación
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateDisplay() {
+            // Actualizar datos de localStorage
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const userTasks = JSON.parse(localStorage.getItem(`userTasks_${USERNAME}`) || '[]');
+            
+            document.getElementById('globalTasks').textContent = JSON.stringify(globalTasks, null, 2);
+            document.getElementById('userTasks').textContent = JSON.stringify(userTasks, null, 2);
+            
+            // Actualizar estado actual
+            const globalTask = globalTasks.find(t => t.id === TASK_ID);
+            const userTask = userTasks.find(t => t.id === TASK_ID);
+            
+            const globalStatus = document.getElementById('globalStatus');
+            const userStatus = document.getElementById('userStatus');
+            
+            if (globalTask) {
+                globalStatus.textContent = globalTask.status;
+                globalStatus.className = `px-2 py-1 rounded ${globalTask.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`;
+            } else {
+                globalStatus.textContent = 'No encontrada';
+                globalStatus.className = 'px-2 py-1 rounded bg-red-100 text-red-800';
+            }
+            
+            if (userTask) {
+                userStatus.textContent = userTask.status;
+                userStatus.className = `px-2 py-1 rounded ${userTask.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`;
+                
+                document.getElementById('score').textContent = userTask.score ? `${userTask.score}/2` : '-';
+                document.getElementById('percentage').textContent = userTask.completionPercentage ? `${userTask.completionPercentage}%` : '-';
+            } else {
+                userStatus.textContent = 'No encontrada';
+                userStatus.className = 'px-2 py-1 rounded bg-red-100 text-red-800';
+                document.getElementById('score').textContent = '-';
+                document.getElementById('percentage').textContent = '-';
+            }
+        }
+
+        function clearAllData() {
+            log('🗑️ Limpiando todos los datos...', 'warning');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem(`userTasks_${USERNAME}`);
+            log('✅ Todos los datos eliminados', 'success');
+            updateDisplay();
+            updateUIPreview('pending', null);
+        }
+
+        // Event listeners
+        window.addEventListener('evaluationCompleted', function(event) {
+            log('🎯 Evento evaluationCompleted recibido:', 'success');
+            log(`   - Task ID: ${event.detail.taskId}`, 'info');
+            log(`   - Usuario: ${event.detail.studentUsername}`, 'info');
+            log('   - Este evento debería actualizar la UI automáticamente', 'info');
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Debug tool iniciado', 'success');
+            log('👤 Usuario: ' + USERNAME, 'info');
+            log('🆔 Task ID: ' + TASK_ID, 'info');
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

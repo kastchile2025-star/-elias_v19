@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Analizador de Carga Masiva de Profesores</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 24px; }
+      h1 { margin: 0 0 8px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      textarea { width: 100%; height: 300px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 8px; }
+      pre { white-space: pre-wrap; word-wrap: break-word; background: rgba(125,125,125,.08); padding: 12px; border-radius: 8px; max-height: 420px; overflow: auto; }
+      .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      button { padding: 8px 12px; border-radius: 6px; border: 1px solid #8884; background: #1f6feb; color: white; cursor: pointer; }
+      button.secondary { background: transparent; color: inherit; border: 1px solid #8886; }
+      .ok { color: #137333; }
+      .warn { color: #8a6d3b; }
+      .err { color: #c62828; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #8884; padding: 6px 8px; font-size: 12px; }
+      th { background: rgba(125,125,125,.12); position: sticky; top: 0; }
+      .pill { display:inline-block; padding: 2px 8px; border-radius:999px; background: #eee3; margin: 1px 4px 1px 0; font-size: 11px; }
+      .footer { margin-top: 18px; font-size: 12px; opacity: .8; }
+    </style>
+  </head>
+  <body>
+    <h1>🔎 Analizador de Carga Masiva de Profesores</h1>
+    <p>Pega aquí el contenido de tu Excel (copiado como texto). Debe incluir encabezados: <code>role, name, rut, email, username, password, course, section, subjects</code>.</p>
+    <div class="row">
+      <input type="file" id="file" accept=".csv,.tsv,.txt" />
+      <button id="btn-parse">Validar y convertir</button>
+      <button id="btn-download" class="secondary" disabled>Descargar JSON</button>
+      <button id="btn-to-local" class="secondary" disabled>Importar directo al navegador</button>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <textarea id="input" placeholder="Pega aquí las filas…"></textarea>
+      <pre id="out">Esperando datos…</pre>
+    </div>
+    <div class="footer">
+      Consejos: corrige emails con coma, normaliza códigos de asignatura (HIST vs HIS), y evita RUTs inválidos. Este analizador agrupa filas por <strong>username</strong> y genera <em>teachingAssignments</em> por asignatura y curso.
+    </div>
+
+    <script>
+      const subjectMap = {
+        MAT: 'Matemáticas',
+        LEN: 'Lenguaje y Comunicación',
+        CNT: 'Ciencias Naturales',
+        HIST: 'Historia, Geografía y Ciencias Sociales',
+        HIS: 'Historia, Geografía y Ciencias Sociales', // alias
+        BIO: 'Biología',
+        FIS: 'Física',
+        QUI: 'Química',
+        CPC: 'Consejo de Curso',
+        EDC: 'Educación Ciudadana',
+        FIL: 'Filosofía'
+      };
+
+      const normalizeCourse = (c) => (c || '').trim()
+        .replace(/\s+/g, ' ')
+        .replace(/1ro basico/i, '1ro Básico')
+        .replace(/2do basico/i, '2do Básico')
+        .replace(/3ro basico/i, '3ro Básico')
+        .replace(/4to basico/i, '4to Básico')
+        .replace(/5to basico/i, '5to Básico')
+        .replace(/6to basico/i, '6to Básico')
+        .replace(/7mo basico/i, '7mo Básico')
+        .replace(/8vo basico/i, '8vo Básico')
+        .replace(/1ro medio/i, '1ro Medio')
+        .replace(/2do medio/i, '2do Medio')
+        .replace(/3ro medio/i, '3ro Medio')
+        .replace(/4to medio/i, '4to Medio');
+
+      function cleanRut(r) {
+        if (!r) return '';
+        const s = String(r).toUpperCase().replace(/[^0-9K]/g, '');
+        if (s.length < 2) return s;
+        const dv = s.slice(-1);
+        const num = s.slice(0, -1);
+        return `${Number(num).toLocaleString('es-CL')}-${dv}`;
+      }
+
+      function rutIsValid(rut) {
+        if (!rut) return false;
+        const s = String(rut).toUpperCase().replace(/\.|-|\s/g, '');
+        if (s.length < 2) return false;
+        const dv = s.slice(-1);
+        const num = s.slice(0, -1);
+        let m = 0, ssum = 1;
+        for (let n = Number(num); n; n = Math.floor(n/10)) {
+          ssum = (ssum + n % 10 * (9 - m++ % 6)) % 11;
+        }
+        const dvCalc = ssum ? String(ssum - 1) : 'K';
+        return dvCalc === dv;
+      }
+
+      function parseClipboard(text) {
+        if (!text) return { headers: [], rows: [] };
+        // Detect TSV (Excel copia como tabulado)
+        const lines = text.replace(/\r/g, '').split(/\n+/).filter(Boolean);
+        const sep = lines[0].includes('\t') ? '\t' : ',';
+        const headers = lines[0].split(new RegExp(sep)).map(h => h.trim().toLowerCase());
+        const rows = lines.slice(1).map(line => {
+          const cols = line.split(new RegExp(sep));
+          const obj = {};
+          headers.forEach((h, i) => obj[h] = (cols[i] ?? '').trim());
+          return obj;
+        });
+        return { headers, rows };
+      }
+
+      function validateAndTransform(rows) {
+        const errors = [];
+        const warnings = [];
+        const byUser = new Map();
+
+        const knownSubjects = Object.keys(subjectMap);
+        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+        const usernameRe = /^[a-z0-9._-]{3,}$/i;
+
+        const pushErr = (row, msg) => errors.push({ idx: row.__idx, username: row.username, msg });
+        const pushWarn = (row, msg) => warnings.push({ idx: row.__idx, username: row.username, msg });
+
+        rows.forEach((raw, idx) => {
+          const row = { ...raw, __idx: idx + 2 }; // +2 considerando encabezado
+          // Normalizaciones
+          row.role = (row.role || '').toLowerCase();
+          row.name = (row.name || '').trim();
+          row.email = (row.email || '').trim();
+          row.username = (row.username || '').trim();
+          row.password = (row.password || '').trim() || '1234';
+          row.course = normalizeCourse(row.course);
+          row.section = (row.section || '').trim().toUpperCase();
+          row.subjects = (row.subjects || '').trim().toUpperCase();
+          row.rut = (row.rut || '').trim();
+
+          if (row.role !== 'teacher') {
+            pushWarn(row, `role='${row.role}' ignorado (solo se procesan teachers)`);
+            return; // saltar
+          }
+          if (!row.username || !usernameRe.test(row.username)) {
+            pushErr(row, 'username vacío o con caracteres inválidos');
+            return;
+          }
+          if (!emailRe.test(row.email)) {
+            pushErr(row, `email inválido: ${row.email}`);
+          }
+          if (row.rut && !rutIsValid(row.rut)) {
+            pushWarn(row, `RUT con dígito verificador no válido: ${row.rut}`);
+          }
+          if (!row.course) pushErr(row, 'course vacío');
+          if (!row.section) pushErr(row, 'section vacío');
+          if (!row.subjects) pushErr(row, 'subjects vacío');
+
+          // Validar código de asignatura
+          if (row.subjects && !knownSubjects.includes(row.subjects)) {
+            pushWarn(row, `subjects desconocido: ${row.subjects} (se mantendrá como alias si es posible)`);
+          }
+
+          // Acumular por usuario
+          if (!byUser.has(row.username)) {
+            byUser.set(row.username, {
+              username: row.username,
+              displayName: row.name || row.username,
+              name: row.name || row.username,
+              email: row.email,
+              rut: row.rut,
+              rutClean: cleanRut(row.rut),
+              role: 'teacher',
+              password: row.password || '1234',
+              activeCourses: new Set(),
+              // subjectCode -> Set(courses)
+              subjects: new Map(),
+              // course -> Set(section)
+              sectionsByCourse: new Map()
+            });
+          }
+          const acc = byUser.get(row.username);
+          acc.activeCourses.add(row.course);
+          if (!acc.subjects.has(row.subjects)) acc.subjects.set(row.subjects, new Set());
+          acc.subjects.get(row.subjects).add(row.course);
+          if (!acc.sectionsByCourse.has(row.course)) acc.sectionsByCourse.set(row.course, new Set());
+          acc.sectionsByCourse.get(row.course).add(row.section);
+        });
+
+        // Construir salida
+        const users = [];
+        const importHints = [];
+        byUser.forEach((acc) => {
+          const teachingAssignments = [];
+          acc.subjects.forEach((coursesSet, code) => {
+            const subjectName = subjectMap[code] || code; // fallback al código
+            const courses = [...coursesSet].sort();
+            teachingAssignments.push({
+              teacherUsername: acc.username,
+              teacherName: acc.displayName,
+              subject: subjectName,
+              subjectCode: code,
+              courses
+            });
+          });
+
+          users.push({
+            username: acc.username,
+            displayName: acc.displayName,
+            email: acc.email,
+            rut: acc.rut,
+            rutClean: acc.rutClean,
+            role: 'teacher',
+            password: acc.password,
+            activeCourses: [...acc.activeCourses].sort(),
+            teachingAssignments
+          });
+
+          // Pista para asignaciones por sección (resolución posterior por nombre)
+          const sections = [];
+          acc.sectionsByCourse.forEach((set, course) => sections.push({ course, sections: [...set].sort() }));
+          importHints.push({ username: acc.username, sections });
+        });
+
+        users.sort((a, b) => a.username.localeCompare(b.username));
+
+        const result = {
+          meta: {
+            generatedAt: new Date().toISOString(),
+            source: 'analizador-carga-profesores',
+            totals: { rows: rows.length, users: users.length, errors: errors.length, warnings: warnings.length }
+          },
+          users,
+          importHints,
+          // Se pueden incluir más objetos si ya existen en el sistema
+          courses: JSON.parse(localStorage.getItem('smart-student-courses') || '[]'),
+          sections: JSON.parse(localStorage.getItem('smart-student-sections') || '[]')
+        };
+
+        return { result, errors, warnings };
+      }
+
+      function renderReport({ result, errors, warnings }) {
+        const out = document.getElementById('out');
+        const lines = [];
+        lines.push(`Resultado: users=${result.meta.totals.users}, errores=${errors.length}, advertencias=${warnings.length}`);
+        if (errors.length) {
+          lines.push('\n❌ Errores (deben corregirse):');
+          errors.slice(0, 200).forEach(e => lines.push(`  - Fila ${e.idx} (${e.username || '?'}) → ${e.msg}`));
+          if (errors.length > 200) lines.push(`  … y ${errors.length - 200} más`);
+        }
+        if (warnings.length) {
+          lines.push('\n⚠️ Advertencias (revisar):');
+          warnings.slice(0, 200).forEach(w => lines.push(`  - Fila ${w.idx} (${w.username || '?'}) → ${w.msg}`));
+          if (warnings.length > 200) lines.push(`  … y ${warnings.length - 200} más`);
+        }
+        lines.push('\n👩‍🏫 Profesores (resumen):');
+        result.users.forEach(u => {
+          const subjects = [...new Set(u.teachingAssignments.map(t => `${t.subject} (${t.subjectCode})`))].join(', ');
+          lines.push(`  - ${u.username} • ${u.displayName} • cursos=${u.activeCourses.length} • asigs=${u.teachingAssignments.length} • ${subjects}`);
+        });
+        lines.push('\n💾 Descarga el JSON y cárgalo desde Admin → Configuración (botón Importar BBDD con asignaciones).');
+        out.textContent = lines.join('\n');
+      }
+
+      function download(filename, dataObj) {
+        const blob = new Blob([JSON.stringify(dataObj, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename; a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      document.getElementById('btn-parse').addEventListener('click', () => {
+        const text = document.getElementById('input').value;
+        const { rows } = parseClipboard(text);
+        const payload = rows.map(r => r);
+        // indexado para mensajes
+        payload.forEach((r, i) => r.__idx = i + 2);
+        const { result, errors, warnings } = validateAndTransform(payload);
+        renderReport({ result, errors, warnings });
+        window.__lastResult = { result, errors, warnings };
+        document.getElementById('btn-download').disabled = false;
+        document.getElementById('btn-to-local').disabled = errors.length > 0; // no permitir si hay errores
+      });
+
+      document.getElementById('btn-download').addEventListener('click', () => {
+        if (!window.__lastResult) return;
+        download(`profesores-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`, window.__lastResult.result);
+      });
+
+      document.getElementById('file').addEventListener('change', async (ev) => {
+        const file = ev.target.files?.[0];
+        if (!file) return;
+        const text = await file.text();
+        document.getElementById('input').value = text;
+      });
+
+      // Importar directo a localStorage (solo users). Las asignaciones por sección deben resolverse después.
+      document.getElementById('btn-to-local').addEventListener('click', () => {
+        if (!window.__lastResult) return;
+        const { result, errors } = window.__lastResult;
+        if (errors.length) { alert('Corrige los errores antes de importar.'); return; }
+        try {
+          const existingUsers = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+          const merged = mergeUsers(existingUsers, result.users);
+          localStorage.setItem('smart-student-users', JSON.stringify(merged));
+          alert(`Usuarios importados/actualizados: ${result.users.length}. Total ahora: ${merged.length}`);
+        } catch (e) {
+          console.error(e);
+          alert('Error importando a localStorage. Revisa la consola.');
+        }
+      });
+
+      function mergeUsers(existing, incoming) {
+        const map = new Map(existing.map(u => [u.username, u]));
+        incoming.forEach(u => {
+          if (map.has(u.username)) {
+            const curr = map.get(u.username);
+            // Unir cursos y asignaciones
+            const activeCourses = Array.from(new Set([...(curr.activeCourses||[]), ...(u.activeCourses||[])])).sort();
+            const assignKey = a => `${a.subject}|${(a.courses||[]).join(',')}`;
+            const assignments = [...(curr.teachingAssignments||[])];
+            (u.teachingAssignments||[]).forEach(a => {
+              if (!assignments.find(x => x.subject === a.subject && JSON.stringify(x.courses||[])===JSON.stringify(a.courses||[]))) {
+                assignments.push(a);
+              }
+            });
+            map.set(u.username, { ...curr, ...u, activeCourses, teachingAssignments: assignments });
+          } else {
+            map.set(u.username, u);
+          }
+        });
+        return Array.from(map.values());
+      }
+    </script>
+  </body>
+</html>

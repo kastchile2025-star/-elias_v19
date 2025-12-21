@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Notification Counter</title>
+</head>
+<body>
+    <h1>Fix Notification Counter Tool</h1>
+    <p>This tool will help diagnose and fix notification counter issues.</p>
+    
+    <button onclick="diagnoseProblem()">1. Diagnose Problem</button><br><br>
+    <button onclick="cleanupNotifications()">2. Cleanup Old Notifications</button><br><br>
+    <button onclick="resetCounters()">3. Reset All Counters</button><br><br>
+    <button onclick="validateData()">4. Validate Data Consistency</button><br><br>
+    
+    <div id="output"></div>
+    
+    <script>
+        function log(message) {
+            console.log(message);
+            const output = document.getElementById('output');
+            output.innerHTML += message + '<br>';
+        }
+        
+        function diagnoseProblem() {
+            document.getElementById('output').innerHTML = '';
+            log('=== DIAGNOSING NOTIFICATION COUNTER PROBLEM ===');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            log(`Data counts: ${users.length} users, ${comments.length} comments, ${tasks.length} tasks, ${notifications.length} notifications`);
+            
+            // Find teachers
+            const teachers = users.filter(u => u.role === 'teacher');
+            log(`Found ${teachers.length} teachers`);
+            
+            teachers.forEach(teacher => {
+                log(`\n--- Teacher: ${teacher.username} ---`);
+                
+                // Count tasks assigned by this teacher
+                const teacherTasks = tasks.filter(t => t.assignedBy === teacher.username);
+                log(`Assigned tasks: ${teacherTasks.length}`);
+                
+                // Count ungraded submissions
+                const ungradedSubmissions = comments.filter(c => 
+                    c.isSubmission && 
+                    teacherTasks.some(t => t.id === c.taskId) &&
+                    !c.grade
+                );
+                log(`Ungraded submissions: ${ungradedSubmissions.length}`);
+                
+                // Count unread notifications
+                const unreadNotifications = notifications.filter(n => 
+                    n.targetUserRole === 'teacher' &&
+                    n.targetUsernames.includes(teacher.username) &&
+                    !n.readBy.includes(teacher.username)
+                );
+                log(`Unread notifications: ${unreadNotifications.length}`);
+                
+                log(`Expected total count: ${ungradedSubmissions.length + unreadNotifications.length}`);
+                
+                // Check for problematic data
+                if (ungradedSubmissions.length === 0 && unreadNotifications.length === 0) {
+                    log('✅ This teacher should have 0 notifications');
+                } else {
+                    log('⚠️ This teacher should have ' + (ungradedSubmissions.length + unreadNotifications.length) + ' notifications');
+                    
+                    if (ungradedSubmissions.length > 0) {
+                        log('Ungraded submissions details:');
+                        ungradedSubmissions.forEach(sub => {
+                            const task = tasks.find(t => t.id === sub.taskId);
+                            log(`  - ${sub.studentName}: "${task?.title || 'Unknown task'}" (${sub.timestamp})`);
+                        });
+                    }
+                    
+                    if (unreadNotifications.length > 0) {
+                        log('Unread notifications details:');
+                        unreadNotifications.forEach(notif => {
+                            log(`  - ${notif.type}: "${notif.taskTitle}" from ${notif.fromDisplayName} (${notif.timestamp})`);
+                        });
+                    }
+                }
+            });
+            
+            log('\n=== DIAGNOSIS COMPLETE ===');
+        }
+        
+        function cleanupNotifications() {
+            log('\n=== CLEANING UP OLD NOTIFICATIONS ===');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const before = notifications.length;
+            const cleaned = notifications.filter(n => new Date(n.timestamp) > thirtyDaysAgo);
+            const after = cleaned.length;
+            
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(cleaned));
+            
+            log(`Cleaned up ${before - after} old notifications (kept ${after})`);
+            
+            // Also cleanup duplicate notifications
+            const uniqueNotifications = [];
+            const seen = new Set();
+            
+            cleaned.forEach(notif => {
+                const key = `${notif.type}_${notif.taskId}_${notif.fromUsername}_${notif.targetUsernames.join(',')}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueNotifications.push(notif);
+                }
+            });
+            
+            if (uniqueNotifications.length < cleaned.length) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(uniqueNotifications));
+                log(`Removed ${cleaned.length - uniqueNotifications.length} duplicate notifications`);
+            }
+            
+            // Trigger update
+            window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            log('✅ Cleanup complete');
+        }
+        
+        function resetCounters() {
+            log('\n=== RESETTING COUNTERS ===');
+            
+            // Clear notification counters by removing read flags for current user
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            // This is a bit tricky since we don't know the current user here
+            // Instead, we'll clear all read flags
+            const resetNotifications = notifications.map(n => ({
+                ...n,
+                readBy: [],
+                read: false
+            }));
+            
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(resetNotifications));
+            
+            // Also reset comment read flags
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const resetComments = comments.map(c => ({
+                ...c,
+                readBy: [],
+                isNew: true
+            }));
+            
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(resetComments));
+            
+            // Trigger updates
+            window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            window.dispatchEvent(new StorageEvent('storage', { key: 'smart-student-task-comments' }));
+            
+            log('✅ All counters reset - refresh the page to see changes');
+        }
+        
+        function validateData() {
+            log('\n=== VALIDATING DATA CONSISTENCY ===');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            let issues = 0;
+            
+            // Check for orphaned comments (comments for non-existent tasks)
+            const orphanedComments = comments.filter(c => !tasks.some(t => t.id === c.taskId));
+            if (orphanedComments.length > 0) {
+                log(`⚠️ Found ${orphanedComments.length} orphaned comments (tasks no longer exist)`);
+                issues++;
+            }
+            
+            // Check for orphaned notifications
+            const orphanedNotifications = notifications.filter(n => !tasks.some(t => t.id === n.taskId));
+            if (orphanedNotifications.length > 0) {
+                log(`⚠️ Found ${orphanedNotifications.length} orphaned notifications (tasks no longer exist)`);
+                issues++;
+            }
+            
+            // Check for comments without proper user references
+            const invalidComments = comments.filter(c => !users.some(u => u.username === c.studentUsername));
+            if (invalidComments.length > 0) {
+                log(`⚠️ Found ${invalidComments.length} comments from non-existent users`);
+                issues++;
+            }
+            
+            // Check for tasks assigned by non-existent users
+            const invalidTasks = tasks.filter(t => !users.some(u => u.username === t.assignedBy));
+            if (invalidTasks.length > 0) {
+                log(`⚠️ Found ${invalidTasks.length} tasks assigned by non-existent users`);
+                issues++;
+            }
+            
+            if (issues === 0) {
+                log('✅ Data validation passed - no issues found');
+            } else {
+                log(`❌ Found ${issues} data consistency issues`);
+                log('Consider cleaning up the data or refreshing the application');
+            }
+        }
+        
+        // Auto-diagnose on load
+        window.addEventListener('load', () => {
+            setTimeout(diagnoseProblem, 500);
+        });
+    </script>
+</body>
+</html>

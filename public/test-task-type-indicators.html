@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Indicadores de Tipo de Tarea</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+            border: 1px solid;
+        }
+        .badge-evaluation {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            border-color: #e9d5ff;
+        }
+        .badge-assignment {
+            background-color: #dbeafe;
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+        .badge-priority-high {
+            background-color: #fecaca;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+        .badge-priority-medium {
+            background-color: #fed7aa;
+            color: #ea580c;
+            border-color: #fdba74;
+        }
+        .badge-priority-low {
+            background-color: #bbf7d0;
+            color: #059669;
+            border-color: #86efac;
+        }
+        .badge-pending {
+            background-color: #fed7aa;
+            color: #ea580c;
+            border-color: #fdba74;
+        }
+        .badge-completed {
+            background-color: #bbf7d0;
+            color: #059669;
+            border-color: #86efac;
+        }
+        .icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 4px;
+        }
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .task-description {
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+        .view-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #ea580c;
+        }
+        .demo-note {
+            background-color: #e0f2fe;
+            border: 1px solid #0891b2;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #0c4a6e;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test - Indicadores de Tipo de Tarea/Evaluación</h1>
+    
+    <div class="demo-note">
+        <strong>📝 Propósito:</strong> Verificar que los badges de tipo de tarea (📄 Tarea / 🎓 Evaluación) se muestran correctamente en ambas vistas.
+    </div>
+
+    <div class="view-title">📋 Vista de Lista</div>
+    
+    <!-- Ejemplo de Tarea Normal -->
+    <div class="card">
+        <div class="task-title">Ensayo sobre Historia Universal</div>
+        <div class="task-description">Escribir un ensayo de 500 palabras sobre los eventos más importantes del siglo XX</div>
+        <div class="badges-container">
+            <span class="badge badge-assignment">
+                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+                Tarea
+            </span>
+            <span class="badge badge-priority-medium">Prioridad Media</span>
+            <span class="badge badge-pending">Pendiente</span>
+        </div>
+    </div>
+
+    <!-- Ejemplo de Evaluación -->
+    <div class="card">
+        <div class="task-title">Evaluación de Matemáticas - Álgebra</div>
+        <div class="task-description">Evaluación sumativa sobre ecuaciones lineales y cuadráticas</div>
+        <div class="badges-container">
+            <span class="badge badge-evaluation">
+                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C19.89,3 19,3 19,3H5M7.5,6A1.5,1.5 0 0,1 9,7.5A1.5,1.5 0 0,1 7.5,9A1.5,1.5 0 0,1 6,7.5A1.5,1.5 0 0,1 7.5,6M16.5,6A1.5,1.5 0 0,1 18,7.5A1.5,1.5 0 0,1 16.5,9A1.5,1.5 0 0,1 15,7.5A1.5,1.5 0 0,1 16.5,6M12,10.5C13.38,10.5 14.5,11.62 14.5,13C14.5,14.38 13.38,15.5 12,15.5C10.62,15.5 9.5,14.38 9.5,13C9.5,11.62 10.62,10.5 12,10.5M12,12C11.45,12 11,12.45 11,13C11,13.55 11.45,14 12,14C12.55,14 13,13.55 13,13C13,12.45 12.55,12 12,12Z" />
+                </svg>
+                Evaluación
+            </span>
+            <span class="badge badge-priority-high">Prioridad Alta</span>
+            <span class="badge badge-pending">Pendiente</span>
+        </div>
+    </div>
+
+    <!-- Ejemplo de Tarea con Calificación -->
+    <div class="card">
+        <div class="task-title">Práctica de Laboratorio de Química</div>
+        <div class="task-description">Informe del experimento sobre reacciones químicas básicas</div>
+        <div class="badges-container">
+            <span class="badge badge-assignment">
+                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+                Tarea
+            </span>
+            <span class="badge badge-priority-low">Prioridad Baja</span>
+            <span class="badge badge-completed">Completada</span>
+            <span class="badge" style="background-color: #dbeafe; color: #2563eb; border-color: #bfdbfe;">85%</span>
+        </div>
+    </div>
+
+    <div class="view-title">📚 Vista por Curso</div>
+    
+    <div class="card">
+        <div style="background-color: #f97316; color: white; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 18px;">📖 Matemáticas - 4to Básico</h3>
+            <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 14px;">2 tareas</p>
+        </div>
+        
+        <!-- Tarea en vista por curso -->
+        <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: between;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span style="font-weight: 500;">Ejercicios de Fracciones</span>
+                        <span class="badge badge-assignment">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                            </svg>
+                            Tarea
+                        </span>
+                        <span class="badge badge-priority-medium">Prioridad Media</span>
+                        <span class="badge badge-pending">Pendiente</span>
+                    </div>
+                    <p style="color: #666; font-size: 14px; margin: 4px 0;">Resolver ejercicios 1-15 del libro página 87</p>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer;">👁️</button>
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer; color: #ea580c;">✏️</button>
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer; color: #dc2626;">🗑️</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Evaluación en vista por curso -->
+        <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px;">
+            <div style="display: flex; align-items: center; justify-content: between;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span style="font-weight: 500;">eval</span>
+                        <span class="badge badge-evaluation">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C19.89,3 19,3 19,3H5M7.5,6A1.5,1.5 0 0,1 9,7.5A1.5,1.5 0 0,1 7.5,9A1.5,1.5 0 0,1 6,7.5A1.5,1.5 0 0,1 7.5,6M16.5,6A1.5,1.5 0 0,1 18,7.5A1.5,1.5 0 0,1 16.5,9A1.5,1.5 0 0,1 15,7.5A1.5,1.5 0 0,1 16.5,6M12,10.5C13.38,10.5 14.5,11.62 14.5,13C14.5,14.38 13.38,15.5 12,15.5C10.62,15.5 9.5,14.38 9.5,13C9.5,11.62 10.62,10.5 12,10.5M12,12C11.45,12 11,12.45 11,13C11,13.55 11.45,14 12,14C12.55,14 13,13.55 13,13C13,12.45 12.55,12 12,12Z" />
+                            </svg>
+                            Evaluación
+                        </span>
+                        <span class="badge badge-priority-high">Prioridad Alta</span>
+                        <span class="badge badge-pending">Pendiente</span>
+                    </div>
+                    <p style="color: #666; font-size: 14px; margin: 4px 0;">sistema respiratorio</p>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer;">👁️</button>
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer; color: #ea580c;">✏️</button>
+                    <button style="background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; cursor: pointer; color: #dc2626;">🗑️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-note" style="margin-top: 32px; background-color: #f0fdf4; border-color: #16a34a; color: #15803d;">
+        <strong>✅ Resultado esperado:</strong> Los badges muestran claramente la diferencia entre:<br>
+        • 📄 <strong>Tarea</strong> (azul) - para actividades normales de estudio<br>
+        • 🎓 <strong>Evaluación</strong> (púrpura) - para exámenes y evaluaciones formales<br><br>
+        Los badges aparecen junto al título tanto en la vista de lista como en la vista por curso.
+    </div>
+
+    <script>
+        console.log('🧪 Test de indicadores de tipo de tarea cargado');
+        console.log('📄 Badges de Tarea:', document.querySelectorAll('.badge-assignment').length);
+        console.log('🎓 Badges de Evaluación:', document.querySelectorAll('.badge-evaluation').length);
+        
+        // Simular que el usuario es profesor para mostrar ambas vistas
+        console.log('👨‍🏫 Vista de profesor simulada con indicadores de tipo de tarea/evaluación');
+    </script>
+</body>
+</html>

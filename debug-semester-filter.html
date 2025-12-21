@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug: Filtro Semestre - Datos de Asistencia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            background: rgba(255,255,255,0.15);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .success { color: #4ade80; font-weight: 600; }
+        .error { color: #ef4444; font-weight: 600; }
+        .warning { color: #fbbf24; font-weight: 600; }
+        .info { color: #60a5fa; }
+        button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .data-card {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug: Filtro de Semestre - Datos de Asistencia</h1>
+        <p class="info">Herramienta de diagnóstico para verificar el funcionamiento del filtro de semestre en el gráfico de comparación de cursos con asistencia.</p>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label>Año:</label>
+                <select id="yearSelect">
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Semestre:</label>
+                <select id="semesterSelect">
+                    <option value="all">Todo el año</option>
+                    <option value="S1">1er Semestre</option>
+                    <option value="S2">2do Semestre</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 Controles de Diagnóstico</h3>
+            <button onclick="checkLocalStorage()">📋 Verificar LocalStorage</button>
+            <button onclick="checkAttendanceData()">📊 Verificar Datos de Asistencia</button>
+            <button onclick="generateSampleData()">🔨 Generar Datos de Muestra</button>
+            <button onclick="testSemesterFilter()">🎯 Probar Filtro de Semestre</button>
+            <button onclick="clearData()">🗑️ Limpiar Datos</button>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 Estado del Sistema</h3>
+            <div id="systemStatus" class="data-grid">
+                <div class="data-card">
+                    <h4>Estado de Datos</h4>
+                    <div id="dataStatus">Verificando...</div>
+                </div>
+                <div class="data-card">
+                    <h4>Configuración de Semestres</h4>
+                    <div id="semesterConfig">Verificando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📈 Resultados de Filtrado</h3>
+            <div id="filterResults"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔧 Logs del Sistema</h3>
+            <pre id="debugLogs">Logs aparecerán aquí...</pre>
+        </div>
+    </div>
+
+    <script>
+        let debugLogs = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            debugLogs.push(logEntry);
+            document.getElementById('debugLogs').textContent = debugLogs.slice(-20).join('\n');
+            console.log(logEntry);
+        }
+
+        function checkLocalStorage() {
+            log('🔍 Verificando LocalStorage...');
+            
+            const keys = Object.keys(localStorage).filter(k => 
+                k.includes('attendance') || 
+                k.includes('semester') || 
+                k.includes('course') || 
+                k.includes('section')
+            );
+            
+            log(`Encontradas ${keys.length} claves relacionadas:`);
+            keys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key) || '[]');
+                    const count = Array.isArray(data) ? data.length : (typeof data === 'object' ? Object.keys(data).length : 0);
+                    log(`  - ${key}: ${count} elementos`);
+                } catch (e) {
+                    log(`  - ${key}: Error parsing`);
+                }
+            });
+
+            updateSystemStatus();
+        }
+
+        function checkAttendanceData() {
+            const year = document.getElementById('yearSelect').value;
+            log(`📊 Verificando datos de asistencia para ${year}...`);
+
+            // Verificar datos específicos por año
+            const yearKey = `smart-student-attendance-${year}`;
+            const yearData = JSON.parse(localStorage.getItem(yearKey) || '[]');
+            
+            // Verificar datos globales
+            const globalData = JSON.parse(localStorage.getItem('smart-student-attendance') || '[]');
+            
+            log(`Datos específicos ${year}: ${yearData.length} registros`);
+            log(`Datos globales: ${globalData.length} registros`);
+
+            if (yearData.length > 0) {
+                const sample = yearData.slice(0, 3);
+                log('Muestra de datos específicos:');
+                sample.forEach(record => {
+                    log(`  - Fecha: ${record.date || record.timestamp || record.when}, Presentes: ${record.presentStudents?.length || 'N/A'}`);
+                });
+            }
+
+            if (globalData.length > 0) {
+                const yearFiltered = globalData.filter(r => {
+                    const d = r.date || r.timestamp || r.when;
+                    return String(d).includes(year);
+                });
+                log(`Datos globales filtrados por ${year}: ${yearFiltered.length} registros`);
+            }
+
+            updateSystemStatus();
+        }
+
+        function generateSampleData() {
+            const year = document.getElementById('yearSelect').value;
+            log(`🔨 Generando datos de muestra para ${year}...`);
+
+            const sampleAttendance = [];
+            const startDate = new Date(year, 2, 1); // Marzo
+            const endDate = new Date(year, 11, 31); // Diciembre
+
+            // Generar datos para cada mes
+            for (let month = 2; month < 12; month++) { // Marzo a Diciembre
+                for (let day = 1; day <= 28; day += 7) { // Una vez por semana
+                    const date = new Date(year, month, day);
+                    const dateStr = `${String(day).padStart(2,'0')}-${String(month+1).padStart(2,'0')}-${year}`;
+                    
+                    sampleAttendance.push({
+                        date: dateStr,
+                        timestamp: date.getTime(),
+                        courseId: 'course-basica-1',
+                        sectionId: 'section-a',
+                        presentStudents: [
+                            { studentId: 'student1', username: 'est001' },
+                            { studentId: 'student2', username: 'est002' },
+                            { studentId: 'student3', username: 'est003' }
+                        ],
+                        presentCount: 3,
+                        totalCount: 5
+                    });
+
+                    sampleAttendance.push({
+                        date: dateStr,
+                        timestamp: date.getTime(),
+                        courseId: 'course-media-1',
+                        sectionId: 'section-b',
+                        presentStudents: [
+                            { studentId: 'student4', username: 'est004' },
+                            { studentId: 'student5', username: 'est005' }
+                        ],
+                        presentCount: 2,
+                        totalCount: 4
+                    });
+                }
+            }
+
+            // Guardar datos específicos por año
+            const yearKey = `smart-student-attendance-${year}`;
+            localStorage.setItem(yearKey, JSON.stringify(sampleAttendance));
+            
+            // Configuración de semestres
+            const semesterConfig = {
+                first: { start: `${year}-03-01`, end: `${year}-06-30` },
+                second: { start: `${year}-07-01`, end: `${year}-12-31` }
+            };
+            localStorage.setItem(`smart-student-semesters-${year}`, JSON.stringify(semesterConfig));
+
+            // Datos de cursos y secciones
+            const courses = [
+                { id: 'course-basica-1', name: '4to Básico', level: 'basica' },
+                { id: 'course-media-1', name: '1ro Medio', level: 'media' }
+            ];
+            localStorage.setItem(`smart-student-courses-${year}`, JSON.stringify(courses));
+
+            const sections = [
+                { id: 'section-a', name: 'Sección A', courseId: 'course-basica-1' },
+                { id: 'section-b', name: 'Sección B', courseId: 'course-media-1' }
+            ];
+            localStorage.setItem(`smart-student-sections-${year}`, JSON.stringify(sections));
+
+            log(`✅ Generados ${sampleAttendance.length} registros de asistencia`);
+            log('✅ Configuración de semestres creada');
+            log('✅ Datos de cursos y secciones creados');
+
+            updateSystemStatus();
+        }
+
+        function testSemesterFilter() {
+            const year = document.getElementById('yearSelect').value;
+            const semester = document.getElementById('semesterSelect').value;
+            
+            log(`🎯 Probando filtro: Año ${year}, Semestre ${semester}`);
+
+            // Obtener configuración de semestres
+            const semesterKey = `smart-student-semesters-${year}`;
+            const semesterConfig = JSON.parse(localStorage.getItem(semesterKey) || '{}');
+            
+            if (!semesterConfig.first && !semesterConfig.second) {
+                log('❌ No se encontró configuración de semestres');
+                return;
+            }
+
+            // Obtener datos de asistencia
+            const attendanceKey = `smart-student-attendance-${year}`;
+            const attendanceData = JSON.parse(localStorage.getItem(attendanceKey) || '[]');
+            
+            if (attendanceData.length === 0) {
+                log('❌ No se encontraron datos de asistencia');
+                return;
+            }
+
+            log(`📊 Total de registros de asistencia: ${attendanceData.length}`);
+
+            if (semester !== 'all') {
+                const semesterInfo = semester === 'S1' ? semesterConfig.first : semesterConfig.second;
+                if (!semesterInfo) {
+                    log(`❌ No se encontró configuración para ${semester}`);
+                    return;
+                }
+
+                const startDate = new Date(semesterInfo.start).getTime();
+                const endDate = new Date(semesterInfo.end).getTime();
+                
+                log(`📅 Rango de ${semester}: ${semesterInfo.start} a ${semesterInfo.end}`);
+
+                const filteredData = attendanceData.filter(record => {
+                    let recordTime = 0;
+                    const dateValue = record.date || record.timestamp || record.when;
+                    
+                    if (typeof dateValue === 'number') {
+                        recordTime = dateValue;
+                    } else if (typeof dateValue === 'string') {
+                        if (/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
+                            const [dd, mm, yyyy] = dateValue.split('-').map(Number);
+                            recordTime = new Date(yyyy, mm - 1, dd).getTime();
+                        } else {
+                            recordTime = new Date(dateValue).getTime();
+                        }
+                    }
+
+                    return recordTime >= startDate && recordTime <= endDate;
+                });
+
+                log(`✅ Registros filtrados por ${semester}: ${filteredData.length}`);
+                
+                const results = document.getElementById('filterResults');
+                results.innerHTML = `
+                    <div class="data-grid">
+                        <div class="data-card">
+                            <h4>Resultado del Filtrado</h4>
+                            <div class="success">✅ Filtro funcionando correctamente</div>
+                            <div class="info">Total registros: ${attendanceData.length}</div>
+                            <div class="info">Filtrados por ${semester}: ${filteredData.length}</div>
+                        </div>
+                        <div class="data-card">
+                            <h4>Muestra de Datos Filtrados</h4>
+                            <pre>${JSON.stringify(filteredData.slice(0, 3), null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            } else {
+                log('📅 Mostrando todos los registros (sin filtro de semestre)');
+                
+                const results = document.getElementById('filterResults');
+                results.innerHTML = `
+                    <div class="data-card">
+                        <h4>Sin Filtro de Semestre</h4>
+                        <div class="info">Mostrando todos los ${attendanceData.length} registros</div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearData() {
+            const year = document.getElementById('yearSelect').value;
+            log(`🗑️ Limpiando datos para ${year}...`);
+
+            const keysToRemove = [
+                `smart-student-attendance-${year}`,
+                `smart-student-semesters-${year}`,
+                `smart-student-courses-${year}`,
+                `smart-student-sections-${year}`
+            ];
+
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                log(`  - Eliminado: ${key}`);
+            });
+
+            log('✅ Datos limpiados');
+            updateSystemStatus();
+        }
+
+        function updateSystemStatus() {
+            const year = document.getElementById('yearSelect').value;
+            
+            // Estado de datos
+            const attendanceCount = JSON.parse(localStorage.getItem(`smart-student-attendance-${year}`) || '[]').length;
+            const coursesCount = JSON.parse(localStorage.getItem(`smart-student-courses-${year}`) || '[]').length;
+            const sectionsCount = JSON.parse(localStorage.getItem(`smart-student-sections-${year}`) || '[]').length;
+
+            document.getElementById('dataStatus').innerHTML = `
+                <div class="${attendanceCount > 0 ? 'success' : 'error'}">
+                    Asistencia ${year}: ${attendanceCount} registros
+                </div>
+                <div class="${coursesCount > 0 ? 'success' : 'warning'}">
+                    Cursos ${year}: ${coursesCount} elementos
+                </div>
+                <div class="${sectionsCount > 0 ? 'success' : 'warning'}">
+                    Secciones ${year}: ${sectionsCount} elementos
+                </div>
+            `;
+
+            // Configuración de semestres
+            const semesterConfig = JSON.parse(localStorage.getItem(`smart-student-semesters-${year}`) || '{}');
+            const hasSemesterConfig = semesterConfig.first && semesterConfig.second;
+
+            document.getElementById('semesterConfig').innerHTML = `
+                <div class="${hasSemesterConfig ? 'success' : 'error'}">
+                    ${hasSemesterConfig ? '✅ Configurado' : '❌ No configurado'}
+                </div>
+                ${hasSemesterConfig ? `
+                    <div class="info">1er: ${semesterConfig.first.start} - ${semesterConfig.first.end}</div>
+                    <div class="info">2do: ${semesterConfig.second.start} - ${semesterConfig.second.end}</div>
+                ` : ''}
+            `;
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Herramienta de debug iniciada');
+            updateSystemStatus();
+        });
+
+        // Actualizar cuando cambie el año
+        document.getElementById('yearSelect').addEventListener('change', updateSystemStatus);
+    </script>
+</body>
+</html>

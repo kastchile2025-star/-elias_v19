@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Formato de Notificaciones - Estudiante Específico</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .section h2 {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            font-size: 1.3rem;
+        }
+
+        .notification-preview {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #f97316;
+        }
+
+        .badge {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #ea580c;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 2.5rem;
+            height: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .course-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .action-button {
+            font-size: 12px;
+            color: #f97316;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            text-decoration: underline;
+        }
+
+        .test-controls {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-controls h3 {
+            margin: 0 0 15px 0;
+            color: #0369a1;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn.danger {
+            background: #ef4444;
+        }
+
+        .btn.danger:hover {
+            background: #dc2626;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .result-box.success {
+            background: #f0fdf4;
+            border-color: #16a34a;
+            color: #15803d;
+        }
+
+        .result-box.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+
+        .result-box.info {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        .split-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .format-example {
+            background: #f9fafb;
+            border-left: 4px solid #f97316;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .format-example h4 {
+            margin: 0 0 12px 0;
+            color: #f97316;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Test: Formato de Notificaciones</h1>
+            <p>Verificación del formato de notificaciones para tareas asignadas a estudiantes específicos</p>
+        </div>
+
+        <div class="section">
+            <h2>📋 Formato Esperado</h2>
+            <div class="format-example">
+                <h4>Estructura de la notificación:</h4>
+Tareas Pendientes (1)
+asdas
+
+MAT
+4to Básico • 07/08/25, 09:42
+
+Ver Tarea
+            </div>
+            <p>El badge debe mostrar la abreviatura de la materia, y si es muy larga (como "Ciencias Naturales" → "CNT"), debe dividirse en dos líneas.</p>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Vista Previa del Formato</h2>
+            
+            <div class="notification-preview">
+                <div class="notification-header">
+                    <div class="notification-title">asdas</div>
+                    <div class="badge">
+                        <div class="split-text">
+                            <span>MAT</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-info">4to Básico • 07/08/25, 09:42</div>
+                <a href="#" class="action-button">Ver Tarea</a>
+            </div>
+
+            <div class="notification-preview">
+                <div class="notification-header">
+                    <div class="notification-title">Tarea de Ciencias</div>
+                    <div class="badge">
+                        <div class="split-text">
+                            <span>CNT</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-info">4to Básico • 07/08/25, 09:42</div>
+                <a href="#" class="action-button">Ver Tarea</a>
+            </div>
+
+            <div class="notification-preview">
+                <div class="notification-header">
+                    <div class="notification-title">Evaluación de Historia</div>
+                    <div class="badge" style="background: #faf5ff; border-color: #e9d5ff; color: #9333ea;">
+                        <div class="split-text">
+                            <span>HIS</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-info">4to Básico • 07/08/25, 09:42</div>
+                <a href="#" class="action-button" style="color: #9333ea;">Ver Evaluación</a>
+            </div>
+        </div>
+
+        <div class="test-controls">
+            <h3>🧪 Controles de Prueba</h3>
+            <button class="btn" onclick="setupTestData()">Configurar Datos de Prueba</button>
+            <button class="btn" onclick="createSpecificAssignment()">Crear Tarea Específica</button>
+            <button class="btn" onclick="testNotificationFormat()">Probar Formato</button>
+            <button class="btn danger" onclick="clearTestData()">Limpiar Datos</button>
+        </div>
+
+        <div class="section">
+            <h2>📊 Resultados de la Prueba</h2>
+            <div id="test-results" class="result-box">
+Click en "Configurar Datos de Prueba" para comenzar...
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Funciones de Prueba</h2>
+            <h3>splitTextForBadge()</h3>
+            <p>Función que divide el texto del badge en múltiples líneas cuando es necesario:</p>
+            <div class="result-box">
+<strong>Ejemplos:</strong>
+- "MAT" → ["MAT"]
+- "CNT" → ["CNT"] 
+- "Historia" → ["Historia"] (si cabe en 8 caracteres)
+- "Ciencias Naturales" → ["CNT"] (usando abreviación)
+
+<strong>Reglas:</strong>
+- Máximo 8 caracteres por línea
+- Si es una palabra muy larga, se divide por la mitad
+- Si son múltiples palabras, se distribuyen en líneas
+            </div>
+
+            <h3>getCourseAbbreviation()</h3>
+            <div class="result-box">
+<strong>Mapeo de materias:</strong>
+- Matemáticas → MAT
+- Ciencias Naturales → CNT
+- Lenguaje y Comunicación → LEN
+- Historia, Geografía y Ciencias Sociales → HIS
+- Inglés → ING
+- Educación Física → EDF
+- Artes → ART
+- Música → MUS
+- Tecnología → TEC
+- Filosofía → FIL
+- Química → QUI
+- Física → FIS
+- Biología → BIO
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const resultsDiv = document.getElementById('test-results');
+            const colorClass = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            resultsDiv.className = `result-box ${colorClass}`;
+            resultsDiv.textContent += `[${timestamp}] ${message}\n`;
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('test-results').textContent = '';
+        }
+
+        function setupTestData() {
+            clearLog();
+            log('🔧 Configurando datos de prueba...', 'info');
+
+            try {
+                // Configurar usuario estudiante
+                const users = [
+                    {
+                        id: 'est_felipe_001',
+                        username: 'felipe',
+                        displayName: 'Felipe Estudiante',
+                        role: 'student',
+                        activeCourses: ['4to_basico_a']
+                    },
+                    {
+                        id: 'prof_carlos_001',
+                        username: 'carlos.profesor',
+                        displayName: 'Carlos Profesor',
+                        role: 'teacher',
+                        activeCourses: ['4to_basico_a']
+                    }
+                ];
+                localStorage.setItem('smart-student-users', JSON.stringify(users));
+                log('✅ Usuarios configurados', 'success');
+
+                // Configurar cursos
+                const courses = [
+                    {
+                        id: '4to_basico_a',
+                        name: '4to Básico',
+                        description: 'Cuarto año básico sección A',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('smart-student-courses', JSON.stringify(courses));
+                log('✅ Cursos configurados', 'success');
+
+                // Configurar secciones
+                const sections = [
+                    {
+                        id: 'section_4a',
+                        name: 'A',
+                        courseId: '4to_basico_a',
+                        description: 'Sección A de 4to Básico',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('smart-student-sections', JSON.stringify(sections));
+                log('✅ Secciones configuradas', 'success');
+
+                // Configurar asignaciones de estudiantes
+                const studentAssignments = [
+                    {
+                        studentId: 'est_felipe_001',
+                        courseId: '4to_basico_a',
+                        sectionId: 'section_4a',
+                        assignedAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('smart-student-student-assignments', JSON.stringify(studentAssignments));
+                log('✅ Asignaciones configuradas', 'success');
+
+                log('🎯 Configuración completada. Ahora puedes crear una tarea específica.', 'success');
+
+            } catch (error) {
+                log(`❌ Error en configuración: ${error.message}`, 'error');
+            }
+        }
+
+        function createSpecificAssignment() {
+            log('📝 Creando tarea específica para Felipe...', 'info');
+
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                const newTask = {
+                    id: `task_specific_${Date.now()}`,
+                    title: 'asdas',
+                    description: 'Tarea de ejemplo asignada específicamente a Felipe',
+                    subject: 'Matemáticas',
+                    course: '4to_basico_a',
+                    assignedTo: 'student', // ⭐ CLAVE: Asignación específica
+                    assignedStudentIds: ['est_felipe_001'], // ⭐ CLAVE: Solo Felipe
+                    assignedBy: 'carlos.profesor',
+                    assignedById: 'prof_carlos_001',
+                    assignedByName: 'Carlos Profesor',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    taskType: 'assignment',
+                    status: 'pending',
+                    priority: 'medium'
+                };
+
+                tasks.push(newTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+                log('✅ Tarea específica creada', 'success');
+                log(`   📋 ID: ${newTask.id}`, 'info');
+                log(`   👤 Asignada a: Felipe (est_felipe_001)`, 'info');
+                log(`   📚 Materia: Matemáticas → Badge "MAT"`, 'info');
+
+                // Crear notificación
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                const newNotification = {
+                    id: `new_task_${newTask.id}_${Date.now()}`,
+                    type: 'new_task',
+                    taskId: newTask.id,
+                    taskTitle: newTask.title,
+                    targetUserRole: 'student',
+                    targetUsernames: ['felipe'], // Solo Felipe debe recibir la notificación
+                    fromUsername: 'carlos.profesor',
+                    fromDisplayName: 'Carlos Profesor',
+                    course: newTask.course,
+                    subject: newTask.subject,
+                    timestamp: newTask.createdAt,
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                };
+
+                notifications.push(newNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                log('🔔 Notificación creada para Felipe', 'success');
+                log(`   🎯 Solo Felipe debería ver esta notificación`, 'info');
+
+            } catch (error) {
+                log(`❌ Error creando tarea: ${error.message}`, 'error');
+            }
+        }
+
+        function testNotificationFormat() {
+            log('🔍 Probando formato de notificaciones...', 'info');
+
+            try {
+                // Simular función splitTextForBadge
+                function splitTextForBadge(text, maxLength = 8) {
+                    if (text.length <= maxLength) return [text];
+                    
+                    const words = text.split(' ');
+                    if (words.length === 1) {
+                        const mid = Math.ceil(text.length / 2);
+                        return [text.substring(0, mid), text.substring(mid)];
+                    }
+                    
+                    let firstLine = '';
+                    let secondLine = '';
+                    let switchToSecond = false;
+                    
+                    for (const word of words) {
+                        if (!switchToSecond && (firstLine + word).length <= maxLength) {
+                            firstLine += (firstLine ? ' ' : '') + word;
+                        } else {
+                            switchToSecond = true;
+                            secondLine += (secondLine ? ' ' : '') + word;
+                        }
+                    }
+                    
+                    return firstLine && secondLine ? [firstLine, secondLine] : [text];
+                }
+
+                // Simular función getCourseAbbreviation
+                function getCourseAbbreviation(subject) {
+                    const abbreviations = {
+                        'Matemáticas': 'MAT',
+                        'Lenguaje y Comunicación': 'LEN', 
+                        'Historia, Geografía y Ciencias Sociales': 'HIS',
+                        'Ciencias Naturales': 'CNT',
+                        'Inglés': 'ING',
+                        'Educación Física': 'EDF',
+                        'Artes': 'ART',
+                        'Música': 'MUS',
+                        'Tecnología': 'TEC',
+                        'Filosofía': 'FIL',
+                        'Química': 'QUI',
+                        'Física': 'FIS',
+                        'Biología': 'BIO'
+                    };
+                    
+                    return abbreviations[subject] || subject.substring(0, 3).toUpperCase();
+                }
+
+                // Simular formatDate
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return new Intl.DateTimeFormat('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }).format(date);
+                }
+
+                // Probar diferentes materias
+                const testSubjects = [
+                    'Matemáticas',
+                    'Ciencias Naturales', 
+                    'Historia, Geografía y Ciencias Sociales',
+                    'Lenguaje y Comunicación',
+                    'Educación Física'
+                ];
+
+                log('📊 Probando abreviaciones de materias:', 'info');
+                testSubjects.forEach(subject => {
+                    const abbrev = getCourseAbbreviation(subject);
+                    const lines = splitTextForBadge(abbrev);
+                    log(`   "${subject}" → "${abbrev}" → [${lines.join(', ')}]`, 'info');
+                });
+
+                // Probar formato de fecha
+                const testDate = new Date().toISOString();
+                const formattedDate = formatDate(testDate);
+                log(`\n⏰ Formato de fecha:`, 'info');
+                log(`   Timestamp: ${testDate}`, 'info');
+                log(`   Formato mostrado: ${formattedDate}`, 'info');
+
+                // Verificar notificación creada
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const taskNotif = notifications.find(n => n.type === 'new_task' && n.taskTitle === 'asdas');
+                
+                if (taskNotif) {
+                    log(`\n🎯 Verificación de notificación creada:`, 'success');
+                    log(`   Título: "${taskNotif.taskTitle}"`, 'info');
+                    log(`   Materia: "${taskNotif.subject}" → Badge: "${getCourseAbbreviation(taskNotif.subject)}"`, 'info');
+                    log(`   Curso: ${taskNotif.course}`, 'info');
+                    log(`   Fecha: ${formatDate(taskNotif.timestamp)}`, 'info');
+                    log(`   Destinatarios: [${taskNotif.targetUsernames.join(', ')}]`, 'info');
+
+                    log(`\n📱 Formato final esperado en la UI:`, 'success');
+                    log(`   Título: ${taskNotif.taskTitle}`, 'info');
+                    log(`   Badge: ${getCourseAbbreviation(taskNotif.subject)}`, 'info');
+                    log(`   Info: 4to Básico • ${formatDate(taskNotif.timestamp)}`, 'info');
+                    log(`   Acción: Ver Tarea`, 'info');
+                } else {
+                    log('❌ No se encontró la notificación de prueba', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error en prueba: ${error.message}`, 'error');
+            }
+        }
+
+        function clearTestData() {
+            log('🧹 Limpiando datos de prueba...', 'info');
+
+            const keys = [
+                'smart-student-users',
+                'smart-student-tasks', 
+                'smart-student-task-notifications',
+                'smart-student-courses',
+                'smart-student-sections',
+                'smart-student-student-assignments'
+            ];
+
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+                log(`   Eliminado: ${key}`, 'info');
+            });
+
+            log('✅ Datos de prueba eliminados', 'success');
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Test de formato de notificaciones iniciado', 'info');
+            log('📋 Ready para probar el formato de badges con texto dividido', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+
+> nextn@0.1.0 dev:session1
+> next dev --turbopack -p 9002
+
+   ▲ Next.js 15.4.1 (Turbopack)
+   - Local:        http://localhost:9002
+   - Network:      http://10.0.10.66:9002
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 1383ms
+ ○ Compiling / ...
+ ✓ Compiled / in 8.6s
+ GET / 200 in 9114ms
+ ○ Compiling /login ...
+ GET / 200 in 323ms
+ ✓ Compiled /login in 2.4s
+ GET /login 200 in 2569ms
+ GET /login 200 in 48ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1874ms
+ GET /dashboard?profile=tab-43843b3e 200 in 1996ms
+ ○ Compiling /api/ai-status ...
+ ✓ Compiled /api/ai-status in 734ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 840ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 33ms
+ GET /dashboard?profile=tab-2944ef7b 200 in 47ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 65ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 33ms
+ GET /dashboard?profile=tab-2944ef7b 200 in 211ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 46ms
+ GET /login 200 in 72ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 42ms
+ GET /dashboard?profile=tab-43843b3e 200 in 109ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 45ms
+ GET /login 200 in 78ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 51ms
+ GET /dashboard?profile=tab-2944ef7b 200 in 67ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 47ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 30ms
+ GET /dashboard?profile=tab-43843b3e 200 in 50ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 29ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 30ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 180ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 54ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 30ms
+ ○ Compiling /dashboard/tareas ...
+ ✓ Compiled /dashboard/tareas in 1889ms
+ GET /dashboard/tareas 200 in 2069ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 28ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 27ms
+ GET /dashboard 200 in 36ms
+ GET /dashboard 200 in 77ms
+ GET /login 200 in 40ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 30ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 49ms
+[?25h

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Botón Marcar Todo como Leído (Profesor) - CORREGIDO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .notification {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .submission {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .comment {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .pending-task {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .count {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .status-ok {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test: Botón "Marcar Todo como Leído" - Profesor (CORREGIDO)</h1>
+        
+        <div class="section">
+            <h3>Usuario Actual: <span id="currentUser">Profesor Jorge</span></h3>
+            <button class="button" onclick="switchUser('teacher', 'profesor_jorge')">Cambiar a Profesor Jorge</button>
+            <button class="button" onclick="switchUser('student', 'felipe_estudiante')">Cambiar a Felipe (Estudiante)</button>
+        </div>
+
+        <div class="section">
+            <h3>Configuración de Datos</h3>
+            <button class="button success" onclick="setupCompleteTestData()">Configurar Datos Completos</button>
+            <button class="button danger" onclick="clearAllData()">Limpiar Todos los Datos</button>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>Estado ANTES de "Marcar Todo como Leído"</h3>
+                <div id="before-state">
+                    <p>Entregas Pendientes: <span id="beforeSubmissions" class="count">0</span></p>
+                    <p>Comentarios No Leídos: <span id="beforeComments" class="count">0</span></p>
+                    <p>Tareas Pendientes: <span id="beforePendingTasks" class="count">0</span></p>
+                    <p>Evaluaciones Pendientes: <span id="beforePendingEvals" class="count">0</span></p>
+                </div>
+                
+                <button class="button success" onclick="markAllAsRead()" style="margin-top: 10px;">
+                    🔄 Marcar Todo como Leído
+                </button>
+            </div>
+
+            <div class="section">
+                <h3>Estado DESPUÉS de "Marcar Todo como Leído"</h3>
+                <div id="after-state">
+                    <p>Entregas Pendientes: <span id="afterSubmissions" class="count">0</span></p>
+                    <p>Comentarios No Leídos: <span id="afterComments" class="count">0</span></p>
+                    <p>Tareas Pendientes: <span id="afterPendingTasks" class="count">0</span></p>
+                    <p>Evaluaciones Pendientes: <span id="afterPendingEvals" class="count">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Resultado del Test</h3>
+            <div id="test-result">
+                <p>Presiona "Marcar Todo como Leído" para ver el resultado</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Comportamiento Esperado vs Actual</h3>
+            <table border="1" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th>Tipo de Notificación</th>
+                    <th>Comportamiento Esperado</th>
+                    <th>Estado Actual</th>
+                </tr>
+                <tr>
+                    <td>Comentarios No Leídos</td>
+                    <td>✅ Se eliminan</td>
+                    <td id="comments-status">Pendiente</td>
+                </tr>
+                <tr>
+                    <td>Entregas Pendientes</td>
+                    <td>✅ Permanecen</td>
+                    <td id="submissions-status">Pendiente</td>
+                </tr>
+                <tr>
+                    <td>Tareas Pendientes</td>
+                    <td>✅ Permanecen</td>
+                    <td id="tasks-status">Pendiente</td>
+                </tr>
+                <tr>
+                    <td>Evaluaciones Pendientes</td>
+                    <td>✅ Permanecen</td>
+                    <td id="evals-status">Pendiente</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>Log de Acciones</h3>
+            <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 5px; height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = {
+            username: 'profesor_jorge',
+            role: 'teacher',
+            displayName: 'Profesor Jorge'
+        };
+
+        let beforeState = {};
+        let afterState = {};
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function switchUser(role, username) {
+            const displayNames = {
+                'profesor_jorge': 'Profesor Jorge',
+                'felipe_estudiante': 'Felipe (Estudiante)'
+            };
+            
+            currentUser = {
+                username: username,
+                role: role,
+                displayName: displayNames[username] || username
+            };
+            
+            document.getElementById('currentUser').textContent = currentUser.displayName;
+            log(`Cambiado a usuario: ${currentUser.displayName} (${role})`);
+            updateNotificationCounts();
+        }
+
+        function setupCompleteTestData() {
+            // Crear tareas
+            const tasks = [
+                {
+                    id: 'task-1',
+                    title: 'Ensayo de Historia',
+                    description: 'Escribir un ensayo sobre la Revolución Industrial',
+                    course: 'Historia',
+                    subject: 'Historia',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    assignedBy: 'profesor_jorge',
+                    createdAt: new Date().toISOString(),
+                    type: 'assignment'
+                },
+                {
+                    id: 'eval-1',
+                    title: 'Evaluación Matemáticas',
+                    description: 'Examen de álgebra y geometría',
+                    course: 'Matemáticas',
+                    subject: 'Matemáticas',
+                    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    assignedBy: 'profesor_jorge',
+                    createdAt: new Date().toISOString(),
+                    type: 'evaluation'
+                }
+            ];
+
+            // Crear comentarios y entregas
+            const comments = [
+                // Entrega de Felipe para la tarea de Historia (SIN CALIFICAR)
+                {
+                    id: 'comment-1',
+                    taskId: 'task-1',
+                    studentUsername: 'felipe_estudiante',
+                    studentName: 'Felipe',
+                    comment: 'Aquí está mi ensayo sobre la Revolución Industrial.',
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    readBy: []
+                },
+                // Entrega de Ana para la evaluación (SIN CALIFICAR)
+                {
+                    id: 'comment-2',
+                    taskId: 'eval-1',
+                    studentUsername: 'ana_estudiante',
+                    studentName: 'Ana',
+                    comment: 'He completado la evaluación de matemáticas.',
+                    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    readBy: []
+                },
+                // Comentario de Felipe (NO LEÍDO)
+                {
+                    id: 'comment-3',
+                    taskId: 'task-1',
+                    studentUsername: 'felipe_estudiante',
+                    studentName: 'Felipe',
+                    comment: 'Profesor, tengo una duda sobre las conclusiones.',
+                    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                },
+                // Comentario de Ana (NO LEÍDO)
+                {
+                    id: 'comment-4',
+                    taskId: 'eval-1',
+                    studentUsername: 'ana_estudiante',
+                    studentName: 'Ana',
+                    comment: '¿Podría revisar mi respuesta de la pregunta 3?',
+                    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+                    timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                }
+            ];
+
+            // Crear notificaciones del sistema
+            const notifications = [
+                // Notificación de tarea pendiente de calificar
+                {
+                    id: 'pending-task-1',
+                    type: 'pending_grading',
+                    taskId: 'task-1',
+                    taskTitle: 'Ensayo de Historia',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['profesor_jorge'],
+                    fromUsername: 'system',
+                    fromDisplayName: 'Sistema',
+                    course: 'Historia',
+                    subject: 'Historia',
+                    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                },
+                // Notificación de evaluación pendiente de calificar
+                {
+                    id: 'pending-eval-1',
+                    type: 'pending_grading',
+                    taskId: 'eval-1',
+                    taskTitle: 'Evaluación Matemáticas',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['profesor_jorge'],
+                    fromUsername: 'system',
+                    fromDisplayName: 'Sistema',
+                    course: 'Matemáticas',
+                    subject: 'Matemáticas',
+                    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                },
+                // Notificación de comentario de estudiante
+                {
+                    id: 'comment-notif-1',
+                    type: 'teacher_comment',
+                    taskId: 'task-1',
+                    taskTitle: 'Ensayo de Historia',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['profesor_jorge'],
+                    fromUsername: 'felipe_estudiante',
+                    fromDisplayName: 'Felipe',
+                    course: 'Historia',
+                    subject: 'Historia',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: []
+                }
+            ];
+
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            log('✅ Datos completos configurados:');
+            log('- 1 tarea + 1 evaluación creadas');
+            log('- 2 entregas de estudiantes (sin calificar)');
+            log('- 2 comentarios de estudiantes (no leídos)');
+            log('- 2 notificaciones de pendientes + 1 comentario');
+            
+            updateNotificationCounts();
+        }
+
+        function clearAllData() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-task-notifications');
+            log('🗑️ Todos los datos han sido eliminados');
+            updateNotificationCounts();
+        }
+
+        function updateNotificationCounts() {
+            if (currentUser.role !== 'teacher') {
+                log('⚠️ Esta prueba es solo para profesores');
+                return;
+            }
+
+            const counts = getNotificationCounts();
+            
+            // Actualizar contadores ANTES
+            document.getElementById('beforeSubmissions').textContent = counts.submissions;
+            document.getElementById('beforeComments').textContent = counts.comments;
+            document.getElementById('beforePendingTasks').textContent = counts.pendingTasks;
+            document.getElementById('beforePendingEvals').textContent = counts.pendingEvals;
+            
+            // Guardar para comparación
+            beforeState = { ...counts };
+            
+            log(`📊 Estado actual: ${counts.submissions} entregas, ${counts.comments} comentarios, ${counts.pendingTasks} tareas pendientes, ${counts.pendingEvals} evaluaciones pendientes`);
+        }
+
+        function getNotificationCounts() {
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const storedNotifications = localStorage.getItem('smart-student-task-notifications');
+
+            if (!storedTasks || !storedComments || !storedNotifications) {
+                return { submissions: 0, comments: 0, pendingTasks: 0, pendingEvals: 0 };
+            }
+
+            const tasks = JSON.parse(storedTasks);
+            const comments = JSON.parse(storedComments);
+            const notifications = JSON.parse(storedNotifications);
+
+            // Filtrar tareas del profesor actual
+            const teacherTasks = tasks.filter(task => task.assignedBy === currentUser.username);
+            const teacherTaskIds = teacherTasks.map(task => task.id);
+
+            // Contar entregas pendientes (sin calificar)
+            const submissions = comments.filter(comment => 
+                comment.isSubmission && 
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== currentUser.username &&
+                !comment.grade
+            ).length;
+
+            // Contar comentarios no leídos (que no sean entregas)
+            const unreadComments = comments.filter(comment => 
+                !comment.isSubmission &&
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== currentUser.username &&
+                (!comment.readBy?.includes(currentUser.username))
+            ).length;
+
+            // Contar notificaciones de tareas pendientes
+            const pendingTasks = notifications.filter(notif =>
+                notif.type === 'pending_grading' &&
+                notif.targetUsernames.includes(currentUser.username) &&
+                !notif.readBy.includes(currentUser.username) &&
+                notif.taskType === 'assignment'
+            ).length;
+
+            // Contar notificaciones de evaluaciones pendientes
+            const pendingEvals = notifications.filter(notif =>
+                notif.type === 'pending_grading' &&
+                notif.targetUsernames.includes(currentUser.username) &&
+                !notif.readBy.includes(currentUser.username) &&
+                notif.taskType === 'evaluation'
+            ).length;
+
+            return {
+                submissions: submissions,
+                comments: unreadComments,
+                pendingTasks: pendingTasks,
+                pendingEvals: pendingEvals
+            };
+        }
+
+        function markAllAsRead() {
+            if (currentUser.role !== 'teacher') {
+                log('❌ Solo los profesores pueden marcar todo como leído');
+                return;
+            }
+
+            log('🔄 Ejecutando "Marcar todo como leído"...');
+
+            // Simular la lógica del componente React
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const storedNotifications = localStorage.getItem('smart-student-task-notifications');
+
+            if (!storedComments || !storedNotifications) {
+                log('❌ No hay datos para marcar');
+                return;
+            }
+
+            let hasUpdates = false;
+
+            // 1. Marcar comentarios como leídos (NO entregas)
+            const comments = JSON.parse(storedComments);
+            const updatedComments = comments.map(comment => {
+                if (
+                    !comment.isSubmission && // Solo comentarios, NO entregas
+                    comment.studentUsername !== currentUser.username &&
+                    (!comment.readBy?.includes(currentUser.username))
+                ) {
+                    hasUpdates = true;
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), currentUser.username]
+                    };
+                }
+                return comment;
+            });
+
+            // 2. Marcar solo notificaciones de comentarios como leídas (NO pending_grading)
+            const notifications = JSON.parse(storedNotifications);
+            const updatedNotifications = notifications.map(notification => {
+                if (
+                    notification.targetUsernames.includes(currentUser.username) &&
+                    !notification.readBy.includes(currentUser.username) &&
+                    // Solo marcar comentarios, NO tareas/evaluaciones pendientes
+                    (notification.type === 'teacher_comment' || notification.type === 'task_submission')
+                ) {
+                    hasUpdates = true;
+                    return {
+                        ...notification,
+                        readBy: [...notification.readBy, currentUser.username],
+                        read: notification.readBy.length + 1 >= notification.targetUsernames.length
+                    };
+                }
+                return notification;
+            });
+
+            if (hasUpdates) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(updatedNotifications));
+                log('✅ Comentarios marcados como leídos');
+                log('📝 IMPORTANTE: Tareas y evaluaciones pendientes NO se marcan como leídas');
+            } else {
+                log('ℹ️ No había comentarios para marcar como leídos');
+            }
+
+            // Actualizar estado DESPUÉS
+            afterState = getNotificationCounts();
+            
+            // Mostrar contadores DESPUÉS
+            document.getElementById('afterSubmissions').textContent = afterState.submissions;
+            document.getElementById('afterComments').textContent = afterState.comments;
+            document.getElementById('afterPendingTasks').textContent = afterState.pendingTasks;
+            document.getElementById('afterPendingEvals').textContent = afterState.pendingEvals;
+
+            // Evaluar resultado del test
+            evaluateTestResult();
+        }
+
+        function evaluateTestResult() {
+            const result = document.getElementById('test-result');
+            const commentsStatus = document.getElementById('comments-status');
+            const submissionsStatus = document.getElementById('submissions-status');
+            const tasksStatus = document.getElementById('tasks-status');
+            const evalsStatus = document.getElementById('evals-status');
+
+            let allCorrect = true;
+            let resultHTML = '<h4>Resultados del Test:</h4>';
+
+            // 1. Comentarios deben eliminarse
+            const commentsCorrect = afterState.comments === 0 && beforeState.comments > 0;
+            commentsStatus.textContent = commentsCorrect ? '✅ Correcto' : '❌ Error';
+            commentsStatus.className = commentsCorrect ? 'status-ok' : 'status-error';
+            resultHTML += `<p>Comentarios: ${commentsCorrect ? '✅' : '❌'} (${beforeState.comments} → ${afterState.comments})</p>`;
+            if (!commentsCorrect) allCorrect = false;
+
+            // 2. Entregas deben permanecer
+            const submissionsCorrect = afterState.submissions === beforeState.submissions && afterState.submissions > 0;
+            submissionsStatus.textContent = submissionsCorrect ? '✅ Correcto' : '❌ Error';
+            submissionsStatus.className = submissionsCorrect ? 'status-ok' : 'status-error';
+            resultHTML += `<p>Entregas: ${submissionsCorrect ? '✅' : '❌'} (${beforeState.submissions} → ${afterState.submissions})</p>`;
+            if (!submissionsCorrect) allCorrect = false;
+
+            // 3. Tareas pendientes deben permanecer
+            const tasksCorrect = afterState.pendingTasks === beforeState.pendingTasks && afterState.pendingTasks > 0;
+            tasksStatus.textContent = tasksCorrect ? '✅ Correcto' : '❌ Error';
+            tasksStatus.className = tasksCorrect ? 'status-ok' : 'status-error';
+            resultHTML += `<p>Tareas Pendientes: ${tasksCorrect ? '✅' : '❌'} (${beforeState.pendingTasks} → ${afterState.pendingTasks})</p>`;
+            if (!tasksCorrect) allCorrect = false;
+
+            // 4. Evaluaciones pendientes deben permanecer
+            const evalsCorrect = afterState.pendingEvals === beforeState.pendingEvals && afterState.pendingEvals > 0;
+            evalsStatus.textContent = evalsCorrect ? '✅ Correcto' : '❌ Error';
+            evalsStatus.className = evalsCorrect ? 'status-ok' : 'status-error';
+            resultHTML += `<p>Evaluaciones Pendientes: ${evalsCorrect ? '✅' : '❌'} (${beforeState.pendingEvals} → ${afterState.pendingEvals})</p>`;
+            if (!evalsCorrect) allCorrect = false;
+
+            // Resultado general
+            resultHTML += `<h4 style="color: ${allCorrect ? '#28a745' : '#dc3545'}">
+                ${allCorrect ? '✅ TEST PASADO - Comportamiento correcto' : '❌ TEST FALLIDO - Hay problemas'}
+            </h4>`;
+
+            result.innerHTML = resultHTML;
+
+            if (allCorrect) {
+                log('🎉 ¡TEST PASADO! El botón funciona correctamente');
+            } else {
+                log('⚠️ TEST FALLIDO: El botón no funciona como debería');
+            }
+        }
+
+        // Inicializar
+        switchUser('teacher', 'profesor_jorge');
+        log('🚀 Test inicializado para verificar el botón "Marcar Todo como Leído" corregido');
+    </script>
+</body>
+</html>

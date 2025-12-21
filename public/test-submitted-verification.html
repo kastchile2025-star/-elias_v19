@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Badge Submitted - VERIFICADO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                ✅ Badge "Submitted" - CORRECCIÓN VERIFICADA
+            </h1>
+            <button 
+                onclick="document.documentElement.classList.toggle('dark')"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+                🌓 Cambiar Tema
+            </button>
+        </div>
+
+        <!-- Estado Actual - CORRECTO -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                🎯 Estado Actual del Badge "Submitted" - TODO CORRECTO
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-700 dark:text-gray-300 min-w-[120px]">Español:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400 cursor-default pointer-events-none">
+                        Entregada
+                    </span>
+                    <span class="text-green-600 dark:text-green-400 text-sm">✅ Correcto</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-700 dark:text-gray-300 min-w-[120px]">English:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400 cursor-default pointer-events-none">
+                        Submitted
+                    </span>
+                    <span class="text-green-600 dark:text-green-400 text-sm">✅ Correcto</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verificación del Código -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                📝 Código Implementado
+            </h2>
+            
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm">
+                <pre class="text-gray-800 dark:text-gray-200"><code>// 1. Función getTaskStatusClass() - línea 837
+case 'submitted': 
+  return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400 cursor-default pointer-events-none';
+
+// 2. Badge en tabla de estudiantes - líneas 1743-1747
+&lt;Badge className={student.hasSubmitted 
+  ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400 cursor-default pointer-events-none' 
+  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 cursor-default pointer-events-none'
+}&gt;
+  {student.hasSubmitted ? translate('submitted') : translate('pending')}
+&lt;/Badge&gt;
+
+// 3. Traducciones - src/locales/
+// es.json: "submitted": "Entregada"
+// en.json: "submitted": "Submitted"</code></pre>
+            </div>
+        </div>
+
+        <!-- Resumen Final -->
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-6 rounded-lg">
+            <h2 class="text-green-800 dark:text-green-400 font-semibold text-lg mb-4">
+                🎉 RESUMEN: Badge "Submitted" - TODO CORRECTO
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">✅ Traducciones:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Español: "Entregada" ✓</li>
+                        <li>• Inglés: "Submitted" ✓</li>
+                        <li>• Usa translate('submitted') ✓</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">✅ Estilo Visual:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Color naranja unificado ✓</li>
+                        <li>• Soporte para modo oscuro ✓</li>
+                        <li>• Sin efectos interactivos ✓</li>
+                        <li>• cursor-default y pointer-events-none ✓</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-green-100 dark:bg-green-800/30 rounded-lg">
+                <p class="text-green-800 dark:text-green-300 text-sm">
+                    <strong>Conclusión:</strong> El badge "submitted" ya está implementado correctamente. 
+                    No se requieren más cambios - traducción, color naranja y comportamiento no interactivo 
+                    están funcionando según las especificaciones.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

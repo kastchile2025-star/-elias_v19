@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Actualización UI Post-Evaluación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center">Test - Actualización UI Post-Evaluación</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Simulación de datos del estudiante -->
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">📊 Simulación de Datos</h2>
+                <div class="space-y-2 text-sm">
+                    <div><strong>Usuario:</strong> <span id="currentUser">sdasd</span></div>
+                    <div><strong>Tarea ID:</strong> <span id="taskId">task_123</span></div>
+                    <div><strong>Estado actual:</strong> <span id="currentStatus">pending</span></div>
+                </div>
+                
+                <div class="mt-4 space-y-2">
+                    <button onclick="simulateEvaluationCompletion()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                        🎯 Simular Evaluación Completada
+                    </button>
+                    <button onclick="checkTaskStatus()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        🔍 Verificar Estado de Tarea
+                    </button>
+                    <button onclick="clearUserData()" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                        🗑️ Limpiar Datos
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Vista previa de la UI -->
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">🎨 Vista Previa UI</h2>
+                <div id="uiPreview" class="mb-3 p-3 bg-purple-100 border border-purple-200 rounded-lg">
+                    <!-- Se actualizará dinámicamente -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-sm text-purple-700 mb-2">
+                                📝 Esta es una evaluación. Haz clic en el botón para comenzar.
+                            </p>
+                            <div class="text-xs text-purple-600 space-y-1">
+                                <div>📚 Tema: sistema respiratorio</div>
+                                <div>❓ Preguntas: 2</div>
+                                <div>⏱️ Tiempo límite: 1 minutos</div>
+                            </div>
+                        </div>
+                        <button class="ml-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                            Realizar Evaluación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Consola de debugging -->
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold mb-4">🖥️ Consola de Debug</h2>
+            <div id="debugConsole" class="bg-black text-green-400 p-3 rounded text-sm font-mono h-64 overflow-y-auto">
+                <div>📋 Sistema iniciado. Esperando comandos...</div>
+            </div>
+        </div>
+        
+        <!-- Instrucciones -->
+        <div class="mt-6 bg-yellow-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold mb-2">📋 Instrucciones de Test</h2>
+            <ol class="list-decimal list-inside space-y-1 text-sm">
+                <li><strong>Simular Evaluación Completada:</strong> Crea datos de evaluación completada en localStorage</li>
+                <li><strong>Verificar Estado:</strong> Comprueba si la lógica de detección funciona correctamente</li>
+                <li><strong>Observar UI:</strong> La vista previa debe cambiar de botón a resultados</li>
+                <li><strong>Limpiar Datos:</strong> Resetea el localStorage para nueva prueba</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const username = 'sdasd';
+        const taskId = 'task_123';
+        
+        function log(message) {
+            const console = document.getElementById('debugConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            console.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function simulateEvaluationCompletion() {
+            log('🎯 Iniciando simulación de evaluación completada...');
+            
+            // Simular datos de evaluación completada
+            const userTasksKey = `userTasks_${username}`;
+            const currentTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            // Crear o actualizar la tarea
+            const taskData = {
+                id: taskId,
+                title: 'sdasd',
+                description: 'asdasd', 
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'Jorge Profesor',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: '2025-07-02T13:59:00.000Z',
+                createdAt: '2025-06-30T20:46:14.527Z',
+                status: 'completed', // 🔥 CLAVE: Estado completado
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'sistema respiratorio',
+                    questionCount: 2,
+                    timeLimit: 1
+                },
+                // Datos de completado
+                score: 2,
+                completionPercentage: 100.0,
+                completedAt: new Date().toISOString()
+            };
+            
+            // Actualizar o añadir la tarea
+            const existingIndex = currentTasks.findIndex(t => t.id === taskId);
+            if (existingIndex !== -1) {
+                currentTasks[existingIndex] = taskData;
+                log('✅ Tarea actualizada en localStorage');
+            } else {
+                currentTasks.push(taskData);
+                log('✅ Nueva tarea añadida a localStorage');
+            }
+            
+            localStorage.setItem(userTasksKey, JSON.stringify(currentTasks));
+            
+            // Disparar evento de actualización
+            window.dispatchEvent(new CustomEvent('evaluationCompleted', {
+                detail: {
+                    taskId: taskId,
+                    studentUsername: username,
+                    score: 2,
+                    completionPercentage: 100.0,
+                    completedAt: new Date().toISOString()
+                }
+            }));
+            
+            log('🚀 Evento evaluationCompleted disparado');
+            log('📊 Datos guardados:', JSON.stringify(taskData, null, 2));
+            
+            // Actualizar UI
+            updateUIPreview(taskData);
+            updateStatus('completed');
+        }
+
+        function checkTaskStatus() {
+            log('🔍 Verificando estado de la tarea...');
+            
+            const userTasksKey = `userTasks_${username}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            const userTask = userTasks.find(t => t.id === taskId);
+            
+            if (userTask) {
+                log('✅ Tarea encontrada en localStorage:');
+                log(`   - ID: ${userTask.id}`);
+                log(`   - Título: ${userTask.title}`);
+                log(`   - Estado: ${userTask.status}`);
+                log(`   - Tipo: ${userTask.taskType}`);
+                if (userTask.status === 'completed') {
+                    log(`   - Puntaje: ${userTask.score}`);
+                    log(`   - Porcentaje: ${userTask.completionPercentage}%`);
+                    log(`   - Completado: ${userTask.completedAt}`);
+                }
+                
+                updateStatus(userTask.status);
+                updateUIPreview(userTask);
+            } else {
+                log('❌ Tarea no encontrada en localStorage');
+                updateStatus('not_found');
+            }
+        }
+
+        function updateStatus(status) {
+            document.getElementById('currentStatus').textContent = status;
+            const statusEl = document.getElementById('currentStatus');
+            statusEl.className = status === 'completed' ? 'text-green-600 font-bold' : 
+                               status === 'not_found' ? 'text-red-600 font-bold' : 'text-gray-600';
+        }
+
+        function updateUIPreview(taskData) {
+            const preview = document.getElementById('uiPreview');
+            
+            if (taskData && taskData.status === 'completed') {
+                // Mostrar UI de evaluación completada
+                preview.innerHTML = `
+                    <div class="text-center">
+                        <div class="flex items-center justify-center mb-3">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <h4 class="font-semibold text-green-800 mb-2">
+                            ✅ Evaluación Realizada
+                        </h4>
+                        <div class="bg-white rounded-lg p-4 space-y-2">
+                            <div class="text-2xl font-bold text-green-600">
+                                ${taskData.completionPercentage.toFixed(1)}% Completado
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                Puntaje: ${taskData.score}/${taskData.evaluationConfig?.questionCount || 0}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                Completado: ${new Date(taskData.completedAt).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                log('🎨 UI actualizada: Mostrando resultados de evaluación completada');
+            } else {
+                // Mostrar UI de botón para realizar evaluación
+                preview.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-sm text-purple-700 mb-2">
+                                📝 Esta es una evaluación. Haz clic en el botón para comenzar.
+                            </p>
+                            <div class="text-xs text-purple-600 space-y-1">
+                                <div>📚 Tema: sistema respiratorio</div>
+                                <div>❓ Preguntas: 2</div>
+                                <div>⏱️ Tiempo límite: 1 minutos</div>
+                            </div>
+                        </div>
+                        <button class="ml-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                            Realizar Evaluación
+                        </button>
+                    </div>
+                `;
+                log('🎨 UI actualizada: Mostrando botón de evaluación');
+            }
+        }
+
+        function clearUserData() {
+            log('🗑️ Limpiando datos de usuario...');
+            const userTasksKey = `userTasks_${username}`;
+            localStorage.removeItem(userTasksKey);
+            updateStatus('pending');
+            updateUIPreview(null);
+            log('✅ Datos eliminados del localStorage');
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📋 Test de actualización UI post-evaluación iniciado');
+            log('👤 Usuario: ' + username);
+            log('🆔 ID de tarea: ' + taskId);
+            checkTaskStatus();
+        });
+    </script>
+</body>
+</html>

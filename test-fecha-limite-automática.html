@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Sistema de Fecha Límite Automática</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🔧 Test: Sistema de Fecha Límite Automática</h1>
+        
+        <!-- Resumen del problema -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-4">📋 Problema a Resolver</h2>
+            <div class="text-blue-700 space-y-2">
+                <p><strong>Requerimiento:</strong> Cuando una tarea o evaluación llega a su fecha límite, debe cambiar automáticamente su estado de "Pendiente" a "Finalizado"</p>
+                <p><strong>Comportamiento:</strong> No se deben permitir más entregas o evaluaciones una vez vencida la fecha</p>
+                <p><strong>UI:</strong> Los contadores y notificaciones deben reflejar correctamente el estado real</p>
+            </div>
+        </div>
+
+        <!-- Funcionalidades implementadas -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-green-800 mb-4">✅ Funcionalidades Implementadas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-green-700 mb-2">🔄 Verificación Automática</h3>
+                    <ul class="text-sm text-green-600 space-y-1">
+                        <li>• Función <code>checkAndUpdateExpiredTasks()</code></li>
+                        <li>• Se ejecuta en cada carga de tareas</li>
+                        <li>• Compara fecha actual vs fecha límite</li>
+                        <li>• Actualiza estado automáticamente a "completed"</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-green-700 mb-2">🚫 Bloqueo de Entregas</h3>
+                    <ul class="text-sm text-green-600 space-y-1">
+                        <li>• Validación en <code>handleAddComment()</code></li>
+                        <li>• Mensaje de error para entregas tardías</li>
+                        <li>• Formulario deshabilitado para tareas vencidas</li>
+                        <li>• Mensaje visual de estado "Vencida"</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-green-700 mb-2">🎯 Bloqueo de Evaluaciones</h3>
+                    <ul class="text-sm text-green-600 space-y-1">
+                        <li>• Validación antes de mostrar botón "Realizar Evaluación"</li>
+                        <li>• Mensaje de evaluación vencida</li>
+                        <li>• Estado "expired" en <code>getTaskStatusForStudent()</code></li>
+                        <li>• Color rojo para tareas vencidas</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-green-700 mb-2">🔔 Actualización de Notificaciones</h3>
+                    <ul class="text-sm text-green-600 space-y-1">
+                        <li>• Panel de notificaciones filtra tareas vencidas</li>
+                        <li>• Contadores se actualizan automáticamente</li>
+                        <li>• Eventos disparados al cambiar estados</li>
+                        <li>• Sincronización en tiempo real</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Archivos modificados -->
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-purple-800 mb-4">📁 Archivos Modificados</h2>
+            <div class="space-y-3">
+                <div class="bg-white p-3 rounded border">
+                    <h4 class="font-medium text-purple-700 mb-2">📄 /src/app/dashboard/tareas/page.tsx</h4>
+                    <ul class="text-sm text-purple-600 space-y-1">
+                        <li>• <strong>Nueva función:</strong> <code>checkAndUpdateExpiredTasks()</code></li>
+                        <li>• <strong>Modificada:</strong> <code>loadTasks()</code> - aplica verificación automática</li>
+                        <li>• <strong>Modificada:</strong> <code>handleAddComment()</code> - validación de fecha límite</li>
+                        <li>• <strong>Modificada:</strong> <code>getTaskStatusForStudent()</code> - estado "expired"</li>
+                        <li>• <strong>Modificadas:</strong> Funciones de UI para mostrar estado vencido</li>
+                        <li>• <strong>Agregada:</strong> Lógica de bloqueo de formularios para tareas vencidas</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-3 rounded border">
+                    <h4 class="font-medium text-purple-700 mb-2">🌐 /src/locales/es.json & en.json</h4>
+                    <ul class="text-sm text-purple-600 space-y-1">
+                        <li>• <code>statusExpired</code>: "Vencida" / "Expired"</li>
+                        <li>• <code>submissionAfterDueDate</code>: Mensaje de error para entregas tardías</li>
+                        <li>• <code>evalExpiredStatus/Message/Date</code>: Mensajes para evaluaciones vencidas</li>
+                        <li>• <code>taskExpired/Message/Date</code>: Mensajes para tareas vencidas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Casos de prueba -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-yellow-800 mb-4">🧪 Casos de Prueba</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded border">
+                    <h4 class="font-medium text-yellow-700 mb-2">Caso 1: Tarea Normal Vencida</h4>
+                    <div class="text-sm text-yellow-600 space-y-1">
+                        <p><strong>Escenario:</strong> Tarea con fecha límite 25/06/2025 - 17:00</p>
+                        <p><strong>Fecha actual:</strong> 26/06/2025 - 10:00</p>
+                        <p><strong>Resultado esperado:</strong></p>
+                        <ul class="ml-4 list-disc">
+                            <li>Estado cambia automáticamente a "Vencida" (color rojo)</li>
+                            <li>Formulario de entrega está bloqueado</li>
+                            <li>Mensaje: "La fecha límite para entregar esta tarea ha expirado"</li>
+                            <li>No aparece en notificaciones pendientes</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-4 rounded border">
+                    <h4 class="font-medium text-yellow-700 mb-2">Caso 2: Evaluación Vencida</h4>
+                    <div class="text-sm text-yellow-600 space-y-1">
+                        <p><strong>Escenario:</strong> Evaluación con fecha límite 25/06/2025 - 23:59</p>
+                        <p><strong>Fecha actual:</strong> 26/06/2025 - 00:01</p>
+                        <p><strong>Resultado esperado:</strong></p>
+                        <ul class="ml-4 list-disc">
+                            <li>Botón "Realizar Evaluación" no aparece</li>
+                            <li>Mensaje de evaluación vencida con ícono rojo</li>
+                            <li>Estado "Vencida" en la lista de tareas</li>
+                            <li>Filtrada de notificaciones pendientes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded border">
+                    <h4 class="font-medium text-yellow-700 mb-2">Caso 3: Intento de Entrega Tardía</h4>
+                    <div class="text-sm text-yellow-600 space-y-1">
+                        <p><strong>Escenario:</strong> Estudiante intenta entregar tarea vencida</p>
+                        <p><strong>Acción:</strong> Clic en "Enviar Comentario" con checkbox de entrega</p>
+                        <p><strong>Resultado esperado:</strong></p>
+                        <ul class="ml-4 list-disc">
+                            <li>Toast de error: "No se pueden realizar entregas después de la fecha límite"</li>
+                            <li>Comentario no se envía</li>
+                            <li>Formulario permanece bloqueado</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flujo técnico -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">⚙️ Flujo Técnico</h2>
+            <div class="text-sm text-gray-600 space-y-3">
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                    <div>
+                        <strong>Carga de Página:</strong> Se ejecuta <code>loadTasks()</code>
+                        <br><span class="text-gray-500">→ Llama a <code>checkAndUpdateExpiredTasks()</code> automáticamente</span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                    <div>
+                        <strong>Verificación Automática:</strong> Compara <code>new Date(task.dueDate) <= new Date()</code>
+                        <br><span class="text-gray-500">→ Si está vencida, cambia <code>task.status = 'completed'</code></span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                    <div>
+                        <strong>Actualización UI:</strong> <code>getTaskStatusForStudent()</code> retorna "expired"
+                        <br><span class="text-gray-500">→ Se aplican estilos rojos y mensajes de vencimiento</span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                    <div>
+                        <strong>Bloqueo de Acciones:</strong> Validaciones en formularios y botones
+                        <br><span class="text-gray-500">→ <code>handleAddComment()</code> valida fecha antes de procesar</span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">5</div>
+                    <div>
+                        <strong>Sincronización:</strong> Se dispara evento <code>taskNotificationsUpdated</code>
+                        <br><span class="text-gray-500">→ Panel de notificaciones se actualiza en tiempo real</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validación manual -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-red-800 mb-4">🔍 Validación Manual</h2>
+            <div class="text-red-700 space-y-3">
+                <p><strong>Para probar la funcionalidad:</strong></p>
+                <ol class="list-decimal list-inside space-y-2 ml-4">
+                    <li>Crear una tarea/evaluación con fecha límite en el pasado</li>
+                    <li>Recargar la página de tareas (se ejecuta verificación automática)</li>
+                    <li>Verificar que aparece como "Vencida" en color rojo</li>
+                    <li>Intentar abrir la tarea/evaluación como estudiante</li>
+                    <li>Confirmar que el formulario está bloqueado con mensaje apropiado</li>
+                    <li>Verificar que no aparece en el panel de notificaciones pendientes</li>
+                </ol>
+                <div class="bg-white p-3 rounded border border-red-200 mt-4">
+                    <p class="font-medium">💡 Tip para testing rápido:</p>
+                    <p class="text-sm">Modifica manualmente el <code>dueDate</code> de una tarea en localStorage a una fecha pasada, luego recarga la página.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado final -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-green-800 mb-4">✅ Estado Final</h2>
+            <div class="text-green-700 space-y-2">
+                <p><strong>Implementación:</strong> ✅ Completada</p>
+                <p><strong>Archivos modificados:</strong> ✅ 3 archivos</p>
+                <p><strong>Traducciones:</strong> ✅ Español e Inglés</p>
+                <p><strong>Validaciones:</strong> ✅ Frontend completo</p>
+                <p><strong>UI/UX:</strong> ✅ Mensajes claros y colores apropiados</p>
+                <p><strong>Sincronización:</strong> ✅ Notificaciones y contadores actualizados</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript opcional para mostrar fecha/hora actual
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('es-ES', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            const timeDisplay = document.getElementById('current-time');
+            if (timeDisplay) {
+                timeDisplay.textContent = timeString;
+            }
+        }
+
+        // Actualizar cada segundo
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        // Agregar reloj en tiempo real
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-3 border">
+                <div class="text-xs text-gray-500">Hora actual:</div>
+                <div id="current-time" class="font-mono text-sm font-bold"></div>
+            </div>
+        `);
+    </script>
+</body>
+</html>

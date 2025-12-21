@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: Estado Vacío Notificaciones</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Debug: Estado Vacío de Notificaciones</h1>
+        <p>Esta página ayuda a diagnosticar por qué no aparece el mensaje "¡Todo al día!" después de completar evaluaciones.</p>
+        
+        <div class="controls">
+            <button class="button" onclick="runDebug()">🔍 Verificar Estado Actual</button>
+            <button class="button success" onclick="simulateCompletion()">✅ Simular Evaluación Completada</button>
+            <button class="button warning" onclick="clearLocalStorage()">🗑️ Limpiar localStorage</button>
+            <button class="button danger" onclick="resetToInitialState()">🔄 Reset a Estado Inicial</button>
+        </div>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        <div id="output" class="output"></div>
+        
+        <h2>📋 Información del Sistema</h2>
+        <div id="systemInfo" class="output"></div>
+        
+        <h2>🎯 Instrucciones</h2>
+        <ol>
+            <li><strong>Verificar Estado Actual:</strong> Click en "🔍 Verificar Estado Actual" para ver el estado de notificaciones</li>
+            <li><strong>Simular Evaluación:</strong> Click en "✅ Simular Evaluación Completada" para crear una evaluación y marcarla como completada</li>
+            <li><strong>Verificar Resultado:</strong> Después de simular, verifica si el estado vacío se muestra correctamente</li>
+            <li><strong>Reset:</strong> Usa "🔄 Reset a Estado Inicial" para volver al estado de prueba</li>
+        </ol>
+    </div>
+
+    <script>
+        let outputElement;
+        let statusElement;
+        let systemInfoElement;
+        
+        // Función para capturar console.log
+        function captureConsole() {
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = function(...args) {
+                originalLog.apply(console, args);
+                appendToOutput('LOG: ' + args.join(' '));
+            };
+            
+            console.error = function(...args) {
+                originalError.apply(console, args);
+                appendToOutput('ERROR: ' + args.join(' '));
+            };
+        }
+        
+        function appendToOutput(text) {
+            if (outputElement) {
+                outputElement.textContent += text + '\n';
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }
+        }
+        
+        function clearOutput() {
+            if (outputElement) {
+                outputElement.textContent = '';
+            }
+        }
+        
+        function showStatus(message, type = 'success') {
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.className = 'status ' + type;
+                statusElement.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function updateSystemInfo() {
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+            
+            const info = `Usuario Actual: ${user.username || 'No definido'} (${user.role || 'sin rol'})
+Tareas en localStorage: ${tasks.length}
+Comentarios en localStorage: ${comments.length}  
+Notificaciones en localStorage: ${notifications.length}
+TaskNotificationManager disponible: ${typeof window.TaskNotificationManager !== 'undefined'}
+Hora actual: ${new Date().toLocaleString()}`;
+            
+            if (systemInfoElement) {
+                systemInfoElement.textContent = info;
+            }
+        }
+        
+        function runDebug() {
+            clearOutput();
+            console.log('🔍 Iniciando debug del estado vacío...');
+            
+            if (typeof window.debugEmptyState === 'function') {
+                const result = window.debugEmptyState();
+                
+                if (result.shouldShowEmpty) {
+                    showStatus('✅ El estado vacío SÍ se muestra correctamente', 'success');
+                } else {
+                    showStatus('❌ El estado vacío NO se muestra (hay elementos pendientes)', 'error');
+                }
+            } else {
+                console.log('⚠️ debugEmptyState no está disponible. Cargando script...');
+                loadDebugScript();
+            }
+            
+            updateSystemInfo();
+        }
+        
+        function simulateCompletion() {
+            clearOutput();
+            console.log('✅ Simulando evaluación completada...');
+            
+            // Crear evaluación de prueba
+            const testTaskId = 'eval_test_' + Date.now();
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            
+            if (!user.username) {
+                // Crear usuario de prueba
+                const testUser = {
+                    username: 'felipe',
+                    role: 'student',
+                    id: 'student_felipe',
+                    displayName: 'Felipe González',
+                    activeCourses: ['MATH101']
+                };
+                localStorage.setItem('smart-student-user', JSON.stringify(testUser));
+                console.log('📝 Usuario de prueba creado:', testUser.username);
+            }
+            
+            // Crear tarea de evaluación
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const testTask = {
+                id: testTaskId,
+                title: 'Evaluación de Prueba - ' + new Date().toLocaleTimeString(),
+                taskType: 'evaluation',
+                course: 'MATH101',
+                subject: 'Matemáticas',
+                assignedBy: 'teacher',
+                dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            tasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            console.log('📋 Tarea de evaluación creada:', testTask.title);
+            
+            // Crear notificación para el estudiante
+            if (window.TaskNotificationManager) {
+                try {
+                    window.TaskNotificationManager.createNewTaskNotification(
+                        testTask.id,
+                        testTask.title,
+                        'evaluation',
+                        testTask.course,
+                        testTask.subject,
+                        'teacher',
+                        'Profesor García',
+                        [user.username || 'felipe']
+                    );
+                    console.log('🔔 Notificación de nueva evaluación creada');
+                } catch (error) {
+                    console.error('Error creando notificación:', error);
+                }
+            }
+            
+            // Esperar un momento y luego marcar como completada
+            setTimeout(() => {
+                if (typeof window.markEvaluationAsCompleted === 'function') {
+                    window.markEvaluationAsCompleted(testTaskId);
+                    showStatus('✅ Evaluación simulada y marcada como completada', 'success');
+                } else {
+                    console.log('⚠️ markEvaluationAsCompleted no disponible');
+                    showStatus('⚠️ No se pudo completar la simulación', 'warning');
+                }
+            }, 1000);
+            
+            updateSystemInfo();
+        }
+        
+        function clearLocalStorage() {
+            const keys = [
+                'smart-student-tasks',
+                'smart-student-task-comments', 
+                'smart-student-notifications',
+                'smart-student-task-notifications',
+                'smart-student-evaluation-results'
+            ];
+            
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            // También limpiar userTasks
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('userTasks_') || key.startsWith('evaluationHistory_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            console.log('🗑️ localStorage limpiado');
+            showStatus('🗑️ localStorage limpiado completamente', 'warning');
+            updateSystemInfo();
+        }
+        
+        function resetToInitialState() {
+            clearLocalStorage();
+            
+            // Crear usuario de prueba
+            const testUser = {
+                username: 'felipe',
+                role: 'student',
+                id: 'student_felipe',
+                displayName: 'Felipe González',
+                activeCourses: ['MATH101']
+            };
+            localStorage.setItem('smart-student-user', JSON.stringify(testUser));
+            
+            console.log('🔄 Estado reseteado a configuración inicial');
+            showStatus('🔄 Estado reseteado. Usuario de prueba creado.', 'success');
+            updateSystemInfo();
+        }
+        
+        function loadDebugScript() {
+            const script = document.createElement('script');
+            script.src = '/debug-empty-state.js';
+            script.onload = () => {
+                console.log('✅ Script de debug cargado');
+                setTimeout(runDebug, 500);
+            };
+            script.onerror = () => {
+                console.error('❌ Error cargando script de debug');
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            outputElement = document.getElementById('output');
+            statusElement = document.getElementById('status');
+            systemInfoElement = document.getElementById('systemInfo');
+            
+            captureConsole();
+            updateSystemInfo();
+            
+            // Cargar script de debug
+            loadDebugScript();
+            
+            console.log('🔬 Debug page loaded. Sistema inicializado.');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis: Problema de Refresco en Evaluación</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .problem-box {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .solution-box {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .step {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fffbeb;
+            border: 2px solid #f6ad55;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        h1, h2, h3 { color: #2d3748; }
+        .highlight { background: #fef5e7; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Diagnóstico: Refresco Automático en Evaluaciones</h1>
+            <p>Análisis del problema de pérdida de estado de evaluación de tarea</p>
+        </div>
+        
+        <div class="content">
+            <div class="problem-box">
+                <h2>❌ Problema Identificado</h2>
+                <p><strong>Síntoma:</strong> Después de completar una evaluación de tarea, la página se refresca automáticamente y pierde el estado de que es una evaluación de tarea, haciendo que aparezcan los botones "Repetir Evaluación" y "Nueva Evaluación" en lugar de solo "Cerrar".</p>
+                
+                <h3>Posibles Causas:</h3>
+                <ul>
+                    <li><strong>useEffect infinito:</strong> Algún useEffect se está ejecutando repetidamente</li>
+                    <li><strong>Estado inconsistente:</strong> Los parámetros de URL se pierden durante la navegación</li>
+                    <li><strong>Timing de localStorage:</strong> La limpieza/escritura de localStorage no está sincronizada</li>
+                    <li><strong>React Strict Mode:</strong> Puede estar causando doble ejecución en desarrollo</li>
+                </ul>
+            </div>
+
+            <div class="solution-box">
+                <h2>✅ Solución Implementada</h2>
+                <p>Vamos a crear una versión más robusta que:</p>
+                
+                <div class="step">
+                    <h3>1. Evitar Loops Infinitos</h3>
+                    <p>Asegurar que los useEffect tienen dependencias correctas y no se ejecutan innecesariamente.</p>
+                </div>
+
+                <div class="step">
+                    <h3>2. Estado Persistente Mejorado</h3>
+                    <p>Usar una combinación de sessionStorage + localStorage para mayor robustez.</p>
+                </div>
+
+                <div class="step">
+                    <h3>3. Detección Robusta</h3>
+                    <p>Implementar múltiples métodos de detección que funcionen incluso después de refrescos.</p>
+                </div>
+
+                <div class="step">
+                    <h3>4. Debug Logging Mejorado</h3>
+                    <p>Agregar logs más detallados para identificar exactamente cuándo y por qué se pierde el estado.</p>
+                </div>
+            </div>
+
+            <div class="warning">
+                <h3>⚠️ Cambios Críticos Necesarios</h3>
+                <p>Se van a implementar los siguientes cambios para resolver el problema:</p>
+                <ul>
+                    <li>Mejorar el useEffect de parámetros de URL para evitar loops</li>
+                    <li>Usar sessionStorage como respaldo adicional</li>
+                    <li>Implementar una función de detección más robusta</li>
+                    <li>Asegurar que el estado se mantiene durante toda the sesión</li>
+                </ul>
+            </div>
+
+            <h2>🔧 Cambios a Implementar</h2>
+            
+            <h3>1. Función de Detección Mejorada</h3>
+            <div class="code-block">
+const isTaskEvaluationDetection = useCallback(() => {
+  // Método 1: Estado React
+  if (isTaskEvaluationSession) return true;
+  
+  // Método 2: localStorage
+  if (localStorage.getItem('isTaskEvaluation') === 'true') return true;
+  
+  // Método 3: sessionStorage (nuevo)
+  if (sessionStorage.getItem('isTaskEvaluation') === 'true') return true;
+  
+  // Método 4: URL params
+  const autoStart = searchParams.get('autoStart');
+  const taskId = searchParams.get('taskId');
+  if (autoStart === 'true' || taskId) return true;
+  
+  // Método 5: Estado de auto-start
+  if (isAutoStartMode) return true;
+  
+  return false;
+}, [isTaskEvaluationSession, searchParams, isAutoStartMode]);
+            </div>
+
+            <h3>2. useEffect Mejorado para URL Params</h3>
+            <div class="code-block">
+useEffect(() => {
+  // Solo ejecutar si realmente hay cambios en los parámetros
+  const courseFromQuery = searchParams.get('course');
+  const bookFromQueryParam = searchParams.get('book');
+  const topicFromQuery = searchParams.get('topic');
+  const autoStart = searchParams.get('autoStart');
+  const taskId = searchParams.get('taskId');
+
+  const isTaskMode = autoStart === 'true' || !!taskId;
+  
+  // Solo actualizar estado si hay cambios
+  if (isTaskMode !== isTaskEvaluationSession) {
+    setIsTaskEvaluationSession(isTaskMode);
+    setIsAutoStartMode(isTaskMode);
+    
+    if (isTaskMode) {
+      localStorage.setItem('isTaskEvaluation', 'true');
+      sessionStorage.setItem('isTaskEvaluation', 'true'); // Respaldo
+    }
+  }
+  
+  // Solo auto-start una vez
+  if (autoStart === 'true' && !hasAutoStarted.current && courseFromQuery && bookFromQueryParam && topicFromQuery) {
+    hasAutoStarted.current = true;
+    handleCreateEvaluation();
+  }
+}, [searchParams.toString()]); // Usar toString() para evitar comparaciones complejas
+            </div>
+
+            <h3>3. Manejo de Resultados Mejorado</h3>
+            <div class="code-block">
+const handleCloseTaskEvaluation = useCallback(() => {
+  console.log('🔄 Closing task evaluation...');
+  
+  setShowResultDialog(false);
+  setIsTaskEvaluationSession(false);
+  
+  // Limpiar todos los métodos de persistencia
+  localStorage.removeItem('isTaskEvaluation');
+  sessionStorage.removeItem('isTaskEvaluation');
+  
+  // Navegar limpiamente sin parámetros
+  router.push('/dashboard/evaluacion');
+}, [router]);
+            </div>
+
+            <div class="solution-box">
+                <h2>🎯 Resultado Esperado</h2>
+                <p>Con estos cambios:</p>
+                <ul>
+                    <li>✅ No habrá refrescos automáticos inesperados</li>
+                    <li>✅ El estado de evaluación de tarea se mantendrá correctamente</li>
+                    <li>✅ Los botones mostrados serán los correctos en cada contexto</li>
+                    <li>✅ La navegación será limpia y predecible</li>
+                    <li>✅ Se podrá debug fácilmente cualquier problema futuro</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

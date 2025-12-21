@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resetear Todas las Tareas - Smart Student</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #dc3545;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .info-section {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .data-list {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Resetear Todas las Tareas</h1>
+        
+        <div class="warning">
+            <h3>⚠️ ADVERTENCIA</h3>
+            <p>Esta acción eliminará PERMANENTEMENTE:</p>
+            <ul>
+                <li>Todas las tareas creadas por profesores</li>
+                <li>Todos los comentarios asociados a esas tareas</li>
+                <li>Todas las notificaciones relacionadas</li>
+                <li>Todas las evaluaciones y entregas</li>
+                <li>Todos los datos de calificaciones</li>
+            </ul>
+            <p><strong>Esta acción NO SE PUEDE DESHACER.</strong></p>
+        </div>
+
+        <div class="info-section">
+            <h3>📊 Estado Actual de la Base de Datos</h3>
+            <div id="currentStatus">Cargando...</div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 1: Análisis de Datos</h3>
+            <button class="btn btn-secondary" onclick="analyzeData()">🔍 Analizar Datos Actuales</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Respaldo (Opcional)</h3>
+            <button class="btn btn-secondary" onclick="createBackup()">💾 Crear Respaldo</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Limpieza Completa</h3>
+            <button class="btn" onclick="confirmReset()" id="resetBtn">🗑️ RESETEAR TODO</button>
+        </div>
+
+        <div class="success" id="successMsg">
+            <h3>✅ Éxito</h3>
+            <p id="successText"></p>
+        </div>
+
+        <div class="error" id="errorMsg">
+            <h3>❌ Error</h3>
+            <p id="errorText"></p>
+        </div>
+
+        <div class="data-list" id="dataAnalysis" style="display: none;">
+            <h4>📋 Análisis Detallado:</h4>
+            <div id="analysisContent"></div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="window.history.back()">← Volver</button>
+            <button class="btn btn-secondary" onclick="window.location.href='/'">🏠 Ir al Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        // Cargar estado actual al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentStatus();
+        });
+
+        function loadCurrentStatus() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                const evaluations = JSON.parse(localStorage.getItem('smart-student-evaluations') || '[]');
+
+                const statusHtml = `
+                    <strong>Tareas:</strong> ${tasks.length}<br>
+                    <strong>Comentarios:</strong> ${comments.length}<br>
+                    <strong>Notificaciones:</strong> ${notifications.length}<br>
+                    <strong>Evaluaciones:</strong> ${evaluations.length}
+                `;
+
+                document.getElementById('currentStatus').innerHTML = statusHtml;
+            } catch (error) {
+                document.getElementById('currentStatus').innerHTML = 'Error al cargar el estado';
+            }
+        }
+
+        function analyzeData() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                const evaluations = JSON.parse(localStorage.getItem('smart-student-evaluations') || '[]');
+
+                // Agrupar tareas por profesor
+                const tasksByTeacher = {};
+                tasks.forEach(task => {
+                    const teacher = task.assignedBy || 'Sin asignar';
+                    if (!tasksByTeacher[teacher]) {
+                        tasksByTeacher[teacher] = [];
+                    }
+                    tasksByTeacher[teacher].push(task);
+                });
+
+                // Analizar comentarios por tarea
+                const commentsByTask = {};
+                comments.forEach(comment => {
+                    if (!commentsByTask[comment.taskId]) {
+                        commentsByTask[comment.taskId] = [];
+                    }
+                    commentsByTask[comment.taskId].push(comment);
+                });
+
+                // Analizar notificaciones por tipo
+                const notificationsByType = {};
+                notifications.forEach(notification => {
+                    const type = notification.type || 'Sin tipo';
+                    if (!notificationsByType[type]) {
+                        notificationsByType[type] = [];
+                    }
+                    notificationsByType[type].push(notification);
+                });
+
+                let analysisHtml = '<h5>📚 Tareas por Profesor:</h5>';
+                Object.keys(tasksByTeacher).forEach(teacher => {
+                    analysisHtml += `<div><strong>${teacher}:</strong> ${tasksByTeacher[teacher].length} tareas</div>`;
+                });
+
+                analysisHtml += '<h5>💬 Comentarios por Tarea:</h5>';
+                Object.keys(commentsByTask).forEach(taskId => {
+                    const task = tasks.find(t => t.id === taskId);
+                    const taskTitle = task ? task.title : `ID: ${taskId}`;
+                    analysisHtml += `<div><strong>${taskTitle}:</strong> ${commentsByTask[taskId].length} comentarios</div>`;
+                });
+
+                analysisHtml += '<h5>🔔 Notificaciones por Tipo:</h5>';
+                Object.keys(notificationsByType).forEach(type => {
+                    analysisHtml += `<div><strong>${type}:</strong> ${notificationsByType[type].length} notificaciones</div>`;
+                });
+
+                document.getElementById('analysisContent').innerHTML = analysisHtml;
+                document.getElementById('dataAnalysis').style.display = 'block';
+
+                showSuccess('Análisis completado exitosamente');
+            } catch (error) {
+                showError('Error al analizar los datos: ' + error.message);
+            }
+        }
+
+        function createBackup() {
+            try {
+                const backup = {
+                    timestamp: new Date().toISOString(),
+                    tasks: JSON.parse(localStorage.getItem('smart-student-tasks') || '[]'),
+                    comments: JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]'),
+                    notifications: JSON.parse(localStorage.getItem('smart-student-notifications') || '[]'),
+                    evaluations: JSON.parse(localStorage.getItem('smart-student-evaluations') || '[]')
+                };
+
+                const backupJson = JSON.stringify(backup, null, 2);
+                const blob = new Blob([backupJson], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `smart-student-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showSuccess('Respaldo creado y descargado exitosamente');
+            } catch (error) {
+                showError('Error al crear el respaldo: ' + error.message);
+            }
+        }
+
+        function confirmReset() {
+            const confirmed = confirm(
+                '¿Estás COMPLETAMENTE SEGURO de que quieres ELIMINAR TODAS las tareas, comentarios, notificaciones y evaluaciones?\n\n' +
+                'Esta acción NO SE PUEDE DESHACER.\n\n' +
+                'Escribe "CONFIRMAR" para continuar:'
+            );
+
+            if (confirmed) {
+                const secondConfirm = prompt('Para confirmar, escribe exactamente: ELIMINAR TODO');
+                if (secondConfirm === 'ELIMINAR TODO') {
+                    performReset();
+                } else {
+                    showError('Confirmación incorrecta. Operación cancelada.');
+                }
+            }
+        }
+
+        function performReset() {
+            try {
+                document.getElementById('resetBtn').disabled = true;
+                document.getElementById('resetBtn').textContent = 'Procesando...';
+
+                // Lista de todas las claves de localStorage relacionadas con tareas Y notificaciones
+                const keysToRemove = [
+                    'smart-student-tasks',
+                    'smart-student-task-comments',
+                    'smart-student-notifications',
+                    'smart-student-evaluations',
+                    'smart-student-task-assignments',
+                    'smart-student-submissions',
+                    'smart-student-grades',
+                    'smart-student-teacher-feedback',
+                    'smart-student-task-notifications',
+                    'notification-counts',
+                    'task-notification-counts'
+                ];
+
+                let removedKeys = [];
+
+                // Remover cada clave
+                keysToRemove.forEach(key => {
+                    if (localStorage.getItem(key)) {
+                        localStorage.removeItem(key);
+                        removedKeys.push(key);
+                    }
+                });
+
+                // Reinicializar con arrays vacíos
+                localStorage.setItem('smart-student-tasks', '[]');
+                localStorage.setItem('smart-student-task-comments', '[]');
+                localStorage.setItem('smart-student-notifications', '[]');
+                localStorage.setItem('smart-student-evaluations', '[]');
+
+                // Disparar TODOS los eventos para actualizar la UI
+                window.dispatchEvent(new Event('storage'));
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                window.dispatchEvent(new CustomEvent('notificationSyncCompleted'));
+                window.dispatchEvent(new CustomEvent('commentsUpdated'));
+                document.dispatchEvent(new Event('commentsUpdated'));
+                document.dispatchEvent(new CustomEvent('notificationsCleared'));
+
+                showSuccess(`Reset completado exitosamente. Se eliminaron ${removedKeys.length} tipos de datos. La aplicación ahora está completamente limpia, incluyendo el badge de notificaciones.`);
+                
+                // Actualizar el estado actual
+                setTimeout(loadCurrentStatus, 1000);
+
+                document.getElementById('resetBtn').disabled = false;
+                document.getElementById('resetBtn').textContent = '🗑️ RESETEAR TODO';
+
+            } catch (error) {
+                showError('Error durante el reset: ' + error.message);
+                document.getElementById('resetBtn').disabled = false;
+                document.getElementById('resetBtn').textContent = '🗑️ RESETEAR TODO';
+            }
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                document.getElementById('successMsg').style.display = 'none';
+            }, 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                document.getElementById('errorMsg').style.display = 'none';
+            }, 5000);
+        }
+
+        // Actualizar estado cada 30 segundos
+        setInterval(loadCurrentStatus, 30000);
+    </script>
+</body>
+</html>

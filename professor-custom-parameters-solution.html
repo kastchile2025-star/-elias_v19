@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solución: Parámetros Personalizados del Profesor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .feature-box {
+            background: #ebf8ff;
+            border: 2px solid #90cdf4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .step {
+            background: #fef5e7;
+            border-left: 4px solid #ed8936;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .example {
+            background: #edf2f7;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        h1, h2, h3 { color: #2d3748; }
+        .highlight { background: #fef5e7; padding: 2px 6px; border-radius: 4px; }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .before {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Solución: Parámetros Personalizados del Profesor</h1>
+            <p>Evaluaciones respetan las configuraciones específicas del profesor</p>
+        </div>
+        
+        <div class="content">
+            <div class="success-box">
+                <h2>🎯 Problema Solucionado</h2>
+                <p><strong>Antes:</strong> Profesor configuraba 2 preguntas en 1 minuto, pero se generaban 15 preguntas en 2 minutos (configuración por defecto).</p>
+                <p><strong>Ahora:</strong> El sistema respeta exactamente los parámetros configurados por el profesor.</p>
+            </div>
+
+            <div class="comparison">
+                <div class="before">
+                    <h3>❌ Comportamiento Anterior</h3>
+                    <ul>
+                        <li>Profesor crea tarea: 2 preguntas, 1 minuto</li>
+                        <li>Estudiante hace clic en "Realizar Evaluación"</li>
+                        <li>Se genera evaluación: <strong>15 preguntas, 2 minutos</strong></li>
+                        <li>Configuración del profesor ignorada</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h3>✅ Comportamiento Actual</h3>
+                    <ul>
+                        <li>Profesor crea tarea: 2 preguntas, 1 minuto</li>
+                        <li>Estudiante hace clic en "Realizar Evaluación"</li>
+                        <li>Se genera evaluación: <strong>2 preguntas, 1 minuto</strong></li>
+                        <li>Configuración del profesor respetada</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <h2>🔧 Cambios Implementados</h2>
+                
+                <div class="step">
+                    <h3>1. Parámetros en URL desde Tareas</h3>
+                    <p>La página de tareas ahora incluye los parámetros personalizados del profesor en la URL:</p>
+                    <div class="code-block">
+const params = new URLSearchParams({
+  course: selectedTask.course,
+  book: selectedTask.subject,
+  topic: selectedTask.evaluationConfig?.topic || '',
+  autoStart: 'true',
+  taskId: selectedTask.id,
+  // 🆕 NUEVOS PARÁMETROS PERSONALIZADOS
+  questionCount: selectedTask.evaluationConfig?.questionCount?.toString() || '15',
+  timeLimit: selectedTask.evaluationConfig?.timeLimit?.toString() || '120'
+});
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>2. Lectura de Parámetros en Evaluación</h3>
+                    <p>La página de evaluación ahora lee y usa estos parámetros:</p>
+                    <div class="code-block">
+const questionCountFromQuery = searchParams.get('questionCount');
+const timeLimitFromQuery = searchParams.get('timeLimit');
+let questionCountToUse = questionCountFromQuery ? parseInt(questionCountFromQuery) : 15;
+let timeLimitToUse = timeLimitFromQuery ? parseInt(timeLimitFromQuery) : 120;
+
+console.log('📊 Evaluation Parameters:', {
+  questionCount: questionCountToUse,
+  timeLimit: timeLimitToUse,
+  isTaskEvaluation: autoStartFromQuery === 'true'
+});
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>3. Configuración Dinámica del Timer</h3>
+                    <p>El temporizador ahora usa el tiempo específico del profesor:</p>
+                    <div class="code-block">
+// Set the time limit from parameters
+setTimeLeft(timeLimitToUse);
+console.log('⏱️ Setting time limit to:', timeLimitToUse, 'seconds');
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>4. Validación Dinámica</h3>
+                    <p>Las validaciones ahora verifican el número correcto de preguntas:</p>
+                    <div class="code-block">
+if (result && result.questions && result.questions.length === questionCountToUse) {
+  setEvaluationTitle(result.evaluationTitle);
+  setEvaluationQuestions(shuffleArray(result.questions));
+  setTimeLeft(timeLimitToUse);
+  // ...
+} else {
+  console.warn(`Expected ${questionCountToUse} questions, got ${result?.questions?.length || 0}`);
+  throw new Error('Question count mismatch');
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <h2>📋 Ejemplo Completo</h2>
+                
+                <h3>Escenario: Profesor Jorge crea evaluación de Sistema Respiratorio</h3>
+                <ul>
+                    <li><strong>Curso:</strong> 4to Básico</li>
+                    <li><strong>Asignatura:</strong> Ciencias Naturales</li>
+                    <li><strong>Tema:</strong> sistema respiratorio</li>
+                    <li><strong>Preguntas:</strong> 2 (configurado por profesor)</li>
+                    <li><strong>Tiempo límite:</strong> 1 minuto (configurado por profesor)</li>
+                </ul>
+
+                <h3>URL generada:</h3>
+                <div class="code-block">
+/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=sistema%20respiratorio&autoStart=true&taskId=eval_123&questionCount=2&timeLimit=60
+                </div>
+
+                <h3>Resultado:</h3>
+                <ul>
+                    <li>✅ Se generan exactamente <strong>2 preguntas</strong></li>
+                    <li>✅ El temporizador se configura a <strong>1 minuto (60 segundos)</strong></li>
+                    <li>✅ La pantalla de progreso muestra "Generando 2 preguntas personalizadas..."</li>
+                    <li>✅ Al repetir evaluación, mantiene los mismos parámetros</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <h2>🧪 Casos de Prueba</h2>
+                
+                <h3>Caso 1: Evaluación de Tarea (Personalizada)</h3>
+                <ol>
+                    <li>Profesor crea tarea con 3 preguntas, 90 segundos</li>
+                    <li>Estudiante hace clic en "Realizar Evaluación"</li>
+                    <li><strong>Verificar:</strong> Se generan 3 preguntas con 90 segundos de tiempo</li>
+                    <li><strong>Verificar:</strong> Al repetir mantiene 3 preguntas y 90 segundos</li>
+                </ol>
+
+                <h3>Caso 2: Evaluación Manual (Por Defecto)</h3>
+                <ol>
+                    <li>Estudiante va directamente a pestaña Evaluaciones</li>
+                    <li>Crea evaluación manualmente</li>
+                    <li><strong>Verificar:</strong> Se generan 15 preguntas con 120 segundos (valores por defecto)</li>
+                </ol>
+
+                <h3>Caso 3: Parámetros Extremos</h3>
+                <ol>
+                    <li>Profesor crea tarea con 1 pregunta, 30 segundos</li>
+                    <li>Estudiante realiza evaluación</li>
+                    <li><strong>Verificar:</strong> Se genera 1 pregunta con 30 segundos</li>
+                    <li><strong>Verificar:</strong> La evaluación funciona correctamente</li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <h2>✨ Beneficios de la Solución</h2>
+                <ul>
+                    <li>✅ <strong>Flexibilidad total para profesores</strong> - pueden configurar evaluaciones de cualquier duración</li>
+                    <li>✅ <strong>Respeto por la configuración pedagógica</strong> - cada evaluación tiene el propósito específico del profesor</li>
+                    <li>✅ <strong>Mejora en la experiencia del estudiante</strong> - evaluaciones más apropiadas y enfocadas</li>
+                    <li>✅ <strong>Consistencia en repeticiones</strong> - si repiten la evaluación, mantiene los parámetros originales</li>
+                    <li>✅ <strong>Backwards compatibility</strong> - evaluaciones manuales siguen funcionando con valores por defecto</li>
+                    <li>✅ <strong>Debug y monitoreo</strong> - logs claros sobre qué parámetros se están usando</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>🔍 Logs para Debug</h3>
+                <p>El sistema ahora registra información detallada para facilitar el debug:</p>
+                <div class="code-block">
+📊 Evaluation Parameters: {
+  questionCount: 2,
+  timeLimit: 60,
+  fromURL: { questionCount: "2", timeLimit: "60" },
+  isTaskEvaluation: true
+}
+
+⏱️ Setting time limit to: 60 seconds
+
+✅ Evaluation created successfully with custom parameters: {
+  questionCount: 2,
+  timeLimit: 60,
+  title: "Evaluación - SISTEMA RESPIRATORIO"
+}
+
+🔄 Repeating evaluation with original parameters: {
+  questionCount: 2,
+  timeLimit: 60
+}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

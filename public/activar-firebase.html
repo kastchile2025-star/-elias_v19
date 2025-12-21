@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Activar Firebase - Limpiar Datos Locales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .header .emoji {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .status {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .status-text {
+            flex: 1;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .status-text strong {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .log {
+            background: #1a202c;
+            color: #48bb78;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .log.visible {
+            display: block;
+        }
+        
+        .log-line {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .log-success {
+            color: #48bb78;
+        }
+        
+        .log-error {
+            color: #f56565;
+        }
+        
+        .log-info {
+            color: #63b3ed;
+        }
+        
+        .log-warning {
+            color: #ecc94b;
+        }
+        
+        .alert {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            border-left-color: #48bb78;
+        }
+        
+        .alert h3 {
+            color: #c53030;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .alert-success h3 {
+            color: #38a169;
+        }
+        
+        .alert p {
+            color: #742a2a;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .alert-success p {
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">🔥</span>
+            <h1>Activar Firebase</h1>
+            <p style="color: #718096; margin-top: 10px;">Limpieza de datos locales e inicialización</p>
+        </div>
+        
+        <div class="alert" id="alert" style="display: none;">
+            <h3>⚠️ Atención</h3>
+            <p>Este proceso eliminará todos los datos almacenados localmente (IndexedDB) y configurará el sistema para usar Firebase como base de datos principal.</p>
+        </div>
+        
+        <div class="status" id="status">
+            <div class="status-item">
+                <span class="status-icon">🔍</span>
+                <div class="status-text">
+                    <strong>Estado de IndexedDB</strong>
+                    <span id="idb-status">Verificando...</span>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-icon">💾</span>
+                <div class="status-text">
+                    <strong>LocalStorage</strong>
+                    <span id="ls-status">Verificando...</span>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-icon">🔥</span>
+                <div class="status-text">
+                    <strong>Configuración Firebase</strong>
+                    <span id="firebase-status">Verificando...</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="checkStatus()">🔍 Verificar Estado</button>
+        <button class="btn btn-danger" onclick="cleanAll()">🧹 Limpiar Todo y Activar Firebase</button>
+        <button class="btn btn-success" onclick="goToApp()">🚀 Ir a la Aplicación</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        const alert = document.getElementById('alert');
+        
+        function addLog(message, type = 'info') {
+            log.classList.add('visible');
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = message;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '';
+            log.classList.remove('visible');
+        }
+        
+        async function checkStatus() {
+            clearLog();
+            addLog('🔍 Verificando estado del sistema...', 'info');
+            
+            // Verificar IndexedDB
+            try {
+                const dbs = await window.indexedDB.databases();
+                const smartStudentDBs = dbs.filter(db => 
+                    db.name && (db.name.includes('smart_student') || db.name.includes('smart-student'))
+                );
+                
+                if (smartStudentDBs.length > 0) {
+                    document.getElementById('idb-status').textContent = `${smartStudentDBs.length} base(s) de datos encontrada(s)`;
+                    addLog(`📊 Bases de datos locales: ${smartStudentDBs.map(db => db.name).join(', ')}`, 'warning');
+                } else {
+                    document.getElementById('idb-status').textContent = 'Sin bases de datos locales';
+                    addLog('✅ No hay bases de datos locales', 'success');
+                }
+            } catch (error) {
+                document.getElementById('idb-status').textContent = 'Error al verificar';
+                addLog(`❌ Error verificando IndexedDB: ${error.message}`, 'error');
+            }
+            
+            // Verificar LocalStorage
+            try {
+                const dbConfig = localStorage.getItem('smart-student-database-config');
+                if (dbConfig) {
+                    const config = JSON.parse(dbConfig);
+                    document.getElementById('ls-status').textContent = `Proveedor: ${config.provider || 'No definido'}`;
+                    
+                    if (config.provider === 'firebase') {
+                        addLog('✅ LocalStorage configurado para Firebase', 'success');
+                    } else if (config.provider === 'idb') {
+                        addLog('⚠️ LocalStorage configurado para IndexedDB (local)', 'warning');
+                    } else {
+                        addLog(`⚠️ Proveedor desconocido: ${config.provider}`, 'warning');
+                    }
+                } else {
+                    document.getElementById('ls-status').textContent = 'Sin configuración';
+                    addLog('⚠️ No hay configuración de base de datos', 'warning');
+                }
+            } catch (error) {
+                document.getElementById('ls-status').textContent = 'Error al verificar';
+                addLog(`❌ Error verificando LocalStorage: ${error.message}`, 'error');
+            }
+            
+            // Verificar configuración Firebase
+            try {
+                const firebaseConfig = localStorage.getItem('firebase-config');
+                if (firebaseConfig) {
+                    document.getElementById('firebase-status').textContent = 'Configuración encontrada';
+                    addLog('✅ Configuración de Firebase encontrada', 'success');
+                } else {
+                    document.getElementById('firebase-status').textContent = 'Sin configuración';
+                    addLog('ℹ️ Firebase se configurará desde variables de entorno', 'info');
+                }
+            } catch (error) {
+                document.getElementById('firebase-status').textContent = 'Error al verificar';
+                addLog(`❌ Error verificando configuración: ${error.message}`, 'error');
+            }
+            
+            addLog('', 'info');
+            addLog('✅ Verificación completada', 'success');
+        }
+        
+        async function cleanAll() {
+            if (!confirm('⚠️ Esta acción eliminará todos los datos locales. ¿Deseas continuar?')) {
+                return;
+            }
+            
+            clearLog();
+            addLog('🧹 Iniciando limpieza completa...', 'info');
+            alert.style.display = 'none';
+            
+            // 1. Limpiar IndexedDB
+            addLog('', 'info');
+            addLog('1️⃣ Limpiando IndexedDB...', 'info');
+            try {
+                const dbs = await window.indexedDB.databases();
+                const smartStudentDBs = dbs.filter(db => 
+                    db.name && (db.name.includes('smart_student') || db.name.includes('smart-student'))
+                );
+                
+                for (const db of smartStudentDBs) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const request = indexedDB.deleteDatabase(db.name);
+                            request.onsuccess = () => resolve();
+                            request.onerror = () => reject(request.error);
+                        });
+                        addLog(`   ✅ Base de datos eliminada: ${db.name}`, 'success');
+                    } catch (error) {
+                        addLog(`   ❌ Error eliminando ${db.name}: ${error.message}`, 'error');
+                    }
+                }
+                
+                // Bases adicionales conocidas
+                const knownDBs = ['smart_student_local_db', 'smart_student_db', 'smart-student-db'];
+                for (const dbName of knownDBs) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const request = indexedDB.deleteDatabase(dbName);
+                            request.onsuccess = () => resolve();
+                            request.onerror = () => reject(request.error);
+                        });
+                        addLog(`   ✅ Base de datos eliminada: ${dbName}`, 'success');
+                    } catch (error) {
+                        // Silenciar errores de bases que no existen
+                    }
+                }
+                
+                addLog('   ✅ IndexedDB limpiado completamente', 'success');
+            } catch (error) {
+                addLog(`   ❌ Error limpiando IndexedDB: ${error.message}`, 'error');
+            }
+            
+            // 2. Configurar LocalStorage para Firebase
+            addLog('', 'info');
+            addLog('2️⃣ Configurando Firebase en LocalStorage...', 'info');
+            try {
+                localStorage.setItem('smart-student-database-config', JSON.stringify({
+                    provider: 'firebase'
+                }));
+                addLog('   ✅ LocalStorage configurado para Firebase', 'success');
+            } catch (error) {
+                addLog(`   ❌ Error configurando LocalStorage: ${error.message}`, 'error');
+            }
+            
+            // 3. Limpiar contadores antiguos
+            addLog('', 'info');
+            addLog('3️⃣ Limpiando contadores antiguos...', 'info');
+            try {
+                const keys = Object.keys(localStorage);
+                let cleaned = 0;
+                for (const key of keys) {
+                    if (key.startsWith('grade-counter-') || 
+                        key.startsWith('attendance-counter-') ||
+                        key.startsWith('sql-') ||
+                        key.startsWith('idb-')) {
+                        localStorage.removeItem(key);
+                        cleaned++;
+                    }
+                }
+                addLog(`   ✅ ${cleaned} contadores limpiados`, 'success');
+            } catch (error) {
+                addLog(`   ❌ Error limpiando contadores: ${error.message}`, 'error');
+            }
+            
+            // 4. Resumen
+            addLog('', 'info');
+            addLog('═══════════════════════════════════════', 'success');
+            addLog('✅ LIMPIEZA COMPLETADA', 'success');
+            addLog('═══════════════════════════════════════', 'success');
+            addLog('', 'info');
+            addLog('📋 Próximos pasos:', 'info');
+            addLog('   1. Haz clic en "🚀 Ir a la Aplicación"', 'info');
+            addLog('   2. O recarga la página con Ctrl+F5', 'info');
+            addLog('   3. Verifica que el badge diga "🔥 Firebase + LS"', 'info');
+            addLog('   4. Carga tus calificaciones en Firebase', 'info');
+            
+            // Mostrar alerta de éxito
+            alert.classList.add('alert-success');
+            alert.innerHTML = '<h3>✅ ¡Éxito!</h3><p>El sistema está configurado para usar Firebase. Recarga la página para ver los cambios.</p>';
+            alert.style.display = 'block';
+            
+            // Actualizar estado
+            document.getElementById('idb-status').textContent = 'Limpiado ✅';
+            document.getElementById('ls-status').textContent = 'Proveedor: firebase ✅';
+            document.getElementById('firebase-status').textContent = 'Configurado ✅';
+        }
+        
+        function goToApp() {
+            window.location.href = 'http://localhost:9002/dashboard/admin/user-management';
+        }
+        
+        // Verificar estado al cargar
+        window.addEventListener('load', () => {
+            checkStatus();
+            alert.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cancel Button Visibility</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Test: Visibilidad del Botón Cancel</h1>
+        
+        <!-- Comparación: Antes vs Después -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Comparación de Botones Cancel</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- ANTES: Botón muy tenue -->
+                <div class="space-y-3">
+                    <h3 class="font-medium text-gray-700">❌ ANTES (muy tenue)</h3>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 hover:border-gray-400 rounded-md transition-colors">
+                            Cancelar
+                        </button>
+                        <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md transition-colors">
+                            Update Task
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- DESPUÉS: Botón más visible -->
+                <div class="space-y-3">
+                    <h3 class="font-medium text-gray-700">✅ DESPUÉS (más visible)</h3>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-400 hover:border-gray-500 rounded-md transition-colors">
+                            Cancelar
+                        </button>
+                        <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md transition-colors">
+                            Update Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Simulación del diálogo completo -->
+        <div class="bg-white p-6 rounded-lg shadow-lg border">
+            <h2 class="text-xl font-semibold mb-4">Simulación de Diálogo Completo</h2>
+            <div class="bg-white border rounded-lg p-6 max-w-md mx-auto">
+                <h3 class="text-lg font-medium mb-4">Editar Tarea</h3>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                        <input type="text" value="Ejemplo de tarea" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md" rows="3">Descripción de ejemplo...</textarea>
+                    </div>
+                </div>
+                
+                <!-- Footer con botones mejorados -->
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-400 hover:border-gray-500 rounded-md transition-colors">
+                        Cancelar
+                    </button>
+                    <button class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md transition-colors">
+                        Actualizar Tarea
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estados de hover -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Estados de Hover</h2>
+            <div class="space-y-4">
+                <div class="flex space-x-3">
+                    <span class="text-sm text-gray-600 w-20">Normal:</span>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-800 border border-gray-400 rounded-md">
+                        Cancelar
+                    </button>
+                </div>
+                <div class="flex space-x-3">
+                    <span class="text-sm text-gray-600 w-20">Hover:</span>
+                    <button class="px-4 py-2 bg-gray-200 text-gray-800 border border-gray-500 rounded-md">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensaje de cambios -->
+        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+            <h3 class="font-medium text-orange-800 mb-2">✅ Cambios Aplicados</h3>
+            <ul class="text-sm text-orange-700 space-y-1">
+                <li>• <strong>Fondo:</strong> Cambiado de blanco a gris claro (bg-gray-100)</li>
+                <li>• <strong>Texto:</strong> Más oscuro para mejor contraste (text-gray-800)</li>
+                <li>• <strong>Borde:</strong> Más visible (border-gray-400)</li>
+                <li>• <strong>Hover:</strong> Transición a gris más oscuro (bg-gray-200)</li>
+                <li>• <strong>Dark mode:</strong> Mantiene la funcionalidad existente</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

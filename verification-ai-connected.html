@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación Final - IA Conectada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #e7ffe7;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #007acc;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+            top: 2px;
+        }
+        .green { 
+            background: #28a745; 
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 8px rgba(40, 167, 69, 0.5); }
+            50% { box-shadow: 0 0 12px rgba(40, 167, 69, 0.8); }
+            100% { box-shadow: 0 0 8px rgba(40, 167, 69, 0.5); }
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .feature-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 IA Conectada Exitosamente</h1>
+        
+        <div class="success">
+            <h3><span class="indicator green"></span>Estado: IA Activada y Funcionando</h3>
+            <p>El indicador ahora debería aparecer en <strong>verde</strong> en la esquina superior derecha del dashboard, indicando que la IA está conectada y lista para usar.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Resumen de la Corrección</h2>
+        
+        <div class="checklist">
+            <h3>✅ Cambios Implementados:</h3>
+            <ul>
+                <li>✓ <strong>Endpoint /api/ai-status corregido:</strong> Ahora retorna correctamente el estado activo de la IA</li>
+                <li>✓ <strong>Validación de API Key:</strong> Verifica que Google AI API Key esté configurada</li>
+                <li>✓ <strong>Indicador mejorado:</strong> Más visible con mejor diseño y animaciones</li>
+                <li>✓ <strong>Manejo de errores:</strong> Gestión robusta de fallos de conexión</li>
+                <li>✓ <strong>Traducciones actualizadas:</strong> Mensajes en español e inglés</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Funciones de IA Disponibles</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>📄 Resúmenes</h3>
+                <p>Generación inteligente de resúmenes de contenido</p>
+            </div>
+            <div class="feature-card">
+                <h3>📝 Evaluaciones</h3>
+                <p>Creación automática de evaluaciones personalizadas</p>
+            </div>
+            <div class="feature-card">
+                <h3>❓ Cuestionarios</h3>
+                <p>Generación de preguntas interactivas</p>
+            </div>
+            <div class="feature-card">
+                <h3>🧠 Mapas Mentales</h3>
+                <p>Visualización de conceptos y relaciones</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🎯 Verificación Final</h2>
+        
+        <div class="info">
+            <h3>Para confirmar que todo funciona correctamente:</h3>
+            <ol>
+                <li>Ve al <strong>Dashboard</strong> principal</li>
+                <li>Busca el <strong>indicador circular verde</strong> en la esquina superior derecha</li>
+                <li>El indicador debe tener una <strong>animación de pulso</strong> suave</li>
+                <li>Al pasar el mouse sobre él, debe mostrar: <strong>"IA Activada - AI is configured and ready"</strong></li>
+                <li>Prueba cualquiera de las funciones de IA para confirmar que responden correctamente</li>
+            </ol>
+        </div>
+
+        <button onclick="openDashboard()">🚀 Ir al Dashboard</button>
+        <button onclick="testAllFeatures()">🧪 Probar Todas las Funciones</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 Estado Técnico</h2>
+        <div id="technical-status" class="info">
+            <p>🔍 Verificando estado técnico...</p>
+        </div>
+    </div>
+
+    <script>
+        function openDashboard() {
+            window.open('/dashboard', '_blank');
+        }
+
+        function testAllFeatures() {
+            const features = [
+                { url: '/dashboard/resumen', name: 'Resúmenes' },
+                { url: '/dashboard/evaluacion', name: 'Evaluaciones' },
+                { url: '/dashboard/cuestionario', name: 'Cuestionarios' },
+                { url: '/dashboard/mapa-mental', name: 'Mapas Mentales' }
+            ];
+            
+            features.forEach((feature, index) => {
+                setTimeout(() => {
+                    window.open(feature.url, '_blank');
+                    console.log(`Abriendo ${feature.name}...`);
+                }, index * 1500);
+            });
+            
+            alert('Se abrirán todas las funciones de IA en pestañas separadas para que puedas probarlas.');
+        }
+
+        async function checkTechnicalStatus() {
+            const statusDiv = document.getElementById('technical-status');
+            
+            try {
+                const response = await fetch('/api/ai-status');
+                const data = await response.json();
+                
+                statusDiv.innerHTML = `
+                    <h4>📊 Estado Técnico Actual:</h4>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>Estado:</strong> ${data.isActive ? '🟢 Activo' : '🔴 Inactivo'}</li>
+                        <li><strong>Razón:</strong> ${data.reason}</li>
+                        <li><strong>Modelo:</strong> ${data.model || 'N/A'}</li>
+                        <li><strong>Última verificación:</strong> ${new Date(data.timestamp).toLocaleString()}</li>
+                        <li><strong>Endpoint:</strong> /api/ai-status ✅</li>
+                        <li><strong>Indicador Visual:</strong> ${data.isActive ? '🟢 Verde (Activo)' : '🔴 Rojo (Inactivo)'}</li>
+                    </ul>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <h4>❌ Error de Conexión:</h4>
+                    <p style="color: #dc3545;">${error.message}</p>
+                    <p>Verifica que el servidor esté funcionando correctamente.</p>
+                `;
+            }
+        }
+
+        // Verificar automáticamente al cargar la página
+        checkTechnicalStatus();
+
+        console.log('🤖 IA Status: El indicador debería aparecer en VERDE en el dashboard');
+        console.log('🎯 Ubicación: Esquina superior derecha, junto al logo SMART STUDENT');
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Reparación Inmediata - Notificaciones Fantasma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Reparación Inmediata</h1>
+        
+        <div class="alert">
+            <strong>🚨 Problema Detectado:</strong><br>
+            El estudiante Felipe tiene notificaciones fantasma.<br>
+            Esta herramienta eliminará automáticamente las notificaciones sin tareas correspondientes.
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <button onclick="repairNow()" id="repairBtn">
+            🔧 Reparar Ahora
+        </button>
+        
+        <div id="result" style="margin-top: 20px;"></div>
+        
+        <hr style="margin: 30px 0;">
+        
+        <h3>📋 Instrucciones:</h3>
+        <ol style="text-align: left; margin: 0 auto; display: inline-block;">
+            <li>Presiona el botón <strong>"🔧 Reparar Ahora"</strong></li>
+            <li>El sistema eliminará automáticamente las notificaciones fantasma</li>
+            <li>La página se recargará automáticamente</li>
+            <li>Verifica que las notificaciones de Felipe estén sincronizadas</li>
+        </ol>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'alert') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function repairNow() {
+            const button = document.getElementById('repairBtn');
+            const resultDiv = document.getElementById('result');
+            
+            // Deshabilitar botón
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> Reparando...';
+            
+            updateStatus('🔄 Iniciando reparación...', 'alert');
+            
+            setTimeout(() => {
+                try {
+                    // Cargar datos actuales
+                    const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                    const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                    const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                    
+                    console.log('📊 Estado actual:');
+                    console.log('   📝 Tareas:', tasks.length);
+                    console.log('   🔔 Notificaciones:', notifications.length);
+                    console.log('   💬 Comentarios:', comments.length);
+                    
+                    let ghostsRemoved = 0;
+                    let orphansRemoved = 0;
+                    let validNotifications = [];
+                    let validComments = [];
+                    
+                    // Eliminar notificaciones fantasma
+                    for (const notification of notifications) {
+                        const taskExists = tasks.some(task => task.id === notification.taskId);
+                        if (!taskExists) {
+                            ghostsRemoved++;
+                            console.log('👻 Eliminando notificación fantasma:', notification.taskTitle);
+                        } else {
+                            validNotifications.push(notification);
+                        }
+                    }
+                    
+                    // Eliminar comentarios huérfanos
+                    for (const comment of comments) {
+                        const taskExists = tasks.some(task => task.id === comment.taskId);
+                        if (!taskExists) {
+                            orphansRemoved++;
+                            console.log('💬 Eliminando comentario huérfano:', comment.comment.substring(0, 40) + '...');
+                        } else {
+                            validComments.push(comment);
+                        }
+                    }
+                    
+                    // Guardar datos limpios
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(validNotifications));
+                    localStorage.setItem('smart-student-task-comments', JSON.stringify(validComments));
+                    
+                    console.log('✅ Reparación completada:');
+                    console.log('   👻 Notificaciones fantasma eliminadas:', ghostsRemoved);
+                    console.log('   💬 Comentarios huérfanos eliminados:', orphansRemoved);
+                    console.log('   ✅ Notificaciones válidas:', validNotifications.length);
+                    console.log('   ✅ Comentarios válidos:', validComments.length);
+                    
+                    // Disparar eventos para actualizar UI
+                    window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                    window.dispatchEvent(new CustomEvent('commentsUpdated'));
+                    
+                    // Mostrar resultado
+                    if (ghostsRemoved > 0 || orphansRemoved > 0) {
+                        updateStatus('✅ Reparación completada exitosamente!', 'success');
+                        resultDiv.innerHTML = `
+                            <div class="alert success">
+                                <strong>🎉 Éxito!</strong><br>
+                                👻 Notificaciones fantasma eliminadas: ${ghostsRemoved}<br>
+                                💬 Comentarios huérfanos eliminados: ${orphansRemoved}<br>
+                                ✅ Notificaciones válidas preservadas: ${validNotifications.length}<br>
+                                ✅ Comentarios válidos preservados: ${validComments.length}
+                            </div>
+                        `;
+                        
+                        // Iniciar cuenta regresiva
+                        let countdown = 5;
+                        resultDiv.innerHTML += `
+                            <div class="alert">
+                                <strong>🔄 Recargando página en: <span class="countdown" id="countdown">${countdown}</span> segundos</strong>
+                            </div>
+                        `;
+                        
+                        const countdownInterval = setInterval(() => {
+                            countdown--;
+                            document.getElementById('countdown').textContent = countdown;
+                            
+                            if (countdown <= 0) {
+                                clearInterval(countdownInterval);
+                                location.reload();
+                            }
+                        }, 1000);
+                        
+                    } else {
+                        updateStatus('ℹ️ No se encontraron problemas', 'success');
+                        resultDiv.innerHTML = `
+                            <div class="alert success">
+                                <strong>✅ Sistema limpio</strong><br>
+                                No se encontraron notificaciones fantasma ni comentarios huérfanos.
+                            </div>
+                        `;
+                        
+                        // Rehabilitar botón
+                        button.disabled = false;
+                        button.innerHTML = '🔧 Reparar Ahora';
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error durante la reparación:', error);
+                    updateStatus('❌ Error durante la reparación', 'error');
+                    resultDiv.innerHTML = `
+                        <div class="alert error">
+                            <strong>❌ Error</strong><br>
+                            Hubo un problema durante la reparación. Revisar consola para más detalles.
+                        </div>
+                    `;
+                    
+                    // Rehabilitar botón
+                    button.disabled = false;
+                    button.innerHTML = '🔧 Reparar Ahora';
+                }
+            }, 1000);
+        }
+
+        // Verificar estado al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let ghostsFound = 0;
+            for (const notification of notifications) {
+                const taskExists = tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) ghostsFound++;
+            }
+            
+            if (ghostsFound > 0) {
+                updateStatus(`🚨 ${ghostsFound} notificaciones fantasma detectadas`, 'alert');
+            } else {
+                updateStatus('✅ Sistema sincronizado correctamente', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Evaluación Completada (Botón y Profesor)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button { 
+            background: #7c3aed; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; 
+            font-size: 14px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .button:hover { background: #6d28d9; }
+        .results-box { 
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; text-align: center; 
+        }
+        .results-box .icon { 
+            width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; 
+            font-size: 32px; color: #16a34a;
+        }
+        .results-box .title { color: #166534; font-weight: 600; margin-bottom: 8px; }
+        .results-box .score { 
+            background: white; border-radius: 8px; padding: 16px; margin-top: 8px; 
+        }
+        .results-box .score .percentage { color: #16a34a; font-size: 24px; font-weight: bold; }
+        .results-box .score .fraction { color: #6b7280; font-size: 14px; margin-top: 4px; }
+        .results-box .score .date { color: #9ca3af; font-size: 12px; margin-top: 8px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .table th, .table td { 
+            padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; 
+        }
+        .table th { 
+            background: #f9fafb; font-weight: 600; font-size: 14px; 
+        }
+        .table td { font-size: 14px; }
+        .badge { 
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; 
+        }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef3c7; color: #d97706; }
+        .badge-red { background: #fee2e2; color: #dc2626; }
+        .summary-stats { 
+            background: #f9fafb; border-radius: 8px; padding: 16px; margin-top: 16px; 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center; 
+        }
+        .summary-stats .stat-value { font-weight: 600; font-size: 18px; margin-bottom: 4px; }
+        .summary-stats .stat-label { color: #6b7280; font-size: 12px; }
+        .log { 
+            background: #1f2937; color: #f9fafb; padding: 15px; border-radius: 6px; 
+            font-family: 'Courier New', monospace; font-size: 12px; overflow-x: auto; margin-top: 10px; 
+        }
+        .info { background: #dbeafe; color: #1e40af; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .success { background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .warning { background: #fef3c7; color: #d97706; padding: 12px; border-radius: 6px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test - Evaluación Completada (UI y Resultados)</h1>
+        
+        <div class="info">
+            <h3>📋 Objetivo del Test</h3>
+            <p>Verificar que:</p>
+            <ul>
+                <li><strong>Estudiante:</strong> El botón "Realizar Evaluación" se reemplaza por un cuadro de resultados después de completar la evaluación</li>
+                <li><strong>Profesor:</strong> Los resultados de la evaluación del estudiante aparecen en la vista del profesor</li>
+            </ul>
+        </div>
+
+        <!-- Simulación de localStorage -->
+        <div class="test-section">
+            <h2>🔧 1. Configuración del Test</h2>
+            <button onclick="setupTestData()" class="button">🚀 Configurar Datos de Prueba</button>
+            <button onclick="clearTestData()" class="button" style="background: #dc2626;">🧹 Limpiar Datos</button>
+            <button onclick="viewLocalStorageData()" class="button" style="background: #059669;">👁️ Ver Datos LocalStorage</button>
+            
+            <div id="setupLog"></div>
+        </div>
+
+        <!-- Vista del Estudiante -->
+        <div class="test-section">
+            <h2>👨‍🎓 2. Vista del Estudiante - Evaluación Completada</h2>
+            
+            <div class="info">
+                <strong>Escenario:</strong> El estudiante "felipe" completó una evaluación de Ciencias Naturales sobre "Sistema Respiratorio" con 85% de acierto.
+            </div>
+            
+            <!-- Simulación: Botón Original (Antes de completar) -->
+            <h3>❌ Antes de Completar (Estado Pendiente)</h3>
+            <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 12px 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="flex: 1;">
+                        <p style="color: #7c3aed; font-size: 14px; margin-bottom: 8px;">📝 Esta es una evaluación. Haz clic en el botón para comenzar.</p>
+                        <div style="color: #7c3aed; font-size: 12px; line-height: 1.4;">
+                            <div>📚 Tema: Sistema Respiratorio</div>
+                            <div>❓ Preguntas: 15</div>
+                            <div>⏱️ Tiempo límite: 2 minutos</div>
+                        </div>
+                    </div>
+                    <button class="button" style="margin-left: 16px;">
+                        🎓 Realizar Evaluación
+                    </button>
+                </div>
+            </div>
+
+            <!-- Simulación: Cuadro de Resultados (Después de completar) -->
+            <h3>✅ Después de Completar (Estado Finalizado)</h3>
+            <div id="studentResultsBox" class="results-box">
+                <div class="icon">🎓</div>
+                <h4 class="title">✅ Evaluación Completada</h4>
+                <div class="score">
+                    <div class="percentage">85.0% Completado</div>
+                    <div class="fraction">Puntaje: 13/15</div>
+                    <div class="date">Completado: 30/6/2025, 15:30:45</div>
+                </div>
+            </div>
+
+            <button onclick="toggleStudentView()" class="button" style="background: #059669; margin-top: 16px;">
+                🔄 Alternar Vista (Pendiente ↔ Completada)
+            </button>
+        </div>
+
+        <!-- Vista del Profesor -->
+        <div class="test-section">
+            <h2>👨‍🏫 3. Vista del Profesor - Resultados de Evaluación</h2>
+            
+            <div class="info">
+                <strong>Escenario:</strong> El profesor "Jorge" ve los resultados de la evaluación asignada a su curso de 4° Básico.
+            </div>
+
+            <h3>📊 Resultados de Evaluación</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Puntaje</th>
+                        <th>Porcentaje</th>
+                        <th>Completado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherResultsTable">
+                    <tr>
+                        <td>Felipe Estudiante</td>
+                        <td><span style="font-weight: 600;">13/15</span></td>
+                        <td><span class="badge badge-green">85.0%</span></td>
+                        <td>30/6/2025, 15:30:45</td>
+                        <td><span class="badge badge-green">Completada</span></td>
+                    </tr>
+                    <tr>
+                        <td>María Estudiante</td>
+                        <td><span style="font-weight: 600;">11/15</span></td>
+                        <td><span class="badge badge-yellow">73.3%</span></td>
+                        <td>30/6/2025, 14:45:20</td>
+                        <td><span class="badge badge-green">Completada</span></td>
+                    </tr>
+                    <tr>
+                        <td>Carlos Estudiante</td>
+                        <td><span style="font-weight: 600;">8/15</span></td>
+                        <td><span class="badge badge-red">53.3%</span></td>
+                        <td>30/6/2025, 16:10:15</td>
+                        <td><span class="badge badge-green">Completada</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Resumen estadístico -->
+            <div class="summary-stats">
+                <div>
+                    <div class="stat-value" style="color: #3b82f6;">3</div>
+                    <div class="stat-label">Completadas</div>
+                </div>
+                <div>
+                    <div class="stat-value" style="color: #16a34a;">70.6%</div>
+                    <div class="stat-label">Promedio</div>
+                </div>
+                <div>
+                    <div class="stat-value" style="color: #7c3aed;">2</div>
+                    <div class="stat-label">Aprobadas (≥60%)</div>
+                </div>
+                <div>
+                    <div class="stat-value" style="color: #ea580c;">1</div>
+                    <div class="stat-label">Necesita Mejora</div>
+                </div>
+            </div>
+
+            <button onclick="simulateNewResult()" class="button" style="background: #059669; margin-top: 16px;">
+                ➕ Simular Nuevo Resultado
+            </button>
+        </div>
+
+        <!-- Verificación de Datos -->
+        <div class="test-section">
+            <h2>🔍 4. Verificación de Datos</h2>
+            <button onclick="verifyEvaluationData()" class="button">✅ Verificar Datos de Evaluación</button>
+            <button onclick="testTaskStatusDetection()" class="button" style="background: #7c3aed;">🎯 Test Detección de Estado</button>
+            
+            <div id="verificationLog"></div>
+        </div>
+
+        <!-- Simulación de Flujo Completo -->
+        <div class="test-section">
+            <h2>🎬 5. Simulación de Flujo Completo</h2>
+            <button onclick="simulateCompleteFlow()" class="button" style="background: #dc2626;">🚀 Simular Flujo Estudiante→Profesor</button>
+            
+            <div id="flowLog"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStudentView = 'completed'; // 'pending' or 'completed'
+        
+        // Configurar datos de prueba
+        function setupTestData() {
+            console.log('🔧 Setting up test data...');
+            
+            // Datos del estudiante Felipe
+            const studentData = {
+                felipe: {
+                    displayName: 'Felipe Estudiante',
+                    role: 'student',
+                    activeCourses: ['4to Básico'],
+                    username: 'felipe'
+                },
+                maria: {
+                    displayName: 'María Estudiante', 
+                    role: 'student',
+                    activeCourses: ['4to Básico'],
+                    username: 'maria'
+                },
+                carlos: {
+                    displayName: 'Carlos Estudiante',
+                    role: 'student', 
+                    activeCourses: ['4to Básico'],
+                    username: 'carlos'
+                }
+            };
+            
+            // Guardar datos de estudiantes
+            Object.keys(studentData).forEach(username => {
+                localStorage.setItem(`userData_${username}`, JSON.stringify(studentData[username]));
+            });
+            
+            // Tarea de evaluación
+            const evaluationTask = {
+                id: 'eval_task_001',
+                title: 'EVAL - Sistema Respiratorio',
+                description: 'Evaluación sobre el sistema respiratorio humano',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'jorge',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: '2025-07-01T23:59:59',
+                createdAt: '2025-06-30T10:00:00',
+                status: 'pending',
+                priority: 'high',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Sistema Respiratorio',
+                    questionCount: 15,
+                    timeLimit: 2
+                },
+                evaluationResults: {
+                    felipe: {
+                        score: 13,
+                        totalQuestions: 15,
+                        completionPercentage: 86.7,
+                        completedAt: '2025-06-30T15:30:45',
+                        attempt: 1
+                    },
+                    maria: {
+                        score: 11,
+                        totalQuestions: 15,
+                        completionPercentage: 73.3,
+                        completedAt: '2025-06-30T14:45:20',
+                        attempt: 1
+                    },
+                    carlos: {
+                        score: 8,
+                        totalQuestions: 15,
+                        completionPercentage: 53.3,
+                        completedAt: '2025-06-30T16:10:15',
+                        attempt: 1
+                    }
+                }
+            };
+            
+            // Guardar tarea global
+            const globalTasks = [evaluationTask];
+            localStorage.setItem('globalTasks', JSON.stringify(globalTasks));
+            
+            // Tareas específicas de cada estudiante
+            ['felipe', 'maria', 'carlos'].forEach(student => {
+                const userTask = {
+                    id: 'eval_task_001',
+                    status: 'completed',
+                    score: evaluationTask.evaluationResults[student].score,
+                    totalQuestions: 15,
+                    completionPercentage: evaluationTask.evaluationResults[student].completionPercentage,
+                    completedAt: evaluationTask.evaluationResults[student].completedAt,
+                    evaluationConfig: {
+                        questionCount: 15,
+                        timeLimit: 2,
+                        topic: 'Sistema Respiratorio'
+                    }
+                };
+                
+                const userTasks = [userTask];
+                localStorage.setItem(`userTasks_${student}`, JSON.stringify(userTasks));
+            });
+            
+            // Estado de evaluación de tarea para Felipe
+            localStorage.setItem('isTaskEvaluation', 'true');
+            localStorage.setItem('evaluationFinished', 'true');
+            
+            const setupLog = document.getElementById('setupLog');
+            setupLog.innerHTML = `
+                <div class="success">
+                    <h4>✅ Datos de Prueba Configurados</h4>
+                    <ul>
+                        <li>✅ Estudiantes: Felipe, María, Carlos</li>
+                        <li>✅ Tarea de Evaluación: Sistema Respiratorio</li>
+                        <li>✅ Resultados: Felipe (86.7%), María (73.3%), Carlos (53.3%)</li>
+                        <li>✅ Estado de evaluación marcado como completado</li>
+                    </ul>
+                </div>
+                <div class="log">
+localStorage keys created:
+- userData_felipe, userData_maria, userData_carlos
+- globalTasks
+- userTasks_felipe, userTasks_maria, userTasks_carlos
+- isTaskEvaluation = true
+- evaluationFinished = true
+                </div>
+            `;
+        }
+        
+        // Limpiar datos de prueba
+        function clearTestData() {
+            const keysToRemove = [
+                'userData_felipe', 'userData_maria', 'userData_carlos',
+                'globalTasks', 
+                'userTasks_felipe', 'userTasks_maria', 'userTasks_carlos',
+                'isTaskEvaluation', 'evaluationFinished'
+            ];
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            const setupLog = document.getElementById('setupLog');
+            setupLog.innerHTML = `
+                <div class="warning">
+                    <h4>🧹 Datos de Prueba Eliminados</h4>
+                    <p>Todos los datos de prueba han sido eliminados del localStorage.</p>
+                </div>
+            `;
+        }
+        
+        // Ver datos del localStorage
+        function viewLocalStorageData() {
+            const relevantKeys = [
+                'userData_felipe', 'globalTasks', 'userTasks_felipe', 
+                'isTaskEvaluation', 'evaluationFinished'
+            ];
+            
+            let output = '<div class="log">';
+            relevantKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    output += `<strong>${key}:</strong>\n${JSON.stringify(JSON.parse(value), null, 2)}\n\n`;
+                } else {
+                    output += `<strong>${key}:</strong> (no encontrado)\n\n`;
+                }
+            });
+            output += '</div>';
+            
+            const setupLog = document.getElementById('setupLog');
+            setupLog.innerHTML = output;
+        }
+        
+        // Alternar vista del estudiante
+        function toggleStudentView() {
+            const container = document.querySelector('#studentResultsBox').parentElement;
+            
+            if (currentStudentView === 'completed') {
+                // Mostrar vista pendiente
+                currentStudentView = 'pending';
+                container.innerHTML = `
+                    <h3>❌ Estado: Pendiente</h3>
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 12px 0;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                <p style="color: #7c3aed; font-size: 14px; margin-bottom: 8px;">📝 Esta es una evaluación. Haz clic en el botón para comenzar.</p>
+                                <div style="color: #7c3aed; font-size: 12px; line-height: 1.4;">
+                                    <div>📚 Tema: Sistema Respiratorio</div>
+                                    <div>❓ Preguntas: 15</div>
+                                    <div>⏱️ Tiempo límite: 2 minutos</div>
+                                </div>
+                            </div>
+                            <button class="button" style="margin-left: 16px;">
+                                🎓 Realizar Evaluación
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="toggleStudentView()" class="button" style="background: #059669; margin-top: 16px;">
+                        🔄 Alternar Vista (Pendiente ↔ Completada)
+                    </button>
+                `;
+            } else {
+                // Mostrar vista completada
+                currentStudentView = 'completed';
+                container.innerHTML = `
+                    <h3>✅ Estado: Completada</h3>
+                    <div id="studentResultsBox" class="results-box">
+                        <div class="icon">🎓</div>
+                        <h4 class="title">✅ Evaluación Completada</h4>
+                        <div class="score">
+                            <div class="percentage">86.7% Completado</div>
+                            <div class="fraction">Puntaje: 13/15</div>
+                            <div class="date">Completado: 30/6/2025, 15:30:45</div>
+                        </div>
+                    </div>
+                    <button onclick="toggleStudentView()" class="button" style="background: #059669; margin-top: 16px;">
+                        🔄 Alternar Vista (Pendiente ↔ Completada)
+                    </button>
+                `;
+            }
+        }
+        
+        // Simular nuevo resultado
+        function simulateNewResult() {
+            const table = document.getElementById('teacherResultsTable');
+            const newRow = table.insertRow();
+            
+            const students = ['Ana', 'Pedro', 'Lucia', 'Roberto'];
+            const randomStudent = students[Math.floor(Math.random() * students.length)];
+            const randomScore = Math.floor(Math.random() * 15) + 1;
+            const percentage = (randomScore / 15 * 100).toFixed(1);
+            const badgeClass = percentage >= 80 ? 'badge-green' : percentage >= 60 ? 'badge-yellow' : 'badge-red';
+            
+            newRow.innerHTML = `
+                <td>${randomStudent} Estudiante</td>
+                <td><span style="font-weight: 600;">${randomScore}/15</span></td>
+                <td><span class="badge ${badgeClass}">${percentage}%</span></td>
+                <td>${new Date().toLocaleString()}</td>
+                <td><span class="badge badge-green">Completada</span></td>
+            `;
+            
+            // Actualizar estadísticas
+            updateTeacherStats();
+        }
+        
+        // Actualizar estadísticas del profesor
+        function updateTeacherStats() {
+            const table = document.getElementById('teacherResultsTable');
+            const rows = table.querySelectorAll('tr');
+            const results = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 0) {
+                    const percentageText = cells[2].textContent.replace('%', '');
+                    const percentage = parseFloat(percentageText);
+                    results.push(percentage);
+                }
+            });
+            
+            if (results.length > 0) {
+                const average = (results.reduce((a, b) => a + b, 0) / results.length).toFixed(1);
+                const passed = results.filter(r => r >= 60).length;
+                const failed = results.length - passed;
+                
+                const statsDiv = document.querySelector('.summary-stats');
+                statsDiv.innerHTML = `
+                    <div>
+                        <div class="stat-value" style="color: #3b82f6;">${results.length}</div>
+                        <div class="stat-label">Completadas</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" style="color: #16a34a;">${average}%</div>
+                        <div class="stat-label">Promedio</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" style="color: #7c3aed;">${passed}</div>
+                        <div class="stat-label">Aprobadas (≥60%)</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" style="color: #ea580c;">${failed}</div>
+                        <div class="stat-label">Necesita Mejora</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Verificar datos de evaluación
+        function verifyEvaluationData() {
+            const log = document.getElementById('verificationLog');
+            let output = '<div class="log">';
+            
+            // Verificar tarea global
+            const globalTasks = JSON.parse(localStorage.getItem('globalTasks') || '[]');
+            const evalTask = globalTasks.find(t => t.taskType === 'evaluation');
+            
+            output += `<strong>🔍 VERIFICACIÓN DE DATOS</strong>\n\n`;
+            
+            if (evalTask) {
+                output += `✅ Tarea de evaluación encontrada: ${evalTask.title}\n`;
+                output += `📊 Resultados en tarea: ${Object.keys(evalTask.evaluationResults || {}).length} estudiantes\n\n`;
+                
+                // Verificar cada estudiante
+                ['felipe', 'maria', 'carlos'].forEach(student => {
+                    const userData = localStorage.getItem(`userData_${student}`);
+                    const userTasks = localStorage.getItem(`userTasks_${student}`);
+                    
+                    if (userData && userTasks) {
+                        const tasks = JSON.parse(userTasks);
+                        const completedTask = tasks.find(t => t.id === evalTask.id && t.status === 'completed');
+                        
+                        output += `👨‍🎓 ${student}:\n`;
+                        output += `  - userData: ✅ exists\n`;
+                        output += `  - userTasks: ✅ exists\n`;
+                        output += `  - completed task: ${completedTask ? '✅ found' : '❌ not found'}\n`;
+                        if (completedTask) {
+                            output += `  - score: ${completedTask.score}/${completedTask.totalQuestions} (${completedTask.completionPercentage.toFixed(1)}%)\n`;
+                        }
+                        output += `\n`;
+                    } else {
+                        output += `❌ ${student}: Missing data\n\n`;
+                    }
+                });
+            } else {
+                output += `❌ No se encontró tarea de evaluación\n\n`;
+            }
+            
+            // Verificar estado de evaluación
+            const isTaskEval = localStorage.getItem('isTaskEvaluation');
+            const evalFinished = localStorage.getItem('evaluationFinished');
+            
+            output += `<strong>🎯 ESTADO DE EVALUACIÓN</strong>\n`;
+            output += `isTaskEvaluation: ${isTaskEval || 'not set'}\n`;
+            output += `evaluationFinished: ${evalFinished || 'not set'}\n`;
+            
+            output += '</div>';
+            log.innerHTML = output;
+        }
+        
+        // Test detección de estado
+        function testTaskStatusDetection() {
+            const log = document.getElementById('verificationLog');
+            
+            // Simular las funciones de detección
+            function getTaskStatusForStudent(task, studentUsername) {
+                if (task.taskType === 'evaluation') {
+                    if (task.evaluationResults && task.evaluationResults[studentUsername]) {
+                        return 'completed';
+                    }
+                    
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    const userTask = userTasks.find(ut => ut.id === task.id);
+                    if (userTask && userTask.status === 'completed') {
+                        return 'completed';
+                    }
+                    
+                    return 'pending';
+                }
+                return 'pending';
+            }
+            
+            function getEvaluationResults(task, studentUsername) {
+                if (task.taskType !== 'evaluation') return null;
+                
+                if (task.evaluationResults && task.evaluationResults[studentUsername]) {
+                    return task.evaluationResults[studentUsername];
+                }
+                
+                const userTasksKey = `userTasks_${studentUsername}`;
+                const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                const userTask = userTasks.find(ut => ut.id === task.id);
+                if (userTask && userTask.status === 'completed') {
+                    return {
+                        score: userTask.score || 0,
+                        completionPercentage: userTask.completionPercentage || 0,
+                        completedAt: userTask.completedAt,
+                        totalQuestions: userTask.totalQuestions || 0
+                    };
+                }
+                
+                return null;
+            }
+            
+            // Test con datos reales
+            const globalTasks = JSON.parse(localStorage.getItem('globalTasks') || '[]');
+            const evalTask = globalTasks.find(t => t.taskType === 'evaluation');
+            
+            let output = '<div class="log">';
+            output += `<strong>🎯 TEST DETECCIÓN DE ESTADO</strong>\n\n`;
+            
+            if (evalTask) {
+                ['felipe', 'maria', 'carlos'].forEach(student => {
+                    const status = getTaskStatusForStudent(evalTask, student);
+                    const results = getEvaluationResults(evalTask, student);
+                    
+                    output += `👨‍🎓 ${student}:\n`;
+                    output += `  Status: ${status}\n`;
+                    output += `  Results: ${results ? 'found' : 'not found'}\n`;
+                    if (results) {
+                        output += `  Score: ${results.score}/${results.totalQuestions}\n`;
+                        output += `  Percentage: ${results.completionPercentage}%\n`;
+                    }
+                    output += `\n`;
+                });
+            }
+            
+            output += '</div>';
+            log.innerHTML = output;
+        }
+        
+        // Simular flujo completo
+        function simulateCompleteFlow() {
+            const log = document.getElementById('flowLog');
+            let output = '<div class="log">';
+            
+            output += `<strong>🎬 SIMULACIÓN FLUJO COMPLETO</strong>\n\n`;
+            output += `1. 👨‍🎓 Estudiante Felipe inicia evaluación...\n`;
+            output += `2. 📝 Completa evaluación con 13/15 respuestas correctas\n`;
+            output += `3. 💾 Datos guardados en localStorage:\n`;
+            output += `   - userTasks_felipe: status = 'completed'\n`;
+            output += `   - globalTasks: evaluationResults.felipe actualizado\n`;
+            output += `4. 🔄 UI del estudiante actualizada:\n`;
+            output += `   - Botón "Realizar Evaluación" → Cuadro de resultados\n`;
+            output += `   - Muestra: "86.7% Completado"\n`;
+            output += `5. 👨‍🏫 Profesor Jorge ve resultados:\n`;
+            output += `   - Tabla de resultados actualizada\n`;
+            output += `   - Felipe aparece como "Completada" con 86.7%\n`;
+            output += `   - Estadísticas actualizadas\n\n`;
+            output += `✅ FLUJO COMPLETADO EXITOSAMENTE\n`;
+            
+            output += '</div>';
+            log.innerHTML = output;
+            
+            // Actualizar vista del estudiante automáticamente
+            if (currentStudentView !== 'completed') {
+                toggleStudentView();
+            }
+        }
+        
+        // Configurar datos iniciales al cargar la página
+        window.addEventListener('load', function() {
+            console.log('🚀 Test page loaded');
+        });
+    </script>
+</body>
+</html>

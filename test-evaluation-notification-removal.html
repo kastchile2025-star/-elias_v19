@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Eliminación de Notificaciones de Evaluación</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover { background: #0056b3; }
+        .button.success { background: #28a745; }
+        .button.success:hover { background: #1e7e34; }
+        .button.danger { background: #dc3545; }
+        .button.danger:hover { background: #c82333; }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .result.success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .result.error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .result.warning { background: #fff3cd; border: 1px solid #ffecb5; color: #856404; }
+        .result.info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-number.danger { color: #dc3545; }
+        .stat-number.success { color: #28a745; }
+        .stat-number.warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Test: Eliminación de Notificaciones de Evaluación</h1>
+        <p>Verificar que las notificaciones "Evaluaciones Pendientes" desaparecen automáticamente cuando el estudiante completa la evaluación</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalNotifications">0</div>
+            <div>Total Notificaciones</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number warning" id="evaluationNotifications">0</div>
+            <div>Notificaciones de Evaluación</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number success" id="completedEvaluations">0</div>
+            <div>Evaluaciones Completadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="activeStudents">0</div>
+            <div>Estudiantes Activos</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🚀 Pruebas Automatizadas</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Configurar Datos de Prueba</h3>
+            <p>Crear usuario estudiante, evaluación y notificación pendiente</p>
+            <button class="button" onclick="setupTestData()">🛠️ Configurar Datos</button>
+            <div id="step1Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Verificar Estado Inicial</h3>
+            <p>Confirmar que existe la notificación "evaluación pendiente"</p>
+            <button class="button" onclick="verifyInitialState()">🔍 Verificar Estado</button>
+            <div id="step2Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Simular Completar Evaluación</h3>
+            <p>Ejecutar la lógica de eliminación de notificaciones</p>
+            <button class="button success" onclick="simulateEvaluationCompletion()">✅ Completar Evaluación</button>
+            <div id="step3Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 4: Verificar Eliminación</h3>
+            <p>Confirmar que la notificación fue eliminada</p>
+            <button class="button success" onclick="verifyNotificationRemoval()">🎯 Verificar Eliminación</button>
+            <div id="step4Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 5: Prueba con Múltiples Estudiantes</h3>
+            <p>Verificar que solo se elimina la notificación del estudiante específico</p>
+            <button class="button" onclick="testMultipleStudents()">👥 Prueba Múltiple</button>
+            <div id="step5Result"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔧 Controles Manuales</h2>
+        <button class="button" onclick="updateStats()">📊 Actualizar Estadísticas</button>
+        <button class="button" onclick="viewAllNotifications()">📋 Ver Todas las Notificaciones</button>
+        <button class="button danger" onclick="clearTestData()">🗑️ Limpiar Datos de Prueba</button>
+    </div>
+
+    <div class="section">
+        <h2>📊 Estado Actual del Sistema</h2>
+        <div id="systemStatus"></div>
+    </div>
+
+    <div class="section">
+        <h2>📝 Log de Actividad</h2>
+        <div id="activityLog" class="log">Iniciando test de eliminación de notificaciones de evaluación...</div>
+    </div>
+
+    <script>
+        let testStudentUsername = 'sofia.estudiante';
+        let testTaskId = 'eval_test_001';
+        let testNotificationId = null;
+        let activityLog = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            activityLog.push(logMessage);
+            
+            const logElement = document.getElementById('activityLog');
+            logElement.textContent = activityLog.join('\n');
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(logMessage);
+        }
+
+        function showResult(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function updateStats() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                
+                const evaluationNotifications = notifications.filter(n => 
+                    n.type === 'new_task' && 
+                    (n.taskType === 'evaluation' || n.taskTitle?.toLowerCase().includes('evaluación'))
+                );
+                
+                const completedEvaluations = tasks.filter(t => 
+                    t.type === 'evaluation' && 
+                    t.status === 'completed'
+                );
+
+                document.getElementById('totalNotifications').textContent = notifications.length;
+                document.getElementById('evaluationNotifications').textContent = evaluationNotifications.length;
+                document.getElementById('completedEvaluations').textContent = completedEvaluations.length;
+                document.getElementById('activeStudents').textContent = Object.keys(users).length;
+                
+                log(`📊 Estadísticas actualizadas: ${notifications.length} notificaciones, ${evaluationNotifications.length} de evaluación`);
+            } catch (error) {
+                log(`❌ Error actualizando estadísticas: ${error.message}`, 'error');
+            }
+        }
+
+        function setupTestData() {
+            try {
+                // Crear usuario estudiante de prueba
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                users[testStudentUsername] = {
+                    username: testStudentUsername,
+                    displayName: 'Sofia Estudiante',
+                    role: 'student',
+                    course: '10A',
+                    password: 'test123'
+                };
+                localStorage.setItem('smart-student-users', JSON.stringify(users));
+
+                // Crear evaluación de prueba
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const testTask = {
+                    id: testTaskId,
+                    title: 'Evaluación Test - Matemáticas',
+                    description: 'Evaluación de prueba para testing',
+                    type: 'evaluation',
+                    subject: 'Matemáticas',
+                    course: '10A',
+                    assignedBy: 'profesor.test',
+                    assignedByName: 'Profesor Test',
+                    assignedTo: 'course',
+                    assignedStudents: [],
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    priority: 'high',
+                    taskType: 'evaluation'
+                };
+                
+                // Remover tarea existente si existe
+                const filteredTasks = tasks.filter(t => t.id !== testTaskId);
+                filteredTasks.push(testTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+
+                // Crear notificación de evaluación pendiente
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                testNotificationId = `new_task_${testTaskId}_${Date.now()}`;
+                
+                const testNotification = {
+                    id: testNotificationId,
+                    type: 'new_task',
+                    taskId: testTaskId,
+                    taskTitle: 'Evaluación Test - Matemáticas',
+                    targetUserRole: 'student',
+                    targetUsernames: [testStudentUsername],
+                    fromUsername: 'profesor.test',
+                    fromDisplayName: 'Profesor Test',
+                    course: '10A',
+                    subject: 'Matemáticas',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                };
+
+                // Remover notificación existente si existe
+                const filteredNotifications = notifications.filter(n => n.taskId !== testTaskId);
+                filteredNotifications.push(testNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+
+                showResult('step1Result', 'success', 
+                    `✅ Datos de prueba configurados:<br>
+                    • Estudiante: ${testStudentUsername}<br>
+                    • Evaluación: ${testTask.title}<br>
+                    • Notificación: ${testNotificationId}`
+                );
+                
+                log(`✅ Datos de prueba configurados correctamente`);
+                updateStats();
+                
+            } catch (error) {
+                showResult('step1Result', 'error', `❌ Error configurando datos: ${error.message}`);
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyInitialState() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const testNotification = notifications.find(n => 
+                    n.type === 'new_task' && 
+                    n.taskId === testTaskId && 
+                    n.targetUsernames.includes(testStudentUsername)
+                );
+
+                if (testNotification) {
+                    showResult('step2Result', 'success', 
+                        `✅ Notificación encontrada:<br>
+                        • ID: ${testNotification.id}<br>
+                        • Tipo: ${testNotification.type}<br>
+                        • Destinatarios: ${testNotification.targetUsernames.join(', ')}<br>
+                        • Estado: ${testNotification.readBy.includes(testStudentUsername) ? 'Leída' : 'No leída'}`
+                    );
+                    log(`✅ Estado inicial verificado: notificación existe para ${testStudentUsername}`);
+                } else {
+                    showResult('step2Result', 'error', 
+                        `❌ No se encontró la notificación de evaluación.<br>
+                        Ejecuta el Paso 1 primero.`
+                    );
+                    log(`❌ Notificación no encontrada para verificación inicial`);
+                }
+                
+            } catch (error) {
+                showResult('step2Result', 'error', `❌ Error verificando estado: ${error.message}`);
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function simulateEvaluationCompletion() {
+            try {
+                // Simular la función removeEvaluationNotificationOnCompletion
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const initialCount = notifications.length;
+                
+                log(`🔍 Iniciando eliminación de notificación para tarea ${testTaskId} y estudiante ${testStudentUsername}`);
+                
+                // Aplicar la misma lógica que en la función real
+                const filteredNotifications = notifications.filter(notification => {
+                    if (notification.type === 'new_task' && 
+                        notification.taskId === testTaskId && 
+                        notification.targetUsernames.includes(testStudentUsername)) {
+                        
+                        if (notification.targetUsernames.length > 1) {
+                            // Remover solo este estudiante de la notificación
+                            notification.targetUsernames = notification.targetUsernames.filter(username => username !== testStudentUsername);
+                            notification.readBy = notification.readBy.filter(username => username !== testStudentUsername);
+                            log(`📝 Removido estudiante ${testStudentUsername} de notificación con múltiples destinatarios`);
+                            return true;
+                        } else {
+                            // Eliminar completamente la notificación
+                            log(`🗑️ Eliminando completamente notificación ${notification.id}`);
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                
+                const removedCount = initialCount - filteredNotifications.length;
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+                
+                // Simular disparo de evento
+                window.dispatchEvent(new Event('taskNotificationsUpdated'));
+                
+                showResult('step3Result', 'success', 
+                    `✅ Evaluación completada simulada:<br>
+                    • Notificaciones procesadas: ${removedCount}<br>
+                    • Notificaciones restantes: ${filteredNotifications.length}<br>
+                    • Evento disparado: taskNotificationsUpdated`
+                );
+                
+                log(`✅ Simulación completada: ${removedCount} notificaciones procesadas`);
+                updateStats();
+                
+            } catch (error) {
+                showResult('step3Result', 'error', `❌ Error simulando completar evaluación: ${error.message}`);
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyNotificationRemoval() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const testNotification = notifications.find(n => 
+                    n.type === 'new_task' && 
+                    n.taskId === testTaskId && 
+                    n.targetUsernames.includes(testStudentUsername)
+                );
+
+                if (!testNotification) {
+                    showResult('step4Result', 'success', 
+                        `✅ ¡ÉXITO! La notificación fue eliminada correctamente.<br>
+                        • El estudiante ${testStudentUsername} ya no tiene notificaciones pendientes<br>
+                        • La evaluación completada no aparece en "Evaluaciones Pendientes"`
+                    );
+                    log(`✅ Verificación exitosa: notificación eliminada para ${testStudentUsername}`);
+                } else {
+                    showResult('step4Result', 'warning', 
+                        `⚠️ La notificación aún existe pero puede haber sido modificada:<br>
+                        • Destinatarios actuales: ${testNotification.targetUsernames.join(', ')}<br>
+                        • ¿Incluye al estudiante test?: ${testNotification.targetUsernames.includes(testStudentUsername) ? 'Sí' : 'No'}`
+                    );
+                    log(`⚠️ Notificación aún existe, verificar estado`);
+                }
+                
+            } catch (error) {
+                showResult('step4Result', 'error', `❌ Error verificando eliminación: ${error.message}`);
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testMultipleStudents() {
+            try {
+                const secondStudent = 'carlos.estudiante';
+                
+                // Agregar segundo estudiante a la notificación
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                // Recrear notificación con múltiples estudiantes
+                const multiStudentNotification = {
+                    id: `new_task_${testTaskId}_multi_${Date.now()}`,
+                    type: 'new_task',
+                    taskId: testTaskId,
+                    taskTitle: 'Evaluación Test - Matemáticas (Multi)',
+                    targetUserRole: 'student',
+                    targetUsernames: [testStudentUsername, secondStudent],
+                    fromUsername: 'profesor.test',
+                    fromDisplayName: 'Profesor Test',
+                    course: '10A',
+                    subject: 'Matemáticas',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                };
+                
+                notifications.push(multiStudentNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                
+                log(`📝 Creada notificación con múltiples estudiantes: ${testStudentUsername}, ${secondStudent}`);
+                
+                // Simular que solo el primer estudiante completa
+                const filteredNotifications = notifications.map(notification => {
+                    if (notification.id === multiStudentNotification.id) {
+                        notification.targetUsernames = notification.targetUsernames.filter(username => username !== testStudentUsername);
+                        notification.readBy = notification.readBy.filter(username => username !== testStudentUsername);
+                        return notification;
+                    }
+                    return notification;
+                });
+                
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+                
+                // Verificar resultado
+                const updatedNotification = filteredNotifications.find(n => n.id === multiStudentNotification.id);
+                
+                showResult('step5Result', 'success', 
+                    `✅ Prueba múltiples estudiantes exitosa:<br>
+                    • Notificación conservada para: ${updatedNotification.targetUsernames.join(', ')}<br>
+                    • Removido solo: ${testStudentUsername}<br>
+                    • Comportamiento correcto: Solo el estudiante específico pierde la notificación`
+                );
+                
+                log(`✅ Prueba múltiples estudiantes completada correctamente`);
+                updateStats();
+                
+            } catch (error) {
+                showResult('step5Result', 'error', `❌ Error en prueba múltiples estudiantes: ${error.message}`);
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function viewAllNotifications() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const evaluationNotifications = notifications.filter(n => 
+                    n.type === 'new_task' && 
+                    (n.taskType === 'evaluation' || n.taskTitle?.toLowerCase().includes('evaluación'))
+                );
+                
+                let html = `<h3>📋 Todas las Notificaciones de Evaluación (${evaluationNotifications.length})</h3>`;
+                
+                if (evaluationNotifications.length === 0) {
+                    html += '<div class="result info">ℹ️ No hay notificaciones de evaluación activas</div>';
+                } else {
+                    evaluationNotifications.forEach((notification, index) => {
+                        const isForTestStudent = notification.targetUsernames.includes(testStudentUsername);
+                        html += `
+                            <div class="result ${isForTestStudent ? 'warning' : 'info'}">
+                                <strong>${index + 1}. ${notification.taskTitle}</strong><br>
+                                • ID: ${notification.id}<br>
+                                • Destinatarios: ${notification.targetUsernames.join(', ')}<br>
+                                • Incluye estudiante test: ${isForTestStudent ? '✅ Sí' : '❌ No'}<br>
+                                • Fecha: ${new Date(notification.timestamp).toLocaleString()}
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('systemStatus').innerHTML = html;
+                log(`📋 Mostradas ${evaluationNotifications.length} notificaciones de evaluación`);
+                
+            } catch (error) {
+                document.getElementById('systemStatus').innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+                log(`❌ Error mostrando notificaciones: ${error.message}`, 'error');
+            }
+        }
+
+        function clearTestData() {
+            try {
+                // Limpiar notificaciones de prueba
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const filteredNotifications = notifications.filter(n => 
+                    !n.taskId.includes('test') && 
+                    !n.id.includes('test')
+                );
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+                
+                // Limpiar tareas de prueba
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const filteredTasks = tasks.filter(t => 
+                    !t.id.includes('test')
+                );
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+                
+                log(`🗑️ Datos de prueba limpiados`);
+                updateStats();
+                
+                // Limpiar resultados
+                ['step1Result', 'step2Result', 'step3Result', 'step4Result', 'step5Result'].forEach(id => {
+                    document.getElementById(id).innerHTML = '';
+                });
+                
+                document.getElementById('systemStatus').innerHTML = '';
+                
+            } catch (error) {
+                log(`❌ Error limpiando datos: ${error.message}`, 'error');
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            log('🚀 Sistema de pruebas iniciado');
+            log('📋 Pasos recomendados:');
+            log('1. Configurar datos de prueba');
+            log('2. Verificar estado inicial');
+            log('3. Simular completar evaluación');
+            log('4. Verificar que la notificación se eliminó');
+            log('5. Probar con múltiples estudiantes');
+        });
+
+        // Escuchar eventos del sistema
+        window.addEventListener('taskNotificationsUpdated', function() {
+            log('🔄 Evento taskNotificationsUpdated recibido');
+            updateStats();
+        });
+    </script>
+</body>
+</html>

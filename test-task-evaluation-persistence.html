@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Persistencia Estado Evaluación de Tarea</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: #f1f3f4;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #5856eb;
+        }
+        .result {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
+        }
+        .error {
+            background: #fee2e2;
+            border-color: #dc2626;
+            color: #991b1b;
+        }
+        .warning {
+            background: #fef3c7;
+            border-color: #d97706;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test - Persistencia Estado Evaluación de Tarea</h1>
+    
+    <div class="test-section">
+        <h2>📋 Objetivo del Test</h2>
+        <p>Este test simula el comportamiento de la página de evaluación para verificar:</p>
+        <ul>
+            <li><strong>Problema:</strong> Al refrescar la página después de terminar una evaluación de tarea, aparecen los botones "Repetir Evaluación" y "Nueva Evaluación" cuando debería aparecer solo "Cerrar"</li>
+            <li><strong>Caso esperado:</strong> El estado debe persistir incluso después de un refresh</li>
+            <li><strong>Métodos de detección:</strong> React state, localStorage, sessionStorage, URL params</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Controles de Test</h2>
+        <button class="button" onclick="simulateTaskEvaluation()">1. Simular Evaluación de Tarea</button>
+        <button class="button" onclick="simulateNormalEvaluation()">2. Simular Evaluación Normal</button>
+        <button class="button" onclick="simulateFinishEvaluation()">3. Simular Finalizar Evaluación</button>
+        <button class="button" onclick="simulatePageRefresh()">4. Simular Refresh de Página</button>
+        <button class="button" onclick="clearAllState()">🧹 Limpiar Todo</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Estado Actual</h2>
+        <div id="currentState"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Detección de Botones</h2>
+        <div id="buttonDetection"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Log de Actividad</h2>
+        <div id="activityLog"></div>
+    </div>
+
+    <script>
+        // Simular el estado React (para este test usaremos variables globales)
+        let reactState = {
+            isTaskEvaluationSession: false,
+            isAutoStartMode: false,
+            evaluationFinished: false,
+            showResultDialog: false
+        };
+
+        // Simular URL params
+        let urlParams = new URLSearchParams();
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('activityLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'result';
+            logDiv.innerHTML = `<div class="${className}">[${timestamp}] ${message}</div>` + logDiv.innerHTML;
+        }
+
+        function updateDisplay() {
+            // Mostrar estado actual
+            const stateDiv = document.getElementById('currentState');
+            stateDiv.innerHTML = `
+                <div class="code-block">
+<strong>React State:</strong>
+- isTaskEvaluationSession: ${reactState.isTaskEvaluationSession}
+- isAutoStartMode: ${reactState.isAutoStartMode}
+- evaluationFinished: ${reactState.evaluationFinished}
+- showResultDialog: ${reactState.showResultDialog}
+
+<strong>Storage:</strong>
+- localStorage.isTaskEvaluation: ${localStorage.getItem('isTaskEvaluation')}
+- sessionStorage.isTaskEvaluation: ${sessionStorage.getItem('isTaskEvaluation')}
+
+<strong>URL Params:</strong>
+- autoStart: ${urlParams.get('autoStart')}
+- taskId: ${urlParams.get('taskId')}
+- course: ${urlParams.get('course')}
+- book: ${urlParams.get('book')}
+- topic: ${urlParams.get('topic')}
+                </div>
+            `;
+
+            // Ejecutar lógica de detección (copiada del código real)
+            detectButtonsToShow();
+        }
+
+        function detectButtonsToShow() {
+            const detectionDiv = document.getElementById('buttonDetection');
+            
+            // Simulamos estar en la pantalla de revisión (evaluationFinished && !showResultDialog)
+            if (!reactState.evaluationFinished || reactState.showResultDialog) {
+                detectionDiv.innerHTML = `
+                    <div class="result">
+                        <strong>Estado:</strong> No está en pantalla de revisión
+                        <br>evaluationFinished: ${reactState.evaluationFinished}
+                        <br>showResultDialog: ${reactState.showResultDialog}
+                    </div>
+                `;
+                return;
+            }
+
+            // Detección robusta (copiada del código real)
+            const reactStateCheck = reactState.isTaskEvaluationSession;
+            const localStorageState = localStorage.getItem('isTaskEvaluation') === 'true';
+            const sessionStorageState = sessionStorage.getItem('isTaskEvaluation') === 'true';
+            const autoStartParam = urlParams.get('autoStart') === 'true';
+            const taskIdParam = !!urlParams.get('taskId');
+            const autoStartModeState = reactState.isAutoStartMode;
+            
+            console.log('🔍🔍🔍 REVIEW SCREEN - DETAILED DETECTION:', {
+                reactStateCheck,
+                localStorageState,
+                sessionStorageState,
+                autoStartParam,
+                taskIdParam,
+                autoStartModeState
+            });
+            
+            // Una evaluación es de tarea si CUALQUIERA de estos es verdadero
+            const isTaskEvaluation = reactStateCheck || localStorageState || sessionStorageState || autoStartParam || taskIdParam || autoStartModeState;
+            
+            let buttonsToShow;
+            let reasoning;
+            
+            if (isTaskEvaluation) {
+                buttonsToShow = "SOLO CERRAR";
+                reasoning = "Evaluación de tarea detectada";
+                log(`✅ Mostrando botón CERRAR para evaluación de tarea`, 'success');
+            } else {
+                buttonsToShow = "REPETIR Y NUEVA EVALUACIÓN";
+                reasoning = "Evaluación normal detectada";
+                log(`❌ Mostrando botones REPETIR Y NUEVA para evaluación normal`, 'error');
+            }
+
+            detectionDiv.innerHTML = `
+                <div class="code-block">
+<strong>Métodos de Detección:</strong>
+- React State (isTaskEvaluationSession): ${reactStateCheck}
+- localStorage: ${localStorageState}
+- sessionStorage: ${sessionStorageState}
+- URL autoStart: ${autoStartParam}
+- URL taskId: ${taskIdParam}
+- React isAutoStartMode: ${autoStartModeState}
+
+<strong>Resultado Final:</strong>
+- Es evaluación de tarea: ${isTaskEvaluation}
+- Razonamiento: ${reasoning}
+- Botones a mostrar: <strong style="color: ${isTaskEvaluation ? 'green' : 'red'}">${buttonsToShow}</strong>
+                </div>
+            `;
+        }
+
+        function simulateTaskEvaluation() {
+            log('🚀 Simulando inicio de evaluación de tarea', 'info');
+            
+            // Simular parámetros URL de tarea
+            urlParams.set('autoStart', 'true');
+            urlParams.set('taskId', 'task-123');
+            urlParams.set('course', 'Matemáticas');
+            urlParams.set('book', 'Álgebra Básica');
+            urlParams.set('topic', 'Ecuaciones Lineales');
+            
+            // Simular estado React
+            reactState.isTaskEvaluationSession = true;
+            reactState.isAutoStartMode = true;
+            reactState.evaluationFinished = false;
+            reactState.showResultDialog = false;
+            
+            // Simular guardado en storage
+            localStorage.setItem('isTaskEvaluation', 'true');
+            sessionStorage.setItem('isTaskEvaluation', 'true');
+            
+            log('✅ Estado de evaluación de tarea establecido', 'success');
+            updateDisplay();
+        }
+
+        function simulateNormalEvaluation() {
+            log('📝 Simulando evaluación normal', 'info');
+            
+            // Limpiar parámetros URL
+            urlParams.delete('autoStart');
+            urlParams.delete('taskId');
+            urlParams.delete('course');
+            urlParams.delete('book');
+            urlParams.delete('topic');
+            
+            // Estado React normal
+            reactState.isTaskEvaluationSession = false;
+            reactState.isAutoStartMode = false;
+            reactState.evaluationFinished = false;
+            reactState.showResultDialog = false;
+            
+            // Limpiar storage
+            localStorage.removeItem('isTaskEvaluation');
+            sessionStorage.removeItem('isTaskEvaluation');
+            
+            log('✅ Estado de evaluación normal establecido', 'success');
+            updateDisplay();
+        }
+
+        function simulateFinishEvaluation() {
+            log('🏁 Simulando finalización de evaluación', 'info');
+            
+            // Cambiar estado a finalizado
+            reactState.evaluationFinished = true;
+            reactState.showResultDialog = false; // Para mostrar pantalla de revisión
+            
+            // Preservar estado de tarea si existía
+            const wasTaskEvaluation = reactState.isTaskEvaluationSession || 
+                                    localStorage.getItem('isTaskEvaluation') === 'true' ||
+                                    urlParams.get('autoStart') === 'true' ||
+                                    urlParams.get('taskId');
+            
+            if (wasTaskEvaluation) {
+                log('💾 Preservando estado de evaluación de tarea al finalizar', 'info');
+                localStorage.setItem('isTaskEvaluation', 'true');
+                sessionStorage.setItem('isTaskEvaluation', 'true');
+                reactState.isTaskEvaluationSession = true;
+                reactState.isAutoStartMode = true;
+            }
+            
+            log('✅ Evaluación finalizada, mostrando pantalla de revisión', 'success');
+            updateDisplay();
+        }
+
+        function simulatePageRefresh() {
+            log('🔄 Simulando refresh de página...', 'warning');
+            
+            // Al refrescar, se pierde el estado React, pero debería recuperarse del storage
+            const wasTaskEvaluationInStorage = localStorage.getItem('isTaskEvaluation') === 'true' ||
+                                              sessionStorage.getItem('isTaskEvaluation') === 'true';
+            
+            // Simular pérdida de estado React
+            reactState.isTaskEvaluationSession = false;
+            reactState.isAutoStartMode = false;
+            reactState.evaluationFinished = true; // Suponemos que estaba finalizada
+            reactState.showResultDialog = false;
+            
+            log('⚠️ Estado React perdido por refresh', 'warning');
+            
+            // Simular recuperación de estado (esto es lo que debería hacer el useEffect)
+            if (wasTaskEvaluationInStorage) {
+                log('🔄 Recuperando estado de evaluación de tarea desde storage', 'info');
+                reactState.isTaskEvaluationSession = true;
+                reactState.isAutoStartMode = true;
+                log('✅ Estado recuperado exitosamente', 'success');
+            } else {
+                log('ℹ️ No hay estado de tarea para recuperar', 'info');
+            }
+            
+            updateDisplay();
+        }
+
+        function clearAllState() {
+            log('🧹 Limpiando todo el estado', 'info');
+            
+            // Limpiar estado React
+            reactState = {
+                isTaskEvaluationSession: false,
+                isAutoStartMode: false,
+                evaluationFinished: false,
+                showResultDialog: false
+            };
+            
+            // Limpiar URL params
+            urlParams = new URLSearchParams();
+            
+            // Limpiar storage
+            localStorage.removeItem('isTaskEvaluation');
+            sessionStorage.removeItem('isTaskEvaluation');
+            
+            // Limpiar log
+            document.getElementById('activityLog').innerHTML = '';
+            
+            log('✅ Todo el estado ha sido limpiado', 'success');
+            updateDisplay();
+        }
+
+        // Inicializar display
+        updateDisplay();
+        log('🚀 Test de persistencia iniciado', 'info');
+    </script>
+</body>
+</html>

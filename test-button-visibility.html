@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Visibilidad Botón Calificar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .demo-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .button-demo {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .dark-demo {
+            background: #1f2937;
+            border-color: #374151;
+            color: white;
+        }
+        .theme-toggle {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Prueba - Visibilidad del Botón Calificar</h1>
+    <p>Esta prueba compara la visibilidad del botón "Calificar" antes y después del ajuste de color.</p>
+
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 Cambiar Tema</button>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Comparación de Botones en Modo Claro</h2>
+        
+        <div class="button-demo">
+            <span><strong>ANTES:</strong> text-orange-700 (problema de visibilidad)</span>
+            <button class="bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 px-3 py-1 rounded text-sm">
+                Calificar Entrega
+            </button>
+        </div>
+        
+        <div class="button-demo">
+            <span><strong>DESPUÉS:</strong> text-orange-900 (mejor contraste)</span>
+            <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm">
+                Calificar Entrega
+            </button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Comparación de Botones en Modo Oscuro</h2>
+        
+        <div class="button-demo dark-demo">
+            <span><strong>ANTES y DESPUÉS:</strong> dark:text-orange-400 (sin cambios)</span>
+            <button class="bg-orange-900/20 hover:bg-orange-900/30 text-orange-400 border border-orange-700 px-3 py-1 rounded text-sm">
+                Calificar Entrega
+            </button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Demostración en Contexto</h2>
+        
+        <div class="demo-context">
+            <h3>Tabla de Estudiantes (Modo Claro)</h3>
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-4 py-2">Estudiante</th>
+                        <th class="border border-gray-300 px-4 py-2">Estado</th>
+                        <th class="border border-gray-300 px-4 py-2">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-2">Sofia Estudiante</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                Entregada
+                            </span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm">
+                                Calificar
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-2">Luis Estudiante</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                                Pendiente
+                            </span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="text-gray-400 text-sm">Sin entrega</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Análisis de Contraste</h2>
+        
+        <div class="contrast-analysis">
+            <h3>📊 Mejora de Contraste:</h3>
+            <ul class="list-disc ml-6 space-y-2">
+                <li><strong>Antes:</strong> text-orange-700 (#c2410c) sobre bg-orange-50 (#fff7ed)</li>
+                <li><strong>Después:</strong> text-orange-900 (#7c2d12) sobre bg-orange-50 (#fff7ed)</li>
+                <li><strong>Beneficio:</strong> Mayor contraste y mejor legibilidad en modo claro</li>
+                <li><strong>Modo oscuro:</strong> Sin cambios (ya era legible con text-orange-400)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Estados del Botón</h2>
+        
+        <div class="states-demo">
+            <h3>Estado Normal:</h3>
+            <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mb-2">
+                Calificar Entrega
+            </button>
+            
+            <h3>Estado Hover (simulado):</h3>
+            <button class="bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mb-2">
+                Calificar Entrega
+            </button>
+            
+            <h3>Versión Pequeña:</h3>
+            <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 px-2 py-1 rounded text-xs">
+                Calificar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let isDark = false;
+        
+        function toggleTheme() {
+            isDark = !isDark;
+            document.body.style.backgroundColor = isDark ? '#1f2937' : '#f5f5f5';
+            document.body.style.color = isDark ? 'white' : '#333';
+            
+            const sections = document.querySelectorAll('.demo-section');
+            sections.forEach(section => {
+                if (isDark) {
+                    section.style.backgroundColor = '#374151';
+                    section.style.color = 'white';
+                    section.style.borderColor = '#4b5563';
+                } else {
+                    section.style.backgroundColor = 'white';
+                    section.style.color = '#333';
+                    section.style.borderColor = '#ddd';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

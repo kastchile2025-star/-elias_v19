@@ -1,0 +1,15 @@
+/* Custom table styles */
+.centered-header {
+  text-align: center !important;
+}
+
+/* Add additional spacing around the text for better readability */
+.centered-header.py-2 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Make sure table headers stand out well */
+thead.bg-muted th.centered-header {
+  font-weight: 600;
+}

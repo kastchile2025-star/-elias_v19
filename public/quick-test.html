@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick API Test</title>
+</head>
+<body>
+    <h1>Quick API Test</h1>
+    <button onclick="testAPI()">Test /api/test-endpoint</button>
+    <button onclick="testBulkUpload()">Test /api/firebase/bulk-upload-grades</button>
+    <pre id="output"></pre>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        async function testAPI() {
+            output.textContent = 'Testing /api/test-endpoint...\n';
+            try {
+                const response = await fetch('/api/test-endpoint', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ test: true })
+                });
+                const data = await response.json();
+                output.textContent += 'Success!\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent += 'Error: ' + error.message + '\n' + error.stack;
+            }
+        }
+        
+        async function testBulkUpload() {
+            output.textContent = 'Testing /api/firebase/bulk-upload-grades...\n';
+            try {
+                // Sin archivo, solo para ver si responde
+                const formData = new FormData();
+                const response = await fetch('/api/firebase/bulk-upload-grades', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                output.textContent += `Status: ${response.status}\n` + JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent += 'Error: ' + error.message + '\n' + error.stack;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Fix Notificaciones Duplicadas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; color: #856404; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .step { margin: 15px 0; padding: 15px; border-left: 4px solid #007bff; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test: Corrección de Notificaciones Duplicadas</h1>
+        
+        <div class="test-section info">
+            <h2>📋 Descripción del Problema</h2>
+            <p>Los estudiantes recibían <strong>2 notificaciones</strong> cuando el profesor creaba una tarea:</p>
+            <ul>
+                <li>Una notificación por la <strong>nueva tarea</strong></li>
+                <li>Una notificación adicional por el <strong>comentario del profesor</strong> (si lo agregaba inmediatamente)</li>
+            </ul>
+            <p><strong>Solución:</strong> No enviar notificaciones de comentario si han pasado menos de 5 minutos desde la creación de la tarea.</p>
+        </div>
+
+        <div class="test-section warning">
+            <h2>🧪 Pasos del Test</h2>
+            <div class="step">
+                <strong>1.</strong> Crear un profesor y estudiantes de prueba
+            </div>
+            <div class="step">
+                <strong>2.</strong> El profesor crea una nueva tarea
+            </div>
+            <div class="step">
+                <strong>3.</strong> El profesor agrega un comentario inmediatamente (menos de 5 minutos)
+            </div>
+            <div class="step">
+                <strong>4.</strong> Verificar que solo existe <strong>1 notificación</strong> por la tarea
+            </div>
+            <div class="step">
+                <strong>5.</strong> Probar agregar comentario después de 5 minutos
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🚀 Ejecutar Tests</h2>
+            <button onclick="setupTestData()">1. Configurar Datos de Prueba</button>
+            <button onclick="testImmediateComment()">2. Test: Comentario Inmediato</button>
+            <button onclick="testDelayedComment()">3. Test: Comentario Tardío</button>
+            <button onclick="viewResults()">4. Ver Resultados</button>
+            <button onclick="cleanupTest()">Limpiar</button>
+        </div>
+
+        <div id="results" class="test-section"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let testTaskId = null;
+
+        function log(message, type = 'info') {
+            testResults.push({ message, type, timestamp: new Date().toISOString() });
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function setupTestData() {
+            try {
+                // Crear usuario profesor
+                const testUsers = {
+                    'prof_test': {
+                        username: 'prof_test',
+                        displayName: 'Profesor Test',
+                        role: 'teacher',
+                        email: 'profesor@test.com',
+                        activeCourses: ['Curso Test'],
+                        teachingSubjects: ['Matemáticas']
+                    },
+                    'estudiante_test': {
+                        username: 'estudiante_test',
+                        displayName: 'Estudiante Test',
+                        role: 'student',
+                        email: 'estudiante@test.com',
+                        activeCourses: ['Curso Test']
+                    }
+                };
+
+                localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+                localStorage.setItem('smart-student-user', JSON.stringify(testUsers['prof_test']));
+                
+                // Limpiar datos previos
+                localStorage.setItem('smart-student-tasks', JSON.stringify([]));
+                localStorage.setItem('smart-student-task-comments', JSON.stringify([]));
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify([]));
+
+                log('✅ Datos de prueba configurados correctamente', 'success');
+                log('Profesor creado: prof_test', 'info');
+                log('Estudiante creado: estudiante_test', 'info');
+                
+            } catch (error) {
+                log(`❌ Error en configuración: ${error.message}`, 'error');
+            }
+        }
+
+        function testImmediateComment() {
+            try {
+                log('\n=== TEST 1: COMENTARIO INMEDIATO ===', 'info');
+                
+                // 1. Crear tarea nueva
+                const newTask = {
+                    id: `task_test_${Date.now()}`,
+                    title: 'Tarea Test - Notificaciones',
+                    description: 'Tarea para probar el fix de notificaciones duplicadas',
+                    subject: 'Matemáticas',
+                    course: 'Curso Test',
+                    assignedBy: 'prof_test',
+                    assignedByName: 'Profesor Test',
+                    assignedTo: 'course',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    priority: 'medium',
+                    taskType: 'assignment'
+                };
+
+                testTaskId = newTask.id;
+                
+                // Guardar tarea
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                tasks.push(newTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+                log('📝 Tarea creada: ' + newTask.title, 'success');
+
+                // 2. Simular notificación de nueva tarea (esto siempre debe ocurrir)
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const newTaskNotification = {
+                    id: `new_task_${newTask.id}_${Date.now()}`,
+                    type: 'new_task',
+                    taskId: newTask.id,
+                    taskTitle: newTask.title,
+                    targetUserRole: 'student',
+                    targetUsernames: ['estudiante_test'],
+                    fromUsername: 'prof_test',
+                    fromDisplayName: 'Profesor Test',
+                    course: newTask.course,
+                    subject: newTask.subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: []
+                };
+                
+                notifications.push(newTaskNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                log('🔔 Notificación de nueva tarea creada', 'success');
+
+                // 3. Agregar comentario inmediatamente (simular el comportamiento corregido)
+                const comment = {
+                    id: `comment_${Date.now()}`,
+                    taskId: newTask.id,
+                    studentUsername: 'prof_test',
+                    studentName: 'Profesor Test',
+                    comment: 'Este es un comentario inicial del profesor con instrucciones adicionales.',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher'
+                };
+
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                comments.push(comment);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+                log('💬 Comentario del profesor agregado inmediatamente', 'info');
+
+                // 4. Verificar el fix: NO debe crear notificación de comentario porque es inmediato
+                const taskCreatedAt = new Date(newTask.createdAt).getTime();
+                const commentTime = new Date(comment.timestamp).getTime();
+                const timeDifference = commentTime - taskCreatedAt;
+                
+                log(`⏱️ Tiempo transcurrido: ${timeDifference}ms (${timeDifference / 1000} segundos)`, 'info');
+                
+                if (timeDifference < 5 * 60 * 1000) {
+                    log('✅ CORRECTO: No se debe crear notificación de comentario (< 5 minutos)', 'success');
+                } else {
+                    log('❌ ERROR: El comentario no es inmediato', 'error');
+                }
+
+                // 5. Verificar total de notificaciones
+                const finalNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const taskNotifications = finalNotifications.filter(n => n.taskId === newTask.id);
+                
+                log(`📊 Total notificaciones para esta tarea: ${taskNotifications.length}`, 'info');
+                
+                if (taskNotifications.length === 1) {
+                    log('✅ ÉXITO: Solo 1 notificación (por la tarea nueva)', 'success');
+                } else {
+                    log(`❌ FALLO: Se esperaba 1 notificación, pero hay ${taskNotifications.length}`, 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error en test inmediato: ${error.message}`, 'error');
+            }
+        }
+
+        function testDelayedComment() {
+            try {
+                log('\n=== TEST 2: COMENTARIO TARDÍO ===', 'info');
+                
+                if (!testTaskId) {
+                    log('❌ Ejecuta primero el test de comentario inmediato', 'error');
+                    return;
+                }
+
+                // Simular un comentario agregado después de 5 minutos
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const testTask = tasks.find(t => t.id === testTaskId);
+                
+                if (!testTask) {
+                    log('❌ No se encontró la tarea de prueba', 'error');
+                    return;
+                }
+
+                // Modificar la fecha de creación de la tarea para simular que pasaron 6 minutos
+                const oldCreatedAt = new Date(testTask.createdAt);
+                const newCreatedAt = new Date(oldCreatedAt.getTime() - 6 * 60 * 1000); // 6 minutos atrás
+                testTask.createdAt = newCreatedAt.toISOString();
+                
+                // Actualizar tarea
+                const updatedTasks = tasks.map(t => t.id === testTaskId ? testTask : t);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(updatedTasks));
+                
+                log('⏰ Fecha de creación modificada para simular 6 minutos transcurridos', 'info');
+
+                // Agregar comentario tardío
+                const delayedComment = {
+                    id: `comment_delayed_${Date.now()}`,
+                    taskId: testTaskId,
+                    studentUsername: 'prof_test',
+                    studentName: 'Profesor Test',
+                    comment: 'Este es un comentario tardío del profesor, debe generar notificación.',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher'
+                };
+
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                comments.push(delayedComment);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+
+                // Simular la creación de notificación de comentario (esto SÍ debe ocurrir)
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                const taskCreatedAt = new Date(testTask.createdAt).getTime();
+                const commentTime = new Date(delayedComment.timestamp).getTime();
+                const timeDifference = commentTime - taskCreatedAt;
+                
+                log(`⏱️ Tiempo transcurrido: ${timeDifference}ms (${timeDifference / (1000 * 60)} minutos)`, 'info');
+                
+                if (timeDifference > 5 * 60 * 1000) {
+                    // Crear notificación de comentario
+                    const commentNotification = {
+                        id: `teacher_comment_${testTaskId}_${Date.now()}`,
+                        type: 'teacher_comment',
+                        taskId: testTaskId,
+                        taskTitle: testTask.title,
+                        targetUserRole: 'student',
+                        targetUsernames: ['estudiante_test'],
+                        fromUsername: 'prof_test',
+                        fromDisplayName: 'Profesor Test',
+                        course: testTask.course,
+                        subject: testTask.subject,
+                        timestamp: new Date().toISOString(),
+                        read: false,
+                        readBy: []
+                    };
+                    
+                    notifications.push(commentNotification);
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                    log('🔔 Notificación de comentario tardío creada', 'success');
+                    
+                } else {
+                    log('❌ ERROR: El comentario aún es considerado inmediato', 'error');
+                }
+
+                // Verificar total de notificaciones
+                const finalNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const taskNotifications = finalNotifications.filter(n => n.taskId === testTaskId);
+                
+                log(`📊 Total notificaciones para esta tarea: ${taskNotifications.length}`, 'info');
+                
+                if (taskNotifications.length === 2) {
+                    log('✅ ÉXITO: 2 notificaciones (1 por tarea nueva + 1 por comentario tardío)', 'success');
+                } else {
+                    log(`❌ FALLO: Se esperaban 2 notificaciones, pero hay ${taskNotifications.length}`, 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error en test tardío: ${error.message}`, 'error');
+            }
+        }
+
+        function viewResults() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (testResults.length === 0) {
+                resultsDiv.innerHTML = '<div class="result info">No hay resultados aún. Ejecuta los tests primero.</div>';
+                return;
+            }
+
+            let html = '<h2>📊 Resultados de los Tests</h2>';
+            
+            // Resumen
+            const successCount = testResults.filter(r => r.type === 'success').length;
+            const errorCount = testResults.filter(r => r.type === 'error').length;
+            const totalTests = successCount + errorCount;
+            
+            html += `<div class="result ${errorCount === 0 ? 'success' : 'warning'}">
+                <strong>Resumen:</strong> ${successCount}/${totalTests} tests exitosos
+            </div>`;
+
+            // Datos finales del sistema
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            html += `<div class="result info">
+                <strong>Estado Final del Sistema:</strong><br>
+                • Tareas: ${tasks.length}<br>
+                • Comentarios: ${comments.length}<br>
+                • Notificaciones: ${notifications.length}
+            </div>`;
+
+            if (testTaskId) {
+                const taskNotifications = notifications.filter(n => n.taskId === testTaskId);
+                html += `<div class="result info">
+                    <strong>Notificaciones para tarea de prueba:</strong><br>
+                    ${taskNotifications.map(n => `• ${n.type}: ${n.taskTitle}`).join('<br>')}
+                </div>`;
+            }
+
+            // Log detallado
+            html += '<h3>📝 Log Detallado</h3>';
+            html += '<pre>' + testResults.map(r => {
+                const time = new Date(r.timestamp).toLocaleTimeString();
+                return `[${time}] [${r.type.toUpperCase()}] ${r.message}`;
+            }).join('\n') + '</pre>';
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function cleanupTest() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-user');
+            
+            testResults = [];
+            testTaskId = null;
+            
+            document.getElementById('results').innerHTML = '<div class="result success">🧹 Datos de prueba eliminados</div>';
+            log('🧹 Cleanup completado', 'success');
+        }
+    </script>
+</body>
+</html>

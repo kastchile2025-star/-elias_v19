@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Traducciones de Evaluación (ES/EN)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .language-toggle { 
+            background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; 
+            margin: 10px 5px; font-size: 14px;
+        }
+        .language-toggle.active { background: #1d4ed8; }
+        .language-toggle:hover { background: #2563eb; }
+        .translation-card { 
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 10px 0; 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+        }
+        .spanish-text { background: #dcfce7; padding: 12px; border-radius: 6px; border-left: 4px solid #16a34a; }
+        .english-text { background: #dbeafe; padding: 12px; border-radius: 6px; border-left: 4px solid #3b82f6; }
+        .key-label { font-family: 'Courier New', monospace; font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+        .results-box { 
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; text-align: center; 
+            margin: 16px 0;
+        }
+        .results-box .icon { 
+            width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; 
+            font-size: 32px; color: #16a34a;
+        }
+        .results-box .title { color: #166534; font-weight: 600; margin-bottom: 8px; }
+        .results-box .score { 
+            background: white; border-radius: 8px; padding: 16px; margin-top: 8px; 
+        }
+        .results-box .score .percentage { color: #16a34a; font-size: 24px; font-weight: bold; }
+        .results-box .score .fraction { color: #6b7280; font-size: 14px; margin-top: 4px; }
+        .results-box .score .date { color: #9ca3af; font-size: 12px; margin-top: 8px; }
+        .button { 
+            background: #7c3aed; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; 
+            font-size: 14px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .button:hover { background: #6d28d9; }
+        .evaluation-prompt { 
+            background: #f3f4f6; border: 1px solid #d1d5db; padding: 16px; border-radius: 8px; margin: 16px 0;
+        }
+        .evaluation-prompt .text { color: #7c3aed; font-size: 14px; margin-bottom: 8px; }
+        .evaluation-prompt .details { color: #7c3aed; font-size: 12px; line-height: 1.4; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .table th, .table td { 
+            padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; 
+        }
+        .table th { 
+            background: #f9fafb; font-weight: 600; font-size: 14px; 
+        }
+        .table td { font-size: 14px; }
+        .info { background: #dbeafe; color: #1e40af; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .success { background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Test - Traducciones de Evaluación (ES/EN)</h1>
+        
+        <div class="info">
+            <h3>📋 Objetivo del Test</h3>
+            <p>Verificar que todas las traducciones del modal de evaluación funcionen correctamente en ambos idiomas:</p>
+            <ul>
+                <li><strong>Español (ES):</strong> Textos originales en español</li>
+                <li><strong>Inglés (EN):</strong> Textos traducidos al inglés</li>
+            </ul>
+        </div>
+
+        <!-- Controles de idioma -->
+        <div class="test-section">
+            <h2>🔧 Control de Idioma</h2>
+            <button class="language-toggle active" id="btn-es" onclick="setLanguage('es')">🇪🇸 Español</button>
+            <button class="language-toggle" id="btn-en" onclick="setLanguage('en')">🇬🇧 English</button>
+            
+            <div class="success">
+                <strong>Idioma Actual:</strong> <span id="current-language">Español</span>
+            </div>
+        </div>
+
+        <!-- Mapeo de Traducciones -->
+        <div class="test-section">
+            <h2>📝 Mapeo de Traducciones de Evaluación</h2>
+            <div id="translations-container">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Vista del Estudiante - Cuadro de Resultados -->
+        <div class="test-section">
+            <h2>👨‍🎓 Vista del Estudiante - Cuadro de Resultados</h2>
+            
+            <div class="results-box">
+                <div class="icon">🎓</div>
+                <h4 class="title" id="evaluation-completed-title">✅ Evaluación Completada</h4>
+                <div class="score">
+                    <div class="percentage">86.7% <span id="completed-label">Completado</span></div>
+                    <div class="fraction"><span id="score-label">Puntaje:</span> 13/15</div>
+                    <div class="date"><span id="completed-at-label">Completado:</span> 30/6/2025, 15:30:45</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista del Estudiante - Prompt de Evaluación -->
+        <div class="test-section">
+            <h2>👨‍🎓 Vista del Estudiante - Prompt de Evaluación</h2>
+            
+            <div class="evaluation-prompt">
+                <div class="text" id="evaluation-prompt-text">📝 Esta es una evaluación. Haz clic en el botón para comenzar.</div>
+                <div class="details">
+                    <div><span id="topic-label">📚 Tema:</span> Sistema Respiratorio</div>
+                    <div><span id="questions-label">❓ Preguntas:</span> 15</div>
+                    <div><span id="time-limit-label">⏱️ Tiempo límite:</span> 2 <span id="minutes-label">minutos</span></div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button class="button">
+                        🎓 <span id="take-evaluation-btn">Realizar Evaluación</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista del Profesor - Tabla de Resultados -->
+        <div class="test-section">
+            <h2>👨‍🏫 Vista del Profesor - Tabla de Resultados</h2>
+            
+            <h3 id="evaluation-results-title">📊 Resultados de la Evaluación</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th id="student-column">Estudiante</th>
+                        <th id="score-column">Puntaje</th>
+                        <th id="percentage-column">Porcentaje</th>
+                        <th id="completed-at-column">Completado el</th>
+                        <th id="status-column">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Felipe Estudiante</td>
+                        <td><span style="font-weight: 600;">13/15</span></td>
+                        <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 12px;">86.7%</span></td>
+                        <td>30/6/2025, 15:30:45</td>
+                        <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 12px;" id="status-completed">Completada</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Verificación de Claves -->
+        <div class="test-section">
+            <h2>🔍 Verificación de Claves de Traducción</h2>
+            <button onclick="verifyTranslations()" class="language-toggle">✅ Verificar Todas las Traducciones</button>
+            
+            <div id="verification-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Definir las traducciones
+        const translations = {
+            es: {
+                "evaluationCompleted": "✅ Evaluación Completada",
+                "completedPercentage": "Completado",
+                "scoreLabel": "Puntaje:",
+                "completedLabel": "Completado:",
+                "evaluationPrompt": "📝 Esta es una evaluación. Haz clic en el botón para comenzar.",
+                "topicLabel": "📚 Tema:",
+                "questionsLabel": "❓ Preguntas:",
+                "timeLimitLabel": "⏱️ Tiempo límite:",
+                "minutes": "minutos",
+                "takeEvaluation": "Realizar Evaluación",
+                "evaluationResults": "📊 Resultados de la Evaluación",
+                "studentName": "Estudiante",
+                "scoreColumn": "Puntaje",
+                "percentageColumn": "Porcentaje",
+                "completedAtColumn": "Completado el",
+                "statusColumn": "Estado",
+                "statusCompleted": "Completada"
+            },
+            en: {
+                "evaluationCompleted": "✅ Evaluation Completed",
+                "completedPercentage": "Completed",
+                "scoreLabel": "Score:",
+                "completedLabel": "Completed:",
+                "evaluationPrompt": "📝 This is an evaluation. Click the button to start.",
+                "topicLabel": "📚 Topic:",
+                "questionsLabel": "❓ Questions:",
+                "timeLimitLabel": "⏱️ Time limit:",
+                "minutes": "minutes",
+                "takeEvaluation": "Take Evaluation",
+                "evaluationResults": "📊 Evaluation Results",
+                "studentName": "Student",
+                "scoreColumn": "Score",
+                "percentageColumn": "Percentage",
+                "completedAtColumn": "Completed At",
+                "statusColumn": "Status",
+                "statusCompleted": "Completed"
+            }
+        };
+
+        let currentLanguage = 'es';
+
+        // Función para cambiar idioma
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Actualizar botones
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            
+            // Actualizar indicador
+            document.getElementById('current-language').textContent = lang === 'es' ? 'Español' : 'English';
+            
+            // Actualizar UI
+            updateUI();
+            updateTranslationsDisplay();
+        }
+
+        // Función para actualizar la UI con las traducciones
+        function updateUI() {
+            const t = translations[currentLanguage];
+            
+            // Cuadro de resultados
+            document.getElementById('evaluation-completed-title').textContent = t.evaluationCompleted;
+            document.getElementById('completed-label').textContent = t.completedPercentage;
+            document.getElementById('score-label').textContent = t.scoreLabel;
+            document.getElementById('completed-at-label').textContent = t.completedLabel;
+            
+            // Prompt de evaluación
+            document.getElementById('evaluation-prompt-text').textContent = t.evaluationPrompt;
+            document.getElementById('topic-label').textContent = t.topicLabel;
+            document.getElementById('questions-label').textContent = t.questionsLabel;
+            document.getElementById('time-limit-label').textContent = t.timeLimitLabel;
+            document.getElementById('minutes-label').textContent = t.minutes;
+            document.getElementById('take-evaluation-btn').textContent = t.takeEvaluation;
+            
+            // Tabla del profesor
+            document.getElementById('evaluation-results-title').textContent = t.evaluationResults;
+            document.getElementById('student-column').textContent = t.studentName;
+            document.getElementById('score-column').textContent = t.scoreColumn;
+            document.getElementById('percentage-column').textContent = t.percentageColumn;
+            document.getElementById('completed-at-column').textContent = t.completedAtColumn;
+            document.getElementById('status-column').textContent = t.statusColumn;
+            document.getElementById('status-completed').textContent = t.statusCompleted;
+        }
+
+        // Función para mostrar el mapeo de traducciones
+        function updateTranslationsDisplay() {
+            const container = document.getElementById('translations-container');
+            const esTranslations = translations.es;
+            const enTranslations = translations.en;
+            
+            let html = '';
+            Object.keys(esTranslations).forEach(key => {
+                html += `
+                    <div class="translation-card">
+                        <div>
+                            <div class="key-label">${key}</div>
+                            <div class="spanish-text">🇪🇸 ${esTranslations[key]}</div>
+                        </div>
+                        <div>
+                            <div class="key-label">${key}</div>
+                            <div class="english-text">🇬🇧 ${enTranslations[key]}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Función para verificar traducciones
+        function verifyTranslations() {
+            const results = document.getElementById('verification-results');
+            const esKeys = Object.keys(translations.es);
+            const enKeys = Object.keys(translations.en);
+            
+            let html = '<div class="success"><h4>✅ Resultados de Verificación</h4><ul>';
+            
+            // Verificar que todas las claves existan en ambos idiomas
+            const missingInEnglish = esKeys.filter(key => !enKeys.includes(key));
+            const missingInSpanish = enKeys.filter(key => !esKeys.includes(key));
+            
+            if (missingInEnglish.length === 0 && missingInSpanish.length === 0) {
+                html += '<li>✅ Todas las claves de traducción están presentes en ambos idiomas</li>';
+                html += `<li>✅ Total de traducciones: ${esKeys.length}</li>`;
+                html += '<li>✅ No hay claves faltantes</li>';
+                html += '<li>✅ Las traducciones están sincronizadas correctamente</li>';
+            } else {
+                if (missingInEnglish.length > 0) {
+                    html += `<li>❌ Claves faltantes en inglés: ${missingInEnglish.join(', ')}</li>`;
+                }
+                if (missingInSpanish.length > 0) {
+                    html += `<li>❌ Claves faltantes en español: ${missingInSpanish.join(', ')}</li>`;
+                }
+            }
+            
+            html += '</ul></div>';
+            results.innerHTML = html;
+        }
+
+        // Inicializar la página
+        window.addEventListener('load', function() {
+            updateUI();
+            updateTranslationsDisplay();
+            console.log('🌐 Translation test page loaded');
+        });
+    </script>
+</body>
+</html>

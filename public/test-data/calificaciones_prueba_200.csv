@@ -1,0 +1,171 @@
+nombre,rut,curso,seccion,asignatura,tipo,fecha,nota
+Lucia Alvarez,12345678-9,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,85
+Lucia Arancibia,23456789-0,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,78
+Lucia Bravo,34567890-1,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,92
+Lucia Castillo,45678901-2,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,88
+Lucia Castro,56789012-3,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,95
+Lucia Cortes,67890123-4,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,72
+Lucia Cubillos,78901234-5,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,81
+Lucia Diaz,89012345-6,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,90
+Lucia Fernandez,90123456-7,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,86
+Lucia Fuentes,11234567-8,2do Básico,A,Ciencias Naturales,tarea,2025-03-15,79
+Lucia Alvarez,12345678-9,2do Básico,A,Matemáticas,prueba,2025-03-20,82
+Lucia Arancibia,23456789-0,2do Básico,A,Matemáticas,prueba,2025-03-20,75
+Lucia Bravo,34567890-1,2do Básico,A,Matemáticas,prueba,2025-03-20,94
+Lucia Castillo,45678901-2,2do Básico,A,Matemáticas,prueba,2025-03-20,87
+Lucia Castro,56789012-3,2do Básico,A,Matemáticas,prueba,2025-03-20,91
+Lucia Cortes,67890123-4,2do Básico,A,Matemáticas,prueba,2025-03-20,70
+Lucia Cubillos,78901234-5,2do Básico,A,Matemáticas,prueba,2025-03-20,83
+Lucia Diaz,89012345-6,2do Básico,A,Matemáticas,prueba,2025-03-20,88
+Lucia Fernandez,90123456-7,2do Básico,A,Matemáticas,prueba,2025-03-20,85
+Lucia Fuentes,11234567-8,2do Básico,A,Matemáticas,prueba,2025-03-20,77
+Lucia Alvarez,12345678-9,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,80
+Lucia Arancibia,23456789-0,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,73
+Lucia Bravo,34567890-1,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,89
+Lucia Castillo,45678901-2,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,84
+Lucia Castro,56789012-3,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,92
+Lucia Cortes,67890123-4,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,68
+Lucia Cubillos,78901234-5,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,79
+Lucia Diaz,89012345-6,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,86
+Lucia Fernandez,90123456-7,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,82
+Lucia Fuentes,11234567-8,2do Básico,A,Lenguaje y Comunicación,evaluacion,2025-03-25,76
+Lucia Gomez,22345678-9,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,88
+Lucia Gonzalez,33456789-0,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,84
+Lucia Herrera,44567890-1,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,91
+Lucia Ibarra,55678901-2,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,87
+Lucia Lopez,66789012-3,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,93
+Lucia Martinez,77890123-4,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,74
+Lucia Mendez,88901234-5,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,82
+Lucia Miranda,99012345-6,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,89
+Lucia Molina,10123456-7,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,85
+Lucia Munoz,21234567-8,3ro Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-04-01,78
+Lucia Gomez,22345678-9,3ro Básico,A,Matemáticas,prueba,2025-04-05,86
+Lucia Gonzalez,33456789-0,3ro Básico,A,Matemáticas,prueba,2025-04-05,81
+Lucia Herrera,44567890-1,3ro Básico,A,Matemáticas,prueba,2025-04-05,95
+Lucia Ibarra,55678901-2,3ro Básico,A,Matemáticas,prueba,2025-04-05,90
+Lucia Lopez,66789012-3,3ro Básico,A,Matemáticas,prueba,2025-04-05,88
+Lucia Martinez,77890123-4,3ro Básico,A,Matemáticas,prueba,2025-04-05,72
+Lucia Mendez,88901234-5,3ro Básico,A,Matemáticas,prueba,2025-04-05,84
+Lucia Miranda,99012345-6,3ro Básico,A,Matemáticas,prueba,2025-04-05,92
+Lucia Molina,10123456-7,3ro Básico,A,Matemáticas,prueba,2025-04-05,87
+Lucia Munoz,21234567-8,3ro Básico,A,Matemáticas,prueba,2025-04-05,79
+Lucia Gomez,22345678-9,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,83
+Lucia Gonzalez,33456789-0,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,78
+Lucia Herrera,44567890-1,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,90
+Lucia Ibarra,55678901-2,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,85
+Lucia Lopez,66789012-3,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,92
+Lucia Martinez,77890123-4,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,71
+Lucia Mendez,88901234-5,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,80
+Lucia Miranda,99012345-6,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,88
+Lucia Molina,10123456-7,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,84
+Lucia Munoz,21234567-8,3ro Básico,A,Ciencias Naturales,tarea,2025-04-10,76
+Carlos Aguirre,12345678-9,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,87
+Carlos Benitez,23456789-0,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,82
+Carlos Campos,34567890-1,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,94
+Carlos Carmona,45678901-2,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,89
+Carlos Cruz,56789012-3,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,91
+Carlos Cubillos,67890123-4,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,73
+Carlos Ibarra,78901234-5,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,85
+Carlos Leiva,89012345-6,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,90
+Carlos Miranda,90123456-7,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,86
+Carlos Molina,11234567-8,3ro Básico,A,Lenguaje y Comunicación,evaluacion,2025-04-15,80
+Carlos Aguirre,12345678-9,4to Básico,A,Matemáticas,tarea,2025-05-01,85
+Carlos Benitez,23456789-0,4to Básico,A,Matemáticas,tarea,2025-05-01,79
+Carlos Campos,34567890-1,4to Básico,A,Matemáticas,tarea,2025-05-01,92
+Carlos Carmona,45678901-2,4to Básico,A,Matemáticas,tarea,2025-05-01,88
+Carlos Cruz,56789012-3,4to Básico,A,Matemáticas,tarea,2025-05-01,95
+Carlos Cubillos,67890123-4,4to Básico,A,Matemáticas,tarea,2025-05-01,70
+Carlos Ibarra,78901234-5,4to Básico,A,Matemáticas,tarea,2025-05-01,83
+Carlos Leiva,89012345-6,4to Básico,A,Matemáticas,tarea,2025-05-01,89
+Carlos Miranda,90123456-7,4to Básico,A,Matemáticas,tarea,2025-05-01,86
+Carlos Molina,11234567-8,4to Básico,A,Matemáticas,tarea,2025-05-01,77
+Carlos Aguirre,12345678-9,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,82
+Carlos Benitez,23456789-0,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,76
+Carlos Campos,34567890-1,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,93
+Carlos Carmona,45678901-2,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,87
+Carlos Cruz,56789012-3,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,91
+Carlos Cubillos,67890123-4,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,69
+Carlos Ibarra,78901234-5,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,81
+Carlos Leiva,89012345-6,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,88
+Carlos Miranda,90123456-7,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,84
+Carlos Molina,11234567-8,4to Básico,A,Ciencias Naturales,prueba,2025-05-10,75
+Pedro Carmona,12345678-9,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,88
+Pedro Leiva,23456789-0,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,83
+Pedro Molina,34567890-1,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,92
+Pedro Quinteros,45678901-2,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,89
+Pedro Salinas,56789012-3,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,94
+Pedro Sepulveda,67890123-4,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,72
+Pedro Serrano,78901234-5,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,85
+Pedro Tapia,89012345-6,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,90
+Carlos Paredes,90123456-7,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,86
+Carlos Quinteros,11234567-8,5to Básico,A,Historia; Geografía y Ciencias Sociales,evaluacion,2025-05-15,79
+Pedro Carmona,12345678-9,5to Básico,A,Matemáticas,tarea,2025-05-20,84
+Pedro Leiva,23456789-0,5to Básico,A,Matemáticas,tarea,2025-05-20,78
+Pedro Molina,34567890-1,5to Básico,A,Matemáticas,tarea,2025-05-20,91
+Pedro Quinteros,45678901-2,5to Básico,A,Matemáticas,tarea,2025-05-20,87
+Pedro Salinas,56789012-3,5to Básico,A,Matemáticas,tarea,2025-05-20,93
+Pedro Sepulveda,67890123-4,5to Básico,A,Matemáticas,tarea,2025-05-20,71
+Pedro Serrano,78901234-5,5to Básico,A,Matemáticas,tarea,2025-05-20,83
+Pedro Tapia,89012345-6,5to Básico,A,Matemáticas,tarea,2025-05-20,89
+Carlos Paredes,90123456-7,5to Básico,A,Matemáticas,tarea,2025-05-20,85
+Carlos Quinteros,11234567-8,5to Básico,A,Matemáticas,tarea,2025-05-20,77
+Martin Castro,12345678-9,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,86
+Martin Diaz,23456789-0,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,81
+Martin Fernandez,34567890-1,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,94
+Martin Fuentes,45678901-2,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,89
+Martin Gomez,56789012-3,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,92
+Martin Gonzalez,67890123-4,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,73
+Martin Herrera,78901234-5,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,84
+Martin Lopez,89012345-6,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,90
+Martin Martinez,90123456-7,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,87
+Martin Mendez,11234567-8,6to Básico,A,Lenguaje y Comunicación,prueba,2025-06-01,79
+Martin Castro,12345678-9,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,83
+Martin Diaz,23456789-0,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,77
+Martin Fernandez,34567890-1,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,91
+Martin Fuentes,45678901-2,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,86
+Martin Gomez,56789012-3,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,93
+Martin Gonzalez,67890123-4,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,70
+Martin Herrera,78901234-5,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,82
+Martin Lopez,89012345-6,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,88
+Martin Martinez,90123456-7,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,85
+Martin Mendez,11234567-8,6to Básico,A,Ciencias Naturales,tarea,2025-06-10,76
+Martin Castro,12345678-9,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,85
+Martin Diaz,23456789-0,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,79
+Martin Fernandez,34567890-1,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,92
+Martin Fuentes,45678901-2,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,88
+Martin Gomez,56789012-3,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,94
+Martin Gonzalez,67890123-4,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,72
+Martin Herrera,78901234-5,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,84
+Martin Lopez,89012345-6,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,90
+Martin Martinez,90123456-7,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,86
+Martin Mendez,11234567-8,7mo Básico,A,Matemáticas,evaluacion,2025-06-15,78
+Martin Morales,22345678-9,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,87
+Martin Munoz,33456789-0,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,82
+Martin Navarro,44567890-1,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,93
+Martin Palma,55678901-2,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,89
+Martin Perez,66789012-3,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,91
+Martin Ramirez,77890123-4,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,74
+Martin Rios,88901234-5,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,85
+Martin Rodriguez,99012345-6,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,90
+Martin Rojas,10123456-7,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,86
+Martin Sanchez,21234567-8,8vo Básico,A,Historia; Geografía y Ciencias Sociales,tarea,2025-07-01,79
+Martin Morales,22345678-9,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,84
+Martin Munoz,33456789-0,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,78
+Martin Navarro,44567890-1,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,92
+Martin Palma,55678901-2,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,88
+Martin Perez,66789012-3,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,94
+Martin Ramirez,77890123-4,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,71
+Martin Rios,88901234-5,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,83
+Martin Rodriguez,99012345-6,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,89
+Martin Rojas,10123456-7,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,85
+Martin Sanchez,21234567-8,8vo Básico,A,Lenguaje y Comunicación,prueba,2025-07-10,77
+Martin Silva,32345678-9,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,86
+Martin Vera,43456789-0,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,81
+Lucia Aguilar,54567890-1,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,93
+Lucia Benitez,65678901-2,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,89
+Lucia Caceres,76789012-3,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,91
+Lucia Campos,87890123-4,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,73
+Lucia Carmona,98901234-5,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,84
+Lucia Cortes,19012345-6,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,90
+Lucia Cruz,20123456-7,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,87
+Lucia Cubillos,31234567-8,8vo Básico,B,Ciencias Naturales,tarea,2025-07-15,79

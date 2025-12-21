@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug - Formato Notificaciones Estudiante vs Profesor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .student { border-left: 4px solid #2196F3; }
+        .teacher { border-left: 4px solid #FF9800; }
+        .notification-item {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #ccc;
+        }
+        .title { font-weight: bold; color: #333; }
+        .subtitle { font-size: 0.9em; color: #666; }
+        .id { font-family: monospace; font-size: 0.8em; color: #999; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .error { color: #f44336; }
+        .success { color: #4CAF50; }
+        .warning { color: #FF9800; }
+        .info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Formato Notificaciones Estudiante vs Profesor</h1>
+        <p>Comparando cómo se muestran las notificaciones en ambos roles</p>
+        
+        <button onclick="analyzeNotifications()">🔍 Analizar Notificaciones</button>
+        <button onclick="fixNotificationFormat()">🔧 Corregir Formato</button>
+        <button onclick="testNotificationDisplay()">📱 Probar Display</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `notification-item ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function analyzeNotifications() {
+            document.getElementById('results').innerHTML = '';
+            log('🔍 Analizando notificaciones almacenadas...', 'info');
+
+            try {
+                // Obtener datos del localStorage
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+
+                log(`📊 Usuario actual: ${currentUser.username} (${currentUser.role})`, 'info');
+                log(`📊 Total notificaciones: ${notifications.length}`, 'info');
+                log(`📊 Total tareas: ${tasks.length}`, 'info');
+
+                // Filtrar notificaciones de tareas
+                const taskNotifications = notifications.filter(n => 
+                    n.type === 'new_task' || n.type === 'task_created'
+                );
+
+                log(`📋 Notificaciones de tareas: ${taskNotifications.length}`, 'info');
+
+                taskNotifications.forEach((notif, index) => {
+                    log(`<div class="debug-section">
+                        <strong>${index + 1}. Notificación ID: ${notif.id}</strong><br>
+                        <div class="title">Título: ${notif.taskTitle || '❌ NO TIENE TÍTULO'}</div>
+                        <div class="subtitle">TaskId: ${notif.taskId}</div>
+                        <div class="subtitle">Para: ${notif.toUsername}</div>
+                        <div class="subtitle">Tipo: ${notif.type}</div>
+                        <div class="subtitle">Curso: ${notif.course}</div>
+                        <div class="subtitle">Materia: ${notif.subject}</div>
+                        <div class="subtitle">Timestamp: ${new Date(notif.timestamp).toLocaleString()}</div>
+                    </div>`, 'info');
+
+                    // Buscar la tarea correspondiente
+                    const task = tasks.find(t => t.id === notif.taskId);
+                    if (task) {
+                        log(`📝 Tarea encontrada: "${task.title}"`, 'success');
+                    } else {
+                        log(`❌ Tarea NO encontrada para taskId: ${notif.taskId}`, 'error');
+                    }
+                });
+
+            } catch (error) {
+                log(`❌ Error al analizar: ${error.message}`, 'error');
+            }
+        }
+
+        function fixNotificationFormat() {
+            log('🔧 Iniciando corrección de formato...', 'info');
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+
+                let correctedCount = 0;
+
+                const correctedNotifications = notifications.map(notif => {
+                    if ((notif.type === 'new_task' || notif.type === 'task_created') && !notif.taskTitle) {
+                        // Buscar la tarea correspondiente
+                        const task = tasks.find(t => t.id === notif.taskId);
+                        if (task) {
+                            notif.taskTitle = task.title;
+                            correctedCount++;
+                            log(`✅ Corregido: ${notif.id} -> "${task.title}"`, 'success');
+                        } else {
+                            log(`⚠️ No se encontró tarea para: ${notif.taskId}`, 'warning');
+                        }
+                    }
+                    return notif;
+                });
+
+                // Guardar las notificaciones corregidas
+                localStorage.setItem('smart-student-notifications', JSON.stringify(correctedNotifications));
+
+                log(`🎉 Corrección completada: ${correctedCount} notificaciones actualizadas`, 'success');
+
+            } catch (error) {
+                log(`❌ Error en la corrección: ${error.message}`, 'error');
+            }
+        }
+
+        function testNotificationDisplay() {
+            log('📱 Probando formato de display...', 'info');
+
+            // Simular datos como en las imágenes
+            const mockNotifications = [
+                {
+                    id: 'test-1',
+                    taskTitle: 'asdas',
+                    taskId: '9077a78d-c290-45f9-b549-6e570f88282d',
+                    type: 'new_task',
+                    course: '9077a79d-c290-45f9-b549-6e57df8828d2-d326c181-fa30-4c50-ab68-efa085a3ffd3',
+                    subject: 'Matemáticas',
+                    timestamp: new Date().toISOString(),
+                    toUsername: 'felipe'
+                }
+            ];
+
+            // Función para obtener abreviación del curso
+            function getCourseAbbreviation(subject) {
+                const abbreviations = {
+                    'Matemáticas': 'MAT',
+                    'Lenguaje': 'LEN',
+                    'Ciencias': 'CIE',
+                    'Historia': 'HIS',
+                    'Inglés': 'ING'
+                };
+                return abbreviations[subject] || subject.substr(0, 3).toUpperCase();
+            }
+
+            // Función para obtener nombre del curso
+            function getCourseNameById(courseId) {
+                // Simulando la función real
+                return '4to Básico';
+            }
+
+            // Función para formatear fecha
+            function formatDate(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit'
+                }) + ', ' + date.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            log('<div class="debug-section teacher"><h3>🏫 Formato Profesor (Correcto)</h3>', 'info');
+            mockNotifications.forEach(notif => {
+                log(`<div class="notification-item">
+                    <div class="title">${notif.taskTitle}</div>
+                    <div class="subtitle">${getCourseNameById(notif.course)} • ${formatDate(notif.timestamp)}</div>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #FF9800; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
+                            ${getCourseAbbreviation(notif.subject)}
+                        </span>
+                    </div>
+                </div>`, 'info');
+            });
+            log('</div>', 'info');
+
+            log('<div class="debug-section student"><h3>👨‍🎓 Formato Estudiante (A corregir)</h3>', 'info');
+            mockNotifications.forEach(notif => {
+                log(`<div class="notification-item">
+                    <div class="title">${notif.taskTitle || notif.taskId}</div>
+                    <div class="subtitle">${getCourseNameById(notif.course)} • ${formatDate(notif.timestamp)}</div>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #FF9800; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
+                            ${getCourseAbbreviation(notif.subject)}
+                        </span>
+                    </div>
+                </div>`, 'info');
+            });
+            log('</div>', 'info');
+        }
+
+        // Auto-ejecutar al cargar
+        window.onload = () => {
+            log('✅ Debug de formato de notificaciones cargado', 'success');
+            log('📋 Instrucciones:', 'info');
+            log('1. Haz clic en "Analizar Notificaciones" para ver el estado actual', 'info');
+            log('2. Haz clic en "Corregir Formato" para aplicar la corrección', 'info');
+            log('3. Haz clic en "Probar Display" para ver comparación visual', 'info');
+        };
+    </script>
+</body>
+</html>

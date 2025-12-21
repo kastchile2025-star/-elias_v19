@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demostración - Sistema de Validación de Tareas</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .demo-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .demo-section h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .code-block {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .test-passed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            background-color: #f8f9fa;
+        }
+        .step h4 {
+            color: #28a745;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Demostración - Sistema de Validación de Tareas</h1>
+        
+        <div class="demo-section">
+            <h3>📋 Descripción del Sistema</h3>
+            <p>Este sistema previene que los usuarios naveguen a tareas que no existen, evitando la apertura de modales vacíos o errores de navegación.</p>
+            <p><strong>Funcionalidades implementadas:</strong></p>
+            <ul>
+                <li>✅ Validación de existencia de tareas antes de mostrar enlaces</li>
+                <li>✅ Enlaces seguros que se deshabilitan si la tarea no existe</li>
+                <li>✅ Mensajes informativos cuando una tarea no está disponible</li>
+                <li>✅ Prevención de navegación a tareas fantasma</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🧪 Pruebas del Sistema</h3>
+            
+            <div class="step">
+                <h4>Paso 1: Crear tarea de prueba</h4>
+                <button class="btn btn-success" onclick="createTestTask()">Crear Tarea de Prueba</button>
+                <button class="btn btn-danger" onclick="deleteTestTask()">Eliminar Tarea de Prueba</button>
+                <div id="taskCreationResult"></div>
+            </div>
+
+            <div class="step">
+                <h4>Paso 2: Crear notificación fantasma</h4>
+                <button class="btn" onclick="createGhostNotification()">Crear Notificación Fantasma</button>
+                <button class="btn btn-danger" onclick="clearGhostNotifications()">Limpiar Notificaciones Fantasma</button>
+                <div id="ghostCreationResult"></div>
+            </div>
+
+            <div class="step">
+                <h4>Paso 3: Probar validación</h4>
+                <button class="btn" onclick="testValidation()">Probar Validación de Enlaces</button>
+                <div id="validationResult"></div>
+            </div>
+
+            <div class="step">
+                <h4>Paso 4: Simular enlaces del panel</h4>
+                <div id="linkSimulation"></div>
+                <button class="btn" onclick="simulateNotificationPanel()">Simular Panel de Notificaciones</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔧 Funciones Administrativas</h3>
+            <button class="btn btn-danger" onclick="resetAllData()">🗑️ Reset Completo</button>
+            <button class="btn" onclick="analyzeCurrentData()">📊 Analizar Datos</button>
+            <button class="btn" onclick="window.open('/dashboard/admin', '_blank')">👨‍💼 Panel de Admin</button>
+        </div>
+
+        <div class="demo-section">
+            <h3>📝 Log de Actividades</h3>
+            <div id="activityLog" class="code-block" style="max-height: 300px; overflow-y: auto;"></div>
+            <button class="btn" onclick="clearLog()">Limpiar Log</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales para la demostración
+        let testTaskId = 'test-task-' + Date.now();
+        let ghostNotificationId = 'ghost-notif-' + Date.now();
+
+        // Función para registrar actividades
+        function logActivity(message, type = 'info') {
+            const logElement = document.getElementById('activityLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(logEntry);
+        }
+
+        // Función para crear tarea de prueba
+        function createTestTask() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                const testTask = {
+                    id: testTaskId,
+                    title: 'Tarea de Prueba - Validación',
+                    description: 'Esta es una tarea creada para probar el sistema de validación',
+                    dueDate: new Date(Date.now() + 86400000).toISOString(), // Mañana
+                    subject: 'Pruebas',
+                    course: '4to Básico',
+                    assignedBy: 'jorge',
+                    assignedByName: 'Jorge Profesor',
+                    taskType: 'assignment'
+                };
+
+                tasks.push(testTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+                logActivity(`Tarea de prueba creada: ${testTask.title} (ID: ${testTaskId})`, 'success');
+                document.getElementById('taskCreationResult').innerHTML = 
+                    `<div class="test-passed">✅ Tarea creada exitosamente: ${testTask.title}</div>`;
+                
+                // Disparar evento para actualizar la UI
+                window.dispatchEvent(new Event('storage'));
+                
+            } catch (error) {
+                logActivity(`Error al crear tarea de prueba: ${error.message}`, 'error');
+                document.getElementById('taskCreationResult').innerHTML = 
+                    `<div class="test-failed">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Función para eliminar tarea de prueba
+        function deleteTestTask() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const filteredTasks = tasks.filter(task => task.id !== testTaskId);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+
+                logActivity(`Tarea de prueba eliminada: ${testTaskId}`, 'warning');
+                document.getElementById('taskCreationResult').innerHTML = 
+                    `<div class="warning">⚠️ Tarea eliminada: ${testTaskId}</div>`;
+                
+                // Disparar evento para actualizar la UI
+                window.dispatchEvent(new Event('storage'));
+                
+            } catch (error) {
+                logActivity(`Error al eliminar tarea de prueba: ${error.message}`, 'error');
+                document.getElementById('taskCreationResult').innerHTML = 
+                    `<div class="test-failed">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Función para crear notificación fantasma
+        function createGhostNotification() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                
+                const ghostNotification = {
+                    id: ghostNotificationId,
+                    type: 'new_task',
+                    taskId: 'non-existent-task-' + Date.now(),
+                    taskTitle: 'Tarea Fantasma',
+                    taskType: 'assignment',
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    targetUsernames: ['felipe'],
+                    message: 'Nueva tarea asignada',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    course: '4to Básico',
+                    subject: 'Pruebas'
+                };
+
+                notifications.push(ghostNotification);
+                localStorage.setItem('smart-student-notifications', JSON.stringify(notifications));
+
+                logActivity(`Notificación fantasma creada: ${ghostNotification.taskTitle} (TaskID: ${ghostNotification.taskId})`, 'warning');
+                document.getElementById('ghostCreationResult').innerHTML = 
+                    `<div class="warning">⚠️ Notificación fantasma creada: ${ghostNotification.taskTitle}</div>`;
+                
+                // Disparar evento para actualizar la UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                
+            } catch (error) {
+                logActivity(`Error al crear notificación fantasma: ${error.message}`, 'error');
+                document.getElementById('ghostCreationResult').innerHTML = 
+                    `<div class="test-failed">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Función para limpiar notificaciones fantasma
+        function clearGhostNotifications() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                const taskIds = new Set(tasks.map(task => task.id));
+                const validNotifications = notifications.filter(notification => 
+                    !notification.taskId || taskIds.has(notification.taskId)
+                );
+                
+                const removedCount = notifications.length - validNotifications.length;
+                localStorage.setItem('smart-student-notifications', JSON.stringify(validNotifications));
+
+                logActivity(`Notificaciones fantasma eliminadas: ${removedCount}`, 'success');
+                document.getElementById('ghostCreationResult').innerHTML = 
+                    `<div class="test-passed">✅ ${removedCount} notificaciones fantasma eliminadas</div>`;
+                
+                // Disparar evento para actualizar la UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                
+            } catch (error) {
+                logActivity(`Error al limpiar notificaciones fantasma: ${error.message}`, 'error');
+                document.getElementById('ghostCreationResult').innerHTML = 
+                    `<div class="test-failed">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Función para probar validación
+        function testValidation() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                // Probar tarea existente
+                const existingTask = tasks.find(task => task.id === testTaskId);
+                const existsResult = existingTask ? 'EXISTE' : 'NO EXISTE';
+                
+                // Probar tarea inexistente
+                const ghostTaskExists = tasks.some(task => task.id === 'non-existent-task-123');
+                const ghostResult = ghostTaskExists ? 'EXISTE (ERROR)' : 'NO EXISTE (CORRECTO)';
+                
+                let resultHtml = `
+                    <div class="test-result">
+                        <strong>🔍 Resultados de Validación:</strong><br>
+                        • Tarea de prueba (${testTaskId}): ${existsResult}<br>
+                        • Tarea fantasma (non-existent-task-123): ${ghostResult}<br>
+                        • Total de tareas en sistema: ${tasks.length}
+                    </div>
+                `;
+                
+                if (existingTask) {
+                    resultHtml += `<div class="test-passed">✅ Validación correcta: La tarea de prueba existe</div>`;
+                } else {
+                    resultHtml += `<div class="test-failed">❌ Validación fallida: La tarea de prueba no existe</div>`;
+                }
+                
+                if (!ghostTaskExists) {
+                    resultHtml += `<div class="test-passed">✅ Validación correcta: La tarea fantasma no existe</div>`;
+                } else {
+                    resultHtml += `<div class="test-failed">❌ Validación fallida: La tarea fantasma existe incorrectamente</div>`;
+                }
+                
+                document.getElementById('validationResult').innerHTML = resultHtml;
+                
+                logActivity(`Validación completada - Tareas: ${tasks.length}, Prueba: ${existsResult}, Fantasma: ${ghostResult}`, 'info');
+                
+            } catch (error) {
+                logActivity(`Error en validación: ${error.message}`, 'error');
+                document.getElementById('validationResult').innerHTML = 
+                    `<div class="test-failed">❌ Error en validación: ${error.message}</div>`;
+            }
+        }
+
+        // Función para simular panel de notificaciones
+        function simulateNotificationPanel() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                
+                let simulationHtml = '<h4>🔔 Simulación del Panel de Notificaciones:</h4>';
+                
+                notifications.forEach(notification => {
+                    if (notification.taskId) {
+                        const taskExists = tasks.some(task => task.id === notification.taskId);
+                        const linkStatus = taskExists ? 'ENLACE ACTIVO' : 'ENLACE DESHABILITADO';
+                        const linkClass = taskExists ? 'test-passed' : 'test-failed';
+                        
+                        simulationHtml += `
+                            <div class="${linkClass}">
+                                📋 ${notification.taskTitle || 'Sin título'}<br>
+                                🔗 Estado: ${linkStatus}<br>
+                                📍 TaskID: ${notification.taskId}<br>
+                                ${taskExists ? 
+                                    `<a href="/dashboard/tareas?taskId=${notification.taskId}" style="color: #007bff;">✅ Ver Tarea</a>` :
+                                    `<span style="color: #6c757d;">❌ Ver Tarea (No disponible)</span>`
+                                }
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (notifications.length === 0) {
+                    simulationHtml += '<div class="warning">⚠️ No hay notificaciones para mostrar</div>';
+                }
+                
+                document.getElementById('linkSimulation').innerHTML = simulationHtml;
+                
+                logActivity(`Simulación de panel completada - ${notifications.length} notificaciones procesadas`, 'info');
+                
+            } catch (error) {
+                logActivity(`Error en simulación: ${error.message}`, 'error');
+                document.getElementById('linkSimulation').innerHTML = 
+                    `<div class="test-failed">❌ Error en simulación: ${error.message}</div>`;
+            }
+        }
+
+        // Función para reset completo
+        function resetAllData() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los datos? Esta acción no se puede deshacer.')) {
+                try {
+                    const keysToRemove = [
+                        'smart-student-tasks',
+                        'smart-student-task-comments',
+                        'smart-student-notifications',
+                        'smart-student-evaluations',
+                        'smart-student-task-notifications',
+                        'notification-counts',
+                        'task-notification-counts'
+                    ];
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    // Reinicializar con arrays vacíos
+                    localStorage.setItem('smart-student-tasks', '[]');
+                    localStorage.setItem('smart-student-task-comments', '[]');
+                    localStorage.setItem('smart-student-notifications', '[]');
+                    localStorage.setItem('smart-student-evaluations', '[]');
+                    
+                    logActivity('Reset completo realizado - Todos los datos eliminados incluyendo badge de notificaciones', 'warning');
+                    
+                    // Disparar eventos para actualizar la UI (incluyendo conteo de notificaciones)
+                    window.dispatchEvent(new Event('storage'));
+                    window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                    window.dispatchEvent(new CustomEvent('notificationSyncCompleted'));
+                    window.dispatchEvent(new CustomEvent('commentsUpdated'));
+                    document.dispatchEvent(new Event('commentsUpdated'));
+                    document.dispatchEvent(new CustomEvent('notificationsCleared'));
+                    
+                } catch (error) {
+                    logActivity(`Error durante el reset: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Función para analizar datos actuales
+        function analyzeCurrentData() {
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                
+                logActivity(`Análisis de datos - Tareas: ${tasks.length}, Comentarios: ${comments.length}, Notificaciones: ${notifications.length}`, 'info');
+                
+                // Verificar consistencia
+                const taskIds = new Set(tasks.map(task => task.id));
+                const orphanComments = comments.filter(comment => comment.taskId && !taskIds.has(comment.taskId));
+                const orphanNotifications = notifications.filter(notification => notification.taskId && !taskIds.has(notification.taskId));
+                
+                logActivity(`Comentarios huérfanos: ${orphanComments.length}, Notificaciones huérfanas: ${orphanNotifications.length}`, 'warning');
+                
+            } catch (error) {
+                logActivity(`Error en análisis: ${error.message}`, 'error');
+            }
+        }
+
+        // Función para limpiar log
+        function clearLog() {
+            document.getElementById('activityLog').textContent = '';
+        }
+
+        // Inicializar demostración
+        document.addEventListener('DOMContentLoaded', function() {
+            logActivity('Sistema de demostración iniciado', 'info');
+            logActivity('Funciones disponibles: createTestTask, deleteTestTask, createGhostNotification, clearGhostNotifications', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+role,name,rut,email,username,password,course,section,subjects
+teacher,Ana López,12.345.678-9,ana.lopez@example.com,ana.lopez2,1234,1ro Básico,A,MAT
+teacher,Ana López,12.345.678-9,ana.lopez@example.com,ana.lopez2,1234,1ro Básico,A,LEN
+teacher,Pedro González,23.456.789-0,pedro.gonzalez@example.com,pedro.gonzalez2,1234,1ro Básico,A,CNT
+teacher,Pedro González,23.456.789-0,pedro.gonzalez@example.com,pedro.gonzalez2,1234,1ro Básico,A,HIST
+teacher,Ana López,12.345.678-9,ana.lopez@example.com,ana.lopez2,1234,1ro Básico,B,MAT
+teacher,Ana López,12.345.678-9,ana.lopez@example.com,ana.lopez2,1234,1ro Básico,B,LEN
+teacher,Pedro González,23.456.789-0,pedro.gonzalez@example.com,pedro.gonzalez2,1234,1ro Básico,B,CNT
+teacher,Pedro González,23.456.789-0,pedro.gonzalez@example.com,pedro.gonzalez2,1234,1ro Básico,B,HIST
+teacher,Lucía Fernández,34.567.890-1,lucia.fernandez@example.com,lucia.fernandez2,1234,2do Básico,A,MAT
+teacher,Lucía Fernández,34.567.890-1,lucia.fernandez@example.com,lucia.fernandez2,1234,2do Básico,A,LEN
+teacher,Carlos Pérez,45.678.901-2,carlos.perez@example.com,carlos.perez2,1234,2do Básico,A,CNT
+teacher,Carlos Pérez,45.678.901-2,carlos.perez@example.com,carlos.perez2,1234,2do Básico,A,HIST
+teacher,Lucía Fernández,34.567.890-1,lucia.fernandez@example.com,lucia.fernandez2,1234,2do Básico,B,MAT
+teacher,Lucía Fernández,34.567.890-1,lucia.fernandez@example.com,lucia.fernandez2,1234,2do Básico,B,LEN
+teacher,Carlos Pérez,45.678.901-2,carlos.perez@example.com,carlos.perez2,1234,2do Básico,B,CNT
+teacher,Carlos Pérez,45.678.901-2,carlos.perez@example.com,carlos.perez2,1234,2do Básico,B,HIST
+teacher,Martín Gómez,56.789.012-3,martin.gomez@example.com,martin.gomez2,1234,3ro Básico,A,MAT
+teacher,Martín Gómez,56.789.012-3,martin.gomez@example.com,martin.gomez2,1234,3ro Básico,A,LEN
+teacher,Sofía Martínez,67.890.123-4,sofia.martinez@example.com,sofia.martinez2,1234,3ro Básico,A,CNT
+teacher,Sofía Martínez,67.890.123-4,sofia.martinez@example.com,sofia.martinez2,1234,3ro Básico,A,HIST

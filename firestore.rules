@@ -1,0 +1,220 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ====================================
+    // REGLAS GENERALES DE AUTENTICACIÓN
+    // ====================================
+    
+    // Helper function para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function para verificar si el usuario es admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function para verificar si el usuario es profesor
+    function isTeacher() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+    
+    // Helper function para verificar si el usuario es estudiante
+    function isStudent() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'student';
+    }
+    
+    // ====================================
+    // COLECCIÓN: users
+    // ====================================
+    match /users/{userId} {
+      // Lectura: Solo usuarios autenticados pueden leer usuarios
+      allow read: if isAuthenticated();
+      
+      // Escritura: Solo admins pueden crear/actualizar/eliminar usuarios
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: courses (Cursos)
+    // ====================================
+    match /courses/{courseId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Solo admins
+      allow create, update, delete: if isAdmin();
+      
+      // ====================================
+      // SUB-COLECCIÓN: grades (Calificaciones)
+      // ====================================
+      match /grades/{gradeId} {
+        // Lectura: Todos los usuarios autenticados
+        allow read: if isAuthenticated();
+        
+        // Escritura: Admins y profesores pueden crear/actualizar
+        allow create, update: if isAdmin() || isTeacher();
+        
+        // Eliminación: Solo admins
+        allow delete: if isAdmin();
+      }
+      
+      // ====================================
+      // SUB-COLECCIÓN: sections (Secciones)
+      // ====================================
+      match /sections/{sectionId} {
+        // Lectura: Todos los usuarios autenticados
+        allow read: if isAuthenticated();
+        
+        // Escritura: Solo admins
+        allow create, update, delete: if isAdmin();
+      }
+      
+      // ====================================
+      // SUB-COLECCIÓN: students (Estudiantes del curso)
+      // ====================================
+      match /students/{studentId} {
+        // Lectura: Todos los usuarios autenticados
+        allow read: if isAuthenticated();
+        
+        // Escritura: Admins y profesores
+        allow create, update: if isAdmin() || isTeacher();
+        
+        // Eliminación: Solo admins
+        allow delete: if isAdmin();
+      }
+    }
+    
+    // ====================================
+    // COLECCIÓN: activities (Actividades/Tareas)
+    // ====================================
+    match /activities/{activityId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Admins y profesores
+      allow create, update: if isAdmin() || isTeacher();
+      
+      // Eliminación: Solo admins
+      allow delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: attendance (Asistencia)
+    // ====================================
+    match /attendance/{attendanceId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Admins y profesores
+      allow create, update: if isAdmin() || isTeacher();
+      
+      // Eliminación: Solo admins
+      allow delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: subjects (Asignaturas)
+    // ====================================
+    match /subjects/{subjectId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Solo admins
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: teacher_assignments (Asignaciones de profesores)
+    // ====================================
+    match /teacher_assignments/{assignmentId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Solo admins
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: student_assignments (Asignaciones de estudiantes)
+    // ====================================
+    match /student_assignments/{assignmentId} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
+      
+      // Escritura: Solo admins
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: imports (Carga masiva - temporal)
+    // ====================================
+    match /imports/{importId} {
+      // Lectura: Admins y el usuario que creó la importación
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      
+      // Escritura: Admins
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ====================================
+    // COLECCIÓN: notifications (Notificaciones)
+    // ====================================
+    match /notifications/{notificationId} {
+      // Lectura: Usuario autenticado puede leer sus propias notificaciones
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Escritura: Sistema y admins
+      allow create, update: if isAdmin();
+      
+      // Eliminación: Usuario puede eliminar sus propias notificaciones o admins
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
+    // ====================================
+    // COLECCIÓN: stats_cache (Estadísticas precomputadas)
+    // ====================================
+    match /stats_cache/{yearId} {
+      // Lectura: Todos los usuarios autenticados (para dashboard)
+      allow read: if true;  // Permitir lectura pública para estadísticas
+      
+      // Escritura: Solo desde Admin SDK (server-side)
+      allow write: if false;  // Solo Admin SDK puede escribir
+      
+      // Sub-colección: monthly (estadísticas mensuales)
+      match /monthly/{monthId} {
+        allow read: if true;
+        allow write: if false;
+      }
+      
+      // Sub-colección: courses (estadísticas por curso)
+      match /courses/{courseId} {
+        allow read: if true;
+        allow write: if false;
+      }
+      
+      // Sub-colección: sections (estadísticas por sección)
+      match /sections/{sectionId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+    
+    // ====================================
+    // REGLAS PARA DESARROLLO (DESACTIVAR EN PRODUCCIÓN)
+    // ====================================
+    // ⚠️ TEMPORAL: Permitir lectura/escritura para testing
+    // ⚠️ ELIMINAR ESTAS LÍNEAS EN PRODUCCIÓN
+    match /{document=**} {
+      allow read, write: if true;  // ⚠️ INSEGURO - Solo para desarrollo
+    }
+  }
+}

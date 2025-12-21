@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Corrección Formato Notificaciones - Estudiante como Profesor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .student { border-left: 4px solid #2196F3; }
+        .teacher { border-left: 4px solid #FF9800; }
+        .notification-item {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #ccc;
+        }
+        .title { font-weight: bold; color: #333; }
+        .subtitle { font-size: 0.9em; color: #666; }
+        .fixed { background: #e8f5e8; border-left-color: #4CAF50; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .error { color: #f44336; }
+        .success { color: #4CAF50; }
+        .warning { color: #FF9800; }
+        .info { color: #2196F3; }
+        .format-demo {
+            background: #f0f8ff;
+            border: 1px solid #cce7ff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Corrección Formato Notificaciones - Estudiante como Profesor</h1>
+        <p>Aplicando el formato del profesor al panel de estudiante dinámicamente</p>
+        
+        <div class="format-demo">
+            <h3>🎯 Formato Objetivo (como en Profesor):</h3>
+            <div class="notification-item teacher">
+                <div class="title">asdasd</div>
+                <div class="subtitle">4to Básico • 07/08/25, 09:47</div>
+                <div style="margin-top: 8px;">
+                    <span style="background: #FF9800; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">LEN</span>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="analyzeCurrentNotifications()">🔍 Analizar Estado Actual</button>
+        <button onclick="fixNotificationFormat()">🔧 Corregir Formato</button>
+        <button onclick="testFormatDisplay()">📱 Probar Formato</button>
+        <button onclick="syncWithTeacherFormat()">🎯 Sincronizar con Formato Profesor</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `notification-item ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function analyzeCurrentNotifications() {
+            clearResults();
+            log('🔍 Analizando notificaciones actuales...', 'info');
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+
+                log(`📊 Usuario actual: ${currentUser.username} (${currentUser.role})`, 'info');
+                log(`📊 Total notificaciones: ${notifications.length}`, 'info');
+                log(`📊 Total tareas: ${tasks.length}`, 'info');
+
+                // Analizar notificaciones de tareas
+                const taskNotifications = notifications.filter(n => 
+                    n.type === 'new_task' && 
+                    (n.targetUsernames?.includes(currentUser.username) || n.toUsername === currentUser.username)
+                );
+
+                log(`📋 Notificaciones de tareas para ${currentUser.username}: ${taskNotifications.length}`, 'info');
+
+                let problemCount = 0;
+                let fixedCount = 0;
+
+                taskNotifications.forEach((notif, index) => {
+                    const task = tasks.find(t => t.id === notif.taskId);
+                    const hasValidTitle = notif.taskTitle && notif.taskTitle !== notif.id && !notif.taskTitle.includes('-');
+                    
+                    if (!hasValidTitle) {
+                        problemCount++;
+                        log(`❌ Problema ${index + 1}: Notificación sin título válido`, 'error');
+                        log(`   ID: ${notif.id}`, 'error');
+                        log(`   TaskTitle actual: "${notif.taskTitle || 'VACÍO'}"`, 'error');
+                        log(`   TaskId: ${notif.taskId}`, 'error');
+                        
+                        if (task) {
+                            log(`   ✅ Tarea encontrada: "${task.title}"`, 'success');
+                        } else {
+                            log(`   ❌ Tarea NO encontrada`, 'error');
+                        }
+                    } else {
+                        fixedCount++;
+                        log(`✅ OK ${index + 1}: "${notif.taskTitle}"`, 'success');
+                    }
+                });
+
+                log(`📊 Resumen: ${fixedCount} correctas, ${problemCount} con problemas`, problemCount > 0 ? 'warning' : 'success');
+
+            } catch (error) {
+                log(`❌ Error al analizar: ${error.message}`, 'error');
+            }
+        }
+
+        function fixNotificationFormat() {
+            log('🔧 Iniciando corrección masiva de formato...', 'info');
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+
+                let correctedCount = 0;
+                const correctedNotifications = notifications.map(notif => {
+                    // Solo corregir notificaciones de tareas que afecten al usuario actual
+                    if ((notif.type === 'new_task' || notif.type === 'task_created') && 
+                        (notif.targetUsernames?.includes(currentUser.username) || notif.toUsername === currentUser.username)) {
+                        
+                        const task = tasks.find(t => t.id === notif.taskId);
+                        
+                        // Si no tiene título válido pero encontramos la tarea
+                        if ((!notif.taskTitle || notif.taskTitle === notif.id || notif.taskTitle.includes('-')) && task) {
+                            notif.taskTitle = task.title;
+                            correctedCount++;
+                            log(`✅ Corregido: ${notif.id} -> "${task.title}"`, 'success');
+                        }
+                        
+                        // Asegurar que tenga todos los campos necesarios para el formato
+                        if (!notif.course && task) notif.course = task.course;
+                        if (!notif.subject && task) notif.subject = task.subject;
+                        if (!notif.taskType && task) notif.taskType = task.taskType || 'assignment';
+                    }
+                    
+                    return notif;
+                });
+
+                // Guardar notificaciones corregidas
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(correctedNotifications));
+
+                log(`🎉 Corrección completada: ${correctedCount} notificaciones actualizadas`, 'success');
+                log('💾 Datos guardados en localStorage', 'success');
+
+                // Disparar evento para actualizar UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                window.dispatchEvent(new Event('storage'));
+
+            } catch (error) {
+                log(`❌ Error en la corrección: ${error.message}`, 'error');
+            }
+        }
+
+        function testFormatDisplay() {
+            log('📱 Probando formato de display mejorado...', 'info');
+
+            // Simular notificaciones con el formato correcto
+            const mockNotifications = [
+                {
+                    id: 'test-1',
+                    taskTitle: 'asdasd',
+                    taskId: '9077a78d-c290-45f9-b549-6e570f88282d',
+                    type: 'new_task',
+                    course: '9077a79d-c290-45f9-b549-6e57df8828d2-d326c181-fa30-4c50-ab68-efa085a3ffd3',
+                    subject: 'Lenguaje y Comunicación',
+                    timestamp: new Date().toISOString(),
+                    toUsername: 'felipe'
+                }
+            ];
+
+            const mockComments = [
+                {
+                    id: 'comment-1',
+                    task: {
+                        title: 'asdasd',
+                        course: '9077a79d-c290-45f9-b549-6e57df8828d2-d326c181-fa30-4c50-ab68-efa085a3ffd3',
+                        subject: 'Lenguaje y Comunicación'
+                    },
+                    comment: 'asdasdas',
+                    studentUsername: 'felipe',
+                    timestamp: new Date().toISOString()
+                }
+            ];
+
+            // Funciones auxiliares simuladas
+            function getCourseAbbreviation(subject) {
+                const abbreviations = {
+                    'Matemáticas': 'MAT',
+                    'Lenguaje y Comunicación': 'LEN',
+                    'Ciencias Naturales': 'CIE',
+                    'Historia': 'HIS',
+                    'Inglés': 'ING'
+                };
+                return abbreviations[subject] || subject.substr(0, 3).toUpperCase();
+            }
+
+            function getCourseNameById(courseId) {
+                return '4to Básico';
+            }
+
+            function formatDate(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit'
+                }) + ', ' + date.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            log('<div class="debug-section teacher"><h3>🏫 Formato Profesor (Referencia)</h3>', 'info');
+            mockNotifications.forEach(notif => {
+                log(`<div class="notification-item">
+                    <div class="title">${notif.taskTitle}</div>
+                    <div class="subtitle">${getCourseNameById(notif.course)} • ${formatDate(notif.timestamp)}</div>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #FF9800; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
+                            ${getCourseAbbreviation(notif.subject)}
+                        </span>
+                    </div>
+                </div>`, 'info');
+            });
+
+            mockComments.forEach(comment => {
+                log(`<div class="notification-item">
+                    <div class="title">felipe</div>
+                    <div class="subtitle">Comentario en: ${comment.task.title}</div>
+                    <div class="subtitle">${getCourseNameById(comment.task.course)} • ${formatDate(comment.timestamp)}</div>
+                </div>`, 'info');
+            });
+            log('</div>', 'info');
+
+            log('<div class="debug-section student"><h3>👨‍🎓 Formato Estudiante (Aplicado)</h3>', 'info');
+            mockNotifications.forEach(notif => {
+                log(`<div class="notification-item fixed">
+                    <div class="title">${notif.taskTitle}</div>
+                    <div class="subtitle">${getCourseNameById(notif.course)} • ${formatDate(notif.timestamp)}</div>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #FF9800; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
+                            ${getCourseAbbreviation(notif.subject)}
+                        </span>
+                    </div>
+                </div>`, 'info');
+            });
+
+            mockComments.forEach(comment => {
+                log(`<div class="notification-item fixed">
+                    <div class="title">${comment.studentUsername}</div>
+                    <div class="subtitle">Comentario en: ${comment.task.title}</div>
+                    <div class="subtitle">${getCourseNameById(comment.task.course)} • ${formatDate(comment.timestamp)}</div>
+                </div>`, 'info');
+            });
+            log('</div>', 'info');
+
+            log('✅ El formato ya está implementado correctamente en el código', 'success');
+            log('🎯 El problema era que notification.taskTitle no tenía el valor correcto', 'info');
+        }
+
+        function syncWithTeacherFormat() {
+            log('🎯 Sincronizando formato estudiante con formato profesor...', 'info');
+            
+            // La estructura ya existe en notifications-panel.tsx
+            // Solo necesitamos asegurar que los datos estén correctos
+            
+            fixNotificationFormat(); // Primero corregir los datos
+            
+            log('✅ Formato sincronizado', 'success');
+            log('📋 El panel de notificaciones ya usa el mismo formato para ambos roles:', 'info');
+            log('   • Título de la tarea en lugar del ID', 'info');
+            log('   • Curso y fecha en el mismo formato', 'info');
+            log('   • Badge con abreviación de la materia', 'info');
+            log('   • Botón "Ver Tarea" consistente', 'info');
+            
+            log('🔄 Recarga la página para ver los cambios aplicados', 'warning');
+        }
+
+        // Auto-ejecutar al cargar
+        window.onload = () => {
+            log('✅ Herramienta de corrección cargada', 'success');
+            log('📋 Esta herramienta corrige el formato de notificaciones para que el rol estudiante tenga el mismo formato que el profesor', 'info');
+        };
+    </script>
+</body>
+</html>

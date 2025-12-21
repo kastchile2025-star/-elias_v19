@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Comportamiento Correcto de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .scenario {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            background-color: #f8f9ff;
+        }
+        .step {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .notification-mock {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        .notification-visible {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        .notification-hidden {
+            border-color: #6c757d;
+            background-color: #f8f9fa;
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        h1, h2, h3 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Prueba: Comportamiento Correcto de Notificaciones</h1>
+    
+    <div class="test-section">
+        <h2>✅ Problema Solucionado</h2>
+        <div class="status success">
+            <strong>Antes:</strong> La notificación de nueva tarea desaparecía al entrar a la página de tareas.
+        </div>
+        <div class="status success">
+            <strong>Ahora:</strong> La notificación persiste hasta que el estudiante entregue la tarea.
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Flujo Correcto Implementado</h2>
+        
+        <div class="scenario">
+            <h3>📋 Escenario: Profesor crea tarea → Estudiante la entrega</h3>
+            
+            <div class="step">
+                <strong>Paso 1:</strong> Profesor crea nueva tarea
+                <div class="notification-mock notification-visible">
+                    🔔 <strong>Nueva tarea asignada</strong><br>
+                    <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small>
+                </div>
+                <em>Estado: Notificación VISIBLE</em>
+            </div>
+            
+            <div class="step">
+                <strong>Paso 2:</strong> Estudiante entra a la página de tareas
+                <div class="notification-mock notification-visible">
+                    🔔 <strong>Nueva tarea asignada</strong><br>
+                    <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small>
+                </div>
+                <em>Estado: Notificación AÚN VISIBLE (corrección aplicada)</em>
+            </div>
+            
+            <div class="step">
+                <strong>Paso 3:</strong> Estudiante hace clic en "Ver tarea"
+                <div class="notification-mock notification-visible">
+                    🔔 <strong>Nueva tarea asignada</strong><br>
+                    <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small>
+                </div>
+                <em>Estado: Notificación AÚN VISIBLE (corrección aplicada)</em>
+            </div>
+            
+            <div class="step">
+                <strong>Paso 4:</strong> Estudiante lee la tarea, agrega comentario SIN marcar como entrega
+                <div class="notification-mock notification-visible">
+                    🔔 <strong>Nueva tarea asignada</strong><br>
+                    <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small>
+                </div>
+                <em>Estado: Notificación AÚN VISIBLE</em>
+            </div>
+            
+            <div class="step">
+                <strong>Paso 5:</strong> Estudiante entrega la tarea (marca checkbox "Es una entrega")
+                <div class="notification-mock notification-hidden">
+                    🔔 <strong>Nueva tarea asignada</strong><br>
+                    <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small>
+                </div>
+                <em>Estado: Notificación MARCADA COMO LEÍDA</em>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Cambios Técnicos Realizados</h2>
+        
+        <div class="status info">
+            <strong>1. Corregida función al ver tarea:</strong><br>
+            ❌ Antes: <code>markTaskNotificationsAsReadOnReview()</code> - marcaba TODAS las notificaciones<br>
+            ✅ Ahora: <code>markGradeNotificationsAsReadOnTasksView()</code> - solo marca notificaciones de calificación
+        </div>
+        
+        <div class="status info">
+            <strong>2. Mantiene función al entregar:</strong><br>
+            ✅ <code>markNewTaskNotificationAsReadOnSubmission()</code> - marca notificación de nueva tarea solo al entregar
+        </div>
+        
+        <div class="status info">
+            <strong>3. Comportamiento por tipo de notificación:</strong><br>
+            • <strong>Nueva tarea:</strong> Se marca como leída solo al entregar<br>
+            • <strong>Calificación:</strong> Se marca como leída al entrar a la página de tareas<br>
+            • <strong>Comentario del profesor:</strong> Se marca como leída al ver la tarea específica
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Verificación Manual</h2>
+        <button onclick="showTestSteps()">📋 Mostrar Pasos de Prueba</button>
+        <div id="testSteps" style="display: none;">
+            <h3>Pasos para probar manualmente:</h3>
+            <ol>
+                <li><strong>Login como profesor:</strong> Crear una nueva tarea para el curso de Felipe</li>
+                <li><strong>Login como Felipe:</strong> Verificar que aparece la notificación en la campana</li>
+                <li><strong>Entrar a página de tareas:</strong> La notificación debe seguir visible</li>
+                <li><strong>Hacer clic en "Ver tarea":</strong> La notificación debe seguir visible</li>
+                <li><strong>Agregar comentario normal:</strong> La notificación debe seguir visible</li>
+                <li><strong>Entregar la tarea:</strong> Marcar "Es una entrega" y enviar</li>
+                <li><strong>Verificar:</strong> La notificación debe desaparecer</li>
+            </ol>
+            
+            <div class="status warning">
+                <strong>Nota:</strong> Si ves notificaciones de tareas previas que ya se marcaron incorrectamente como leídas, 
+                puedes usar el script de reparación para restablecerlas.
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛠️ Herramientas de Debug</h2>
+        <button onclick="checkNotificationState()">🔍 Verificar Estado de Notificaciones</button>
+        <button onclick="resetTaskNotifications()">🔄 Recrear Notificaciones de Prueba</button>
+        <div id="debugResults"></div>
+    </div>
+
+    <script>
+        function addResult(content, type = 'info') {
+            const container = document.getElementById('debugResults');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function showTestSteps() {
+            const testSteps = document.getElementById('testSteps');
+            testSteps.style.display = testSteps.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function checkNotificationState() {
+            const container = document.getElementById('debugResults');
+            container.innerHTML = '';
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+
+                if (!currentUser) {
+                    addResult('❌ No hay usuario logueado', 'error');
+                    return;
+                }
+
+                const userNotifications = notifications.filter(n => 
+                    n.targetUsernames.includes(currentUser.username)
+                );
+
+                addResult(`📊 Usuario actual: <strong>${currentUser.username}</strong>`, 'info');
+                addResult(`🔔 Total de notificaciones para este usuario: ${userNotifications.length}`, 'info');
+
+                userNotifications.forEach(notification => {
+                    const isRead = notification.readBy.includes(currentUser.username);
+                    const icon = isRead ? '✅' : '🔔';
+                    const status = isRead ? 'success' : 'warning';
+                    
+                    addResult(
+                        `${icon} <strong>${notification.type}</strong> - Tarea: "${notification.taskTitle}" - ${isRead ? 'LEÍDA' : 'NO LEÍDA'}`,
+                        status
+                    );
+                });
+
+                if (userNotifications.length === 0) {
+                    addResult('ℹ️ No hay notificaciones para este usuario', 'info');
+                }
+
+            } catch (error) {
+                addResult(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function resetTaskNotifications() {
+            if (confirm('¿Recrear notificaciones de prueba? Esto creará una notificación de nueva tarea no leída.')) {
+                try {
+                    const currentUser = JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+                    
+                    if (!currentUser) {
+                        addResult('❌ No hay usuario logueado', 'error');
+                        return;
+                    }
+
+                    const testNotification = {
+                        id: `test_notification_${Date.now()}`,
+                        type: 'new_task',
+                        taskId: 'test_task_001',
+                        taskTitle: 'Tarea de Prueba - Comportamiento Notificaciones',
+                        course: currentUser.activeCourses?.[0] || '4to Básico',
+                        subject: 'Prueba',
+                        teacherUsername: 'teacher_test',
+                        teacherName: 'Profesor de Prueba',
+                        targetUserRole: 'student',
+                        targetUsernames: [currentUser.username],
+                        readBy: [],
+                        read: false,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                    notifications.push(testNotification);
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+
+                    addResult('✅ Notificación de prueba creada', 'success');
+                    addResult('🔄 Recarga la página principal para ver la notificación en la campana', 'info');
+                    
+                } catch (error) {
+                    addResult(`❌ Error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Auto-verificar estado al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkNotificationState, 500);
+        });
+    </script>
+</body>
+</html>

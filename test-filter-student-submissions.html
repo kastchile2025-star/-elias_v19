@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Filtro de Entregas de Otros Estudiantes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .step {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .step-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .comment-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #ddd;
+        }
+        .visible {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+        .hidden {
+            background: #ffeaea;
+            border-left-color: #dc3545;
+        }
+        .teacher-comment {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        .student-comment {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        .submission {
+            background: #fce4ec;
+            border-left-color: #e91e63;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Prueba - Filtro de Entregas de Otros Estudiantes</h1>
+    <p>Esta prueba verifica que los estudiantes <strong>NO vean las entregas de otros estudiantes</strong> en sus notificaciones, pero sí vean los comentarios de profesores y otros estudiantes.</p>
+
+    <div class="step">
+        <h2 class="step-title">Reglas de Filtrado para Estudiantes</h2>
+        <div class="result">
+            <strong>✅ Los estudiantes DEBEN ver:</strong><br>
+            • Comentarios de profesores (no entregas)<br>
+            • Comentarios de discusión de otros estudiantes (no entregas)<br><br>
+            
+            <strong>❌ Los estudiantes NO DEBEN ver:</strong><br>
+            • Entregas de otros estudiantes (isSubmission: true)<br>
+            • Sus propios comentarios
+        </div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">1. Estado Actual</h2>
+        <button class="button" onclick="checkCurrentUser()">👤 Verificar Usuario</button>
+        <div id="current-user"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">2. Crear Escenario de Prueba</h2>
+        <p>Crear diferentes tipos de comentarios para probar el filtrado:</p>
+        <button class="button" onclick="createTestScenario()">🧪 Crear Escenario</button>
+        <div id="test-scenario"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">3. Simular Filtro de Notificaciones</h2>
+        <p>Aplicar la nueva lógica de filtrado para ver qué debe aparecer:</p>
+        <button class="button success" onclick="simulateFilter()">🎯 Simular Filtro</button>
+        <div id="filter-simulation"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">4. Verificar Comportamiento</h2>
+        <p>Confirmar que las entregas de otros estudiantes están ocultas:</p>
+        <button class="button" onclick="verifyBehavior()">✅ Verificar</button>
+        <div id="behavior-verification"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">Acciones de Limpieza</h2>
+        <button class="button danger" onclick="cleanupTestData()">🗑️ Limpiar Datos de Prueba</button>
+    </div>
+
+    <script>
+        let testTaskId = null;
+
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+        }
+
+        function checkCurrentUser() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('current-user').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            document.getElementById('current-user').innerHTML = `
+                <div class="result">
+                    <strong>Usuario actual:</strong> ${user.username}<br>
+                    <strong>Rol:</strong> ${user.role}<br>
+                    <strong>Curso:</strong> ${user.course || 'No definido'}<br>
+                    ${user.role === 'student' ? '✅ Probando como estudiante - correcto' : '⚠️ Para esta prueba necesitas estar como estudiante'}
+                </div>
+            `;
+            
+            return user;
+        }
+
+        function createTestScenario() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('test-scenario').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            // Crear tarea de prueba
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            testTaskId = `test_filter_${Date.now()}`;
+            
+            const newTask = {
+                id: testTaskId,
+                title: 'Tarea Prueba - Filtro Entregas',
+                description: 'Tarea para probar el filtrado de entregas',
+                subject: 'Ciencias Naturales',
+                course: user.course,
+                assignedTo: 'course',
+                assignedBy: 'profesor_test',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+            // Crear diferentes tipos de comentarios
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const timestamp = new Date().toISOString();
+            
+            const testComments = [
+                // 1. Comentario del profesor (DEBE aparecer)
+                {
+                    id: `test_teacher_comment_${Date.now()}`,
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_test',
+                    studentName: 'Profesor Test',
+                    comment: 'Este es un comentario del profesor',
+                    timestamp: timestamp,
+                    isSubmission: false,
+                    readBy: []
+                },
+                // 2. Entrega de Sofia (NO DEBE aparecer para Felipe)
+                {
+                    id: `test_sofia_submission_${Date.now()}`,
+                    taskId: testTaskId,
+                    studentUsername: 'sofia',
+                    studentName: 'Sofia Estudiante',
+                    comment: 'Esta es mi entrega de la tarea',
+                    timestamp: timestamp,
+                    isSubmission: true,
+                    readBy: []
+                },
+                // 3. Comentario de discusión de Sofia (DEBE aparecer)
+                {
+                    id: `test_sofia_comment_${Date.now()}`,
+                    taskId: testTaskId,
+                    studentUsername: 'sofia',
+                    studentName: 'Sofia Estudiante',
+                    comment: 'Tengo una pregunta sobre esta tarea',
+                    timestamp: timestamp,
+                    isSubmission: false,
+                    readBy: []
+                },
+                // 4. Entrega de otro estudiante (NO DEBE aparecer)
+                {
+                    id: `test_carlos_submission_${Date.now()}`,
+                    taskId: testTaskId,
+                    studentUsername: 'carlos',
+                    studentName: 'Carlos Estudiante',
+                    comment: 'Mi tarea completada',
+                    timestamp: timestamp,
+                    isSubmission: true,
+                    readBy: []
+                }
+            ];
+
+            comments.push(...testComments);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+
+            document.getElementById('test-scenario').innerHTML = `
+                <div class="result">
+                    ✅ Escenario de prueba creado:<br><br>
+                    <div class="comment-item teacher-comment">
+                        <strong>1. Comentario del profesor</strong> (DEBE aparecer)<br>
+                        "Este es un comentario del profesor" - isSubmission: false
+                    </div>
+                    <div class="comment-item submission">
+                        <strong>2. Entrega de Sofia</strong> (NO debe aparecer)<br>
+                        "Esta es mi entrega de la tarea" - isSubmission: true
+                    </div>
+                    <div class="comment-item student-comment">
+                        <strong>3. Comentario de Sofia</strong> (DEBE aparecer)<br>
+                        "Tengo una pregunta sobre esta tarea" - isSubmission: false
+                    </div>
+                    <div class="comment-item submission">
+                        <strong>4. Entrega de Carlos</strong> (NO debe aparecer)<br>
+                        "Mi tarea completada" - isSubmission: true
+                    </div>
+                </div>
+            `;
+        }
+
+        function simulateFilter() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('filter-simulation').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+
+            // Aplicar el filtro ANTES del fix
+            const oldFilter = comments.filter(comment => 
+                comment.studentUsername !== user.username && // Not own comments
+                (!comment.readBy?.includes(user.username)) // Not read by current user
+                // PROBLEMA: No excluía isSubmission
+            );
+
+            // Aplicar el filtro DESPUÉS del fix
+            const newFilter = comments.filter(comment => 
+                comment.studentUsername !== user.username && // Not own comments
+                (!comment.readBy?.includes(user.username)) && // Not read by current user
+                !comment.isSubmission // NUEVO: Excluir entregas de otros estudiantes
+            );
+
+            let html = '<div class="result">';
+            html += '<strong>Comparación de filtros:</strong><br><br>';
+            
+            html += `<strong>❌ ANTES del fix (${oldFilter.length} elementos):</strong><br>`;
+            oldFilter.forEach(comment => {
+                const type = comment.isSubmission ? 'ENTREGA' : 'COMENTARIO';
+                const className = comment.isSubmission ? 'hidden' : 'visible';
+                html += `
+                    <div class="comment-item ${className}">
+                        ${type}: ${comment.studentName} - "${comment.comment.substring(0, 50)}..."
+                        ${comment.isSubmission ? ' 🚫 (No debería aparecer)' : ' ✅'}
+                    </div>
+                `;
+            });
+
+            html += `<br><strong>✅ DESPUÉS del fix (${newFilter.length} elementos):</strong><br>`;
+            newFilter.forEach(comment => {
+                html += `
+                    <div class="comment-item visible">
+                        COMENTARIO: ${comment.studentName} - "${comment.comment.substring(0, 50)}..." ✅
+                    </div>
+                `;
+            });
+
+            if (newFilter.length === 0) {
+                html += '<div class="comment-item visible">No hay comentarios válidos para mostrar</div>';
+            }
+
+            html += '</div>';
+            document.getElementById('filter-simulation').innerHTML = html;
+        }
+
+        function verifyBehavior() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('behavior-verification').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+
+            // Aplicar el filtro corregido
+            const filteredComments = comments.filter(comment => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission // Excluir entregas
+            );
+
+            // Contar tipos de comentarios excluidos
+            const excludedSubmissions = comments.filter(comment => 
+                comment.studentUsername !== user.username && 
+                comment.isSubmission
+            );
+
+            const ownComments = comments.filter(comment => 
+                comment.studentUsername === user.username
+            );
+
+            let html = '<div class="result">';
+            html += '<strong>Verificación del comportamiento:</strong><br><br>';
+            
+            html += `<div class="comment-item visible">
+                ✅ Comentarios válidos mostrados: ${filteredComments.length}<br>
+                (Solo comentarios de profesores y otros estudiantes, NO entregas)
+            </div>`;
+            
+            html += `<div class="comment-item hidden">
+                🚫 Entregas de otros estudiantes excluidas: ${excludedSubmissions.length}<br>
+                (Correctamente filtradas)
+            </div>`;
+            
+            html += `<div class="comment-item hidden">
+                🚫 Comentarios propios excluidos: ${ownComments.length}<br>
+                (Correcto - no debe ver sus propios comentarios)
+            </div>`;
+
+            // Verificar si hay entregas en los comentarios visibles
+            const visibleSubmissions = filteredComments.filter(c => c.isSubmission);
+            if (visibleSubmissions.length === 0) {
+                html += `<div class="comment-item visible">
+                    ✅ ¡CORRECTO! No hay entregas de otros estudiantes en las notificaciones
+                </div>`;
+            } else {
+                html += `<div class="comment-item hidden">
+                    ❌ ERROR: Todavía se muestran ${visibleSubmissions.length} entregas de otros estudiantes
+                </div>`;
+            }
+
+            html += '</div>';
+            document.getElementById('behavior-verification').innerHTML = html;
+        }
+
+        function cleanupTestData() {
+            if (testTaskId) {
+                // Limpiar tarea de prueba
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const filteredTasks = tasks.filter(task => task.id !== testTaskId);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+
+                // Limpiar comentarios de prueba
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const filteredComments = comments.filter(comment => comment.taskId !== testTaskId);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+
+                alert('Datos de prueba limpiados');
+                testTaskId = null;
+            } else {
+                alert('No hay datos de prueba para limpiar');
+            }
+        }
+
+        // Auto-verificar usuario al cargar
+        window.onload = () => {
+            checkCurrentUser();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Final - Evaluación Completa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button.success { background-color: #28a745; }
+        .button.warning { background-color: #ffc107; color: #212529; }
+        .button.danger { background-color: #dc3545; }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        .evaluation-card {
+            background: #f8f9fa;
+            border: 2px solid #6f42c1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th { background-color: #f2f2f2; }
+        .score-high { background-color: #d4edda; }
+        .score-medium { background-color: #fff3cd; }
+        .score-low { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test Final - Evaluación: Vista Estudiante y Profesor</h1>
+        
+        <div class="section">
+            <h3>🎓 Configurar Evaluación de Estudiante</h3>
+            <button class="button" onclick="setupStudentEvaluation()">Configurar Evaluación Completada</button>
+            <div id="student-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>👨‍🏫 Configurar Vista del Profesor</h3>
+            <button class="button" onclick="setupTeacherEvaluation()">Configurar Tarea de Evaluación</button>
+            <div id="teacher-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>🔍 Verificar Vista del Estudiante</h3>
+            <button class="button success" onclick="checkStudentView()">Verificar Vista Estudiante</button>
+            <div id="student-view-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>👩‍🏫 Verificar Vista del Profesor</h3>
+            <button class="button success" onclick="checkTeacherView()">Verificar Vista Profesor</button>
+            <div id="teacher-view-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>🧹 Limpiar Datos</h3>
+            <button class="button danger" onclick="clearAll()">Limpiar Todo</button>
+            <div id="clear-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function setupStudentEvaluation() {
+            const taskId = 'eval_test_' + Date.now();
+            const completedEvaluation = {
+                id: taskId,
+                title: 'Evaluación - Sistema Respiratorio',
+                description: 'Evaluación sobre el sistema respiratorio humano',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'profesor_jorge',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'completed',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'SISTEMA RESPIRATORIO',
+                    questionCount: 2,
+                    timeLimit: 1
+                },
+                completedAt: new Date().toISOString(),
+                score: 1,
+                completionPercentage: 50.0
+            };
+
+            localStorage.setItem('userTasks_estudiante1', JSON.stringify([completedEvaluation]));
+
+            document.getElementById('student-result').style.display = 'block';
+            document.getElementById('student-result').className = 'result success';
+            document.getElementById('student-result').innerHTML = `
+                <h4>✅ Evaluación del Estudiante Configurada</h4>
+                <div class="evaluation-card">
+                    <div class="result-box">
+                        <h3>50.0% Completado</h3>
+                        <p>Puntaje: 1/2</p>
+                    </div>
+                    <p>Estado: <strong>completed</strong> (Finalizada)</p>
+                </div>
+            `;
+        }
+
+        function setupTeacherEvaluation() {
+            const taskId = 'eval_teacher_' + Date.now();
+            const evaluationTask = {
+                id: taskId,
+                title: 'Evaluación - Sistema Respiratorio',
+                description: 'Evaluación sobre el sistema respiratorio humano',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'profesor_jorge',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'SISTEMA RESPIRATORIO',
+                    questionCount: 2,
+                    timeLimit: 1
+                },
+                evaluationResults: {
+                    'estudiante1': {
+                        score: 1,
+                        completionPercentage: 50.0,
+                        completedAt: new Date().toISOString(),
+                        attempt: 1
+                    },
+                    'estudiante2': {
+                        score: 2,
+                        completionPercentage: 100.0,
+                        completedAt: new Date().toISOString(),
+                        attempt: 1
+                    },
+                    'estudiante3': {
+                        score: 0,
+                        completionPercentage: 0.0,
+                        completedAt: new Date().toISOString(),
+                        attempt: 1
+                    }
+                }
+            };
+
+            const existingTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            existingTasks.push(evaluationTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(existingTasks));
+
+            document.getElementById('teacher-result').style.display = 'block';
+            document.getElementById('teacher-result').className = 'result success';
+            document.getElementById('teacher-result').innerHTML = `
+                <h4>🎯 Tarea de Evaluación Configurada</h4>
+                <div class="evaluation-card">
+                    <p><strong>Resultados incluidos:</strong> 3 estudiantes</p>
+                    <table>
+                        <tr><th>Estudiante</th><th>Puntaje</th><th>Porcentaje</th></tr>
+                        <tr class="score-medium"><td>estudiante1</td><td>1/2</td><td>50.0%</td></tr>
+                        <tr class="score-high"><td>estudiante2</td><td>2/2</td><td>100.0%</td></tr>
+                        <tr class="score-low"><td>estudiante3</td><td>0/2</td><td>0.0%</td></tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        function checkStudentView() {
+            const userTasks = JSON.parse(localStorage.getItem('userTasks_estudiante1') || '[]');
+            const evaluations = userTasks.filter(task => task.taskType === 'evaluation');
+            
+            const resultDiv = document.getElementById('student-view-result');
+            resultDiv.style.display = 'block';
+            
+            if (evaluations.length === 0) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h4>❌ No se encontraron evaluaciones</h4>';
+            } else {
+                resultDiv.className = 'result success';
+                const task = evaluations[0];
+                const isCompleted = task.status === 'completed';
+                
+                resultDiv.innerHTML = `
+                    <h4>✅ Vista del Estudiante Verificada</h4>
+                    <div class="evaluation-card">
+                        <h5>📝 ${task.title}</h5>
+                        ${isCompleted ? `
+                            <div class="result-box">
+                                <h3>✅ Evaluación Completada</h3>
+                                <div style="font-size: 24px; margin: 10px 0;">
+                                    ${task.completionPercentage.toFixed(1)}% Completado
+                                </div>
+                                <p>Puntaje: ${task.score}/${task.evaluationConfig?.questionCount || 0}</p>
+                            </div>
+                            <p>👆 <strong>El botón "Realizar Evaluación" fue reemplazado por este cuadro</strong></p>
+                        ` : `
+                            <p>🔘 Se mostraría el botón "Realizar Evaluación"</p>
+                        `}
+                    </div>
+                `;
+            }
+        }
+
+        function checkTeacherView() {
+            const allTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTasks = allTasks.filter(task => task.taskType === 'evaluation');
+            
+            const resultDiv = document.getElementById('teacher-view-result');
+            resultDiv.style.display = 'block';
+            
+            if (evaluationTasks.length === 0) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h4>❌ No se encontraron evaluaciones</h4>';
+            } else {
+                resultDiv.className = 'result success';
+                const task = evaluationTasks[0];
+                const results = task.evaluationResults || {};
+                const resultsCount = Object.keys(results).length;
+                
+                resultDiv.innerHTML = `
+                    <h4>🎯 Vista del Profesor Verificada</h4>
+                    <div class="evaluation-card">
+                        <h5>📊 ${task.title}</h5>
+                        <p><strong>Resultados de Evaluación:</strong> ${resultsCount} estudiantes</p>
+                        
+                        <table>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Puntaje</th>
+                                <th>Porcentaje</th>
+                                <th>Estado</th>
+                            </tr>
+                            ${Object.entries(results).map(([student, result]) => `
+                                <tr class="${result.completionPercentage >= 80 ? 'score-high' : 
+                                            result.completionPercentage >= 60 ? 'score-medium' : 'score-low'}">
+                                    <td>${student}</td>
+                                    <td>${result.score}/${task.evaluationConfig?.questionCount || 0}</td>
+                                    <td>${result.completionPercentage.toFixed(1)}%</td>
+                                    <td>Finalizada</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                        
+                        <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <h6>📈 Resumen:</h6>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">
+                                <div>
+                                    <strong style="color: #007bff;">${resultsCount}</strong><br>
+                                    <small>Completaron</small>
+                                </div>
+                                <div>
+                                    <strong style="color: #28a745;">${(Object.values(results).reduce((sum, r) => sum + r.completionPercentage, 0) / resultsCount).toFixed(1)}%</strong><br>
+                                    <small>Promedio</small>
+                                </div>
+                                <div>
+                                    <strong style="color: #6f42c1;">${Object.values(results).filter(r => r.completionPercentage >= 60).length}</strong><br>
+                                    <small>Aprobados (≥60%)</small>
+                                </div>
+                                <div>
+                                    <strong style="color: #fd7e14;">${Object.values(results).filter(r => r.completionPercentage < 60).length}</strong><br>
+                                    <small>Necesitan Mejorar</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearAll() {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('userTasks_') || key === 'smart-student-tasks' || key.includes('evaluationHistory_'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            document.getElementById('clear-result').style.display = 'block';
+            document.getElementById('clear-result').className = 'result success';
+            document.getElementById('clear-result').innerHTML = `
+                <h4>🧹 Datos Eliminados</h4>
+                <p>Se eliminaron ${keysToRemove.length} claves del localStorage</p>
+            `;
+        }
+    </script>
+</body>
+</html>

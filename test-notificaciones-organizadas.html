@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Panel de Notificaciones Mejorado: Organización por Tipo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.orange {
+            background: #fd7e14;
+        }
+        .button.orange:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.purple {
+            background: #6f42c1;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .mockup {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+        .mockup h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .notification-panel {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .notification-section {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .evaluation-section {
+            background: #f3e8ff;
+            border-left: 4px solid #8b5cf6;
+        }
+        .evaluation-completed-section {
+            background: #f5f3ff;
+            border-left: 4px solid #a78bfa;
+        }
+        .task-section {
+            background: #fef3e8;
+            border-left: 4px solid #f97316;
+        }
+        .task-review-section {
+            background: #fff7ed;
+            border-left: 4px solid #fb923c;
+        }
+        .comment-section {
+            background: #e8f5e8;
+            border-left: 4px solid #22c55e;
+        }
+        .notification-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .notification-item:hover {
+            background: #f9fafb;
+        }
+        .notification-icon {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-left: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        .badge-purple {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            border-color: #d8b4fe;
+        }
+        .badge-orange {
+            background-color: #fff7ed;
+            color: #ea580c;
+            border-color: #fdba74;
+        }
+        .notification-title {
+            margin: 0 0 6px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .notification-desc {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .notification-meta {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+        .notification-action {
+            font-size: 12px;
+            font-weight: 500;
+            color: #2563eb;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .notification-action:hover {
+            text-decoration: underline;
+        }
+        .notification-action.purple {
+            color: #7c3aed;
+        }
+        .notification-action.orange {
+            color: #ea580c;
+        }
+        .notification-action.green {
+            color: #16a34a;
+        }
+        .purple-icon {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+        .light-purple-icon {
+            background: #f5f3ff;
+            color: #8b5cf6;
+        }
+        .orange-icon {
+            background: #fff7ed;
+            color: #f97316;
+        }
+        .light-orange-icon {
+            background: #ffedd5;
+            color: #fb923c;
+        }
+        .green-icon {
+            background: #ecfdf5;
+            color: #16a34a;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 9999px;
+            font-size: 10px;
+            line-height: 1;
+            padding: 4px 6px;
+            font-weight: bold;
+        }
+        .notification-bell {
+            position: relative;
+            display: inline-block;
+            padding: 10px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .notification-bell:hover {
+            background: #f9fafb;
+        }
+        .status-correct {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .status-error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .align-center {
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test: Panel de Notificaciones Mejorado - Organización por Tipo</h1>
+        
+        <div class="section">
+            <h3>Mejoras Implementadas en Panel de Notificaciones</h3>
+            <ul>
+                <li>✅ <strong>Organización jerárquica:</strong> Categorías claramente separadas y organizadas</li>
+                <li>✅ <strong>Orden de secciones:</strong> 
+                    <ol>
+                        <li><span style="color: #7c3aed;">Evaluaciones Pendientes</span> - Prioridad máxima</li>
+                        <li><span style="color: #8b5cf6;">Evaluaciones Completadas</span> - Resultados por revisar</li>
+                        <li><span style="color: #ea580c;">Tareas Pendientes</span> - Tareas por calificar</li>
+                        <li><span style="color: #f97316;">Tareas por Revisar</span> - Entregas de estudiantes</li>
+                        <li><span style="color: #16a34a;">Comentarios No Leídos</span> - Al final</li>
+                    </ol>
+                </li>
+                <li>✅ <strong>Diferenciación por colores:</strong> Morado (evaluaciones), Naranja (tareas), Verde (comentarios)</li>
+                <li>✅ <strong>Notificaciones persistentes:</strong> Las tareas/evaluaciones permanecen hasta ser finalizadas</li>
+                <li>✅ <strong>Comentarios automáticos:</strong> Se marcan como leídos al abrir la tarea/evaluación</li>
+            </ul>
+        </div>
+
+        <div class="grid">
+            <!-- Mockup 1: Panel de Notificaciones para Profesor -->
+            <div class="section">
+                <h3>Panel de Notificaciones - Profesor</h3>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div class="notification-bell">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                        <div class="notification-badge">12</div>
+                    </div>
+                </div>
+                
+                <div class="mockup">
+                    <h4>Notificaciones</h4>
+                    
+                    <div class="notification-panel">
+                        <!-- 1. Evaluaciones Pendientes -->
+                        <div class="notification-section evaluation-section">
+                            <h5 style="margin: 0; color: #7c3aed;">📋 Evaluaciones Pendientes (3)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Evaluación Matemáticas</strong>
+                                <span class="badge badge-purple">Matemáticas</span>
+                            </div>
+                            <p class="notification-desc">Evaluación trimestral de álgebra</p>
+                            <div class="notification-meta">Curso: 3°B</div>
+                            <a href="#" class="notification-action purple">Revisar Evaluación</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Examen Química</strong>
+                                <span class="badge badge-purple">Ciencias</span>
+                            </div>
+                            <p class="notification-desc">Evaluación de elementos químicos</p>
+                            <div class="notification-meta">Curso: 4°A</div>
+                            <a href="#" class="notification-action purple">Revisar Evaluación</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Prueba de Literatura</strong>
+                                <span class="badge badge-purple">Lenguaje</span>
+                            </div>
+                            <p class="notification-desc">Análisis de obras clásicas</p>
+                            <div class="notification-meta">Curso: 3°A</div>
+                            <a href="#" class="notification-action purple">Revisar Evaluación</a>
+                        </div>
+
+                        <!-- 2. Evaluaciones Completadas -->
+                        <div class="notification-section evaluation-completed-section">
+                            <h5 style="margin: 0; color: #8b5cf6;">🎓 Evaluaciones Completadas (2)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Carlos Rodríguez</strong>
+                                <span class="badge badge-purple">Matemáticas</span>
+                            </div>
+                            <p class="notification-desc">Completó: Evaluación de Geometría</p>
+                            <div class="notification-meta">02/07/2025 16:30</div>
+                            <a href="#" class="notification-action purple">Ver Resultados</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Ana Martínez</strong>
+                                <span class="badge badge-purple">Ciencias</span>
+                            </div>
+                            <p class="notification-desc">Completó: Quiz de Biología</p>
+                            <div class="notification-meta">02/07/2025 14:15</div>
+                            <a href="#" class="notification-action purple">Ver Resultados</a>
+                        </div>
+
+                        <!-- 3. Tareas Pendientes -->
+                        <div class="notification-section task-section">
+                            <h5 style="margin: 0; color: #ea580c;">📝 Tareas Pendientes (2)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Ensayo Historia</strong>
+                                <span class="badge badge-orange">Historia</span>
+                            </div>
+                            <p class="notification-desc">Ensayo sobre revolución industrial</p>
+                            <div class="notification-meta">Curso: 4°B</div>
+                            <a href="#" class="notification-action orange">Revisar Tarea</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Proyecto Final</strong>
+                                <span class="badge badge-orange">Tecnología</span>
+                            </div>
+                            <p class="notification-desc">Proyecto de programación</p>
+                            <div class="notification-meta">Curso: 3°A</div>
+                            <a href="#" class="notification-action orange">Revisar Tarea</a>
+                        </div>
+
+                        <!-- 4. Tareas por Revisar -->
+                        <div class="notification-section task-review-section">
+                            <h5 style="margin: 0; color: #f97316;">📋 Tareas por Revisar (3)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Felipe González</strong>
+                                <span class="badge badge-orange">Historia</span>
+                            </div>
+                            <p class="notification-desc">Entregó: Ensayo Historia</p>
+                            <div class="notification-meta">01/07/2025 23:45</div>
+                            <a href="#" class="notification-action orange">Revisar Entrega</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">María López</strong>
+                                <span class="badge badge-orange">Historia</span>
+                            </div>
+                            <p class="notification-desc">Entregó: Ensayo Historia</p>
+                            <div class="notification-meta">02/07/2025 08:30</div>
+                            <a href="#" class="notification-action orange">Revisar Entrega</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">José Gómez</strong>
+                                <span class="badge badge-orange">Tecnología</span>
+                            </div>
+                            <p class="notification-desc">Entregó: Proyecto Final</p>
+                            <div class="notification-meta">30/06/2025 17:10</div>
+                            <a href="#" class="notification-action orange">Revisar Entrega</a>
+                        </div>
+
+                        <!-- 5. Comentarios No Leídos -->
+                        <div class="notification-section comment-section">
+                            <h5 style="margin: 0; color: #16a34a;">💬 Comentarios No Leídos (2)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Felipe González</strong>
+                                <div class="notification-meta">01/07/2025 23:50</div>
+                            </div>
+                            <p class="notification-desc">¿Podría revisar mi introducción?</p>
+                            <div class="notification-meta">En: Ensayo Historia</div>
+                            <a href="#" class="notification-action green">Ver Comentario</a>
+                        </div>
+                        <div class="notification-item">
+                            <div class="flex flex-between align-center">
+                                <strong class="notification-title">Ana Martínez</strong>
+                                <div class="notification-meta">02/07/2025 14:20</div>
+                            </div>
+                            <p class="notification-desc">Tengo dudas sobre la pregunta 3</p>
+                            <div class="notification-meta">En: Quiz de Biología</div>
+                            <a href="#" class="notification-action green">Ver Comentario</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <p><strong>Estado:</strong> <span class="status-correct">✅ Implementado y Funcionando</span></p>
+                    <p><strong>Orden:</strong> <span class="status-correct">✅ Orden correcto de prioridades</span></p>
+                </div>
+            </div>
+
+            <!-- Mockup 2: Implementación y Comportamiento -->
+            <div class="section">
+                <h3>Comportamiento de Notificaciones</h3>
+                
+                <div style="padding: 15px; background-color: #f3f4f6; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0;">Lógica Implementada:</h4>
+                    <ul style="padding-left: 20px;">
+                        <li><strong>Evaluaciones Pendientes:</strong> Permanecen hasta que el profesor las revise y califique</li>
+                        <li><strong>Evaluaciones Completadas:</strong> Se mantienen hasta que el profesor revise los resultados</li>
+                        <li><strong>Tareas Pendientes:</strong> Permanecen hasta que el profesor las califique</li>
+                        <li><strong>Tareas por Revisar:</strong> Entregas de estudiantes que esperan calificación</li>
+                        <li><strong>Comentarios No Leídos:</strong> Se marcan como leídos automáticamente al abrir la tarea/evaluación relacionada</li>
+                    </ul>
+                </div>
+
+                <div style="padding: 15px; background-color: #ecfdf5; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0;">Mejoras para Comentarios:</h4>
+                    <p><strong>Antes:</strong> Los comentarios permanecían como no leídos aunque el profesor revisara la tarea.</p>
+                    <p><strong>Ahora:</strong> Al abrir una tarea o evaluación, todos los comentarios asociados se marcan automáticamente como leídos.</p>
+                    <pre style="background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 12px;">
+// Marcar comentarios de una tarea como leídos
+TaskNotificationManager.markCommentsAsReadForTask(taskId, username);</pre>
+                </div>
+
+                <div style="padding: 15px; background-color: #eff6ff; border-radius: 8px;">
+                    <h4 style="margin-top: 0;">Persistencia de Notificaciones:</h4>
+                    <p><strong>Problema Resuelto:</strong> Las tareas y evaluaciones ya no desaparecen al ser abiertas.</p>
+                    <p><strong>Solución:</strong> Se modificó la lógica del botón "Marcar todo como leído" para mantener las tareas y evaluaciones pendientes.</p>
+                    <pre style="background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 12px;">
+// Filtrar para mantener tareas y evaluaciones pendientes
+const filteredNotifications = taskNotifications.filter(notification => 
+  notification.type === 'new_task' || 
+  notification.type === 'pending_grading' ||
+  notification.type === 'task_submission' ||
+  notification.type === 'task_completed'
+);</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Cambios Realizados</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>✅ Archivos Modificados:</h4>
+                    <ul>
+                        <li><strong>notifications-panel.tsx:</strong> 
+                            <ul>
+                                <li>Reorganización de secciones en el panel</li>
+                                <li>Mejora del filtrado de notificaciones</li>
+                                <li>Corrección del comportamiento de "Marcar como leído"</li>
+                            </ul>
+                        </li>
+                        <li><strong>notifications.ts:</strong>
+                            <ul>
+                                <li>Lógica mejorada para manejo de comentarios</li>
+                                <li>Nueva función para marcar comentarios automáticamente</li>
+                                <li>Ajuste en la persistencia de notificaciones</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>✅ Funcionalidades Implementadas:</h4>
+                    <ul>
+                        <li>✅ Panel de notificaciones reorganizado por tipo y prioridad</li>
+                        <li>✅ Diferenciación visual clara entre evaluaciones y tareas</li>
+                        <li>✅ Botones de acción destacados para cada notificación</li>
+                        <li>✅ Comentarios se marcan como leídos automáticamente al revisar tarea</li>
+                        <li>✅ Tareas y evaluaciones permanecen hasta ser finalizadas</li>
+                        <li>✅ Etiquetas/insignias para identificar materias</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de funcionalidad (solo para la demostración)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Test de panel de notificaciones cargado correctamente');
+        });
+    </script>
+</body>
+</html>

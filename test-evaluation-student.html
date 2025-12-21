@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Evaluación - Estudiante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Prueba de Funcionalidades - Evaluación Estudiante</h1>
+        
+        <div class="success">
+            <h3>✅ Funcionalidades Implementadas</h3>
+            <ul>
+                <li><strong>Server Actions:</strong> Se creó evaluation-actions.ts con funciones para manejar evaluaciones</li>
+                <li><strong>Estado de Evaluación:</strong> Ahora cambia de "pendiente" a "finalizada" automáticamente</li>
+                <li><strong>Porcentaje de Completitud:</strong> Se muestra en el diálogo de resultados</li>
+                <li><strong>Tiempo de Respuesta:</strong> Se registra el tiempo gastado en la evaluación</li>
+                <li><strong>Persistencia de Datos:</strong> Se actualiza localStorage con los resultados</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>🔧 Pasos para Probar</h3>
+            <div class="step">
+                <h4>Paso 1: Login como Estudiante</h4>
+                <p>Inicia sesión con un usuario estudiante en el sistema.</p>
+                <button class="test-button" onclick="openApp()">Abrir Aplicación</button>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 2: Ir a Tareas</h4>
+                <p>Navega a la sección de "Tareas" en el dashboard.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 3: Realizar Evaluación</h4>
+                <p>Busca una tarea de tipo "evaluación" y haz clic en "Realizar Evaluación".</p>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 4: Completar Evaluación</h4>
+                <p>Responde las preguntas y termina la evaluación.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 5: Verificar Resultados</h4>
+                <p>Comprueba que se muestre:</p>
+                <ul>
+                    <li>Porcentaje de completitud</li>
+                    <li>Mensaje de estado actualizado</li>
+                    <li>Cambio de estado a "finalizada"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning">
+            <h3>⚠️ Funcionalidades Corregidas</h3>
+            <ul>
+                <li><strong>Error del servidor:</strong> Se solucionó el error "fetchServerAction" implementando server actions correctamente</li>
+                <li><strong>Estado de la tarea:</strong> Ahora se actualiza automáticamente cuando el estudiante termina</li>
+                <li><strong>Persistencia:</strong> Los datos se guardan correctamente en localStorage</li>
+                <li><strong>Tracking de tiempo:</strong> Se registra el tiempo exacto gastado en la evaluación</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>📋 Pruebas Recomendadas</h3>
+            <ol>
+                <li>Crear una tarea de evaluación como profesor</li>
+                <li>Asignar la tarea a un estudiante</li>
+                <li>Realizar la evaluación como estudiante</li>
+                <li>Verificar que el porcentaje se muestre correctamente</li>
+                <li>Confirmar que el estado cambie a "finalizada"</li>
+                <li>Revisar que las notificaciones se actualicen en el profesor</li>
+            </ol>
+        </div>
+
+        <div class="result">
+            <h3>🎉 Estado Actual</h3>
+            <p><strong>Estado del Servidor:</strong> <span id="server-status">Verificando...</span></p>
+            <p><strong>Funcionalidades:</strong> Implementadas y listas para probar</p>
+            <button class="test-button" onclick="checkServerStatus()">Verificar Servidor</button>
+        </div>
+    </div>
+
+    <script>
+        function openApp() {
+            window.open('/dashboard', '_blank');
+        }
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const statusElement = document.getElementById('server-status');
+                
+                if (response.ok) {
+                    statusElement.textContent = '✅ Servidor funcionando correctamente';
+                    statusElement.style.color = 'green';
+                } else {
+                    statusElement.textContent = '⚠️ Servidor respondiendo pero con errores';
+                    statusElement.style.color = 'orange';
+                }
+            } catch (error) {
+                const statusElement = document.getElementById('server-status');
+                statusElement.textContent = '❌ Error de conexión';
+                statusElement.style.color = 'red';
+            }
+        }
+
+        // Verificar estado del servidor al cargar
+        window.onload = checkServerStatus;
+    </script>
+</body>
+</html>

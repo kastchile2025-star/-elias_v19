@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solución Completada - Estado Evaluación de Tarea</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+            margin: 10px 0 0 0;
+        }
+        
+        .success-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .problem-box {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .solution-box {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .code-section {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .code-title {
+            color: #61dafb;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .highlight {
+            background: rgba(255, 255, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .changes-list {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .changes-list li {
+            margin: 8px 0;
+            padding-left: 10px;
+        }
+        
+        .change-new {
+            border-left: 4px solid #4CAF50;
+            background: #f1f8e9;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .test-results {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .technical-details {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Solución Completada</h1>
+            <p>Persistencia de Estado para Evaluaciones de Tarea</p>
+            <div class="success-badge">✅ PROBLEMA RESUELTO</div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🎯</span>Problema Original</h2>
+            <div class="problem-box">
+                <h3>Escenario Problemático:</h3>
+                <ol>
+                    <li><strong>Usuario inicia</strong> una evaluación desde una tarea asignada por el profesor</li>
+                    <li><strong>Usuario completa</strong> la evaluación exitosamente</li>
+                    <li><strong>Sistema muestra</strong> correctamente solo el botón "Cerrar"</li>
+                    <li><strong>Usuario refresca</strong> la página (F5 o navegador)</li>
+                    <li><strong>❌ PROBLEMA:</strong> Aparecen los botones "Repetir Evaluación" y "Nueva Evaluación"</li>
+                    <li><strong>✅ ESPERADO:</strong> Debe seguir mostrando SOLO el botón "Cerrar"</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🔧</span>Solución Implementada</h2>
+            <div class="solution-box">
+                <h3>Estrategia de Múltiples Capas de Persistencia:</h3>
+                <ul>
+                    <li><strong>Capa 1:</strong> Estado React (isTaskEvaluationSession, isAutoStartMode)</li>
+                    <li><strong>Capa 2:</strong> localStorage permanente</li>
+                    <li><strong>Capa 3:</strong> sessionStorage como respaldo</li>
+                    <li><strong>Capa 4:</strong> URL parameters (autoStart, taskId)</li>
+                    <li><strong>Capa 5:</strong> Estado de finalización persistente</li>
+                </ul>
+                <p><strong>Resultado:</strong> Si CUALQUIERA de estas capas indica que es una evaluación de tarea, se mostrará solo el botón "Cerrar"</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">⚡</span>Cambios Técnicos Implementados</h2>
+            
+            <div class="technical-details">
+                <div class="code-title">1. useEffect de Recuperación Mejorado</div>
+                <div class="code-section">
+useEffect(() => {
+    const savedTaskEvaluation = localStorage.getItem('isTaskEvaluation') === 'true';
+    const sessionTaskEvaluation = sessionStorage.getItem('isTaskEvaluation') === 'true';
+    
+    if (savedTaskEvaluation || sessionTaskEvaluation) {
+        setIsTaskEvaluationSession(true);
+        <span class="highlight">setIsAutoStartMode(true); // NUEVO: Consistencia de estado</span>
+        
+        <span class="highlight">// NUEVO: Recuperar estado de evaluación finalizada</span>
+        <span class="highlight">const savedEvaluationFinished = localStorage.getItem('evaluationFinished') === 'true';</span>
+        <span class="highlight">if (savedEvaluationFinished) {</span>
+        <span class="highlight">    setEvaluationFinished(true);</span>
+        <span class="highlight">    setShowResultDialog(false);</span>
+        <span class="highlight">}</span>
+    }
+}, []);
+                </div>
+            </div>
+
+            <div class="technical-details">
+                <div class="code-title">2. handleFinishEvaluation Mejorado</div>
+                <div class="code-section">
+const handleFinishEvaluation = useCallback(() => {
+    // ... código existente ...
+    
+    if (autoStart || taskId || isCurrentlyTaskEvaluation) {
+        localStorage.setItem('isTaskEvaluation', 'true');
+        sessionStorage.setItem('isTaskEvaluation', 'true');
+        <span class="highlight">localStorage.setItem('evaluationFinished', 'true'); // NUEVO</span>
+        setIsTaskEvaluationSession(true);
+        setIsAutoStartMode(true);
+    }
+    
+    // ... resto del código ...
+}, [/* dependencies */]);
+                </div>
+            </div>
+
+            <div class="technical-details">
+                <div class="code-title">3. handleCloseDialogAndShowReview Mejorado</div>
+                <div class="code-section">
+const handleCloseDialogAndShowReview = () => {
+    setShowResultDialog(false);
+    
+    <span class="highlight">// NUEVO: Preservar estado al cerrar diálogo</span>
+    <span class="highlight">const isCurrentlyTaskEvaluation = /* detección robusta */;</span>
+    <span class="highlight">if (isCurrentlyTaskEvaluation) {</span>
+    <span class="highlight">    localStorage.setItem('isTaskEvaluation', 'true');</span>
+    <span class="highlight">    sessionStorage.setItem('isTaskEvaluation', 'true');</span>
+    <span class="highlight">    localStorage.setItem('evaluationFinished', 'true');</span>
+    <span class="highlight">    setIsTaskEvaluationSession(true);</span>
+    <span class="highlight">    setIsAutoStartMode(true);</span>
+    <span class="highlight">}</span>
+};
+                </div>
+            </div>
+
+            <div class="technical-details">
+                <div class="code-title">4. Limpieza Completa en handleCloseTaskEvaluation</div>
+                <div class="code-section">
+const handleCloseTaskEvaluation = useCallback(() => {
+    // ... resetear estados React ...
+    
+    localStorage.removeItem('isTaskEvaluation');
+    sessionStorage.removeItem('isTaskEvaluation');
+    <span class="highlight">localStorage.removeItem('evaluationFinished'); // NUEVO</span>
+    
+    router.push('/dashboard/evaluacion');
+}, [router]);
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🧪</span>Validación de la Solución</h2>
+            <div class="test-results">
+                <h3>Escenarios de Prueba Completados:</h3>
+                <div class="changes-list" style="background: rgba(255,255,255,0.1); border: none;">
+                    <div class="change-new" style="background: rgba(255,255,255,0.1); border-left-color: #fff;">
+                        <strong>✅ Escenario 1:</strong> Evaluación de tarea → Finalizar → Pantalla revisión → Solo botón "Cerrar" ✓
+                    </div>
+                    <div class="change-new" style="background: rgba(255,255,255,0.1); border-left-color: #fff;">
+                        <strong>✅ Escenario 2:</strong> Evaluación de tarea → Finalizar → Cerrar diálogo → Solo botón "Cerrar" ✓
+                    </div>
+                    <div class="change-new" style="background: rgba(255,255,255,0.1); border-left-color: #fff;">
+                        <strong>✅ Escenario 3:</strong> Evaluación de tarea → Finalizar → Refresh (F5) → Solo botón "Cerrar" ✓
+                    </div>
+                    <div class="change-new" style="background: rgba(255,255,255,0.1); border-left-color: #fff;">
+                        <strong>✅ Escenario 4:</strong> Evaluación normal → Finalizar → Refresh → Botones "Repetir" y "Nueva" ✓
+                    </div>
+                    <div class="change-new" style="background: rgba(255,255,255,0.1); border-left-color: #fff;">
+                        <strong>✅ Escenario 5:</strong> Limpieza completa de estado al cerrar evaluación de tarea ✓
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">🎯</span>Funcionalidad Final</h2>
+            <div class="changes-list">
+                <li><strong>🔒 Detección Robusta:</strong> 5 métodos independientes para detectar evaluaciones de tarea</li>
+                <li><strong>💾 Persistencia Completa:</strong> Estado se mantiene a través de refreshes, navegación y cambios de pestaña</li>
+                <li><strong>🔄 Recuperación Automática:</strong> Al cargar la página, se recupera automáticamente el estado correcto</li>
+                <li><strong>🧹 Limpieza Segura:</strong> Al cerrar una evaluación de tarea, se limpia completamente todo el estado</li>
+                <li><strong>⚡ Sin Efectos Secundarios:</strong> Las evaluaciones normales siguen funcionando exactamente igual</li>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="emoji">📋</span>Resultado</h2>
+            <div class="solution-box">
+                <h3>✅ PROBLEMA COMPLETAMENTE RESUELTO</h3>
+                <p><strong>Antes:</strong> Al refrescar la página después de terminar una evaluación de tarea, aparecían incorrectamente los botones "Repetir Evaluación" y "Nueva Evaluación".</p>
+                <p><strong>Después:</strong> El sistema ahora detecta de manera robusta y persistente las evaluaciones de tarea, manteniendo el estado correcto incluso después de refreshes, y muestra únicamente el botón "Cerrar" como esperado.</p>
+                <p><strong>Impacto:</strong> Los estudiantes tendrán una experiencia consistente y los profesores pueden confiar en que las evaluaciones asignadas como tareas funcionarán correctamente en todos los escenarios.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="text-align: center; padding: 20px;">
+        <h3 style="color: #667eea; margin: 0;">🎉 Implementación Completada con Éxito</h3>
+        <p style="color: #666; margin: 10px 0 0 0;">Todos los casos de uso han sido validados y funcionan correctamente</p>
+    </div>
+</body>
+</html>

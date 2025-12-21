@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Corrección: Notificaciones Cruzadas entre Profesores</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e293b;
+        }
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        .problem {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+        }
+        .solution {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+        }
+        .warning {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+        }
+        .info {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+        }
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-danger {
+            background: #ef4444;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        .btn-success {
+            background: #22c55e;
+        }
+        .btn-success:hover {
+            background: #16a34a;
+        }
+        .results {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .step.success {
+            background: #dcfce7;
+            border-left: 3px solid #22c55e;
+        }
+        .step.error {
+            background: #fee2e2;
+            border-left: 3px solid #ef4444;
+        }
+        .step.warning {
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Corrección: Notificaciones Cruzadas entre Profesores</h1>
+            <p>Herramienta para diagnosticar y solucionar el problema donde los comentarios de un profesor aparecen como notificaciones para otros profesores</p>
+        </div>
+
+        <div class="section problem">
+            <h2>🚨 Problema Identificado</h2>
+            <p><strong>Descripción:</strong> Los comentarios que realiza un profesor están llegando a otros profesores cuando deberían llegar solamente a los estudiantes que tiene asignados.</p>
+            <p><strong>Causa:</strong> Notificaciones mal dirigidas o datos corruptos en localStorage que incluyen a profesores como destinatarios de comentarios de otros profesores.</p>
+        </div>
+
+        <div class="section info">
+            <h2>📊 Diagnóstico del Sistema</h2>
+            <div id="diagnosis-results" class="results">Ejecuta el diagnóstico para ver el estado actual...</div>
+            <button class="btn" onclick="runDiagnosis()">🔍 Ejecutar Diagnóstico</button>
+        </div>
+
+        <div class="section">
+            <h2>📈 Estadísticas Actuales</h2>
+            <div class="stats" id="current-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-notifications">-</div>
+                    <div class="stat-label">Total Notificaciones</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="teacher-comment-notifications">-</div>
+                    <div class="stat-label">Notificaciones de Comentarios</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="cross-contaminated-notifications">-</div>
+                    <div class="stat-label">Notificaciones Cruzadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="affected-teachers">-</div>
+                    <div class="stat-label">Profesores Afectados</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section solution">
+            <h2>✅ Soluciones Disponibles</h2>
+            
+            <div class="step">
+                <h3>🔧 Solución 1: Limpieza Automática (Recomendada)</h3>
+                <p>Ejecuta la función de limpieza del sistema que elimina notificaciones mal dirigidas:</p>
+                <button class="btn btn-success" onclick="runAutomaticCleanup()">🚑 Limpieza Automática</button>
+            </div>
+
+            <div class="step">
+                <h3>🔧 Solución 2: Limpieza Manual Específica</h3>
+                <p>Limpia manualmente solo las notificaciones de comentarios cruzados entre profesores:</p>
+                <button class="btn" onclick="runManualCleanup()">🛠️ Limpieza Manual</button>
+            </div>
+
+            <div class="step">
+                <h3>🔧 Solución 3: Limpieza Completa de Notificaciones</h3>
+                <p><strong>⚠️ CUIDADO:</strong> Esto eliminará TODAS las notificaciones del sistema. Solo usar en casos extremos:</p>
+                <button class="btn btn-danger" onclick="runCompleteCleanup()">🗑️ Limpieza Completa</button>
+            </div>
+        </div>
+
+        <div class="section warning">
+            <h2>⚠️ Prevención de Futuros Problemas</h2>
+            <div id="prevention-results" class="results">Ejecuta la verificación de prevención...</div>
+            <button class="btn" onclick="runPreventionCheck()">🛡️ Verificar Prevención</button>
+        </div>
+
+        <div class="section">
+            <h2>📋 Registro de Acciones</h2>
+            <div id="action-log" class="results">Acciones realizadas aparecerán aquí...</div>
+            <button class="btn" onclick="clearLog()">🧹 Limpiar Log</button>
+        </div>
+    </div>
+
+    <script>
+        let actionLog = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            actionLog.push(logEntry);
+            
+            const logElement = document.getElementById('action-log');
+            logElement.textContent = actionLog.join('\n');
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function clearLog() {
+            actionLog = [];
+            document.getElementById('action-log').textContent = 'Log limpiado...';
+        }
+
+        function updateStats() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const teacherCommentNotifications = notifications.filter(n => n.type === 'teacher_comment');
+                
+                // Detectar notificaciones cruzadas (donde un profesor está en targetUsernames de comentario de otro profesor)
+                const crossContaminated = teacherCommentNotifications.filter(notification => {
+                    return notification.targetUsernames.some(targetUsername => {
+                        // Verificar si el targetUsername es un profesor
+                        const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                        const targetUser = users.find(u => u.username === targetUsername);
+                        return targetUser && targetUser.role === 'teacher' && targetUser.username !== notification.fromUsername;
+                    });
+                });
+
+                // Contar profesores únicos afectados
+                const affectedTeachers = new Set();
+                crossContaminated.forEach(notification => {
+                    notification.targetUsernames.forEach(targetUsername => {
+                        const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                        const targetUser = users.find(u => u.username === targetUsername);
+                        if (targetUser && targetUser.role === 'teacher' && targetUser.username !== notification.fromUsername) {
+                            affectedTeachers.add(targetUsername);
+                        }
+                    });
+                });
+
+                document.getElementById('total-notifications').textContent = notifications.length;
+                document.getElementById('teacher-comment-notifications').textContent = teacherCommentNotifications.length;
+                document.getElementById('cross-contaminated-notifications').textContent = crossContaminated.length;
+                document.getElementById('affected-teachers').textContent = affectedTeachers.size;
+
+            } catch (error) {
+                log(`❌ Error actualizando estadísticas: ${error.message}`, 'error');
+            }
+        }
+
+        function runDiagnosis() {
+            log('🔍 Iniciando diagnóstico del sistema...');
+            
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                
+                log(`📊 Total de notificaciones en sistema: ${notifications.length}`);
+                log(`👥 Total de usuarios en sistema: ${users.length}`);
+                
+                // Filtrar solo notificaciones de comentarios de profesores
+                const teacherCommentNotifications = notifications.filter(n => n.type === 'teacher_comment');
+                log(`💬 Notificaciones de comentarios de profesores: ${teacherCommentNotifications.length}`);
+                
+                // Analizar cada notificación de comentario
+                let problemsFound = 0;
+                const problemDetails = [];
+                
+                teacherCommentNotifications.forEach((notification, index) => {
+                    const fromUser = users.find(u => u.username === notification.fromUsername);
+                    
+                    if (!fromUser || fromUser.role !== 'teacher') {
+                        problemDetails.push(`❌ Notificación ${index + 1}: Emisor no es profesor válido (${notification.fromUsername})`);
+                        problemsFound++;
+                        return;
+                    }
+                    
+                    // Verificar cada destinatario
+                    notification.targetUsernames.forEach(targetUsername => {
+                        const targetUser = users.find(u => u.username === targetUsername);
+                        
+                        if (!targetUser) {
+                            problemDetails.push(`⚠️ Notificación ${index + 1}: Destinatario no existe (${targetUsername})`);
+                            problemsFound++;
+                        } else if (targetUser.role === 'teacher' && targetUser.username !== notification.fromUsername) {
+                            problemDetails.push(`🚨 PROBLEMA: Notificación ${index + 1}: Profesor "${notification.fromUsername}" → Profesor "${targetUsername}" (INCORRECTO)`);
+                            problemsFound++;
+                        } else if (targetUser.username === notification.fromUsername) {
+                            problemDetails.push(`🚨 PROBLEMA: Notificación ${index + 1}: Profesor "${notification.fromUsername}" se envía notificación a sí mismo (INCORRECTO)`);
+                            problemsFound++;
+                        } else if (targetUser.role === 'student') {
+                            // Esto está correcto, no reportar
+                        }
+                    });
+                });
+                
+                log(`\n📋 RESUMEN DEL DIAGNÓSTICO:`);
+                log(`✅ Notificaciones analizadas: ${teacherCommentNotifications.length}`);
+                log(`❌ Problemas encontrados: ${problemsFound}`);
+                
+                if (problemsFound > 0) {
+                    log(`\n🔍 DETALLES DE LOS PROBLEMAS:`);
+                    problemDetails.forEach(detail => log(detail));
+                    log(`\n💡 RECOMENDACIÓN: Ejecutar limpieza automática para corregir estos problemas.`);
+                } else {
+                    log(`\n🎉 ¡EXCELENTE! No se encontraron problemas de notificaciones cruzadas.`);
+                }
+                
+                updateStats();
+                
+            } catch (error) {
+                log(`❌ Error durante el diagnóstico: ${error.message}`, 'error');
+            }
+        }
+
+        function runAutomaticCleanup() {
+            log('🚑 Iniciando limpieza automática del sistema...');
+            
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                let cleanedCount = 0;
+                
+                const cleanedNotifications = notifications.filter(notification => {
+                    // Si no es una notificación de comentario de profesor, mantenerla
+                    if (notification.type !== 'teacher_comment') {
+                        return true;
+                    }
+                    
+                    // Verificar si tiene problemas de destinatarios
+                    const hasProblems = notification.targetUsernames.some(targetUsername => {
+                        const targetUser = users.find(u => u.username === targetUsername);
+                        
+                        // Eliminar si el destinatario es un profesor (que no sea el emisor) o si es el mismo emisor
+                        if (targetUser && targetUser.role === 'teacher') {
+                            cleanedCount++;
+                            log(`🗑️ Eliminando notificación problemática: De "${notification.fromUsername}" hacia profesor "${targetUsername}"`);
+                            return true;
+                        }
+                        
+                        return false;
+                    });
+                    
+                    return !hasProblems;
+                });
+                
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(cleanedNotifications));
+                
+                log(`✅ Limpieza automática completada:`);
+                log(`   - Notificaciones originales: ${notifications.length}`);
+                log(`   - Notificaciones problemáticas eliminadas: ${cleanedCount}`);
+                log(`   - Notificaciones restantes: ${cleanedNotifications.length}`);
+                
+                // Disparar eventos para actualizar la UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                
+                updateStats();
+                
+                log(`\n🔄 Eventos de actualización disparados. La UI debería actualizarse automáticamente.`);
+                
+            } catch (error) {
+                log(`❌ Error durante la limpieza automática: ${error.message}`, 'error');
+            }
+        }
+
+        function runManualCleanup() {
+            log('🛠️ Iniciando limpieza manual específica...');
+            
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                let removedCount = 0;
+                
+                const filteredNotifications = notifications.filter(notification => {
+                    // Solo procesar notificaciones de comentarios de profesores
+                    if (notification.type === 'teacher_comment') {
+                        // Verificar si el profesor está en targetUsernames (comentario propio)
+                        if (notification.targetUsernames.includes(notification.fromUsername)) {
+                            log(`🗑️ Eliminando comentario propio: Profesor "${notification.fromUsername}" → tarea "${notification.taskTitle}"`);
+                            removedCount++;
+                            return false;
+                        }
+                        
+                        // Verificar si hay otros profesores en targetUsernames
+                        const hasOtherTeachers = notification.targetUsernames.some(targetUsername => {
+                            const targetUser = users.find(u => u.username === targetUsername);
+                            return targetUser && targetUser.role === 'teacher' && targetUser.username !== notification.fromUsername;
+                        });
+                        
+                        if (hasOtherTeachers) {
+                            log(`🗑️ Eliminando notificación cruzada: Profesor "${notification.fromUsername}" → otros profesores`);
+                            removedCount++;
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                });
+                
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+                
+                log(`✅ Limpieza manual completada:`);
+                log(`   - Notificaciones eliminadas: ${removedCount}`);
+                log(`   - Notificaciones restantes: ${filteredNotifications.length}`);
+                
+                // Disparar eventos para actualizar la UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                
+                updateStats();
+                
+            } catch (error) {
+                log(`❌ Error durante la limpieza manual: ${error.message}`, 'error');
+            }
+        }
+
+        function runCompleteCleanup() {
+            const confirmed = confirm('⚠️ ADVERTENCIA: Esto eliminará TODAS las notificaciones del sistema.\n\n¿Estás completamente seguro?\n\nEsta acción NO se puede deshacer.');
+            
+            if (!confirmed) {
+                log('❌ Limpieza completa cancelada por el usuario.');
+                return;
+            }
+            
+            const doubleConfirm = prompt('Para confirmar, escribe "ELIMINAR TODO" (en mayúsculas):');
+            
+            if (doubleConfirm !== 'ELIMINAR TODO') {
+                log('❌ Limpieza completa cancelada - confirmación incorrecta.');
+                return;
+            }
+            
+            log('🗑️ Iniciando limpieza completa del sistema...');
+            
+            try {
+                const originalCount = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]').length;
+                
+                localStorage.setItem('smart-student-task-notifications', '[]');
+                
+                log(`✅ Limpieza completa ejecutada:`);
+                log(`   - Notificaciones eliminadas: ${originalCount}`);
+                log(`   - Sistema reiniciado con notificaciones limpias`);
+                
+                // Disparar eventos para actualizar la UI
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                window.dispatchEvent(new CustomEvent('notificationSyncCompleted'));
+                
+                updateStats();
+                
+                log(`\n⚠️ RECOMENDACIÓN: Recarga la página del dashboard para asegurar que la UI se actualice completamente.`);
+                
+            } catch (error) {
+                log(`❌ Error durante la limpieza completa: ${error.message}`, 'error');
+            }
+        }
+
+        function runPreventionCheck() {
+            log('🛡️ Verificando medidas de prevención...');
+            
+            try {
+                // Verificar que la función de limpieza automática esté disponible
+                if (typeof window.TaskNotificationManager !== 'undefined') {
+                    log('✅ TaskNotificationManager está disponible');
+                    
+                    if (typeof window.TaskNotificationManager.removeTeacherOwnCommentNotifications === 'function') {
+                        log('✅ Función de limpieza automática disponible: removeTeacherOwnCommentNotifications');
+                    } else {
+                        log('❌ Función de limpieza automática NO disponible');
+                    }
+                    
+                    if (typeof window.TaskNotificationManager.createTeacherCommentNotifications === 'function') {
+                        log('✅ Función de creación de notificaciones disponible');
+                    } else {
+                        log('❌ Función de creación de notificaciones NO disponible');
+                    }
+                } else {
+                    log('❌ TaskNotificationManager NO está disponible en el contexto actual');
+                    log('ℹ️ Esto es normal si estás ejecutando desde esta página de diagnóstico');
+                }
+                
+                // Verificar estructura de datos
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                log(`📊 Estructura de datos:`);
+                log(`   - Usuarios en sistema: ${users.length}`);
+                log(`   - Profesores: ${users.filter(u => u.role === 'teacher').length}`);
+                log(`   - Estudiantes: ${users.filter(u => u.role === 'student').length}`);
+                log(`   - Notificaciones totales: ${notifications.length}`);
+                
+                // Verificar integridad de notificaciones recientes
+                const recentNotifications = notifications.filter(n => {
+                    const notifDate = new Date(n.timestamp);
+                    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                    return notifDate > oneDayAgo;
+                });
+                
+                log(`📅 Notificaciones recientes (últimas 24h): ${recentNotifications.length}`);
+                
+                const recentTeacherComments = recentNotifications.filter(n => n.type === 'teacher_comment');
+                log(`💬 Comentarios de profesores recientes: ${recentTeacherComments.length}`);
+                
+                // Verificar si hay problemas en notificaciones recientes
+                let recentProblems = 0;
+                recentTeacherComments.forEach(notification => {
+                    if (notification.targetUsernames.includes(notification.fromUsername)) {
+                        recentProblems++;
+                    }
+                    notification.targetUsernames.forEach(targetUsername => {
+                        const targetUser = users.find(u => u.username === targetUsername);
+                        if (targetUser && targetUser.role === 'teacher' && targetUser.username !== notification.fromUsername) {
+                            recentProblems++;
+                        }
+                    });
+                });
+                
+                if (recentProblems === 0) {
+                    log('✅ No se detectaron problemas en notificaciones recientes');
+                    log('✅ El sistema de prevención parece estar funcionando correctamente');
+                } else {
+                    log(`❌ Se detectaron ${recentProblems} problemas en notificaciones recientes`);
+                    log('⚠️ El sistema de prevención podría necesitar atención');
+                }
+                
+            } catch (error) {
+                log(`❌ Error durante la verificación de prevención: ${error.message}`, 'error');
+            }
+        }
+
+        // Inicializar estadísticas al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            log('🔧 Herramienta de corrección de notificaciones cruzadas inicializada');
+            log('👆 Usa los botones de arriba para diagnosticar y corregir problemas');
+        });
+    </script>
+</body>
+</html>

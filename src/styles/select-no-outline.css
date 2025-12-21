@@ -1,0 +1,38 @@
+/* Eliminar el efecto de contorno coloreado en los selectores al hacer focus o hover */
+
+/* Anula los estilos de contorno en naranja */
+.select-orange-hover-trigger:hover,
+.select-orange-hover-trigger:focus-visible,
+.select-orange-hover-trigger:focus,
+.select-orange-hover-trigger:active {
+  border-color: #d1d5db !important; /* color gris neutro */
+  outline-color: #d1d5db !important;
+  --ring-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Anula los estilos de contorno en morado */
+.select-purple-hover-trigger:hover,
+.select-purple-hover-trigger:focus-visible,
+.select-purple-hover-trigger:focus,
+.select-purple-hover-trigger:active {
+  border-color: #d1d5db !important; /* color gris neutro */
+  outline-color: #d1d5db !important;
+  --ring-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Mantener solo el hover del contenido interno */
+.select-orange-hover [data-radix-select-item]:hover,
+.select-orange-hover [role="option"]:hover,
+.select-orange-hover li:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+}
+
+.select-purple-hover [data-radix-select-item]:hover,
+.select-purple-hover [role="option"]:hover,
+.select-purple-hover li:hover {
+  background-color: rgb(233, 213, 255) !important; /* purple-100 */
+  color: rgb(107, 33, 168) !important; /* purple-700 */
+}

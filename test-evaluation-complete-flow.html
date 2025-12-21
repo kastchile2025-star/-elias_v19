@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Evaluación Completa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-step {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .test-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background-color: #218838;
+        }
+        .debug-button {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .result {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Completo - Evaluación de Estudiante</h1>
+        
+        <div class="success">
+            <h3>✅ Correcciones Implementadas</h3>
+            <ul>
+                <li><strong>Redirección:</strong> Ahora redirige a /dashboard/tareas después de completar</li>
+                <li><strong>Estado:</strong> Debugging mejorado para detectar cambios de estado</li>
+                <li><strong>Logs:</strong> Información detallada en consola del navegador</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h3>📋 Paso 1: Configurar Usuario de Prueba</h3>
+            <p>Establece un usuario estudiante para las pruebas:</p>
+            <input type="text" id="testUsername" value="estudiante1" style="padding: 10px; width: 200px; margin-right: 10px;">
+            <button class="test-button" onclick="setupTestUser()">Configurar Usuario</button>
+            <div id="userSetupResult" class="result"></div>
+        </div>
+
+        <div class="test-step">
+            <h3>📝 Paso 2: Crear Tarea de Evaluación</h3>
+            <p>Crea una tarea de evaluación que el estudiante pueda completar:</p>
+            <button class="test-button" onclick="createEvaluationTask()">Crear Tarea de Evaluación</button>
+            <div id="taskCreationResult" class="result"></div>
+        </div>
+
+        <div class="test-step">
+            <h3>🎯 Paso 3: Ir a la Aplicación</h3>
+            <p>Abre la aplicación para hacer login como estudiante y realizar la evaluación:</p>
+            <button class="test-button" onclick="openApp()">Abrir Dashboard</button>
+            <button class="debug-button" onclick="openTasks()">Ir Directo a Tareas</button>
+        </div>
+
+        <div class="test-step">
+            <h3>✅ Paso 4: Simular Completar Evaluación</h3>
+            <p>Si quieres simular la completación sin hacer la evaluación manualmente:</p>
+            <input type="text" id="taskIdForCompletion" placeholder="ID de la tarea" style="padding: 10px; width: 200px; margin-right: 10px;">
+            <button class="test-button" onclick="simulateCompletion()">Simular Completación</button>
+            <div id="completionResult" class="result"></div>
+        </div>
+
+        <div class="test-step">
+            <h3>🔍 Paso 5: Verificar Estado</h3>
+            <p>Verifica que la tarea haya cambiado de estado correctamente:</p>
+            <button class="debug-button" onclick="checkTaskStatus()">Verificar Estado de Tareas</button>
+            <button class="debug-button" onclick="checkSubmissions()">Ver Entregas</button>
+            <button class="debug-button" onclick="checkHistory()">Ver Historial</button>
+            <div id="statusResult" class="result"></div>
+        </div>
+
+        <div class="test-step">
+            <h3>🧹 Paso 6: Limpiar para Nueva Prueba</h3>
+            <p>Limpia los datos para ejecutar una nueva prueba:</p>
+            <button class="debug-button" onclick="clearAllTestData()" style="background-color: #dc3545;">Limpiar Todo</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTestUser = 'estudiante1';
+        let currentTaskId = null;
+
+        function setupTestUser() {
+            currentTestUser = document.getElementById('testUsername').value || 'estudiante1';
+            
+            // Simular login del usuario en localStorage
+            const userData = {
+                username: currentTestUser,
+                role: 'student',
+                id: currentTestUser,
+                email: `${currentTestUser}@test.com`
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            
+            document.getElementById('userSetupResult').textContent = 
+                `Usuario configurado: ${currentTestUser}\nDatos guardados en localStorage como 'currentUser'`;
+        }
+
+        function createEvaluationTask() {
+            currentTaskId = `eval_test_${Date.now()}`;
+            
+            const evaluationTask = {
+                id: currentTaskId,
+                title: 'Evaluación de Prueba - Biología',
+                description: 'Evaluación sobre células y tejidos para probar el sistema',
+                taskType: 'evaluation',
+                status: 'pending',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                createdAt: new Date().toISOString(),
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                evaluationConfig: {
+                    topic: 'Células y Tejidos',
+                    questionCount: 5,
+                    timeLimit: 10 // 10 minutos para prueba rápida
+                },
+                assignedStudents: [currentTestUser]
+            };
+
+            // Agregar a las tareas del usuario
+            const userTasksKey = `userTasks_${currentTestUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            userTasks.push(evaluationTask);
+            localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+
+            // También guardar el ID de la tarea para referencia
+            document.getElementById('taskIdForCompletion').value = currentTaskId;
+
+            document.getElementById('taskCreationResult').textContent = 
+                `Tarea creada exitosamente:\n\nID: ${currentTaskId}\nTítulo: ${evaluationTask.title}\nTema: ${evaluationTask.evaluationConfig.topic}\nPreguntas: ${evaluationTask.evaluationConfig.questionCount}\nTiempo: ${evaluationTask.evaluationConfig.timeLimit} minutos\n\nAsignada a: ${currentTestUser}`;
+        }
+
+        function openApp() {
+            window.open('/dashboard', '_blank');
+        }
+
+        function openTasks() {
+            window.open('/dashboard/tareas', '_blank');
+        }
+
+        function simulateCompletion() {
+            const taskId = document.getElementById('taskIdForCompletion').value;
+            if (!taskId) {
+                document.getElementById('completionResult').textContent = 'Error: Ingresa un ID de tarea';
+                return;
+            }
+
+            // Simular datos de completación realistas
+            const submissionId = `submission_${taskId}_${currentTestUser}_${Date.now()}`;
+            const score = 4; // 4 de 5 preguntas correctas
+            const totalQuestions = 5;
+            const completionPercentage = 80; // 80%
+            const timeSpent = 450; // 7.5 minutos
+
+            // Crear entrega simulada
+            const submission = {
+                id: submissionId,
+                taskId: taskId,
+                studentId: currentTestUser,
+                studentName: currentTestUser,
+                submissionDate: new Date().toISOString(),
+                answers: [true, false, 2, [0, 1], true], // Respuestas simuladas
+                score: score,
+                totalQuestions: totalQuestions,
+                completionPercentage: completionPercentage,
+                timeSpent: timeSpent,
+                evaluationTitle: 'Evaluación de Prueba - Biología',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                topic: 'Células y Tejidos',
+                status: 'completed',
+                type: 'evaluation'
+            };
+
+            // Actualizar entregas
+            const submissions = JSON.parse(localStorage.getItem('taskSubmissions') || '[]');
+            submissions.push(submission);
+            localStorage.setItem('taskSubmissions', JSON.stringify(submissions));
+
+            // Actualizar estado de la tarea
+            const userTasksKey = `userTasks_${currentTestUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            const taskIndex = userTasks.findIndex(task => task.id === taskId);
+            if (taskIndex !== -1) {
+                userTasks[taskIndex].status = 'completed';
+                userTasks[taskIndex].completedAt = new Date().toISOString();
+                userTasks[taskIndex].score = score;
+                userTasks[taskIndex].completionPercentage = completionPercentage;
+                
+                localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+            }
+
+            // Actualizar historial
+            const historyKey = `evaluationHistory_${currentTestUser}`;
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            
+            const historyEntry = {
+                id: submissionId,
+                evaluationTitle: 'Evaluación de Prueba - Biología',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                topic: 'Células y Tejidos',
+                score: score,
+                totalQuestions: totalQuestions,
+                completionPercentage: completionPercentage,
+                timeSpent: timeSpent,
+                completedAt: new Date().toISOString(),
+                taskId: taskId
+            };
+            
+            history.push(historyEntry);
+            localStorage.setItem(historyKey, JSON.stringify(history));
+
+            document.getElementById('completionResult').textContent = 
+                `Evaluación completada exitosamente:\n\nID de entrega: ${submissionId}\nPuntuación: ${score}/${totalQuestions} (${completionPercentage}%)\nTiempo gastado: ${Math.floor(timeSpent/60)}:${(timeSpent%60).toString().padStart(2,'0')}\nEstado actualizado: completed\n\nDatos guardados en:\n- taskSubmissions\n- userTasks_${currentTestUser}\n- evaluationHistory_${currentTestUser}`;
+        }
+
+        function checkTaskStatus() {
+            const userTasksKey = `userTasks_${currentTestUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            let result = `Estado de tareas para ${currentTestUser}:\n\n`;
+            
+            if (userTasks.length === 0) {
+                result += 'No hay tareas para este usuario.';
+            } else {
+                userTasks.forEach((task, index) => {
+                    result += `${index + 1}. ${task.title}\n`;
+                    result += `   ID: ${task.id}\n`;
+                    result += `   Estado: ${task.status}\n`;
+                    result += `   Tipo: ${task.taskType}\n`;
+                    if (task.completedAt) {
+                        result += `   Completado: ${new Date(task.completedAt).toLocaleString()}\n`;
+                    }
+                    if (task.score !== undefined) {
+                        result += `   Puntuación: ${task.score}\n`;
+                    }
+                    if (task.completionPercentage !== undefined) {
+                        result += `   Porcentaje: ${task.completionPercentage}%\n`;
+                    }
+                    result += '\n';
+                });
+            }
+            
+            document.getElementById('statusResult').textContent = result;
+        }
+
+        function checkSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('taskSubmissions') || '[]');
+            
+            let result = 'Entregas del sistema:\n\n';
+            
+            if (submissions.length === 0) {
+                result += 'No hay entregas registradas.';
+            } else {
+                submissions.forEach((sub, index) => {
+                    result += `${index + 1}. ${sub.evaluationTitle}\n`;
+                    result += `   Estudiante: ${sub.studentName}\n`;
+                    result += `   Puntuación: ${sub.score}/${sub.totalQuestions}\n`;
+                    result += `   Porcentaje: ${sub.completionPercentage}%\n`;
+                    result += `   Fecha: ${new Date(sub.submissionDate).toLocaleString()}\n`;
+                    result += '\n';
+                });
+            }
+            
+            document.getElementById('statusResult').textContent = result;
+        }
+
+        function checkHistory() {
+            const historyKey = `evaluationHistory_${currentTestUser}`;
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            
+            let result = `Historial de evaluaciones para ${currentTestUser}:\n\n`;
+            
+            if (history.length === 0) {
+                result += 'No hay historial de evaluaciones.';
+            } else {
+                history.forEach((item, index) => {
+                    result += `${index + 1}. ${item.evaluationTitle}\n`;
+                    result += `   Tema: ${item.topic}\n`;
+                    result += `   Puntuación: ${item.score}/${item.totalQuestions}\n`;
+                    result += `   Porcentaje: ${item.completionPercentage}%\n`;
+                    result += `   Completado: ${new Date(item.completedAt).toLocaleString()}\n`;
+                    result += '\n';
+                });
+            }
+            
+            document.getElementById('statusResult').textContent = result;
+        }
+
+        function clearAllTestData() {
+            // Limpiar datos específicos del test
+            localStorage.removeItem(`userTasks_${currentTestUser}`);
+            localStorage.removeItem(`evaluationHistory_${currentTestUser}`);
+            localStorage.removeItem('taskSubmissions');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isTaskEvaluation');
+            localStorage.removeItem('evaluationFinished');
+            
+            sessionStorage.removeItem('isTaskEvaluation');
+            sessionStorage.removeItem('evaluationFinished');
+            
+            // Limpiar campos
+            document.getElementById('taskIdForCompletion').value = '';
+            document.getElementById('userSetupResult').textContent = '';
+            document.getElementById('taskCreationResult').textContent = '';
+            document.getElementById('completionResult').textContent = '';
+            document.getElementById('statusResult').textContent = '';
+            
+            alert('Todos los datos de prueba han sido limpiados.');
+        }
+
+        // Configurar usuario por defecto al cargar
+        window.onload = function() {
+            setupTestUser();
+        };
+    </script>
+</body>
+</html>

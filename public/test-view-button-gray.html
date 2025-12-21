@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Botón Ver Tarea - Gris</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn-view {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            border: none;
+            background: transparent;
+            color: rgb(75 85 99);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-view:hover {
+            color: rgb(31 41 55);
+            background-color: rgb(243 244 246);
+        }
+        
+        .btn-view:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-edit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            border: none;
+            background: transparent;
+            color: rgb(234 88 12);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-edit:hover {
+            color: rgb(194 65 12);
+            background-color: rgb(255 247 237);
+        }
+        
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            border: none;
+            background: transparent;
+            color: rgb(220 38 38);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-delete:hover {
+            color: rgb(185 28 28);
+            background-color: rgb(254 242 242);
+        }
+        
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            .btn-view {
+                color: rgb(156 163 175);
+            }
+            
+            .btn-view:hover {
+                color: rgb(229 231 235);
+                background-color: rgb(55 65 81);
+            }
+            
+            .btn-edit {
+                color: rgb(251 146 60);
+            }
+            
+            .btn-edit:hover {
+                color: rgb(254 215 170);
+                background-color: rgb(124 45 18 / 0.2);
+            }
+            
+            .btn-delete {
+                color: rgb(248 113 113);
+            }
+            
+            .btn-delete:hover {
+                color: rgb(252 165 165);
+                background-color: rgb(127 29 29 / 0.2);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
+            Test Botón "Ver Tarea" - Color Gris
+        </h1>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Botón Ver Tarea Actualizado</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ANTES (Azul) -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-blue-600">⚡ ANTES (Azul - muy prominente)</h3>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-medium text-gray-900 dark:text-white">eval</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">sistema respiratorio</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <!-- Botón azul anterior -->
+                            <button class="p-1.5 rounded text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors" title="Ver tarea">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DESPUÉS (Gris) -->
+                <div class="border border-green-200 dark:border-green-700 rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-green-600">✅ DESPUÉS (Gris - más sutil)</h3>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-medium text-gray-900 dark:text-white">eval</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">sistema respiratorio</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <!-- Botón gris nuevo -->
+                            <button class="btn-view" title="Ver tarea">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-edit" title="Editar tarea">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete" title="Eliminar tarea">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Ejemplo Completo con Badges</h2>
+            
+            <div class="border rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h3 class="font-medium text-gray-900 dark:text-white">eval</h3>
+                            
+                            <!-- Badge de Evaluación -->
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                                </svg>
+                                Evaluación
+                            </span>
+                            
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-red-100 text-red-800">
+                                Alta
+                            </span>
+                            
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
+                                Pendiente
+                            </span>
+                        </div>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">sistema respiratorio</p>
+                        <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                            📅 Vence: 28 jun 2025, 17:48 | 👥 4to Básico | 💬 0 comentarios
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-1 ml-4">
+                        <button class="btn-view" title="Ver tarea" onclick="alert('¡Botón Ver Tarea clickeado!')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-edit" title="Editar tarea" onclick="alert('¡Botón Editar clickeado!')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-delete" title="Eliminar tarea" onclick="alert('¡Botón Eliminar clickeado!')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-300 mb-2">
+                👁️ Botón "Ver Tarea" - Color Gris (Actual)
+            </h3>
+            <ul class="text-sm text-gray-700 dark:text-gray-400 space-y-1">
+                <li>• <strong>Color gris sutil</strong>: `text-gray-600` - No compite con otros elementos</li>
+                <li>• <strong>Hover visible</strong>: Se oscurece a `text-gray-800` con fondo gris claro</li>
+                <li>• <strong>Buena legibilidad</strong>: Visible pero no intrusivo</li>
+                <li>• <strong>Jerarquía clara</strong>: Los botones de acción (editar/eliminar) destacan más</li>
+                <li>• <strong>Consistencia</strong>: Mantiene el patrón de colores del sistema</li>
+                <li>• <strong>Tema oscuro compatible</strong>: `dark:text-gray-400` para modo oscuro</li>
+            </ul>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-600 dark:text-gray-400">
+                El botón "Ver Tarea" ahora tiene un color gris más sutil que no compite visualmente con otros elementos
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 PRUEBA: Asignación de Tareas a Estudiantes Específicos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .success { border-color: #27ae60; background-color: #d5f4e6; }
+        .error { border-color: #e74c3c; background-color: #fadbd8; }
+        .warning { border-color: #f39c12; background-color: #fef5e7; }
+        .info { border-color: #3498db; background-color: #ebf3fd; }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .step-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .check-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .result-box {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .notification-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .notification-header {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .notification-details {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin: 2px;
+        }
+        
+        .student-specific { background-color: #e8f5e8; border-left: 4px solid #27ae60; }
+        .course-wide { background-color: #fff3cd; border-left: 4px solid #ffc107; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 PRUEBA: Asignación de Tareas a Estudiantes Específicos</h1>
+            <p>Verificación de notificaciones para tareas asignadas a estudiantes particulares</p>
+        </div>
+
+        <div class="test-section info">
+            <h3>📋 Información del Problema</h3>
+            <p><strong>Problema identificado:</strong> Cuando el profesor asigna una tarea a un estudiante específico, la notificación no aparece en la campana de notificaciones del estudiante.</p>
+            <p><strong>Causa:</strong> La función <code>createNewTaskNotifications</code> no consideraba las asignaciones específicas (<code>assignedTo: 'student'</code> y <code>assignedStudentIds</code>).</p>
+            <p><strong>Solución:</strong> Modificar la función para que filtre solo los estudiantes específicos cuando sea una asignación dirigida.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Pasos de Prueba</h3>
+            
+            <button onclick="paso1_ConfigurarDatos()" class="step-button">
+                Paso 1: Configurar Datos de Prueba
+            </button>
+            <div id="resultado-paso1" class="result-box"></div>
+
+            <button onclick="paso2_CrearTareaEspecifica()" class="step-button">
+                Paso 2: Crear Tarea para Estudiante Específico
+            </button>
+            <div id="resultado-paso2" class="result-box"></div>
+
+            <button onclick="paso3_CrearTareaCurso()" class="step-button">
+                Paso 3: Crear Tarea para Todo el Curso (Comparación)
+            </button>
+            <div id="resultado-paso3" class="result-box"></div>
+
+            <button onclick="verificarNotificaciones()" class="check-button">
+                🔍 Verificar Notificaciones Generadas
+            </button>
+            <div id="resultado-verificacion" class="result-box"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Resultados de la Verificación</h3>
+            <div id="panel-resultados"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Panel de Notificaciones Simulado</h3>
+            <div id="simulacion-panel"></div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de prueba
+        const datosPrueba = {
+            profesor: {
+                id: 'prof_001',
+                username: 'prof_ciencias',
+                displayName: 'Prof. García',
+                role: 'teacher'
+            },
+            estudiantes: [
+                { id: 'est_001', username: 'felipe_est', displayName: 'Felipe Estudiante', role: 'student', activeCourses: ['ciencias_5to'] },
+                { id: 'est_002', username: 'maria_est', displayName: 'María González', role: 'student', activeCourses: ['ciencias_5to'] },
+                { id: 'est_003', username: 'carlos_est', displayName: 'Carlos Rodríguez', role: 'student', activeCourses: ['ciencias_5to'] },
+                { id: 'est_004', username: 'ana_est', displayName: 'Ana López', role: 'student', activeCourses: ['ciencias_5to'] }
+            ],
+            curso: 'ciencias_5to'
+        };
+
+        // Sistema de notificaciones simulado
+        const NotificationSystem = {
+            getNotifications() {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            },
+
+            saveNotifications(notifications) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            },
+
+            getTasks() {
+                return JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            },
+
+            saveTasks(tasks) {
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            },
+
+            getUsers() {
+                return JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            },
+
+            saveUsers(users) {
+                localStorage.setItem('smart-student-users', JSON.stringify(users));
+            },
+
+            // Implementación de createNewTaskNotifications corregida
+            createNewTaskNotifications(taskId, taskTitle, course, subject, teacherUsername, teacherDisplayName, taskType = 'assignment') {
+                console.log('=== DEBUG createNewTaskNotifications ===');
+                console.log('TaskId:', taskId);
+                console.log('Course:', course);
+                
+                // 🔧 CORRECCIÓN: Obtener la tarea para verificar asignaciones específicas
+                const tasks = this.getTasks();
+                const currentTask = tasks.find(task => task.id === taskId);
+                
+                let targetStudents = [];
+                
+                if (currentTask && currentTask.assignedTo === 'student' && currentTask.assignedStudentIds) {
+                    // 🎯 Tarea asignada a estudiantes específicos
+                    console.log('📋 Tarea asignada a estudiantes específicos:', currentTask.assignedStudentIds);
+                    
+                    // Obtener datos de usuarios para convertir IDs a usernames
+                    const users = this.getUsers();
+                    
+                    targetStudents = currentTask.assignedStudentIds
+                        .map(studentId => {
+                            const user = users.find(u => u.id === studentId);
+                            if (user && user.role === 'student') {
+                                return {
+                                    username: user.username,
+                                    displayName: user.displayName || user.username
+                                };
+                            }
+                            return null;
+                        })
+                        .filter(student => student !== null);
+                    
+                    console.log('🎯 Estudiantes específicos encontrados:', targetStudents);
+                } else {
+                    // 📚 Tarea asignada a todo el curso
+                    console.log('📚 Tarea asignada a todo el curso');
+                    targetStudents = this.getStudentsInCourse(course);
+                    console.log('Students found in course:', targetStudents);
+                }
+                
+                if (targetStudents.length === 0) {
+                    console.log('No target students found, skipping notification creation');
+                    return;
+                }
+
+                const notifications = this.getNotifications();
+                console.log('Current notifications count:', notifications.length);
+                
+                const newNotification = {
+                    id: `new_task_${taskId}_${Date.now()}`,
+                    type: 'new_task',
+                    taskId,
+                    taskTitle,
+                    targetUserRole: 'student',
+                    targetUsernames: targetStudents.map(student => student.username),
+                    fromUsername: teacherUsername,
+                    fromDisplayName: teacherDisplayName,
+                    teacherName: teacherDisplayName,
+                    course,
+                    subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType
+                };
+
+                notifications.push(newNotification);
+                console.log('New notification created:', newNotification);
+                console.log('Target usernames:', newNotification.targetUsernames);
+                console.log('Total notifications after creation:', notifications.length);
+                
+                this.saveNotifications(notifications);
+                console.log('Notifications saved to localStorage');
+                
+                return newNotification;
+            },
+
+            getStudentsInCourse(course) {
+                const users = this.getUsers();
+                return users
+                    .filter(user => 
+                        user.role === 'student' && 
+                        user.activeCourses && 
+                        user.activeCourses.includes(course)
+                    )
+                    .map(user => ({
+                        username: user.username,
+                        displayName: user.displayName || user.username
+                    }));
+            }
+        };
+
+        function log(message, type = 'info') {
+            console.log(message);
+            return `[${new Date().toLocaleTimeString()}] ${message}\n`;
+        }
+
+        function paso1_ConfigurarDatos() {
+            let resultado = '';
+            
+            try {
+                // Configurar usuarios
+                const usuarios = [datosPrueba.profesor, ...datosPrueba.estudiantes];
+                NotificationSystem.saveUsers(usuarios);
+                resultado += log('✅ Usuarios configurados correctamente');
+                resultado += log(`   👥 ${usuarios.length} usuarios guardados`);
+                
+                // Limpiar notificaciones y tareas anteriores
+                NotificationSystem.saveNotifications([]);
+                NotificationSystem.saveTasks([]);
+                resultado += log('🧹 Datos anteriores limpiados');
+                
+                // Verificar configuración
+                const usuariosGuardados = NotificationSystem.getUsers();
+                resultado += log(`📊 Verificación: ${usuariosGuardados.length} usuarios en localStorage`);
+                
+                document.getElementById('resultado-paso1').textContent = resultado;
+                document.getElementById('resultado-paso1').className = 'result-box success';
+                
+            } catch (error) {
+                resultado += log(`❌ Error en configuración: ${error.message}`, 'error');
+                document.getElementById('resultado-paso1').textContent = resultado;
+                document.getElementById('resultado-paso1').className = 'result-box error';
+            }
+        }
+
+        function paso2_CrearTareaEspecifica() {
+            let resultado = '';
+            
+            try {
+                // Crear tarea asignada solo a Felipe
+                const taskId = `task_especifica_${Date.now()}`;
+                const tareaEspecifica = {
+                    id: taskId,
+                    title: 'Tarea Solo para Felipe',
+                    description: 'Esta tarea está asignada únicamente a Felipe',
+                    subject: 'Ciencias Naturales',
+                    course: datosPrueba.curso,
+                    assignedById: datosPrueba.profesor.id,
+                    assignedByName: datosPrueba.profesor.displayName,
+                    assignedTo: 'student', // 🔑 CLAVE: Asignación específica
+                    assignedStudentIds: ['est_001'], // 🔑 CLAVE: Solo Felipe
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    priority: 'medium',
+                    attachments: [],
+                    taskType: 'tarea'
+                };
+                
+                // Guardar tarea
+                const tasks = NotificationSystem.getTasks();
+                tasks.push(tareaEspecifica);
+                NotificationSystem.saveTasks(tasks);
+                
+                resultado += log('📝 Tarea específica creada');
+                resultado += log(`   📋 ID: ${taskId}`);
+                resultado += log(`   🎯 Asignada a: ${tareaEspecifica.assignedStudentIds.join(', ')}`);
+                resultado += log(`   📚 Tipo asignación: ${tareaEspecifica.assignedTo}`);
+                
+                // Crear notificación usando el sistema corregido
+                const notificacion = NotificationSystem.createNewTaskNotifications(
+                    taskId,
+                    tareaEspecifica.title,
+                    tareaEspecifica.course,
+                    tareaEspecifica.subject,
+                    datosPrueba.profesor.username,
+                    datosPrueba.profesor.displayName,
+                    'assignment'
+                );
+                
+                if (notificacion) {
+                    resultado += log('🔔 Notificación creada exitosamente');
+                    resultado += log(`   🎯 Destinatarios: ${notificacion.targetUsernames.join(', ')}`);
+                    resultado += log(`   ✅ Solo Felipe debería recibir la notificación`);
+                } else {
+                    resultado += log('❌ No se creó notificación', 'error');
+                }
+                
+                document.getElementById('resultado-paso2').textContent = resultado;
+                document.getElementById('resultado-paso2').className = 'result-box success';
+                
+            } catch (error) {
+                resultado += log(`❌ Error: ${error.message}`, 'error');
+                document.getElementById('resultado-paso2').textContent = resultado;
+                document.getElementById('resultado-paso2').className = 'result-box error';
+            }
+        }
+
+        function paso3_CrearTareaCurso() {
+            let resultado = '';
+            
+            try {
+                // Crear tarea para todo el curso
+                const taskId = `task_curso_${Date.now()}`;
+                const tareaCurso = {
+                    id: taskId,
+                    title: 'Tarea para Todo el Curso',
+                    description: 'Esta tarea está asignada a todos los estudiantes del curso',
+                    subject: 'Ciencias Naturales',
+                    course: datosPrueba.curso,
+                    assignedById: datosPrueba.profesor.id,
+                    assignedByName: datosPrueba.profesor.displayName,
+                    assignedTo: 'course', // 🔑 CLAVE: Asignación a curso
+                    assignedStudentIds: undefined, // 🔑 CLAVE: No hay IDs específicos
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    priority: 'medium',
+                    attachments: [],
+                    taskType: 'tarea'
+                };
+                
+                // Guardar tarea
+                const tasks = NotificationSystem.getTasks();
+                tasks.push(tareaCurso);
+                NotificationSystem.saveTasks(tasks);
+                
+                resultado += log('📝 Tarea para curso creada');
+                resultado += log(`   📋 ID: ${taskId}`);
+                resultado += log(`   📚 Tipo asignación: ${tareaCurso.assignedTo}`);
+                resultado += log(`   👥 Destinatarios: todos los estudiantes del curso`);
+                
+                // Crear notificación usando el sistema corregido
+                const notificacion = NotificationSystem.createNewTaskNotifications(
+                    taskId,
+                    tareaCurso.title,
+                    tareaCurso.course,
+                    tareaCurso.subject,
+                    datosPrueba.profesor.username,
+                    datosPrueba.profesor.displayName,
+                    'assignment'
+                );
+                
+                if (notificacion) {
+                    resultado += log('🔔 Notificación creada exitosamente');
+                    resultado += log(`   🎯 Destinatarios: ${notificacion.targetUsernames.join(', ')}`);
+                    resultado += log(`   ✅ Todos los estudiantes deberían recibir la notificación`);
+                } else {
+                    resultado += log('❌ No se creó notificación', 'error');
+                }
+                
+                document.getElementById('resultado-paso3').textContent = resultado;
+                document.getElementById('resultado-paso3').className = 'result-box success';
+                
+            } catch (error) {
+                resultado += log(`❌ Error: ${error.message}`, 'error');
+                document.getElementById('resultado-paso3').textContent = resultado;
+                document.getElementById('resultado-paso3').className = 'result-box error';
+            }
+        }
+
+        function verificarNotificaciones() {
+            let resultado = '';
+            
+            try {
+                const notificaciones = NotificationSystem.getNotifications();
+                const tasks = NotificationSystem.getTasks();
+                
+                resultado += log(`📊 RESUMEN DE VERIFICACIÓN`);
+                resultado += log(`🔔 Total notificaciones: ${notificaciones.length}`);
+                resultado += log(`📝 Total tareas: ${tasks.length}`);
+                resultado += log('');
+                
+                // Análisis por tipo de asignación
+                const tareaEspecifica = tasks.find(t => t.assignedTo === 'student');
+                const tareaCurso = tasks.find(t => t.assignedTo === 'course');
+                
+                if (tareaEspecifica) {
+                    const notifEspecifica = notificaciones.find(n => n.taskId === tareaEspecifica.id);
+                    resultado += log('🎯 TAREA ESPECÍFICA:');
+                    resultado += log(`   📋 Título: ${tareaEspecifica.title}`);
+                    resultado += log(`   👤 Asignada a ID: ${tareaEspecifica.assignedStudentIds}`);
+                    
+                    if (notifEspecifica) {
+                        resultado += log(`   ✅ Notificación encontrada`);
+                        resultado += log(`   🎯 Destinatarios: ${notifEspecifica.targetUsernames.join(', ')}`);
+                        
+                        if (notifEspecifica.targetUsernames.length === 1 && notifEspecifica.targetUsernames[0] === 'felipe_est') {
+                            resultado += log(`   ✅ CORRECTO: Solo Felipe recibe la notificación`);
+                        } else {
+                            resultado += log(`   ❌ ERROR: Destinatarios incorrectos`);
+                        }
+                    } else {
+                        resultado += log(`   ❌ ERROR: No se encontró notificación`);
+                    }
+                }
+                
+                resultado += log('');
+                
+                if (tareaCurso) {
+                    const notifCurso = notificaciones.find(n => n.taskId === tareaCurso.id);
+                    resultado += log('📚 TAREA DE CURSO:');
+                    resultado += log(`   📋 Título: ${tareaCurso.title}`);
+                    resultado += log(`   👥 Asignada a: todo el curso`);
+                    
+                    if (notifCurso) {
+                        resultado += log(`   ✅ Notificación encontrada`);
+                        resultado += log(`   🎯 Destinatarios: ${notifCurso.targetUsernames.join(', ')}`);
+                        
+                        if (notifCurso.targetUsernames.length === 4) {
+                            resultado += log(`   ✅ CORRECTO: Todos los estudiantes reciben la notificación`);
+                        } else {
+                            resultado += log(`   ❌ ERROR: Número incorrecto de destinatarios`);
+                        }
+                    } else {
+                        resultado += log(`   ❌ ERROR: No se encontró notificación`);
+                    }
+                }
+                
+                document.getElementById('resultado-verificacion').textContent = resultado;
+                document.getElementById('resultado-verificacion').className = 'result-box info';
+                
+                // Mostrar panel de resultados detallado
+                mostrarPanelResultados(notificaciones, tasks);
+                
+                // Simular panel de notificaciones
+                simularPanelNotificaciones(notificaciones);
+                
+            } catch (error) {
+                resultado += log(`❌ Error en verificación: ${error.message}`, 'error');
+                document.getElementById('resultado-verificacion').textContent = resultado;
+                document.getElementById('resultado-verificacion').className = 'result-box error';
+            }
+        }
+
+        function mostrarPanelResultados(notificaciones, tasks) {
+            const panel = document.getElementById('panel-resultados');
+            
+            let html = '<table class="comparison-table">';
+            html += '<thead><tr><th>Tarea</th><th>Tipo Asignación</th><th>Estudiantes Objetivo</th><th>Notificación Creada</th><th>Destinatarios</th><th>Estado</th></tr></thead>';
+            html += '<tbody>';
+            
+            tasks.forEach(task => {
+                const notif = notificaciones.find(n => n.taskId === task.id);
+                const esEspecifica = task.assignedTo === 'student';
+                const destinatariosEsperados = esEspecifica ? 
+                    (task.assignedStudentIds ? task.assignedStudentIds.length : 0) : 
+                    datosPrueba.estudiantes.length;
+                
+                html += '<tr>';
+                html += `<td><strong>${task.title}</strong></td>`;
+                html += `<td><span class="badge">${task.assignedTo}</span></td>`;
+                html += `<td>${destinatariosEsperados} estudiante(s)</td>`;
+                html += `<td>${notif ? '✅ Sí' : '❌ No'}</td>`;
+                html += `<td>${notif ? notif.targetUsernames.join(', ') : 'N/A'}</td>`;
+                
+                let estado = '';
+                if (!notif) {
+                    estado = '<span style="color: red;">❌ Sin notificación</span>';
+                } else if (notif.targetUsernames.length === destinatariosEsperados) {
+                    estado = '<span style="color: green;">✅ Correcto</span>';
+                } else {
+                    estado = '<span style="color: orange;">⚠️ Destinatarios incorrectos</span>';
+                }
+                html += `<td>${estado}</td>`;
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            panel.innerHTML = html;
+        }
+
+        function simularPanelNotificaciones(notificaciones) {
+            const panel = document.getElementById('simulacion-panel');
+            
+            if (notificaciones.length === 0) {
+                panel.innerHTML = '<p>No hay notificaciones para mostrar.</p>';
+                return;
+            }
+            
+            let html = '<h4>📱 Vista desde diferentes estudiantes:</h4>';
+            
+            datosPrueba.estudiantes.forEach(estudiante => {
+                const notificacionesEstudiante = notificaciones.filter(n => 
+                    n.targetUsernames.includes(estudiante.username)
+                );
+                
+                html += `<div class="notification-item ${notificacionesEstudiante.length > 0 ? 'student-specific' : 'course-wide'}">`;
+                html += `<div class="notification-header">👤 ${estudiante.displayName} (${estudiante.username})</div>`;
+                
+                if (notificacionesEstudiante.length > 0) {
+                    html += `<div>🔔 ${notificacionesEstudiante.length} notificación(es):</div>`;
+                    notificacionesEstudiante.forEach(notif => {
+                        html += `<div class="notification-details">`;
+                        html += `📋 ${notif.taskTitle} (${notif.taskType})<br>`;
+                        html += `👨‍🏫 De: ${notif.fromDisplayName}<br>`;
+                        html += `📚 Curso: ${notif.course}`;
+                        html += `</div>`;
+                    });
+                } else {
+                    html += `<div>📭 Sin notificaciones</div>`;
+                }
+                
+                html += '</div>';
+            });
+            
+            panel.innerHTML = html;
+        }
+
+        // Ejecutar configuración inicial al cargar la página
+        window.addEventListener('load', function() {
+            console.log('🧪 Sistema de prueba de asignaciones específicas cargado');
+        });
+    </script>
+</body>
+</html>

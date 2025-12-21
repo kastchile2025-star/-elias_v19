@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Badges Fijos - Sin Efectos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .badge-fixed {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 0.375rem;
+            border: 1px solid;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        .badge-evaluation {
+            background-color: rgb(243 232 255);
+            color: rgb(107 33 168);
+            border-color: rgb(196 181 253);
+        }
+        
+        .badge-assignment {
+            background-color: rgb(219 234 254);
+            color: rgb(30 64 175);
+            border-color: rgb(147 197 253);
+        }
+        
+        .badge-high {
+            background-color: rgb(254 226 226);
+            color: rgb(153 27 27);
+        }
+        
+        .badge-medium {
+            background-color: rgb(254 249 195);
+            color: rgb(146 64 14);
+        }
+        
+        .badge-pending {
+            background-color: rgb(255 237 213);
+            color: rgb(154 52 18);
+        }
+        
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            .badge-evaluation {
+                background-color: rgb(88 28 135 / 0.2);
+                color: rgb(196 181 253);
+                border-color: rgb(107 33 168);
+            }
+            
+            .badge-assignment {
+                background-color: rgb(30 58 138 / 0.2);
+                color: rgb(147 197 253);
+                border-color: rgb(30 64 175);
+            }
+            
+            .badge-high {
+                background-color: rgb(127 29 29 / 0.2);
+                color: rgb(248 113 113);
+            }
+            
+            .badge-medium {
+                background-color: rgb(120 53 15 / 0.2);
+                color: rgb(251 191 36);
+            }
+            
+            .badge-pending {
+                background-color: rgb(124 45 18 / 0.2);
+                color: rgb(251 146 60);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
+            Test Badges Fijos - Sin Efectos Hover/Focus
+        </h1>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Ejemplo de Tarea "eval"</h2>
+            
+            <div class="border rounded-lg p-4">
+                <div class="flex items-center space-x-2 mb-2">
+                    <h3 class="font-medium text-gray-900 dark:text-white">eval</h3>
+                    
+                    <!-- Badge de Tipo: Evaluación -->
+                    <span class="badge-fixed badge-evaluation">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                        </svg>
+                        Evaluación
+                    </span>
+                    
+                    <!-- Badge de Materia -->
+                    <span class="badge-fixed bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                        Ciencias Naturales
+                    </span>
+                    
+                    <!-- Badge de Prioridad: Alta -->
+                    <span class="badge-fixed badge-high">
+                        Alta
+                    </span>
+                    
+                    <!-- Badge de Estado: Pendiente -->
+                    <span class="badge-fixed badge-pending">
+                        Pendiente
+                    </span>
+                </div>
+                
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">sistema respiratorio</p>
+                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                    📅 Vence: 28 jun 2025, 17:48 | 💬 0 comentarios
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Ejemplo de Tarea Normal</h2>
+            
+            <div class="border rounded-lg p-4">
+                <div class="flex items-center space-x-2 mb-2">
+                    <h3 class="font-medium text-gray-900 dark:text-white">Ensayo sobre fotosíntesis</h3>
+                    
+                    <!-- Badge de Tipo: Tarea -->
+                    <span class="badge-fixed badge-assignment">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                            <path fill-rule="evenodd" d="M3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        Tarea
+                    </span>
+                    
+                    <!-- Badge de Materia -->
+                    <span class="badge-fixed bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                        Biología
+                    </span>
+                    
+                    <!-- Badge de Prioridad: Media -->
+                    <span class="badge-fixed badge-medium">
+                        Media
+                    </span>
+                    
+                    <!-- Badge de Estado: Pendiente -->
+                    <span class="badge-fixed badge-pending">
+                        Pendiente
+                    </span>
+                </div>
+                
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Escribe un ensayo de 500 palabras sobre el proceso de fotosíntesis</p>
+                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                    📅 Vence: 30 jun 2025, 23:59 | 💬 2 comentarios
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+            <h3 class="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                ✅ Verificaciones Realizadas
+            </h3>
+            <ul class="text-sm text-blue-800 dark:text-blue-400 space-y-1">
+                <li>• Los badges mantienen sus colores originales sin cambios al hover</li>
+                <li>• Los badges no son interactivos (cursor: default, pointer-events: none)</li>
+                <li>• El badge de "Evaluación" mantiene su color púrpura</li>
+                <li>• Los badges de prioridad y estado mantienen sus colores respectivos</li>
+                <li>• Soporte para tema oscuro sin efectos de hover</li>
+            </ul>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-600 dark:text-gray-400">
+                Pasa el cursor sobre los badges - no deberían cambiar de color
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Rápido - Felipe Tareas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid;
+        }
+        .success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border-color: #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            width: calc(50% - 10px);
+        }
+        button:hover { background-color: #0056b3; }
+        .fix-btn {
+            background-color: #28a745;
+        }
+        .fix-btn:hover {
+            background-color: #218838;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🩺 Diagnóstico Rápido: Felipe y sus Tareas</h1>
+    
+    <div class="card">
+        <h2>🎯 Problema</h2>
+        <div class="status error">
+            Felipe ve la notificación de nueva tarea pero no la ve en la página de tareas.
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🔍 Diagnóstico</h2>
+        <button onclick="diagnose()">Diagnosticar Ahora</button>
+        <button onclick="fixProblem()" class="fix-btn">Reparar Automáticamente</button>
+        <div id="results"></div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Estado Actual</h2>
+        <div id="status">Haz clic en "Diagnosticar Ahora" para ver el estado</div>
+    </div>
+
+    <script>
+        function addResult(content, type = 'info') {
+            const container = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function updateStatus(content) {
+            document.getElementById('status').innerHTML = content;
+        }
+
+        function diagnose() {
+            // Limpiar resultados anteriores
+            document.getElementById('results').innerHTML = '';
+
+            try {
+                // Obtener datos del localStorage
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+                const allUsers = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+
+                // Encontrar Felipe
+                const felipe = allUsers['felipe'] || Object.values(allUsers).find(u => u.username === 'felipe');
+
+                if (!felipe) {
+                    addResult('❌ Felipe no encontrado en el sistema', 'error');
+                    return;
+                }
+
+                addResult(`👤 Felipe encontrado. Cursos: <span class="highlight">${JSON.stringify(felipe.activeCourses)}</span>`, 'success');
+                addResult(`📋 Total de tareas en sistema: <span class="highlight">${tasks.length}</span>`, 'info');
+
+                // Analizar tareas visibles para Felipe
+                let visibleTasks = 0;
+                const coursesInTasks = new Set();
+
+                tasks.forEach(task => {
+                    coursesInTasks.add(task.course);
+                    
+                    let isVisible = false;
+                    if (task.assignedTo === 'course') {
+                        isVisible = felipe.activeCourses?.includes(task.course);
+                    } else if (task.assignedTo === 'student') {
+                        isVisible = task.assignedStudents?.includes('felipe');
+                    }
+
+                    if (isVisible) {
+                        visibleTasks++;
+                        addResult(`✅ "${task.title}" (${task.course}) - VISIBLE`, 'success');
+                    } else {
+                        addResult(`❌ "${task.title}" (${task.course}) - NO VISIBLE`, 'error');
+                    }
+                });
+
+                // Resumen
+                if (visibleTasks === 0 && tasks.length > 0) {
+                    addResult(`🚨 PROBLEMA: Felipe no puede ver ninguna de las ${tasks.length} tareas`, 'error');
+                    addResult(`💡 Cursos en tareas: ${Array.from(coursesInTasks).join(', ')}`, 'warning');
+                    addResult(`💡 Cursos de Felipe: ${(felipe.activeCourses || []).join(', ')}`, 'warning');
+                } else if (visibleTasks > 0) {
+                    addResult(`✅ Felipe puede ver ${visibleTasks} de ${tasks.length} tareas`, 'success');
+                }
+
+                // Verificar notificaciones
+                const felipeNotifications = notifications.filter(n => n.studentUsername === 'felipe');
+                addResult(`🔔 Notificaciones para Felipe: ${felipeNotifications.length}`, 'info');
+
+                // Actualizar estado
+                updateStatus(`
+                    <div class="status ${visibleTasks > 0 ? 'success' : 'error'}">
+                        📊 <strong>Resumen:</strong><br>
+                        • Tareas visibles: ${visibleTasks}/${tasks.length}<br>
+                        • Notificaciones: ${felipeNotifications.length}<br>
+                        • Estado: ${visibleTasks > 0 ? 'FUNCIONANDO' : 'NECESITA REPARACIÓN'}
+                    </div>
+                `);
+
+            } catch (error) {
+                addResult(`❌ Error durante diagnóstico: ${error.message}`, 'error');
+            }
+        }
+
+        function fixProblem() {
+            document.getElementById('results').innerHTML = '';
+            addResult('🔧 Iniciando reparación automática...', 'info');
+
+            try {
+                // Obtener datos
+                const allUsers = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const currentUser = JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+
+                // Encontrar Felipe
+                let felipe = allUsers['felipe'] || Object.values(allUsers).find(u => u.username === 'felipe');
+                
+                if (!felipe) {
+                    addResult('❌ No se puede reparar: Felipe no encontrado', 'error');
+                    return;
+                }
+
+                // Obtener todos los cursos únicos de las tareas
+                const coursesInTasks = [...new Set(tasks.map(task => task.course))];
+                const originalCourses = felipe.activeCourses || [];
+                
+                // Asegurar que Felipe tenga todos los cursos necesarios
+                felipe.activeCourses = [...new Set([...originalCourses, ...coursesInTasks])];
+
+                // Asegurar que todas las tareas tengan assignedTo
+                let tasksFixed = 0;
+                const updatedTasks = tasks.map(task => {
+                    if (!task.assignedTo) {
+                        task.assignedTo = 'course';
+                        tasksFixed++;
+                    }
+                    return task;
+                });
+
+                // Guardar cambios
+                // Actualizar Felipe en usuarios
+                if (allUsers['felipe']) {
+                    allUsers['felipe'] = felipe;
+                } else {
+                    Object.keys(allUsers).forEach(key => {
+                        if (allUsers[key].username === 'felipe') {
+                            allUsers[key] = felipe;
+                        }
+                    });
+                }
+
+                localStorage.setItem('smart-student-users', JSON.stringify(allUsers));
+
+                // Si Felipe es el usuario actual, actualizarlo también
+                if (currentUser && currentUser.username === 'felipe') {
+                    localStorage.setItem('smart-student-current-user', JSON.stringify(felipe));
+                }
+
+                // Guardar tareas actualizadas
+                if (tasksFixed > 0) {
+                    localStorage.setItem('smart-student-tasks', JSON.stringify(updatedTasks));
+                }
+
+                // Reportar resultados
+                addResult(`✅ Cursos agregados a Felipe: ${JSON.stringify(coursesInTasks)}`, 'success');
+                if (tasksFixed > 0) {
+                    addResult(`✅ Reparadas ${tasksFixed} tareas sin asignación`, 'success');
+                }
+                addResult('✅ Reparación completada', 'success');
+                addResult('🔄 <strong>Ahora recarga la página de tareas para ver los cambios</strong>', 'warning');
+
+                // Actualizar diagnóstico
+                setTimeout(diagnose, 1000);
+
+            } catch (error) {
+                addResult(`❌ Error durante reparación: ${error.message}`, 'error');
+            }
+        }
+
+        // Ejecutar diagnóstico automáticamente al cargar
+        window.addEventListener('load', function() {
+            setTimeout(diagnose, 500);
+        });
+    </script>
+</body>
+</html>

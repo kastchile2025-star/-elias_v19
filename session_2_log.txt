@@ -1,0 +1,74 @@
+
+> nextn@0.1.0 dev:session2
+> next dev --turbopack -p 9003
+
+   ▲ Next.js 15.4.1 (Turbopack)
+   - Local:        http://localhost:9003
+   - Network:      http://10.0.10.66:9003
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 1354ms
+ ○ Compiling / ...
+ ✓ Compiled / in 16s
+ GET / 200 in 17117ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1380ms
+ GET /login 200 in 1718ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1915ms
+ GET /dashboard?profile=tab-026e8c30 200 in 2003ms
+ ○ Compiling /api/ai-status ...
+ ✓ Compiled /api/ai-status in 934ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 1038ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 43ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 33ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 29ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 32ms
+ ○ Compiling /dashboard/gestion-usuarios ...
+ ✓ Compiled /dashboard/gestion-usuarios in 1647ms
+ GET /dashboard/gestion-usuarios 200 in 1735ms
+ ✓ Compiled /_not-found/page in 467ms
+ GET /solucion-completa-ejecutar.js 404 in 698ms
+ GET /dashboard/gestion-usuarios 200 in 167ms
+ GET /login 200 in 50ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 53ms
+🔍 Checking AI status...
+📊 API Key configured: Yes
+🔑 API Key length: 39
+🎯 Expected key format: Valid
+✅ AI is configured and ready
+ GET /api/ai-status 200 in 58ms
+[?25h

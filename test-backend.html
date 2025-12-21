@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Backend API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Backend API para Profesor Jorge</h1>
+    
+    <button onclick="testProfile()">🎯 Test Profile</button>
+    <button onclick="testCourses()">📚 Test Courses</button>
+    <button onclick="testSubjects()">📖 Test Subjects</button>
+    <button onclick="testAll()">🚀 Test All</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:9002/api';
+        const USERNAME = 'jorge';
+
+        async function testProfile() {
+            try {
+                const response = await fetch(`${API_BASE}/users/${USERNAME}/profile`);
+                const data = await response.json();
+                showResult('Profile', data);
+            } catch (error) {
+                showResult('Profile Error', error.message);
+            }
+        }
+
+        async function testCourses() {
+            try {
+                const response = await fetch(`${API_BASE}/users/${USERNAME}/courses`);
+                const data = await response.json();
+                showResult('Courses', data);
+            } catch (error) {
+                showResult('Courses Error', error.message);
+            }
+        }
+
+        async function testSubjects() {
+            try {
+                const response = await fetch(`${API_BASE}/users/${USERNAME}/subjects`);
+                const data = await response.json();
+                showResult('Subjects', data);
+            } catch (error) {
+                showResult('Subjects Error', error.message);
+            }
+        }
+
+        async function testAll() {
+            await testProfile();
+            await testCourses();
+            await testSubjects();
+        }
+
+        function showResult(title, data) {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <h3>${title}:</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        // Test automático al cargar
+        window.onload = () => {
+            console.log('🧪 Iniciando tests automáticos...');
+            testAll();
+        };
+    </script>
+</body>
+</html>

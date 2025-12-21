@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Arreglar Todos los Usuarios - Smart Student</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .user-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .user-card.student {
+            border-left-color: #28a745;
+        }
+        .user-card.teacher {
+            border-left-color: #ffc107;
+        }
+        .user-card.admin {
+            border-left-color: #dc3545;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .status {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .status.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Arreglar Usuarios de Configuración</h1>
+        <p>Esta herramienta arregla automáticamente todos los usuarios creados en la pestaña de configuración para que puedan hacer login correctamente.</p>
+        
+        <div class="section">
+            <h2>🚀 Acciones Principales</h2>
+            <div class="grid">
+                <button class="button success" onclick="arreglarTodosAutomaticamente()">✅ Arreglar Todos los Usuarios</button>
+                <button class="button" onclick="mostrarTodosLosUsuarios()">👥 Ver Usuarios Actuales</button>
+                <button class="button warning" onclick="probarTodosLosLogins()">🧪 Probar Todos los Logins</button>
+                <button class="button" onclick="abrirLogin()">🚪 Ir al Login</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🛠️ Acciones de Mantenimiento</h2>
+            <div class="grid">
+                <button class="button" onclick="crearUsuariosDePrueba()">👤 Crear Usuarios de Prueba</button>
+                <button class="button danger" onclick="limpiarTodosLosUsuarios()">🗑️ Limpiar Todo</button>
+                <button class="button" onclick="exportarUsuarios()">💾 Exportar Usuarios</button>
+                <button class="button" onclick="mostrarDiagnostico()">🔍 Diagnóstico Completo</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+        <div id="users-display"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('users-display').innerHTML = '';
+        }
+
+        function arreglarTodosAutomaticamente() {
+            clearResults();
+            log('🔧 INICIANDO ARREGLO AUTOMÁTICO DE TODOS LOS USUARIOS...', 'info');
+            
+            try {
+                // Cargar script de arreglo
+                const script = document.createElement('script');
+                script.src = '/fix-all-users.js';
+                script.onload = function() {
+                    log('✅ Script de arreglo cargado exitosamente', 'success');
+                };
+                script.onerror = function() {
+                    log('❌ Error al cargar script de arreglo', 'error');
+                };
+                document.head.appendChild(script);
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function mostrarTodosLosUsuarios() {
+            clearResults();
+            log('👥 MOSTRANDO TODOS LOS USUARIOS...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            if (users.length === 0) {
+                log('❌ No hay usuarios en el sistema', 'error');
+                return;
+            }
+            
+            log(`📊 Total de usuarios: ${users.length}`, 'success');
+            
+            // Agrupar por rol
+            const usersByRole = users.reduce((acc, user) => {
+                acc[user.role] = acc[user.role] || [];
+                acc[user.role].push(user);
+                return acc;
+            }, {});
+            
+            // Mostrar estadísticas
+            Object.keys(usersByRole).forEach(role => {
+                log(`   ${role}: ${usersByRole[role].length} usuarios`);
+            });
+            
+            // Mostrar usuarios en cards
+            mostrarUsuariosEnCards(users);
+        }
+
+        function mostrarUsuariosEnCards(users) {
+            const usersDisplay = document.getElementById('users-display');
+            usersDisplay.innerHTML = '<h3>👥 Lista de Usuarios</h3>';
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            
+            users.forEach(user => {
+                const card = document.createElement('div');
+                card.className = `user-card ${user.role}`;
+                
+                // Verificar si el usuario puede hacer login
+                const puedeLogin = verificarUsuarioPuedeLogin(user);
+                const statusClass = puedeLogin.puede ? 'ok' : 'error';
+                const statusText = puedeLogin.puede ? '✅ OK' : '❌ ERROR';
+                
+                card.innerHTML = `
+                    <div><strong>${user.displayName || user.name || user.username}</strong></div>
+                    <div>Usuario: ${user.username}</div>
+                    <div>Rol: ${user.role}</div>
+                    <div>Password: ${user.password || 'Sin password'}</div>
+                    <div>Email: ${user.email || 'Sin email'}</div>
+                    <div>Cursos: ${user.activeCourses ? user.activeCourses.join(', ') : 'Ninguno'}</div>
+                    <div class="status ${statusClass}">${statusText}</div>
+                    ${!puedeLogin.puede ? `<div style="color: red; font-size: 11px;">${puedeLogin.error}</div>` : ''}
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            usersDisplay.appendChild(grid);
+        }
+
+        function verificarUsuarioPuedeLogin(user) {
+            const camposRequeridos = ['id', 'username', 'password', 'role', 'displayName', 'activeCourses', 'email'];
+            const camposFaltantes = camposRequeridos.filter(campo => 
+                !user[campo] || (campo === 'activeCourses' && !Array.isArray(user[campo]))
+            );
+            
+            if (camposFaltantes.length > 0) {
+                return { 
+                    puede: false, 
+                    error: `Falta: ${camposFaltantes.join(', ')}` 
+                };
+            }
+            
+            return { puede: true };
+        }
+
+        function probarTodosLosLogins() {
+            clearResults();
+            log('🧪 PROBANDO LOGIN DE TODOS LOS USUARIOS...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            if (users.length === 0) {
+                log('❌ No hay usuarios para probar', 'error');
+                return;
+            }
+            
+            let exitosos = 0;
+            let fallidos = 0;
+            
+            users.forEach(user => {
+                const resultado = verificarUsuarioPuedeLogin(user);
+                
+                if (resultado.puede) {
+                    log(`✅ ${user.username} (${user.role}) - Puede hacer login`, 'success');
+                    exitosos++;
+                } else {
+                    log(`❌ ${user.username} (${user.role}) - ${resultado.error}`, 'error');
+                    fallidos++;
+                }
+            });
+            
+            log(`\n📊 RESUMEN:`, 'info');
+            log(`   ✅ Usuarios OK: ${exitosos}`, 'success');
+            log(`   ❌ Usuarios con problemas: ${fallidos}`, fallidos > 0 ? 'error' : 'success');
+            
+            if (fallidos > 0) {
+                log('\n💡 Ejecuta "Arreglar Todos los Usuarios" para corregir los problemas', 'warning');
+            }
+        }
+
+        function crearUsuariosDePrueba() {
+            clearResults();
+            log('👤 CREANDO USUARIOS DE PRUEBA...', 'info');
+            
+            const usuariosPrueba = [
+                { username: 'estudiante1', name: 'Estudiante Uno', role: 'student' },
+                { username: 'profesor1', name: 'Profesor Uno', role: 'teacher' },
+                { username: 'admin1', name: 'Admin Uno', role: 'admin' },
+                { username: 'max', name: 'Max Usuario', role: 'student' },
+                { username: 'karla', name: 'Karla Usuario', role: 'student' }
+            ];
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            let creados = 0;
+            
+            usuariosPrueba.forEach(userTemplate => {
+                const existe = users.find(u => u.username === userTemplate.username);
+                if (!existe) {
+                    const nuevoUsuario = {
+                        id: crypto.randomUUID(),
+                        username: userTemplate.username,
+                        name: userTemplate.name,
+                        email: `${userTemplate.username}@${userTemplate.role}.com`,
+                        role: userTemplate.role,
+                        password: '1234',
+                        displayName: userTemplate.name,
+                        activeCourses: userTemplate.role === 'admin' ? [] : ['4to Básico'],
+                        isActive: true,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    if (userTemplate.role === 'student') {
+                        nuevoUsuario.assignedTeachers = {
+                            'Matemáticas': 'jorge',
+                            'Ciencias Naturales': 'carlos'
+                        };
+                    } else if (userTemplate.role === 'teacher') {
+                        nuevoUsuario.teachingAssignments = [{
+                            teacherUsername: userTemplate.username,
+                            teacherName: userTemplate.name,
+                            subject: 'Matemáticas',
+                            courses: ['4to Básico']
+                        }];
+                    }
+                    
+                    users.push(nuevoUsuario);
+                    creados++;
+                    log(`✅ Usuario creado: ${userTemplate.username} (${userTemplate.role})`, 'success');
+                }
+            });
+            
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            log(`\n🎉 Usuarios de prueba creados: ${creados}`, 'success');
+            
+            if (creados > 0) {
+                log('💡 Todos los usuarios tienen password: 1234', 'info');
+            }
+        }
+
+        function limpiarTodosLosUsuarios() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los usuarios? Esta acción no se puede deshacer.')) {
+                localStorage.setItem('smart-student-users', '[]');
+                localStorage.setItem('smart-student-students', '[]');
+                localStorage.setItem('smart-student-teachers', '[]');
+                localStorage.setItem('smart-student-administrators', '[]');
+                
+                clearResults();
+                log('🗑️ Todos los usuarios han sido eliminados', 'success');
+            }
+        }
+
+        function exportarUsuarios() {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            if (users.length === 0) {
+                log('❌ No hay usuarios para exportar', 'error');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(users, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `usuarios-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            log(`✅ Usuarios exportados: ${users.length} usuarios`, 'success');
+        }
+
+        function mostrarDiagnostico() {
+            clearResults();
+            log('🔍 DIAGNÓSTICO COMPLETO DEL SISTEMA...', 'info');
+            
+            // Verificar localStorage
+            const keys = ['smart-student-users', 'smart-student-students', 'smart-student-teachers', 'smart-student-administrators'];
+            
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    const count = Array.isArray(parsed) ? parsed.length : Object.keys(parsed).length;
+                    log(`📊 ${key}: ${count} registros`);
+                } else {
+                    log(`📊 ${key}: No existe`);
+                }
+            });
+            
+            // Mostrar usuarios y probar logins
+            mostrarTodosLosUsuarios();
+            setTimeout(() => probarTodosLosLogins(), 1000);
+        }
+
+        function abrirLogin() {
+            window.open('/login', '_blank');
+        }
+
+        // Auto-ejecutar diagnóstico al cargar
+        window.onload = function() {
+            log('🔄 Página cargada. Ejecutando diagnóstico inicial...', 'info');
+            setTimeout(mostrarDiagnostico, 500);
+        };
+    </script>
+</body>
+</html>

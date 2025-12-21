@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Avanzado - Filtro de Comentarios por Curso y Sección</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .test-button.secondary {
+            background-color: #6c757d;
+        }
+        .test-button.secondary:hover {
+            background-color: #545b62;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-line;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        h1 { color: #333; }
+        h2 { color: #666; }
+        h3 { color: #888; }
+        .scenario {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .user-card {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #fff;
+            min-width: 200px;
+        }
+        .user-card.success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .user-card.error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background-color: #28a745; }
+        .status-error { background-color: #dc3545; }
+        .status-warning { background-color: #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test Avanzado: Filtro de Comentarios por Curso y Sección</h1>
+    
+    <div class="test-section">
+        <h2>📋 Descripción del Test Avanzado</h2>
+        <p>Este test verifica que los comentarios estén correctamente filtrados por <strong>curso</strong>, <strong>sección</strong> y <strong>estudiante asignado</strong>.</p>
+        
+        <div class="scenario">
+            <h3>🎯 Escenarios de Prueba:</h3>
+            <ul>
+                <li><strong>Escenario 1:</strong> Tarea para "4to Básico Sección A" - Solo estudiantes de esa sección ven comentarios</li>
+                <li><strong>Escenario 2:</strong> Tarea para estudiantes específicos - Solo esos estudiantes ven comentarios</li>
+                <li><strong>Escenario 3:</strong> Estudiante de otra sección NO debe ver comentarios</li>
+                <li><strong>Escenario 4:</strong> Profesor siempre ve todos los comentarios</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Configuración de Datos de Prueba</h2>
+        <button class="test-button" onclick="setupAdvancedTestData()">1. Configurar Datos Avanzados</button>
+        <button class="test-button secondary" onclick="clearTestData()">Limpiar Datos</button>
+        <div id="setup-result" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Pruebas por Escenario</h2>
+        <div class="grid-2">
+            <div>
+                <h3>Escenario 1: Tarea para 4to A (Todo el curso)</h3>
+                <button class="test-button" onclick="testScenario1()">Probar Escenario 1</button>
+                <div id="scenario1-result" class="result-box"></div>
+            </div>
+            <div>
+                <h3>Escenario 2: Tarea para Estudiantes Específicos</h3>
+                <button class="test-button" onclick="testScenario2()">Probar Escenario 2</button>
+                <div id="scenario2-result" class="result-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧑‍🎓 Pruebas Individuales por Usuario</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <button class="test-button" onclick="testUserIndividual('profesor_carlos', 'teacher')">Profesor Carlos</button>
+            <button class="test-button" onclick="testUserIndividual('felipe_4a', 'student')">Felipe (4to A)</button>
+            <button class="test-button" onclick="testUserIndividual('maria_4a', 'student')">María (4to A)</button>
+            <button class="test-button" onclick="testUserIndividual('carlos_4b', 'student')">Carlos (4to B)</button>
+            <button class="test-button" onclick="testUserIndividual('ana_5a', 'student')">Ana (5to A)</button>
+        </div>
+        <div id="individual-result" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Resumen Global</h2>
+        <div id="global-summary" class="result-box"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let userData = {};
+        let tasksData = {};
+        let commentsData = {};
+
+        function log(id, message, type = 'info') {
+            const element = document.getElementById(id);
+            const timestamp = new Date().toLocaleTimeString();
+            const typeClass = type === 'success' ? 'success' : 
+                            type === 'error' ? 'error' : 
+                            type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<span class="${typeClass}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        function clearLog(id) {
+            document.getElementById(id).innerHTML = '';
+        }
+
+        function clearTestData() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-student-assignments');
+            localStorage.removeItem('smart-student-sections');
+            localStorage.removeItem('smart-student-courses');
+            
+            clearLog('setup-result');
+            log('setup-result', '🧹 Datos de prueba eliminados', 'warning');
+        }
+
+        function setupAdvancedTestData() {
+            clearLog('setup-result');
+            log('setup-result', '🔧 Configurando datos avanzados de prueba...', 'info');
+            
+            // === USUARIOS ===
+            const testUsers = [
+                // Profesor
+                {
+                    id: 'prof_carlos_001',
+                    username: 'profesor_carlos',
+                    displayName: 'Prof. Carlos',
+                    role: 'teacher',
+                    activeCourses: ['4to_basico_a', '4to_basico_b', '5to_basico_a']
+                },
+                // Estudiantes 4to A
+                {
+                    id: 'est_felipe_4a',
+                    username: 'felipe_4a',
+                    displayName: 'Felipe (4to A)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_a']
+                },
+                {
+                    id: 'est_maria_4a',
+                    username: 'maria_4a',
+                    displayName: 'María (4to A)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_a']
+                },
+                // Estudiantes 4to B
+                {
+                    id: 'est_carlos_4b',
+                    username: 'carlos_4b',
+                    displayName: 'Carlos (4to B)',
+                    role: 'student',
+                    activeCourses: ['4to_basico_b']
+                },
+                // Estudiantes 5to A
+                {
+                    id: 'est_ana_5a',
+                    username: 'ana_5a',
+                    displayName: 'Ana (5to A)',
+                    role: 'student',
+                    activeCourses: ['5to_basico_a']
+                }
+            ];
+
+            // === CURSOS Y SECCIONES ===
+            const testCourses = [
+                {
+                    id: 'course_4to_basico',
+                    name: '4to Básico',
+                    description: 'Cuarto año básico'
+                },
+                {
+                    id: 'course_5to_basico',
+                    name: '5to Básico',
+                    description: 'Quinto año básico'
+                }
+            ];
+
+            const testSections = [
+                {
+                    id: 'section_4a',
+                    courseId: 'course_4to_basico',
+                    name: 'A',
+                    description: '4to Básico Sección A'
+                },
+                {
+                    id: 'section_4b',
+                    courseId: 'course_4to_basico',
+                    name: 'B',
+                    description: '4to Básico Sección B'
+                },
+                {
+                    id: 'section_5a',
+                    courseId: 'course_5to_basico',
+                    name: 'A',
+                    description: '5to Básico Sección A'
+                }
+            ];
+
+            // === ASIGNACIONES DE ESTUDIANTES ===
+            const testStudentAssignments = [
+                // 4to A
+                {
+                    studentId: 'est_felipe_4a',
+                    courseId: 'course_4to_basico',
+                    sectionId: 'section_4a'
+                },
+                {
+                    studentId: 'est_maria_4a',
+                    courseId: 'course_4to_basico',
+                    sectionId: 'section_4a'
+                },
+                // 4to B
+                {
+                    studentId: 'est_carlos_4b',
+                    courseId: 'course_4to_basico',
+                    sectionId: 'section_4b'
+                },
+                // 5to A
+                {
+                    studentId: 'est_ana_5a',
+                    courseId: 'course_5to_basico',
+                    sectionId: 'section_5a'
+                }
+            ];
+
+            // === TAREAS ===
+            const testTasks = [
+                // Tarea 1: Para todo 4to A
+                {
+                    id: 'task_4to_a_matematicas',
+                    title: 'Ejercicios de Matemáticas - 4to A',
+                    description: 'Resolver problemas de fracciones',
+                    assignedBy: 'profesor_carlos',
+                    assignedById: 'prof_carlos_001',
+                    assignedTo: 'course',
+                    course: '4to_basico_a',
+                    courseSectionId: 'course_4to_basico-section_4a',
+                    subject: 'Matemáticas',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending'
+                },
+                // Tarea 2: Solo para Felipe y María (específicos)
+                {
+                    id: 'task_especifica_felipe_maria',
+                    title: 'Proyecto Especial - Solo Felipe y María',
+                    description: 'Proyecto de investigación avanzado',
+                    assignedBy: 'profesor_carlos',
+                    assignedById: 'prof_carlos_001',
+                    assignedTo: 'student',
+                    assignedStudentIds: ['est_felipe_4a', 'est_maria_4a'],
+                    course: '4to_basico_a',
+                    subject: 'Ciencias',
+                    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending'
+                }
+            ];
+
+            // === COMENTARIOS ===
+            const testComments = [
+                // Comentarios para tarea de 4to A (curso completo)
+                {
+                    id: 'comment_prof_4to_a_1',
+                    taskId: 'task_4to_a_matematicas',
+                    studentId: 'prof_carlos_001',
+                    studentUsername: 'profesor_carlos',
+                    studentName: 'Prof. Carlos',
+                    comment: 'Recuerden revisar las fracciones equivalentes',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    authorRole: 'teacher'
+                },
+                {
+                    id: 'comment_felipe_4to_a_1',
+                    taskId: 'task_4to_a_matematicas',
+                    studentId: 'est_felipe_4a',
+                    studentUsername: 'felipe_4a',
+                    studentName: 'Felipe (4to A)',
+                    comment: 'Profesor, tengo dudas sobre el ejercicio 3',
+                    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    authorRole: 'student'
+                },
+                
+                // Comentarios para tarea específica (solo Felipe y María)
+                {
+                    id: 'comment_prof_especifica_1',
+                    taskId: 'task_especifica_felipe_maria',
+                    studentId: 'prof_carlos_001',
+                    studentUsername: 'profesor_carlos',
+                    studentName: 'Prof. Carlos',
+                    comment: 'Este proyecto es solo para ustedes dos. Trabajen en equipo.',
+                    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    authorRole: 'teacher'
+                },
+                {
+                    id: 'comment_maria_especifica_1',
+                    taskId: 'task_especifica_felipe_maria',
+                    studentId: 'est_maria_4a',
+                    studentUsername: 'maria_4a',
+                    studentName: 'María (4to A)',
+                    comment: 'Felipe, ¿cuándo nos reunimos para empezar?',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    authorRole: 'student'
+                }
+            ];
+
+            // Guardar en localStorage
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            localStorage.setItem('smart-student-courses', JSON.stringify(testCourses));
+            localStorage.setItem('smart-student-sections', JSON.stringify(testSections));
+            localStorage.setItem('smart-student-student-assignments', JSON.stringify(testStudentAssignments));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testTasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+
+            // Guardar referencias globales
+            userData = testUsers;
+            tasksData = testTasks;
+            commentsData = testComments;
+
+            log('setup-result', '✅ Datos avanzados configurados correctamente', 'success');
+            log('setup-result', `👥 ${testUsers.length} usuarios creados`, 'info');
+            log('setup-result', `🏫 ${testCourses.length} cursos creados`, 'info');
+            log('setup-result', `📚 ${testSections.length} secciones creadas`, 'info');
+            log('setup-result', `🎯 ${testStudentAssignments.length} asignaciones de estudiantes`, 'info');
+            log('setup-result', `📝 ${testTasks.length} tareas creadas`, 'info');
+            log('setup-result', `💬 ${testComments.length} comentarios creados`, 'info');
+            log('setup-result', '', 'info');
+            log('setup-result', '🎯 Estructura de datos:', 'info');
+            log('setup-result', '  • Felipe y María → 4to A', 'info');
+            log('setup-result', '  • Carlos → 4to B', 'info');
+            log('setup-result', '  • Ana → 5to A', 'info');
+            log('setup-result', '  • Tarea 1: Matemáticas para todo 4to A', 'info');
+            log('setup-result', '  • Tarea 2: Proyecto específico solo Felipe y María', 'info');
+        }
+
+        // Función simulada para obtener cursos disponibles
+        function getAvailableCoursesWithNames() {
+            const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+            const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
+            
+            let availableCourses = [];
+            
+            courses.forEach(course => {
+                const courseSections = sections.filter(s => s.courseId === course.id);
+                
+                courseSections.forEach(section => {
+                    availableCourses.push({
+                        id: `${course.id}-${section.id}`,
+                        courseId: course.id,
+                        sectionId: section.id,
+                        name: `${course.name} Sección ${section.name}`,
+                        originalCourseName: course.name
+                    });
+                });
+            });
+            
+            return availableCourses;
+        }
+
+        // Función simulada para verificar asignación de estudiante a tarea
+        function isStudentAssignedToTaskSimulated(taskId, studentId, studentUsername) {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (!task) {
+                console.log(`❌ Tarea no encontrada: ${taskId}`);
+                return false;
+            }
+            
+            console.log(`🔍 Verificando acceso para ${studentUsername} (${studentId}) a tarea "${task.title}"`);
+            
+            // Si la tarea está asignada a estudiantes específicos
+            if (task.assignedTo === 'student' && task.assignedStudentIds) {
+                const isDirectlyAssigned = task.assignedStudentIds.includes(studentId);
+                console.log(`🎯 Estudiante directamente asignado: ${isDirectlyAssigned}`);
+                return isDirectlyAssigned;
+            }
+            
+            // Si la tarea está asignada a todo el curso
+            if (task.assignedTo === 'course') {
+                const taskCourseId = task.courseSectionId || task.course;
+                
+                if (!taskCourseId) {
+                    console.log(`⚠️ Tarea sin courseId definido`);
+                    return false;
+                }
+                
+                // Obtener información del estudiante
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const studentData = users.find(u => u.id === studentId || u.username === studentUsername);
+                
+                if (!studentData) {
+                    console.log(`❌ Datos del estudiante no encontrados: ${studentUsername}`);
+                    return false;
+                }
+                
+                // Verificar usando asignaciones dinámicas
+                const studentAssignments = JSON.parse(localStorage.getItem('smart-student-student-assignments') || '[]');
+                const availableCourses = getAvailableCoursesWithNames();
+                const taskCourseData = availableCourses.find(c => c.id === taskCourseId);
+                
+                if (taskCourseData) {
+                    const { sectionId, courseId: actualCourseId } = taskCourseData;
+                    
+                    const isAssignedToTaskSection = studentAssignments.some(assignment => 
+                        assignment.studentId === studentId && 
+                        assignment.sectionId === sectionId && 
+                        assignment.courseId === actualCourseId
+                    );
+                    
+                    console.log(`🏫 Verificando curso ${actualCourseId} sección ${sectionId}: ${isAssignedToTaskSection}`);
+                    return isAssignedToTaskSection;
+                }
+                
+                // Fallback: activeCourses
+                const isInActiveCourses = studentData.activeCourses?.includes(taskCourseId) || false;
+                console.log(`🔄 Fallback activeCourses: ${isInActiveCourses}`);
+                return isInActiveCourses;
+            }
+            
+            return false;
+        }
+
+        // Función para simular filtro de comentarios
+        function simulateCommentFilter(user, taskId) {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            const taskComments = comments.filter(c => c.taskId === taskId);
+            
+            const filteredComments = taskComments.filter(comment => {
+                // PROFESOR: solo comentarios (no entregas)
+                if (user.role === 'teacher') {
+                    return !comment.isSubmission;
+                }
+                
+                // ESTUDIANTE: aplicar filtros de privacidad
+                if (user.role === 'student') {
+                    // Para entregas: solo mostrar la propia
+                    if (comment.isSubmission) {
+                        return comment.studentId === user.id;
+                    }
+                    
+                    // Para comentarios: verificar si el estudiante está asignado a la tarea
+                    const isAssigned = isStudentAssignedToTaskSimulated(comment.taskId, user.id, user.username);
+                    return isAssigned;
+                }
+                
+                return !comment.isSubmission;
+            });
+
+            return {
+                totalComments: taskComments.length,
+                visibleComments: filteredComments.length,
+                comments: filteredComments,
+                isAssigned: user.role === 'teacher' ? true : isStudentAssignedToTaskSimulated(taskId, user.id, user.username)
+            };
+        }
+
+        function testScenario1() {
+            clearLog('scenario1-result');
+            log('scenario1-result', '🧪 ESCENARIO 1: Tarea para todo 4to A', 'info');
+            log('scenario1-result', '📝 Tarea: Ejercicios de Matemáticas - 4to A', 'info');
+            log('scenario1-result', '🎯 Expectativa: Solo estudiantes de 4to A ven comentarios', 'info');
+            log('scenario1-result', '', 'info');
+
+            const taskId = 'task_4to_a_matematicas';
+            const testUsers = [
+                { id: 'prof_carlos_001', username: 'profesor_carlos', displayName: 'Prof. Carlos', role: 'teacher', expected: 2 },
+                { id: 'est_felipe_4a', username: 'felipe_4a', displayName: 'Felipe (4to A)', role: 'student', expected: 2 },
+                { id: 'est_maria_4a', username: 'maria_4a', displayName: 'María (4to A)', role: 'student', expected: 2 },
+                { id: 'est_carlos_4b', username: 'carlos_4b', displayName: 'Carlos (4to B)', role: 'student', expected: 0 },
+                { id: 'est_ana_5a', username: 'ana_5a', displayName: 'Ana (5to A)', role: 'student', expected: 0 }
+            ];
+
+            let allPassed = true;
+
+            testUsers.forEach(user => {
+                const result = simulateCommentFilter(user, taskId);
+                const success = result.visibleComments === user.expected;
+                allPassed = allPassed && success;
+
+                log('scenario1-result', 
+                    `${user.displayName}: ${success ? '✅' : '❌'} (vio ${result.visibleComments}/${user.expected} comentarios)`,
+                    success ? 'success' : 'error'
+                );
+            });
+
+            log('scenario1-result', '', 'info');
+            log('scenario1-result', 
+                `🎯 RESULTADO: ${allPassed ? '✅ TODOS LOS TESTS PASARON' : '❌ ALGUNOS TESTS FALLARON'}`,
+                allPassed ? 'success' : 'error'
+            );
+        }
+
+        function testScenario2() {
+            clearLog('scenario2-result');
+            log('scenario2-result', '🧪 ESCENARIO 2: Tarea para estudiantes específicos', 'info');
+            log('scenario2-result', '📝 Tarea: Proyecto Especial - Solo Felipe y María', 'info');
+            log('scenario2-result', '🎯 Expectativa: Solo Felipe y María ven comentarios', 'info');
+            log('scenario2-result', '', 'info');
+
+            const taskId = 'task_especifica_felipe_maria';
+            const testUsers = [
+                { id: 'prof_carlos_001', username: 'profesor_carlos', displayName: 'Prof. Carlos', role: 'teacher', expected: 2 },
+                { id: 'est_felipe_4a', username: 'felipe_4a', displayName: 'Felipe (4to A)', role: 'student', expected: 2 },
+                { id: 'est_maria_4a', username: 'maria_4a', displayName: 'María (4to A)', role: 'student', expected: 2 },
+                { id: 'est_carlos_4b', username: 'carlos_4b', displayName: 'Carlos (4to B)', role: 'student', expected: 0 },
+                { id: 'est_ana_5a', username: 'ana_5a', displayName: 'Ana (5to A)', role: 'student', expected: 0 }
+            ];
+
+            let allPassed = true;
+
+            testUsers.forEach(user => {
+                const result = simulateCommentFilter(user, taskId);
+                const success = result.visibleComments === user.expected;
+                allPassed = allPassed && success;
+
+                log('scenario2-result', 
+                    `${user.displayName}: ${success ? '✅' : '❌'} (vio ${result.visibleComments}/${user.expected} comentarios)`,
+                    success ? 'success' : 'error'
+                );
+            });
+
+            log('scenario2-result', '', 'info');
+            log('scenario2-result', 
+                `🎯 RESULTADO: ${allPassed ? '✅ TODOS LOS TESTS PASARON' : '❌ ALGUNOS TESTS FALLARON'}`,
+                allPassed ? 'success' : 'error'
+            );
+        }
+
+        function testUserIndividual(username, role) {
+            clearLog('individual-result');
+            log('individual-result', `🔍 Prueba individual para: ${username}`, 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const user = users.find(u => u.username === username);
+            
+            if (!user) {
+                log('individual-result', `❌ Usuario no encontrado: ${username}`, 'error');
+                return;
+            }
+
+            log('individual-result', `👤 Usuario: ${user.displayName} (${user.role})`, 'info');
+            log('individual-result', `🏫 Cursos activos: ${user.activeCourses?.join(', ') || 'Ninguno'}`, 'info');
+            log('individual-result', '', 'info');
+
+            const tasks = ['task_4to_a_matematicas', 'task_especifica_felipe_maria'];
+            const taskNames = ['Matemáticas 4to A', 'Proyecto Específico'];
+
+            tasks.forEach((taskId, index) => {
+                const result = simulateCommentFilter(user, taskId);
+                log('individual-result', 
+                    `📝 ${taskNames[index]}: ${result.visibleComments} comentarios visibles (asignado: ${result.isAssigned ? 'Sí' : 'No'})`,
+                    result.isAssigned ? 'success' : 'warning'
+                );
+            });
+        }
+
+        // Actualizar resumen global
+        setInterval(() => {
+            const summary = document.getElementById('global-summary');
+            summary.innerHTML = `
+📊 Estado del Sistema de Filtrado:
+
+🎯 Objetivo: Comentarios privados por curso, sección y estudiante
+✅ Configuración: Datos de prueba avanzados listos
+🔧 Funcionalidad: Filtro mejorado con verificación de sección
+
+🎓 Estructura de Prueba:
+   • Felipe y María → 4to Básico Sección A
+   • Carlos → 4to Básico Sección B  
+   • Ana → 5to Básico Sección A
+   • Profesor Carlos → Acceso a todas las secciones
+
+📝 Tareas de Prueba:
+   1. Matemáticas para todo 4to A → Solo estudiantes de 4to A
+   2. Proyecto específico → Solo Felipe y María
+
+🎯 Expectativas:
+   ✅ Carlos (4to B) NO debe ver comentarios de 4to A
+   ✅ Ana (5to A) NO debe ver comentarios de 4to
+   ✅ Felipe y María SÍ deben ver comentarios de sus tareas
+   ✅ Profesor siempre ve todos los comentarios
+
+Ejecuta los tests para verificar que el filtro funcione correctamente.`;
+        }, 2000);
+    </script>
+</body>
+</html>

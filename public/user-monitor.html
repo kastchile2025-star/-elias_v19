@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Monitor de Usuarios - Smart Student</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .monitor {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .status.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Monitor de Usuarios en Tiempo Real</h1>
+        <p>Este monitor verifica automáticamente el estado de los usuarios y detecta problemas de sincronización.</p>
+        
+        <div class="stats" id="stats">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+        
+        <div>
+            <span class="status" id="systemStatus">Verificando...</span>
+            <button class="button success" onclick="arreglarTodo()">🔧 Arreglar Todo</button>
+            <button class="button" onclick="actualizarManualmente()">🔄 Actualizar</button>
+            <button class="button" onclick="abrirConfiguracion()">⚙️ Ir a Configuración</button>
+            <button class="button" onclick="abrirLogin()">🚪 Probar Login</button>
+            <button class="button danger" onclick="limpiarTodo()">🗑️ Limpiar Todo</button>
+        </div>
+        
+        <div class="monitor" id="monitor">
+            <div>🎯 Monitor de Usuarios - Iniciando...</div>
+        </div>
+    </div>
+
+    <script>
+        let monitorInterval;
+        let lastState = null;
+
+        function log(message, type = 'info') {
+            const monitor = document.getElementById('monitor');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#00ff00',
+                error: '#ff0000',
+                warning: '#ffff00',
+                success: '#00ff88'
+            };
+            
+            const div = document.createElement('div');
+            div.style.color = colors[type] || '#00ff00';
+            div.innerHTML = `[${timestamp}] ${message}`;
+            monitor.appendChild(div);
+            monitor.scrollTop = monitor.scrollHeight;
+        }
+
+        function getSystemState() {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const students = JSON.parse(localStorage.getItem('smart-student-students') || '[]');
+            const teachers = JSON.parse(localStorage.getItem('smart-student-teachers') || '[]');
+            const administrators = JSON.parse(localStorage.getItem('smart-student-administrators') || '[]');
+            
+            return {
+                users: users.length,
+                students: students.length,
+                teachers: teachers.length,
+                administrators: administrators.length,
+                total: students.length + teachers.length + administrators.length,
+                raw: { users, students, teachers, administrators }
+            };
+        }
+
+        function updateStats(state) {
+            const statsContainer = document.getElementById('stats');
+            
+            const isSystemOk = state.users >= state.total;
+            const systemClass = isSystemOk ? 'ok' : 'error';
+            const systemText = isSystemOk ? '✅ Sistema OK' : '❌ Problema Detectado';
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${state.users}</div>
+                    <div class="stat-label">Usuarios Principales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${state.students}</div>
+                    <div class="stat-label">Estudiantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${state.teachers}</div>
+                    <div class="stat-label">Profesores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${state.administrators}</div>
+                    <div class="stat-label">Administradores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${state.total}</div>
+                    <div class="stat-label">Total en Categorías</div>
+                </div>
+            `;
+            
+            document.getElementById('systemStatus').textContent = systemText;
+            document.getElementById('systemStatus').className = `status ${systemClass}`;
+        }
+
+        function checkForChanges() {
+            const currentState = getSystemState();
+            
+            if (lastState === null) {
+                log('🔍 Monitor iniciado - Estado inicial capturado');
+                updateStats(currentState);
+                lastState = currentState;
+                return;
+            }
+            
+            // Detectar cambios
+            let hasChanges = false;
+            
+            if (currentState.users !== lastState.users) {
+                const diff = currentState.users - lastState.users;
+                log(`👥 Usuarios principales: ${lastState.users} → ${currentState.users} (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'success' : 'warning');
+                hasChanges = true;
+            }
+            
+            if (currentState.students !== lastState.students) {
+                const diff = currentState.students - lastState.students;
+                log(`🎓 Estudiantes: ${lastState.students} → ${currentState.students} (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'info' : 'warning');
+                hasChanges = true;
+            }
+            
+            if (currentState.teachers !== lastState.teachers) {
+                const diff = currentState.teachers - lastState.teachers;
+                log(`👨‍🏫 Profesores: ${lastState.teachers} → ${currentState.teachers} (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'info' : 'warning');
+                hasChanges = true;
+            }
+            
+            if (currentState.administrators !== lastState.administrators) {
+                const diff = currentState.administrators - lastState.administrators;
+                log(`👑 Administradores: ${lastState.administrators} → ${currentState.administrators} (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'info' : 'warning');
+                hasChanges = true;
+            }
+            
+            // Verificar problemas de sincronización
+            if (currentState.users < currentState.total) {
+                log(`⚠️ PROBLEMA: Hay ${currentState.total - currentState.users} usuarios en categorías que no están en el principal`, 'error');
+                log('🔧 Ejecuta "Arreglar Todo" para sincronizar', 'warning');
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                updateStats(currentState);
+                lastState = currentState;
+                
+                // Auto-verificar logins después de cambios
+                setTimeout(verificarLoginsRapido, 1000);
+            }
+        }
+
+        function verificarLoginsRapido() {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            if (users.length === 0) {
+                log('❌ No hay usuarios para verificar login', 'error');
+                return;
+            }
+            
+            let puedenLogin = 0;
+            let noPuedenLogin = 0;
+            
+            users.forEach(user => {
+                const camposRequeridos = ['id', 'username', 'password', 'role', 'displayName', 'activeCourses', 'email'];
+                const camposFaltantes = camposRequeridos.filter(campo => 
+                    !user[campo] || (campo === 'activeCourses' && !Array.isArray(user[campo]))
+                );
+                
+                if (camposFaltantes.length === 0) {
+                    puedenLogin++;
+                } else {
+                    noPuedenLogin++;
+                    log(`❌ ${user.username} no puede hacer login - Faltan: ${camposFaltantes.join(', ')}`, 'error');
+                }
+            });
+            
+            if (noPuedenLogin === 0) {
+                log(`✅ Todos los usuarios (${puedenLogin}) pueden hacer login`, 'success');
+            } else {
+                log(`⚠️ ${noPuedenLogin} usuarios no pueden hacer login de ${users.length} total`, 'warning');
+            }
+        }
+
+        function arreglarTodo() {
+            log('🔧 Iniciando reparación automática...', 'info');
+            
+            // Cargar y ejecutar script de reparación
+            const script = document.createElement('script');
+            script.src = '/monitor-user-creation.js';
+            script.onload = function() {
+                log('✅ Script de reparación cargado', 'success');
+                setTimeout(() => {
+                    actualizarManualmente();
+                }, 2000);
+            };
+            document.head.appendChild(script);
+        }
+
+        function actualizarManualmente() {
+            log('🔄 Actualizando estado...', 'info');
+            lastState = null;
+            checkForChanges();
+        }
+
+        function abrirConfiguracion() {
+            window.open('/dashboard/admin', '_blank');
+        }
+
+        function abrirLogin() {
+            window.open('/login', '_blank');
+        }
+
+        function limpiarTodo() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los usuarios?')) {
+                localStorage.setItem('smart-student-users', '[]');
+                localStorage.setItem('smart-student-students', '[]');
+                localStorage.setItem('smart-student-teachers', '[]');
+                localStorage.setItem('smart-student-administrators', '[]');
+                
+                log('🗑️ Todos los usuarios eliminados', 'warning');
+                actualizarManualmente();
+            }
+        }
+
+        // Iniciar monitor
+        function startMonitor() {
+            log('🎯 Iniciando monitor automático...', 'info');
+            checkForChanges();
+            
+            // Verificar cambios cada 2 segundos
+            monitorInterval = setInterval(checkForChanges, 2000);
+        }
+
+        // Auto-iniciar al cargar la página
+        window.onload = function() {
+            setTimeout(startMonitor, 500);
+        };
+    </script>
+</body>
+</html>

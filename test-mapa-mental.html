@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mapa Mental - Smart Student</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        select, textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+        .result img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #363;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Test Generador de Mapas Mentales</h1>
+        <p>Esta es una página de prueba para verificar que el generador de mapas mentales está funcionando correctamente.</p>
+        
+        <form id="mindMapForm">
+            <div class="form-group">
+                <label for="course">Curso:</label>
+                <select id="course" required>
+                    <option value="">Selecciona un curso</option>
+                    <option value="6to Básico">6to Básico</option>
+                    <option value="7mo Básico">7mo Básico</option>
+                    <option value="8vo Básico">8vo Básico</option>
+                    <option value="1ro Medio">1ro Medio</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="book">Libro:</label>
+                <select id="book" required>
+                    <option value="">Selecciona un libro</option>
+                    <option value="Ciencias Naturales 6º Básico">Ciencias Naturales 6º Básico</option>
+                    <option value="Matemáticas 6º Básico">Matemáticas 6º Básico</option>
+                    <option value="Historia 6º Básico">Historia 6º Básico</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="theme">Tema central del mapa mental:</label>
+                <textarea id="theme" rows="3" placeholder="Ejemplo: sistema respiratorio, fotosíntesis, revolución francesa..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="horizontal">
+                    <label for="horizontal">Orientación horizontal</label>
+                </div>
+            </div>
+            
+            <button type="submit" id="generateBtn">
+                🚀 Generar Mapa Mental
+            </button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('mindMapForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const course = document.getElementById('course').value;
+            const book = document.getElementById('book').value;
+            const theme = document.getElementById('theme').value;
+            const isHorizontal = document.getElementById('horizontal').checked;
+            const resultDiv = document.getElementById('result');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (!course || !book || !theme.trim()) {
+                resultDiv.innerHTML = '<div class="error">Por favor completa todos los campos requeridos.</div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Mostrar loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ Generando...';
+            resultDiv.innerHTML = '<div class="loading">🧠 Generando tu mapa mental...<br>Esto puede tomar unos segundos.</div>';
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/mind-map', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        centralTheme: theme.trim(),
+                        bookTitle: book,
+                        language: 'es',
+                        isHorizontal: isHorizontal
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.imageDataUri) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ ¡Mapa mental generado exitosamente!</div>
+                        <h3>📊 MAPA MENTAL - ${theme.toUpperCase()}</h3>
+                        <img src="${data.imageDataUri}" alt="Mapa Mental: ${theme}" />
+                        <div style="margin-top: 20px;">
+                            <button onclick="downloadImage('${data.imageDataUri}', '${theme}')">
+                                📥 Descargar Imagen
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No se recibió imagen en la respuesta');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Error al generar el mapa mental: ${error.message}
+                    </div>
+                `;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🚀 Generar Mapa Mental';
+            }
+        });
+        
+        function downloadImage(dataUri, filename) {
+            const link = document.createElement('a');
+            link.href = dataUri;
+            link.download = `mapa-mental-${filename.replace(/\s+/g, '-').toLowerCase()}.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Ejemplos predefinidos
+        const examples = {
+            'sistema respiratorio': {
+                course: '6to Básico',
+                book: 'Ciencias Naturales 6º Básico'
+            },
+            'fotosíntesis': {
+                course: '6to Básico', 
+                book: 'Ciencias Naturales 6º Básico'
+            },
+            'números decimales': {
+                course: '6to Básico',
+                book: 'Matemáticas 6º Básico'
+            }
+        };
+        
+        document.getElementById('theme').addEventListener('input', function(e) {
+            const theme = e.target.value.toLowerCase();
+            if (examples[theme]) {
+                document.getElementById('course').value = examples[theme].course;
+                document.getElementById('book').value = examples[theme].book;
+            }
+        });
+    </script>
+    
+    <!-- Documentación de pruebas -->
+    <div style="margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+        <h2>📋 Casos de Prueba - Título en Mayúsculas</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <h3>✅ Caso 1: Título en UI</h3>
+            <p><strong>Objetivo:</strong> Verificar que el título mostrado sea "MAPA MENTAL - [TEMA]" todo en mayúsculas</p>
+            <p><strong>Instrucciones:</strong></p>
+            <ol>
+                <li>Genera un mapa mental con tema "Sistema Respiratorio"</li>
+                <li>Verifica que el título mostrado sea <strong>"MAPA MENTAL - SISTEMA RESPIRATORIO"</strong></li>
+                <li>Confirma que tanto "MAPA MENTAL" como el tema estén en mayúsculas</li>
+            </ol>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <h3>✅ Caso 2: Título en PDF/Descarga</h3>
+            <p><strong>Objetivo:</strong> Verificar que el título en PDF también esté todo en mayúsculas</p>
+            <p><strong>Instrucciones:</strong></p>
+            <ol>
+                <li>Ve a la página principal de Mapa Mental (/dashboard/mapa-mental)</li>
+                <li>Genera un mapa mental</li>
+                <li>Descarga el PDF</li>
+                <li>Verifica que el título del PDF sea <strong>"MAPA MENTAL - [TEMA]"</strong> todo en mayúsculas</li>
+            </ol>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <h3>✅ Caso 3: Diferentes Temas</h3>
+            <p><strong>Objetivo:</strong> Verificar que funcione con diferentes temas</p>
+            <p><strong>Temas sugeridos:</strong></p>
+            <ul>
+                <li>"Sistema Respiratorio" → "MAPA MENTAL - SISTEMA RESPIRATORIO"</li>
+                <li>"Fotosíntesis" → "MAPA MENTAL - FOTOSÍNTESIS"</li>
+                <li>"Revolución Francesa" → "MAPA MENTAL - REVOLUCIÓN FRANCESA"</li>
+            </ul>
+        </div>
+        
+        <div style="background-color: #d4edda; padding: 15px; border-radius: 6px; border: 1px solid #c3e6cb;">
+            <h4>🎯 Estado de Implementación</h4>
+            <p><strong>✅ COMPLETADO:</strong></p>
+            <ul>
+                <li>Título en UI: "MAPA MENTAL - [TEMA]" todo en mayúsculas</li>
+                <li>Título en PDF: "MAPA MENTAL - [TEMA]" todo en mayúsculas</li>
+                <li>Nodos y subnodos relevantes según el tema</li>
+                <li>Mapa horizontal centrado correctamente</li>
+                <li>Logging para distinguir modo mock vs real</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

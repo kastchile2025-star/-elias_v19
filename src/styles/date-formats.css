@@ -1,0 +1,21 @@
+/* Estilos para asegurar que las fechas se muestren en una sola línea */
+
+.date-single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilos específicos para las celdas de tablas con fechas */
+td.date-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 150px; /* Ancho mínimo aumentado para mejor visualización */
+  max-width: 200px; /* Ancho máximo aumentado */
+}
+
+/* Estilos para fechas en general */
+.single-line-date {
+  white-space: nowrap;
+}

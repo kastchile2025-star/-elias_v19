@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demostración del Problema de Sincronización</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .panel {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .panel.student {
+            background-color: #e8f4f8;
+            border-color: #4caf50;
+        }
+        .panel.teacher {
+            background-color: #fff3e0;
+            border-color: #ff9800;
+        }
+        .notification {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .notification.ghost {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .notification.valid {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .success {
+            background: #28a745;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.4em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            background-color: #dc3545;
+        }
+        .tasks-empty {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Demostración del Problema de Sincronización</h1>
+        <p>Esta página reproduce exactamente el problema que mencionó el usuario:</p>
+        <p><strong>Problema:</strong> El estudiante ve notificaciones pendientes en su panel, pero cuando va a la pestaña de tareas, no encuentra ninguna tarea creada.</p>
+        
+        <div class="step">
+            <h3>Paso 1: Configurar el Escenario</h3>
+            <p>Primero, configuramos un estudiante y un profesor, pero <strong>sin crear tareas reales</strong>.</p>
+            <button onclick="setupScenario()">🔧 Configurar Escenario</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Crear Notificaciones Fantasma</h3>
+            <p>Simulamos notificaciones que quedaron de tareas que fueron eliminadas o nunca existieron.</p>
+            <button onclick="createGhostNotifications()">👻 Crear Notificaciones Fantasma</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Ver el Problema</h3>
+            <p>El estudiante ve notificaciones pendientes, pero no hay tareas correspondientes.</p>
+            <button onclick="showProblem()">👀 Mostrar Problema</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 4: Aplicar Solución</h3>
+            <p>Usar el sistema de sincronización para eliminar las notificaciones fantasma.</p>
+            <button onclick="applySolution()">✅ Aplicar Solución</button>
+        </div>
+
+        <div class="step">
+            <h3>Paso 5: Verificar Solución</h3>
+            <p>Confirmar que las notificaciones fantasma han sido eliminadas.</p>
+            <button onclick="verifySolution()">🔍 Verificar Solución</button>
+        </div>
+
+        <hr>
+
+        <div class="panel student">
+            <h3>👨‍🎓 Vista del Estudiante</h3>
+            <div id="studentPanel">
+                <p>Cargando datos del estudiante...</p>
+            </div>
+        </div>
+
+        <div class="panel teacher">
+            <h3>👨‍🏫 Vista del Profesor</h3>
+            <div id="teacherPanel">
+                <p>Cargando datos del profesor...</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>📊 Estado del Sistema</h3>
+            <div id="systemStatus">
+                <p>Preparando sistema...</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>📝 Log de Actividades</h3>
+            <div id="activityLog" style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                <p>Sistema iniciado...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de usuarios de prueba
+        const studentUser = {
+            username: 'maria_estudiante',
+            role: 'student',
+            name: 'María Estudiante',
+            email: 'maria@ejemplo.com',
+            activeCourses: ['Matemáticas', 'Ciencias', 'Historia']
+        };
+
+        const teacherUser = {
+            username: 'jorge_profesor',
+            role: 'teacher',
+            name: 'Jorge Profesor',
+            email: 'jorge@ejemplo.com',
+            activeCourses: ['Matemáticas', 'Ciencias', 'Historia']
+        };
+
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('activityLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : type === 'success' ? '#28a745' : '#6c757d';
+            logElement.innerHTML += `<div style="color: ${color}; margin: 2px 0;">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function setupScenario() {
+            log('🔧 Configurando escenario inicial...');
+            
+            // Limpiar datos existentes
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-task-comments');
+            
+            // Configurar usuarios
+            localStorage.setItem('smart-student-users', JSON.stringify([studentUser, teacherUser]));
+            
+            // Configurar cursos
+            const courses = ['Matemáticas', 'Ciencias', 'Historia'];
+            localStorage.setItem('smart-student-courses', JSON.stringify(courses));
+            
+            log('✅ Escenario configurado: Usuario estudiante y profesor creados, SIN tareas', 'success');
+            updateDisplay();
+        }
+
+        function createGhostNotifications() {
+            log('👻 Creando notificaciones fantasma...');
+            
+            const ghostNotifications = [
+                {
+                    id: 'ghost_1',
+                    type: 'new_task',
+                    taskId: 'task_nonexistent_1',
+                    taskTitle: 'Tarea de Matemáticas - Álgebra',
+                    targetUserRole: 'student',
+                    targetUsernames: ['maria_estudiante'],
+                    fromUsername: 'jorge_profesor',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'Matemáticas',
+                    subject: 'Matemáticas',
+                    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                },
+                {
+                    id: 'ghost_2',
+                    type: 'teacher_comment',
+                    taskId: 'task_nonexistent_2',
+                    taskTitle: 'Evaluación de Ciencias',
+                    targetUserRole: 'student',
+                    targetUsernames: ['maria_estudiante'],
+                    fromUsername: 'jorge_profesor',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'Ciencias',
+                    subject: 'Ciencias',
+                    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                }
+            ];
+
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(ghostNotifications));
+            
+            log(`👻 ${ghostNotifications.length} notificaciones fantasma creadas`, 'warning');
+            log('   - Tarea de Matemáticas (ID: task_nonexistent_1)', 'warning');
+            log('   - Evaluación de Ciencias (ID: task_nonexistent_2)', 'warning');
+            
+            updateDisplay();
+        }
+
+        function showProblem() {
+            log('👀 Mostrando el problema...');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            log(`📊 Estado actual del sistema:`, 'info');
+            log(`   📝 Tareas reales: ${tasks.length}`, 'info');
+            log(`   🔔 Notificaciones: ${notifications.length}`, 'info');
+            
+            if (notifications.length > 0 && tasks.length === 0) {
+                log('🚨 PROBLEMA DETECTADO: Hay notificaciones pero no hay tareas!', 'error');
+                log('   El estudiante ve notificaciones pendientes en su panel', 'error');
+                log('   Pero cuando va a la pestaña de tareas, no encuentra nada', 'error');
+            }
+            
+            updateDisplay();
+        }
+
+        function applySolution() {
+            log('✅ Aplicando solución de sincronización...');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let ghostsRemoved = 0;
+            let validNotifications = [];
+            
+            // Eliminar notificaciones fantasma
+            for (const notification of notifications) {
+                const taskExists = tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) {
+                    ghostsRemoved++;
+                    log(`👻 Eliminando notificación fantasma: ${notification.taskTitle}`, 'warning');
+                } else {
+                    validNotifications.push(notification);
+                }
+            }
+            
+            // Guardar notificaciones válidas
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(validNotifications));
+            
+            log(`🔄 Sincronización completada:`, 'success');
+            log(`   👻 Notificaciones fantasma eliminadas: ${ghostsRemoved}`, 'success');
+            log(`   ✅ Notificaciones válidas mantenidas: ${validNotifications.length}`, 'success');
+            
+            // Disparar evento de sincronización
+            window.dispatchEvent(new CustomEvent('notificationSyncCompleted', {
+                detail: { ghostsRemoved, notificationsCreated: 0, commentsRemoved: 0 }
+            }));
+            
+            updateDisplay();
+        }
+
+        function verifySolution() {
+            log('🔍 Verificando solución...');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            log(`📊 Estado después de la solución:`, 'info');
+            log(`   📝 Tareas reales: ${tasks.length}`, 'info');
+            log(`   🔔 Notificaciones: ${notifications.length}`, 'info');
+            
+            if (notifications.length === 0 && tasks.length === 0) {
+                log('✅ SOLUCIÓN EXITOSA: Sistema sincronizado correctamente!', 'success');
+                log('   No hay notificaciones fantasma', 'success');
+                log('   El estudiante ya no ve notificaciones falsas', 'success');
+            } else {
+                log('⚠️  Verificar consistencia manualmente', 'warning');
+            }
+            
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            updateStudentPanel();
+            updateTeacherPanel();
+            updateSystemStatus();
+        }
+
+        function updateStudentPanel() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const studentNotifications = notifications.filter(n => 
+                n.targetUserRole === 'student' && n.targetUsernames.includes('maria_estudiante')
+            );
+            
+            const studentTasks = tasks.filter(t => 
+                studentUser.activeCourses.includes(t.course)
+            );
+            
+            let html = `
+                <h4>📋 Panel de Notificaciones</h4>
+                <p><strong>Notificaciones pendientes:</strong> <span class="badge">${studentNotifications.length}</span></p>
+            `;
+            
+            if (studentNotifications.length > 0) {
+                html += '<h5>🔔 Notificaciones:</h5>';
+                studentNotifications.forEach(notification => {
+                    const taskExists = tasks.some(task => task.id === notification.taskId);
+                    const className = taskExists ? 'valid' : 'ghost';
+                    const icon = taskExists ? '✅' : '👻';
+                    
+                    html += `
+                        <div class="notification ${className}">
+                            ${icon} ${notification.taskTitle}<br>
+                            <small>Curso: ${notification.course} | Tipo: ${notification.type}</small>
+                            ${!taskExists ? '<br><strong>⚠️ Tarea no existe (fantasma)</strong>' : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `
+                <h5>📝 Tareas Asignadas:</h5>
+            `;
+            
+            if (studentTasks.length === 0) {
+                html += '<div class="tasks-empty">📭 No tienes tareas asignadas en este momento.</div>';
+            } else {
+                studentTasks.forEach(task => {
+                    html += `
+                        <div class="notification valid">
+                            ✅ ${task.title}<br>
+                            <small>Curso: ${task.course} | Vence: ${new Date(task.dueDate).toLocaleDateString()}</small>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('studentPanel').innerHTML = html;
+        }
+
+        function updateTeacherPanel() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const teacherTasks = tasks.filter(t => t.assignedBy === 'jorge_profesor');
+            
+            let html = `
+                <h4>📋 Panel del Profesor</h4>
+                <p><strong>Tareas creadas:</strong> ${teacherTasks.length}</p>
+            `;
+            
+            if (teacherTasks.length === 0) {
+                html += '<div class="tasks-empty">📭 No has creado ninguna tarea aún.</div>';
+            } else {
+                html += '<h5>📝 Tareas Creadas:</h5>';
+                teacherTasks.forEach(task => {
+                    html += `
+                        <div class="notification valid">
+                            ✅ ${task.title}<br>
+                            <small>Curso: ${task.course} | Creada: ${new Date(task.createdAt).toLocaleDateString()}</small>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('teacherPanel').innerHTML = html;
+        }
+
+        function updateSystemStatus() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let ghostCount = 0;
+            let validCount = 0;
+            
+            for (const notification of notifications) {
+                const taskExists = tasks.some(task => task.id === notification.taskId);
+                if (taskExists) {
+                    validCount++;
+                } else {
+                    ghostCount++;
+                }
+            }
+            
+            const healthScore = notifications.length > 0 ? (validCount / notifications.length * 100) : 100;
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold;">${tasks.length}</div>
+                        <div style="font-size: 12px; color: #666;">Tareas Reales</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold;">${notifications.length}</div>
+                        <div style="font-size: 12px; color: #666;">Notificaciones</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: ${ghostCount > 0 ? '#dc3545' : '#28a745'};">${ghostCount}</div>
+                        <div style="font-size: 12px; color: #666;">Fantasmas</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: ${healthScore >= 90 ? '#28a745' : healthScore >= 70 ? '#ffc107' : '#dc3545'};">${healthScore.toFixed(0)}%</div>
+                        <div style="font-size: 12px; color: #666;">Salud</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('systemStatus').innerHTML = html;
+        }
+
+        // Inicializar pantalla
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Sistema de demostración iniciado');
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

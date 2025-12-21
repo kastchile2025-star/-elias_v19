@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Diagnóstico Repetir Evaluación EN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            border-radius: 10px;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .urgent {
+            background: linear-gradient(135deg, #FF1744, #D32F2F);
+            color: white;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .repeat-button {
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+        }
+        .results-box {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error-box {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            color: #d32f2f;
+        }
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .toggle-switch {
+            width: 50px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .toggle-switch.checked {
+            background: #4CAF50;
+        }
+        .toggle-handle {
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .toggle-switch.checked .toggle-handle {
+            transform: translateX(25px);
+        }
+        .language-label {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-en { background: #4CAF50; }
+        .status-es { background: #FF5722; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Diagnóstico: Repetir Evaluación EN</h1>
+            <p>Herramienta específica para diagnosticar el problema de "Repetir Evaluación" generando en español</p>
+        </div>
+
+        <!-- Simulación del Header con Toggle -->
+        <div class="mockup-header">
+            <div>
+                <span>🎓 SMART STUDENT</span>
+                <span style="margin-left: 20px;">Teacher Mode</span>
+            </div>
+            <div class="toggle-container">
+                <span class="language-label">ES</span>
+                <div class="toggle-switch" id="langToggle" onclick="toggleLanguage()" data-state="unchecked" aria-checked="false" role="switch">
+                    <div class="toggle-handle"></div>
+                </div>
+                <span class="language-label" id="langLabel">EN</span>
+            </div>
+        </div>
+
+        <div class="test-section urgent">
+            <h3>🚨 PROBLEMA CRÍTICO</h3>
+            <p><strong>Síntoma:</strong> Al hacer clic en "Repetir Evaluación" con EN activo, la evaluación se genera en español.</p>
+            <p><strong>Estado del Toggle:</strong> <span class="status-indicator" id="toggleStatus"></span><span id="toggleStatusText">Inactivo (ES)</span></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Simulación de Detección</h3>
+            <p>Esta prueba simula exactamente lo que hace <code>detectCurrentLanguage()</code> cuando se ejecuta "Repetir Evaluación":</p>
+            
+            <button class="test-button repeat-button" onclick="simulateRepeatEvaluation()">
+                🔄 Simular "Repetir Evaluación"
+            </button>
+            
+            <div class="results-box" id="repeatResults">
+                Haz clic en el botón para simular la repetición...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Diagnóstico Paso a Paso</h3>
+            
+            <button class="test-button" onclick="runStepByStepDiagnosis()">
+                📊 Ejecutar Diagnóstico Completo
+            </button>
+            
+            <div class="results-box" id="diagnosisResults">
+                Diagnóstico completo se mostrará aquí...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛠️ Herramientas de Corrección</h3>
+            
+            <button class="test-button" onclick="forceEnglishMode()">
+                🇺🇸 Forzar Modo Inglés Total
+            </button>
+            
+            <button class="test-button" onclick="testApiCallSimulation()">
+                🚀 Simular API Call con Language
+            </button>
+            
+            <div class="results-box" id="correctionResults">
+                Resultados de corrección se mostrarán aquí...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📈 Estado en Tiempo Real</h3>
+            <div class="results-box" id="realtimeStatus">
+                Estado se actualizará automáticamente...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEnglish = false;
+
+        function updateToggleUI() {
+            const toggle = document.getElementById('langToggle');
+            const label = document.getElementById('langLabel');
+            const statusIndicator = document.getElementById('toggleStatus');
+            const statusText = document.getElementById('toggleStatusText');
+
+            if (isEnglish) {
+                toggle.classList.add('checked');
+                toggle.setAttribute('data-state', 'checked');
+                toggle.setAttribute('aria-checked', 'true');
+                label.style.color = '#4CAF50';
+                label.style.fontWeight = 'bold';
+                statusIndicator.className = 'status-indicator status-en';
+                statusText.textContent = 'Activo (EN)';
+                
+                // Sync all sources
+                localStorage.setItem('smart-student-lang', 'en');
+                localStorage.setItem('language', 'en');
+                document.documentElement.lang = 'en';
+                document.documentElement.setAttribute('data-lang', 'en');
+            } else {
+                toggle.classList.remove('checked');
+                toggle.setAttribute('data-state', 'unchecked');
+                toggle.setAttribute('aria-checked', 'false');
+                label.style.color = 'white';
+                label.style.fontWeight = 'normal';
+                statusIndicator.className = 'status-indicator status-es';
+                statusText.textContent = 'Inactivo (ES)';
+                
+                // Sync all sources
+                localStorage.setItem('smart-student-lang', 'es');
+                localStorage.setItem('language', 'es');
+                document.documentElement.lang = 'es';
+                document.documentElement.setAttribute('data-lang', 'es');
+            }
+        }
+
+        function toggleLanguage() {
+            isEnglish = !isEnglish;
+            updateToggleUI();
+            updateRealtimeStatus();
+        }
+
+        function simulateDetectCurrentLanguage() {
+            console.log('🔍 SUPER ROBUST LANGUAGE DETECTION - Starting enhanced detection...');
+            
+            let results = {
+                enToggleFound: false,
+                enToggleActive: false,
+                detectionSteps: [],
+                finalLanguage: 'es',
+                reason: 'Default Spanish',
+                allEnElements: []
+            };
+            
+            results.detectionSteps.push('🔍 Current context state: isEnglish=' + isEnglish);
+            
+            // Buscar todos los elementos con texto "EN"
+            const allElements = document.querySelectorAll('*');
+            results.detectionSteps.push('🔍 Searching for EN toggle in ' + allElements.length + ' elements...');
+            
+            for (let element of allElements) {
+                const rect = element.getBoundingClientRect();
+                const text = element.textContent?.trim();
+                
+                if (text === 'EN') {
+                    results.enToggleFound = true;
+                    results.allEnElements.push({
+                        tagName: element.tagName,
+                        position: { top: rect.top, left: rect.left, right: rect.right },
+                        isInHeader: rect.top >= 0 && rect.top < 100,
+                        classes: element.className,
+                        attributes: {
+                            'data-state': element.getAttribute('data-state'),
+                            'aria-checked': element.getAttribute('aria-checked'),
+                            'role': element.getAttribute('role')
+                        },
+                        parentClasses: element.parentElement?.className
+                    });
+                    
+                    results.detectionSteps.push('🎯 Found EN element: ' + element.tagName + ' at (' + rect.top + ',' + rect.left + ')');
+                    
+                    // Verificar si está activo
+                    const checkMethods = {
+                        'element.data-state': element.getAttribute('data-state') === 'checked',
+                        'element.aria-checked': element.getAttribute('aria-checked') === 'true',
+                        'element.active-class': element.classList.contains('active'),
+                        'element.checked-class': element.classList.contains('checked'),
+                        'parent.data-state': element.parentElement?.getAttribute('data-state') === 'checked',
+                        'parent.aria-checked': element.parentElement?.getAttribute('aria-checked') === 'true',
+                        'parent.active-class': element.parentElement?.classList.contains('active'),
+                        'closest-checked': element.closest('[data-state="checked"]') !== null,
+                        'closest-aria-checked': element.closest('[aria-checked="true"]') !== null,
+                        'switch-parent-checked': element.closest('[role="switch"][data-state="checked"]') !== null
+                    };
+                    
+                    results.detectionSteps.push('🔍 Check methods: ' + JSON.stringify(checkMethods));
+                    
+                    const anyActive = Object.values(checkMethods).some(method => method === true);
+                    
+                    if (anyActive) {
+                        results.enToggleActive = true;
+                        results.detectionSteps.push('✅ EN TOGGLE IS ACTIVE');
+                        if (rect.top >= 0 && rect.top < 100) {
+                            results.detectionSteps.push('✅ EN TOGGLE IS IN HEADER - Will force English');
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Storage and context checks
+            const storageIndicatesEnglish = localStorage.getItem('smart-student-lang') === 'en' ||
+                                           localStorage.getItem('language') === 'en' ||
+                                           document.documentElement.lang === 'en';
+            
+            results.detectionSteps.push('💾 Storage indicates English: ' + storageIndicatesEnglish);
+            
+            // Final decision
+            if (results.enToggleActive) {
+                results.finalLanguage = 'en';
+                results.reason = 'EN toggle is visually active';
+                results.detectionSteps.push('🎯 DECISION: EN TOGGLE ACTIVE → ENGLISH');
+            } else if (storageIndicatesEnglish) {
+                results.finalLanguage = 'en';
+                results.reason = 'Storage indicates English';
+                results.detectionSteps.push('🎯 DECISION: STORAGE → ENGLISH');
+            } else {
+                results.detectionSteps.push('🎯 DECISION: NO ENGLISH INDICATORS → SPANISH');
+            }
+            
+            return results;
+        }
+
+        function simulateRepeatEvaluation() {
+            const results = simulateDetectCurrentLanguage();
+            
+            const output = `🔄 SIMULATE "REPETIR EVALUACIÓN" - RESULTS:
+
+📊 Detection Summary:
+- EN Toggle Found: ${results.enToggleFound}
+- EN Toggle Active: ${results.enToggleActive}
+- Final Language: ${results.finalLanguage}
+- Reason: ${results.reason}
+
+📋 Step-by-Step Process:
+${results.detectionSteps.join('\n')}
+
+🔍 All EN Elements Found:
+${results.allEnElements.map(el => 
+    `- ${el.tagName}: pos(${el.position.top},${el.position.left}) data-state="${el.attributes['data-state']}" aria-checked="${el.attributes['aria-checked']}"`
+).join('\n')}
+
+🎯 EXPECTED API CALL:
+- Will send to API: language="${results.finalLanguage}"
+- Expected evaluation: ${results.finalLanguage === 'en' ? 'ENGLISH' : 'SPANISH'}
+
+🚨 CURRENT PROBLEM:
+${results.finalLanguage === 'es' && isEnglish ? 
+  '❌ DETECTED SPANISH BUT TOGGLE IS EN - THIS IS THE BUG!' : 
+  results.finalLanguage === 'en' ? '✅ Correctly detected English' : '✅ Correctly detected Spanish'}
+`;
+            
+            document.getElementById('repeatResults').textContent = output;
+            document.getElementById('repeatResults').className = 
+                results.finalLanguage === 'es' && isEnglish ? 'results-box error-box' : 'results-box';
+        }
+
+        function runStepByStepDiagnosis() {
+            const diagnosis = `🔍 COMPLETE STEP-BY-STEP DIAGNOSIS:
+
+1. 🎮 UI State:
+   - Toggle Position: ${isEnglish ? 'EN (Active)' : 'ES (Inactive)'}
+   - User Expectation: ${isEnglish ? 'English evaluation' : 'Spanish evaluation'}
+
+2. 💾 Storage State:
+   - localStorage.smart-student-lang: ${localStorage.getItem('smart-student-lang')}
+   - localStorage.language: ${localStorage.getItem('language')}
+   - document.documentElement.lang: ${document.documentElement.lang}
+
+3. 🔍 DOM Detection Test:
+${(() => {
+    const results = simulateDetectCurrentLanguage();
+    return `   - EN elements found: ${results.enToggleFound}
+   - Any EN toggle active: ${results.enToggleActive}
+   - Detection result: ${results.finalLanguage}
+   - Detection reason: ${results.reason}`;
+})()}
+
+4. 🚨 Problem Analysis:
+${(() => {
+    const results = simulateDetectCurrentLanguage();
+    if (isEnglish && results.finalLanguage === 'es') {
+        return `   ❌ CRITICAL BUG: Toggle is EN but detection says Spanish!
+   - This means the DOM detection is failing
+   - The toggle element is not being found as active
+   - Check the HTML structure and attributes`;
+    } else if (isEnglish && results.finalLanguage === 'en') {
+        return `   ✅ Working correctly: Toggle EN → Detection English`;
+    } else if (!isEnglish && results.finalLanguage === 'es') {
+        return `   ✅ Working correctly: Toggle ES → Detection Spanish`;
+    } else {
+        return `   ⚠️ Unexpected state: Toggle ES but detection English`;
+    }
+})()}
+
+5. 🛠️ Recommended Fix:
+${(() => {
+    const results = simulateDetectCurrentLanguage();
+    if (isEnglish && results.finalLanguage === 'es') {
+        return `   - Improve DOM element detection
+   - Add more specific selectors for the toggle
+   - Check if the toggle attributes are being set correctly
+   - Add fallback detection methods`;
+    } else {
+        return `   - No fix needed, detection is working correctly`;
+    }
+})()}
+`;
+
+            document.getElementById('diagnosisResults').textContent = diagnosis;
+        }
+
+        function forceEnglishMode() {
+            isEnglish = true;
+            updateToggleUI();
+            
+            // Extra forcing
+            localStorage.setItem('smart-student-lang', 'en');
+            localStorage.setItem('language', 'en');
+            document.documentElement.lang = 'en';
+            document.documentElement.setAttribute('data-lang', 'en');
+            
+            const output = `🇺🇸 FORCED ENGLISH MODE:
+- UI Toggle: Set to EN
+- localStorage.smart-student-lang: ${localStorage.getItem('smart-student-lang')}
+- localStorage.language: ${localStorage.getItem('language')}
+- document.documentElement.lang: ${document.documentElement.lang}
+- document.data-lang: ${document.documentElement.getAttribute('data-lang')}
+
+✅ All sources now indicate English mode`;
+
+            document.getElementById('correctionResults').textContent = output;
+            updateRealtimeStatus();
+        }
+
+        function testApiCallSimulation() {
+            const results = simulateDetectCurrentLanguage();
+            
+            const apiPayload = {
+                bookTitle: "Test Book",
+                topic: "Test Topic",
+                language: results.finalLanguage,
+                pdfContent: "",
+                questionCount: 15,
+                timeLimit: 120
+            };
+            
+            const output = `🚀 API CALL SIMULATION:
+
+📤 Would send to /api/generate-dynamic-evaluation:
+${JSON.stringify(apiPayload, null, 2)}
+
+🎯 Expected Result:
+- Language sent: "${results.finalLanguage}"
+- Expected questions: ${results.finalLanguage === 'en' ? 'ENGLISH' : 'SPANISH'}
+
+🚨 Current Status:
+${results.finalLanguage === 'en' && isEnglish ? '✅ CORRECT: Will generate English' :
+  results.finalLanguage === 'es' && !isEnglish ? '✅ CORRECT: Will generate Spanish' :
+  results.finalLanguage === 'es' && isEnglish ? '❌ BUG: Will generate Spanish but toggle is EN' :
+  '⚠️ UNEXPECTED: Will generate English but toggle is ES'}`;
+
+            document.getElementById('correctionResults').textContent = output;
+        }
+
+        function updateRealtimeStatus() {
+            const results = simulateDetectCurrentLanguage();
+            
+            const status = `📈 REAL-TIME STATUS (Auto-refresh):
+
+🎮 UI: ${isEnglish ? 'EN Active' : 'ES Active'}
+🔍 Detection: ${results.finalLanguage === 'en' ? 'English' : 'Spanish'}
+💾 Storage: ${localStorage.getItem('smart-student-lang')}
+🚨 Status: ${
+    isEnglish && results.finalLanguage === 'en' ? '✅ WORKING' :
+    !isEnglish && results.finalLanguage === 'es' ? '✅ WORKING' :
+    isEnglish && results.finalLanguage === 'es' ? '❌ BUG' : '⚠️ UNEXPECTED'
+}
+
+Last updated: ${new Date().toLocaleTimeString()}`;
+
+            document.getElementById('realtimeStatus').textContent = status;
+        }
+
+        // Initialize
+        window.onload = function() {
+            updateToggleUI();
+            updateRealtimeStatus();
+            
+            // Auto-refresh status every 2 seconds
+            setInterval(updateRealtimeStatus, 2000);
+        };
+    </script>
+</body>
+</html>

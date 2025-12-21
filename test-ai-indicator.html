@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Indicador de IA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005c99;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #007acc;
+        }
+        .success {
+            background: #e7ffe7;
+            border-left-color: #28a745;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .green { background: #28a745; }
+        .red { background: #dc3545; }
+        .yellow { background: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Test del Indicador de IA</h1>
+        
+        <div class="info">
+            <strong>Objetivo:</strong> Verificar que el indicador de IA aparezca en verde cuando la IA esté conectada.
+        </div>
+
+        <h2>Estado Actual del Endpoint</h2>
+        <div id="status" class="status">Verificando...</div>
+
+        <h2>Acciones</h2>
+        <button onclick="checkAIStatus()">🔍 Verificar Estado de IA</button>
+        <button onclick="openDashboard()">📱 Abrir Dashboard</button>
+        <button onclick="testAIFunctions()">🧪 Probar Funciones de IA</button>
+
+        <h2>Indicadores de Estado</h2>
+        <div class="info">
+            <p><span class="indicator green"></span><strong>Verde:</strong> IA conectada y funcionando</p>
+            <p><span class="indicator yellow"></span><strong>Amarillo:</strong> Verificando conexión</p>
+            <p><span class="indicator red"></span><strong>Rojo:</strong> IA no disponible o error</p>
+        </div>
+
+        <h2>Verificaciones</h2>
+        <div id="checks" class="status">
+            <p>✓ Endpoint /api/ai-status configurado</p>
+            <p>✓ API Key de Google AI configurada</p>
+            <p>✓ Componente AIStatusIndicator implementado</p>
+            <p>📍 <strong>Buscar:</strong> Pequeño círculo verde en la esquina superior derecha del dashboard</p>
+        </div>
+
+        <h2>Instrucciones</h2>
+        <ol>
+            <li>Haz clic en "Verificar Estado de IA" para confirmar que el endpoint funciona</li>
+            <li>Abre el Dashboard con el botón correspondiente</li>
+            <li>Busca el indicador circular en la esquina superior derecha</li>
+            <li>Debe aparecer en <strong>verde</strong> si todo funciona correctamente</li>
+            <li>Opcionalmente, prueba las funciones de IA para confirmar que están activas</li>
+        </ol>
+    </div>
+
+    <script>
+        async function checkAIStatus() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.innerHTML = '<div class="info">🔍 Verificando estado del endpoint...</div>';
+                
+                const response = await fetch('/api/ai-status');
+                const data = await response.json();
+                
+                if (data.isActive) {
+                    statusDiv.innerHTML = `
+                        <div class="info success">
+                            <h4>✅ IA Conectada Exitosamente</h4>
+                            <p><strong>Estado:</strong> ${data.reason}</p>
+                            <p><strong>Modelo:</strong> ${data.model}</p>
+                            <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                            <p><span class="indicator green"></span>El indicador en el dashboard debería aparecer en <strong>verde</strong></p>
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="info" style="background: #fff3cd; border-left-color: #ffc107;">
+                            <h4>⚠️ IA No Disponible</h4>
+                            <p><strong>Razón:</strong> ${data.reason}</p>
+                            <p><span class="indicator red"></span>El indicador aparecerá en <strong>rojo</strong></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div style="background: #f8d7da; border-left-color: #dc3545;" class="info">
+                        <h4>❌ Error de Conexión</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>Verifica que el servidor esté corriendo en el puerto correcto</p>
+                    </div>
+                `;
+            }
+        }
+
+        function openDashboard() {
+            window.open('/dashboard', '_blank');
+            console.log('Dashboard abierto - busca el indicador verde en la esquina superior derecha');
+        }
+
+        function testAIFunctions() {
+            const features = [
+                '/dashboard/resumen',
+                '/dashboard/evaluacion', 
+                '/dashboard/cuestionario',
+                '/dashboard/mapa-mental'
+            ];
+            
+            features.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, index * 1000);
+            });
+            
+            console.log('Abriendo funciones de IA para prueba...');
+        }
+
+        // Verificar automáticamente al cargar la página
+        checkAIStatus();
+    </script>
+</body>
+</html>

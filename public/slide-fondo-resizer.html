@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transformar imagen a fondo 16:9</title>
+  <style>
+    :root { --bg: #0b1020; --panel: #151c34; --text: #e6edff; --muted: #99a3c4; --accent: #4f8cff; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 1000px; margin: 32px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 16px; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr 380px; gap: 16px; }
+    .controls { background:#0f1630; border:1px solid #263158; border-radius: 10px; padding: 16px; }
+    label { display:block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
+    input[type="file"], select, input[type="color"], button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #2a3460; background: #0b1228; color: var(--text); }
+    button { cursor: pointer; background: linear-gradient(180deg, #5b8cff, #3e6af8); border: 0; font-weight: 600; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .preview { aspect-ratio: 16 / 9; background: #11182f; border: 1px solid #2a3460; border-radius: 10px; display:grid; place-items:center; position: relative; overflow: hidden; }
+    .preview canvas { width: 100%; height: 100%; }
+    .row { display:flex; gap:8px; }
+    .row > * { flex:1; }
+    .hint { font-size: 12px; color: var(--muted); }
+    .badge { display:inline-block; padding:4px 8px; border:1px solid #2a3460; border-radius:6px; font-size:12px; color:#b9c6ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Transformar imagen a fondo 16:9</h1>
+    <p>Convierte cualquier imagen al tamaño exacto de diapositiva para el módulo Profesor → Presentaciones. Relación 16:9 centrada.</p>
+
+    <div class="grid">
+      <div class="preview">
+        <canvas id="canvas" width="1920" height="1080" aria-label="Vista previa 16:9"></canvas>
+      </div>
+
+      <div class="controls">
+        <label>Imagen de entrada</label>
+        <input id="file" type="file" accept="image/*" />
+
+        <label>Presets de tamaño (16:9)</label>
+        <select id="preset">
+          <option value="1920x1080">1920 × 1080 (recomendado)</option>
+          <option value="1280x720">1280 × 720 (ligero)</option>
+          <option value="1600x900">1600 × 900</option>
+          <option value="2560x1440">2560 × 1440</option>
+          <option value="3840x2160">3840 × 2160 (4K)</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label>Modo de ajuste</label>
+            <select id="fit">
+              <option value="cover">Cubrir (recomendado)</option>
+              <option value="contain">Contener (puede dejar bordes)</option>
+            </select>
+          </div>
+          <div>
+            <label>Color de fondo</label>
+            <input id="bg" type="color" value="#0b1020" />
+          </div>
+        </div>
+
+        <label>Margen de seguridad (%)</label>
+        <input id="safe" type="range" min="0" max="10" step="0.5" value="5" />
+        <div class="hint">Recomendado 5% para evitar cortes en visores que usan cover.</div>
+
+        <div style="height:10px"></div>
+        <button id="download" disabled>Descargar imagen 16:9</button>
+        <div style="height:10px"></div>
+        <div class="badge">Relación 16:9 garantizada</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const canvas = $('#canvas');
+    const ctx = canvas.getContext('2d');
+    const file = $('#file');
+    const preset = $('#preset');
+    const fitSel = $('#fit');
+    const bg = $('#bg');
+    const safe = $('#safe');
+    const btn = $('#download');
+
+    let img = null;
+
+    function parseSize(v){
+      const [w,h] = v.split('x').map(Number); return {w,h};
+    }
+
+    function draw(){
+      const {w, h} = parseSize(preset.value);
+      canvas.width = w; canvas.height = h;
+
+      // Fondo
+      ctx.fillStyle = bg.value; ctx.fillRect(0,0,w,h);
+
+      if(!img) return;
+
+      const margin = Math.max(0, Math.min(10, Number(safe.value))) / 100;
+      const innerW = w * (1 - margin*2);
+      const innerH = h * (1 - margin*2);
+      const innerX = (w - innerW)/2;
+      const innerY = (h - innerH)/2;
+
+      const rW = innerW / img.width;
+      const rH = innerH / img.height;
+      const r = (fitSel.value === 'cover') ? Math.max(rW, rH) : Math.min(rW, rH);
+
+      const drawW = img.width * r;
+      const drawH = img.height * r;
+      const dx = innerX + (innerW - drawW)/2;
+      const dy = innerY + (innerH - drawH)/2;
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+    }
+
+    preset.addEventListener('change', draw);
+    fitSel.addEventListener('change', draw);
+    bg.addEventListener('input', draw);
+    safe.addEventListener('input', draw);
+
+    file.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      const image = new Image();
+      image.onload = ()=>{ img = image; btn.disabled = false; draw(); URL.revokeObjectURL(url); };
+      image.onerror = ()=>{ alert('No se pudo cargar la imagen.'); btn.disabled = true; };
+      image.src = url;
+    });
+
+    btn.addEventListener('click', ()=>{
+      const link = document.createElement('a');
+      link.download = `fondo_${preset.value}.png`;
+      canvas.toBlob((blob)=>{
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        setTimeout(()=>URL.revokeObjectURL(link.href), 5000);
+      }, 'image/png', 0.95);
+    });
+
+    // Primera pintura
+    draw();
+  </script>
+</body>
+</html>

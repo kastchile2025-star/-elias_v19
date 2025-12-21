@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Nombres de Estudiantes en Tareas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                🔧 Corrección: Nombres de Estudiantes en Estado de Tareas
+            </h1>
+            <button 
+                onclick="document.documentElement.classList.toggle('dark')"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+                🌓 Cambiar Tema
+            </button>
+        </div>
+
+        <!-- Problema Identificado -->
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-6 rounded-lg mb-6">
+            <h2 class="text-red-800 dark:text-red-400 font-semibold text-lg mb-4">
+                🚨 Problema Identificado
+            </h2>
+            
+            <div class="text-red-700 dark:text-red-300 space-y-2">
+                <p><strong>Ubicación:</strong> Tareas → Estado de los estudiantes (modo profesor)</p>
+                <p><strong>Síntoma:</strong> No aparecen los nombres de los estudiantes, solo "Pendiente"</p>
+                <p><strong>Causa:</strong> Inconsistencia entre propiedades `name` vs `displayName` en objetos de estudiantes</p>
+            </div>
+        </div>
+
+        <!-- Análisis del Problema -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🔍 Análisis del Problema
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+                    <h3 class="text-yellow-800 dark:text-yellow-400 font-medium mb-2">📋 Flujo de Datos</h3>
+                    <div class="text-yellow-700 dark:text-yellow-300 text-sm space-y-1">
+                        <p>1. <code>getStudentsForCourse()</code> → Devuelve objetos con <strong>displayName</strong></p>
+                        <p>2. <code>getStudentsWithTaskStatus()</code> → Mapea estudiantes</p>
+                        <p>3. <code>studentsWithStatus.map()</code> → Intenta acceder a <strong>student.name</strong> ❌</p>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                    <h3 class="text-red-800 dark:text-red-400 font-medium mb-2">❌ Error en el Código</h3>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                        <code class="text-gray-800 dark:text-gray-200">
+                            // getStudentsForCourse() devuelve:<br>
+                            { username: "felipe", displayName: "Felipe Estudiante" }<br><br>
+                            // Pero la tabla intenta acceder a:<br>
+                            &lt;td&gt;{student.name}&lt;/td&gt; // ❌ undefined!
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparación Antes/Después -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-red-600 dark:text-red-400 font-semibold mb-3">❌ ANTES (Problema)</h3>
+                
+                <div class="space-y-3">
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">Tabla mostrando undefined:</p>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                        <code class="text-gray-800 dark:text-gray-200">
+                            &lt;td&gt;{student.name}&lt;/td&gt;
+                        </code>
+                    </div>
+                    
+                    <!-- Simulación tabla problemática -->
+                    <div class="border rounded-lg overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-3 py-2 text-left">Estudiante</th>
+                                    <th class="px-3 py-2 text-left">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3 py-2 text-red-500">(undefined)</td>
+                                    <td class="px-3 py-2">
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Pendiente</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 text-red-500">(undefined)</td>
+                                    <td class="px-3 py-2">
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Pendiente</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-green-600 dark:text-green-400 font-semibold mb-3">✅ DESPUÉS (Corregido)</h3>
+                
+                <div class="space-y-3">
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">Tabla mostrando nombres correctamente:</p>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                        <code class="text-gray-800 dark:text-gray-200">
+                            &lt;td&gt;{student.displayName}&lt;/td&gt;
+                        </code>
+                    </div>
+                    
+                    <!-- Simulación tabla corregida -->
+                    <div class="border rounded-lg overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-3 py-2 text-left">Estudiante</th>
+                                    <th class="px-3 py-2 text-left">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3 py-2 text-green-700 dark:text-green-400 font-medium">Felipe Estudiante</td>
+                                    <td class="px-3 py-2">
+                                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Entregada</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 text-blue-700 dark:text-blue-400 font-medium">María García</td>
+                                    <td class="px-3 py-2">
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Pendiente</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 text-blue-700 dark:text-blue-400 font-medium">Carlos López</td>
+                                    <td class="px-3 py-2">
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Pendiente</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cambio Técnico -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🛠️ Cambio Técnico Implementado
+            </h2>
+            
+            <div class="border-l-4 border-green-500 pl-4">
+                <h3 class="text-green-600 dark:text-green-400 font-medium mb-2">Corrección en línea 1741</h3>
+                <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded text-sm">
+                    <p class="text-gray-600 dark:text-gray-400 mb-2">Archivo: <code>src/app/dashboard/tareas/page.tsx</code></p>
+                    <div class="space-y-2">
+                        <div class="text-red-600 dark:text-red-400">
+                            <code>- &lt;td className="py-2 px-3"&gt;{student.name}&lt;/td&gt;</code>
+                        </div>
+                        <div class="text-green-600 dark:text-green-400">
+                            <code>+ &lt;td className="py-2 px-3"&gt;{student.displayName}&lt;/td&gt;</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verificación de Consistencia -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                ✅ Verificación de Consistencia
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">getStudentsForCourse()</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Devuelve objetos con <code>displayName</code></p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Tareas asignadas a estudiantes específicos</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Ya usaba <code>displayName</code> correctamente</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Renderizado de tabla</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Ahora usa <code>student.displayName</code> consistentemente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Casos de Uso -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🎯 Casos de Uso Corregidos
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h3 class="text-blue-800 dark:text-blue-400 font-medium mb-2">📚 Tareas por Curso</h3>
+                    <ul class="text-blue-700 dark:text-blue-300 text-sm space-y-1">
+                        <li>• Todos los estudiantes del curso aparecen</li>
+                        <li>• Se muestran nombres completos (displayName)</li>
+                        <li>• Estados correctos (Entregada/Pendiente)</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                    <h3 class="text-purple-800 dark:text-purple-400 font-medium mb-2">👥 Tareas Específicas</h3>
+                    <ul class="text-purple-700 dark:text-purple-300 text-sm space-y-1">
+                        <li>• Solo estudiantes asignados aparecen</li>
+                        <li>• Nombres visibles correctamente</li>
+                        <li>• Funcionaba bien anteriormente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen Final -->
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-6 rounded-lg">
+            <h2 class="text-green-800 dark:text-green-400 font-semibold text-lg mb-4">
+                🎉 Corrección Completada
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">✅ Problema Resuelto:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Nombres de estudiantes ahora visibles</li>
+                        <li>• Consistencia en propiedades de objetos</li>
+                        <li>• Tabla funciona para ambos tipos de asignación</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">🔄 Para Verificar:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Crear tarea asignada a curso completo</li>
+                        <li>• Ver "Estado de los estudiantes"</li>
+                        <li>• Confirmar nombres visibles</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-green-100 dark:bg-green-800/30 rounded-lg">
+                <p class="text-green-800 dark:text-green-300 text-sm">
+                    <strong>Resultado:</strong> La tabla "Estado de los estudiantes" ahora muestra correctamente los nombres de todos los estudiantes que deben completar la tarea/evaluación, tanto para tareas asignadas por curso como para estudiantes específicos.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

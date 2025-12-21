@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug - Botones Pantalla Revisión</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fef5f5;
+            border-radius: 15px;
+            border-left: 5px solid #e74c3c;
+        }
+        .section h2 {
+            color: #e74c3c;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status.debug {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.fixed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        .debug-steps {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .debug-steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .debug-steps li {
+            padding: 5px 0;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug - Botones Pantalla Revisión</h1>
+        
+        <div class="section">
+            <h2><span class="icon">🎯</span> Problema Específico Identificado</h2>
+            
+            <div class="status debug">
+                🐛 PROBLEMA: Los botones "Repetir Evaluación" y "Nueva Evaluación" aún aparecen en la pantalla de revisión
+            </div>
+            
+            <p><strong>Síntomas observados:</strong></p>
+            <ul>
+                <li>✅ Evaluación de tarea se ejecuta correctamente</li>
+                <li>✅ Estudiante completa la evaluación</li>
+                <li>❓ Diálogo de resultados: ¿Muestra solo "Cerrar"?</li>
+                <li>❌ Pantalla de revisión: Muestra "Repetir" y "Nueva Evaluación"</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔍</span> Diagnóstico y Solución Mejorada</h2>
+            
+            <p><strong>Posibles causas del problema:</strong></p>
+            <ol>
+                <li><strong>Estado perdido:</strong> La variable <code>isAutoStartMode</code> se resetea durante el flujo</li>
+                <li><strong>Parámetros URL:</strong> Los searchParams se pierden o cambian</li>
+                <li><strong>Timing:</strong> La detección ocurre antes de que el estado esté listo</li>
+            </ol>
+
+            <div class="status fixed">
+                ✅ SOLUCIÓN: Detección múltiple y robusta implementada
+            </div>
+
+            <div class="code-block">
+// ❌ ANTES: Solo dependía de una variable
+{isAutoStartMode ? (
+  &lt;Button&gt;Cerrar&lt;/Button&gt;
+) : (
+  &lt;Button&gt;Repetir&lt;/Button&gt;
+  &lt;Button&gt;Nueva&lt;/Button&gt;
+)}
+
+// ✅ AHORA: Detección múltiple y logging
+{(() =&gt; {
+  const autoStartFromUrl = searchParams.get('autoStart') === 'true';
+  const isTaskEvaluation = isAutoStartMode || autoStartFromUrl;
+  
+  console.log('Review screen - Detection:', { 
+    isAutoStartMode, 
+    autoStartFromUrl, 
+    isTaskEvaluation,
+    allParams: Object.fromEntries(searchParams.entries())
+  });
+  
+  return isTaskEvaluation ? (
+    &lt;Button onClick={handleCloseTaskEvaluation}&gt;Cerrar&lt;/Button&gt;
+  ) : (
+    &lt;&gt;
+      &lt;Button onClick={handleRepeatEvaluation}&gt;Repetir&lt;/Button&gt;
+      &lt;Button onClick={handleStartNewEvaluation}&gt;Nueva&lt;/Button&gt;
+    &lt;/&gt;
+  );
+})()}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🧪</span> Proceso de Debug</h2>
+            
+            <div class="debug-steps">
+                <h3>📋 Pasos para debuggear:</h3>
+                <ol>
+                    <li><strong>Abrir DevTools</strong> (F12) → Console</li>
+                    <li><strong>Ir a Tareas</strong> → Buscar evaluación</li>
+                    <li><strong>Click "Realizar Evaluación"</strong></li>
+                    <li><strong>Completar evaluación</strong></li>
+                    <li><strong>En el diálogo de resultados:</strong>
+                        <ul>
+                            <li>Buscar log: "Results dialog - Detection"</li>
+                            <li>Verificar valores de isTaskEvaluation</li>
+                        </ul>
+                    </li>
+                    <li><strong>Click "Cerrar" → Pantalla de revisión</strong></li>
+                    <li><strong>En la pantalla de revisión:</strong>
+                        <ul>
+                            <li>Buscar log: "Review screen - Detection"</li>
+                            <li>Verificar qué botones aparecen</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <a href="http://localhost:3000/dashboard/tareas" class="test-link" target="_blank">
+                🔧 Probar con Debug Activado
+            </a>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📊</span> Valores Esperados en Console</h2>
+            
+            <div class="code-block">
+// ✅ En el diálogo de resultados (ESPERADO):
+Results dialog - Detection: {
+  isAutoStartMode: true,
+  autoStartFromUrl: true, 
+  isTaskEvaluation: true
+}
+
+// ✅ En la pantalla de revisión (ESPERADO):
+Review screen - Detection: {
+  isAutoStartMode: true,
+  autoStartFromUrl: true,
+  isTaskEvaluation: true,
+  allParams: {course: "4to Básico", book: "Ciencias Naturales", topic: "sistema respiratorio", autoStart: "true"}
+}
+
+// ❌ Si aparecen ambos botones (PROBLEMA):
+Review screen - Detection: {
+  isAutoStartMode: false,
+  autoStartFromUrl: false,
+  isTaskEvaluation: false,
+  allParams: {} // o parámetros faltantes
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🛠️</span> Plan de Contingencia</h2>
+            
+            <p><strong>Si el problema persiste después del debug:</strong></p>
+            
+            <ol>
+                <li><strong>Verificar URL:</strong> Confirmar que los parámetros persisten durante todo el flujo</li>
+                <li><strong>Implementar localStorage:</strong> Guardar el estado en localStorage como backup</li>
+                <li><strong>Detección alternativa:</strong> Usar el parámetro taskId o course para detectar</li>
+            </ol>
+
+            <div class="code-block">
+// Opción de respaldo: Usar localStorage
+useEffect(() => {
+  if (searchParams.get('autoStart') === 'true') {
+    localStorage.setItem('currentEvaluationType', 'task');
+  }
+}, [searchParams]);
+
+// En la pantalla de revisión:
+const isTaskEvaluation = 
+  isAutoStartMode || 
+  searchParams.get('autoStart') === 'true' ||
+  localStorage.getItem('currentEvaluationType') === 'task';
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">✅</span> Próximos Pasos</h2>
+            
+            <div class="status debug">
+                🔍 AHORA: Probar y revisar logs en consola
+            </div>
+            
+            <p><strong>Acciones inmediatas:</strong></p>
+            <ul>
+                <li>1. Probar el flujo con DevTools abierto</li>
+                <li>2. Revisar los logs de detección</li>
+                <li>3. Identificar dónde se pierde el estado</li>
+                <li>4. Aplicar solución específica según findings</li>
+            </ul>
+            
+            <p style="margin-top: 20px; font-weight: bold; color: #e74c3c;">
+                🎯 El debug detallado nos ayudará a identificar exactamente dónde falla la detección
+            </p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔧 Debug page para botones de pantalla de revisión');
+        console.log('📋 Cambios implementados:');
+        console.log('  1. Detección múltiple: isAutoStartMode || searchParams autoStart');
+        console.log('  2. Logging detallado para debug');
+        console.log('  3. Aplicado tanto al diálogo como a la pantalla de revisión');
+        console.log('🔍 Ahora prueba el flujo y revisa los logs en consola');
+    </script>
+</body>
+</html>

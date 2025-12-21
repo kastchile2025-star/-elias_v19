@@ -1,0 +1,1 @@
+createTestNotification(); window.location.reload();

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Notificaciones Profesor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005c99;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #007acc;
+        }
+        .success {
+            background: #e7ffe7;
+            border-left-color: #28a745;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test de Notificaciones para Profesores</h1>
+        
+        <div class="info">
+            <strong>Objetivo:</strong> Verificar que la campana de notificaciones muestre correctamente las tareas/evaluaciones pendientes de calificar para profesores.
+        </div>
+
+        <h2>Setup de Datos de Prueba</h2>
+        
+        <button onclick="createTeacherData()">1. Crear Profesor de Prueba</button>
+        <button onclick="createTasksWithSubmissions()">2. Crear Tareas con Entregas</button>
+        <button onclick="createPendingGradingNotifications()">3. Crear Notificaciones Pendientes</button>
+        <button onclick="viewCurrentData()">Ver Datos Actuales</button>
+        <button onclick="cleanupData()">Limpiar Datos</button>
+        
+        <div id="status" class="status"></div>
+        
+        <h2>Verificaciones</h2>
+        <div class="info">
+            <p><strong>1. Campana de Notificaciones:</strong> Debe mostrar el número total de tareas/evaluaciones pendientes de calificar</p>
+            <p><strong>2. Panel de Notificaciones:</strong> Debe mostrar secciones separadas para:</p>
+            <ul>
+                <li>Tareas/Evaluaciones Pendientes de Calificar</li>
+                <li>Entregas de Estudiantes sin Calificar</li>
+            </ul>
+            <p><strong>3. Enlaces:</strong> Cada notificación debe tener un enlace para revisar la tarea/entrega</p>
+        </div>
+
+        <h2>Instrucciones</h2>
+        <ol>
+            <li>Ejecuta el setup de datos de prueba en orden</li>
+            <li>Ve al dashboard en localhost:3000</li>
+            <li>Verifica que la campana muestre notificaciones</li>
+            <li>Haz clic en la campana y verifica el contenido del panel</li>
+            <li>Verifica que los enlaces funcionen correctamente</li>
+        </ol>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.innerHTML = `<div class="info ${type}">${message}</div>`;
+        }
+
+        function createTeacherData() {
+            // Crear datos de usuario profesor
+            const userData = {
+                username: 'profesor_test',
+                displayName: 'Profesor Test',
+                email: 'profesor@test.com',
+                role: 'teacher',
+                activeCourses: ['10A', '11B'],
+                subjects: ['Matemáticas', 'Física']
+            };
+            
+            localStorage.setItem('smart-student-user', JSON.stringify(userData));
+            updateStatus('✅ Profesor de prueba creado exitosamente', 'success');
+        }
+
+        function createTasksWithSubmissions() {
+            const tasks = [
+                {
+                    id: 'task_001',
+                    title: 'Ecuaciones Cuadráticas',
+                    description: 'Resolver ejercicios de ecuaciones cuadráticas',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    subject: 'Matemáticas',
+                    course: '10A',
+                    assignedBy: 'profesor_test',
+                    assignedByName: 'Profesor Test',
+                    type: 'task'
+                },
+                {
+                    id: 'eval_001',
+                    title: 'Evaluación - Física Mecánica',
+                    description: 'Evaluación parcial de mecánica clásica',
+                    dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+                    subject: 'Física',
+                    course: '11B',
+                    assignedBy: 'profesor_test',
+                    assignedByName: 'Profesor Test',
+                    type: 'evaluation'
+                }
+            ];
+
+            const comments = [
+                {
+                    id: 'comment_001',
+                    taskId: 'task_001',
+                    studentUsername: 'estudiante1',
+                    studentName: 'Ana María García',
+                    comment: 'He resuelto todos los ejercicios. Adjunto mi trabajo.',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    isNew: false,
+                    readBy: []
+                },
+                {
+                    id: 'comment_002',
+                    taskId: 'eval_001',
+                    studentUsername: 'estudiante2',
+                    studentName: 'Carlos Rodríguez',
+                    comment: 'Evaluación completada. Espero sus comentarios.',
+                    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    isNew: false,
+                    readBy: []
+                }
+            ];
+
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+            
+            updateStatus('✅ Tareas y entregas creadas exitosamente', 'success');
+        }
+
+        function createPendingGradingNotifications() {
+            const notifications = [
+                {
+                    id: 'notif_pending_001',
+                    type: 'pending_grading',
+                    taskId: 'task_001',
+                    taskTitle: 'Ecuaciones Cuadráticas',
+                    taskType: 'task',
+                    course: '10A',
+                    subject: 'Matemáticas',
+                    fromUsername: 'system',
+                    targetUsernames: ['profesor_test'],
+                    timestamp: new Date().toISOString(),
+                    readBy: [],
+                    read: false
+                },
+                {
+                    id: 'notif_pending_002',
+                    type: 'pending_grading',
+                    taskId: 'eval_001',
+                    taskTitle: 'Evaluación - Física Mecánica',
+                    taskType: 'evaluation',
+                    course: '11B',
+                    subject: 'Física',
+                    fromUsername: 'system',
+                    targetUsernames: ['profesor_test'],
+                    timestamp: new Date().toISOString(),
+                    readBy: [],
+                    read: false
+                }
+            ];
+
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            updateStatus('✅ Notificaciones pendientes creadas exitosamente', 'success');
+        }
+
+        function viewCurrentData() {
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+
+            let statusHtml = '<h3>📊 Estado Actual de los Datos:</h3>';
+            statusHtml += `<p><strong>Usuario:</strong> ${user.displayName || 'No definido'} (${user.role || 'No definido'})</p>`;
+            statusHtml += `<p><strong>Tareas:</strong> ${tasks.length} tareas</p>`;
+            statusHtml += `<p><strong>Entregas:</strong> ${comments.filter(c => c.isSubmission).length} entregas</p>`;
+            statusHtml += `<p><strong>Notificaciones:</strong> ${notifications.length} notificaciones</p>`;
+            
+            if (tasks.length > 0) {
+                statusHtml += '<h4>Tareas:</h4><ul>';
+                tasks.forEach(task => {
+                    statusHtml += `<li>${task.title} (${task.type || 'task'})</li>`;
+                });
+                statusHtml += '</ul>';
+            }
+
+            if (comments.filter(c => c.isSubmission).length > 0) {
+                statusHtml += '<h4>Entregas sin Calificar:</h4><ul>';
+                comments.filter(c => c.isSubmission && !c.grade).forEach(comment => {
+                    const task = tasks.find(t => t.id === comment.taskId);
+                    statusHtml += `<li>${comment.studentName} - ${task?.title || 'Tarea desconocida'}</li>`;
+                });
+                statusHtml += '</ul>';
+            }
+
+            updateStatus(statusHtml, 'info');
+        }
+
+        function cleanupData() {
+            localStorage.removeItem('smart-student-user');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-task-notifications');
+            
+            updateStatus('🧹 Datos de prueba eliminados exitosamente', 'warning');
+        }
+
+        // Mostrar estado inicial
+        viewCurrentData();
+    </script>
+</body>
+</html>

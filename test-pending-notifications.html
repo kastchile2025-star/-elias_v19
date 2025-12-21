@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test: Notificaciones Pendientes Profesor - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .button.danger:hover {
+            background: #dc2626;
+        }
+        .button.success {
+            background: #10b981;
+        }
+        .button.success:hover {
+            background: #059669;
+        }
+        .button.warning {
+            background: #f59e0b;
+        }
+        .button.warning:hover {
+            background: #d97706;
+        }
+        .log {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .result {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .result.success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .result.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .result.warning {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-number.danger {
+            color: #ef4444;
+        }
+        .stat-number.success {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Test: Notificaciones Pendientes Profesor</h1>
+        <p>Verificar que un profesor VEA notificaciones de tareas pendientes cuando crea una tarea</p>
+    </div>
+
+    <div class="section">
+        <div class="info-box">
+            <h3>🎯 Problema a Resolver</h3>
+            <p><strong>Situación:</strong> Cuando un profesor crea una tarea, debería aparecer una notificación "pending_grading" en su panel de notificaciones.</p>
+            <p><strong>Problema:</strong> Estas notificaciones no aparecen porque el sistema las filtra como "notificaciones propias".</p>
+            <p><strong>Solución:</strong> Las notificaciones del sistema deben usar fromUsername: 'system' en lugar del username del profesor.</p>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalPendingNotifications">0</div>
+            <div>Notificaciones Pendientes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number danger" id="problematicNotifications">0</div>
+            <div>Notificaciones Problemáticas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number success" id="systemNotifications">0</div>
+            <div>Notificaciones del Sistema</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="tasksWithoutNotifications">0</div>
+            <div>Tareas Sin Notificación</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>👤 Configuración de Usuario</h2>
+        <div>
+            <label for="profesorSelect">Seleccionar Profesor:</label>
+            <select id="profesorSelect" style="margin-left: 10px; padding: 5px;">
+                <option value="">-- Seleccionar Profesor --</option>
+            </select>
+            <button class="button" onclick="loadProfesor()">Cargar Datos</button>
+        </div>
+        <div id="profesorInfo" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="section">
+        <h2>🧪 Pasos del Test</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Analizar Notificaciones Existentes</h3>
+            <p>Revisar las notificaciones pending_grading existentes y su configuración</p>
+            <button class="button" onclick="analizarNotificacionesExistentes()">🔍 Analizar Existentes</button>
+            <div id="paso1Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Crear Tarea de Prueba</h3>
+            <p>Simular que el profesor crea una nueva tarea y verificar la notificación</p>
+            <button class="button warning" onclick="crearTareaPrueba()">📝 Crear Tarea</button>
+            <div id="paso2Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Verificar Notificación Creada</h3>
+            <p>Verificar que se creó la notificación pending_grading correctamente</p>
+            <button class="button" onclick="verificarNotificacionCreada()">🔍 Verificar Notificación</button>
+            <div id="paso3Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 4: Verificar Visibilidad para Profesor</h3>
+            <p>Verificar que el profesor pueda ver la notificación en su panel</p>
+            <button class="button success" onclick="verificarVisibilidadProfesor()">👨‍🏫 Verificar Visibilidad</button>
+            <div id="paso4Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 5: Reparar Notificaciones Problemáticas</h3>
+            <p>Corregir notificaciones pending_grading existentes que tengan fromUsername incorrecto</p>
+            <button class="button success" onclick="repararNotificaciones()">🔧 Reparar Notificaciones</button>
+            <div id="paso5Result"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Resultados del Test</h2>
+        <div id="testResults"></div>
+        <button class="button danger" onclick="limpiarTest()">🗑️ Limpiar Test</button>
+    </div>
+
+    <div class="section">
+        <h2>📝 Log de Actividad</h2>
+        <div id="activityLog" class="log">Iniciando test de notificaciones pendientes del profesor...</div>
+    </div>
+
+    <script>
+        let profesorActual = null;
+        let testTaskId = null;
+        let testNotificationId = null;
+        let activityLog = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            activityLog.push(logMessage);
+            document.getElementById('activityLog').textContent = activityLog.join('\n');
+            document.getElementById('activityLog').scrollTop = document.getElementById('activityLog').scrollHeight;
+        }
+
+        function showResult(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function updateStats() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const pendingNotifications = notifications.filter(n => n.type === 'pending_grading');
+                const problematicNotifications = pendingNotifications.filter(n => n.fromUsername !== 'system');
+                const systemNotifications = pendingNotifications.filter(n => n.fromUsername === 'system');
+                
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const teacherTasks = tasks.filter(task => task.status === 'pending');
+                const tasksWithoutNotifications = teacherTasks.filter(task => 
+                    !pendingNotifications.some(n => n.taskId === task.id)
+                );
+
+                document.getElementById('totalPendingNotifications').textContent = pendingNotifications.length;
+                document.getElementById('problematicNotifications').textContent = problematicNotifications.length;
+                document.getElementById('systemNotifications').textContent = systemNotifications.length;
+                document.getElementById('tasksWithoutNotifications').textContent = tasksWithoutNotifications.length;
+            } catch (error) {
+                log(`❌ Error actualizando estadísticas: ${error.message}`);
+            }
+        }
+
+        function loadProfesores() {
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const profesorSelect = document.getElementById('profesorSelect');
+                
+                profesorSelect.innerHTML = '<option value="">-- Seleccionar Profesor --</option>';
+                
+                Object.entries(usersObj).forEach(([username, userData]) => {
+                    if (userData.role === 'teacher') {
+                        const option = document.createElement('option');
+                        option.value = username;
+                        option.textContent = `${userData.displayName || username}`;
+                        profesorSelect.appendChild(option);
+                    }
+                });
+                
+                log(`Cargados profesores del sistema`);
+            } catch (error) {
+                log(`❌ Error cargando profesores: ${error.message}`);
+            }
+        }
+
+        function loadProfesor() {
+            const profesorUsername = document.getElementById('profesorSelect').value;
+            if (!profesorUsername) {
+                log('❌ Selecciona un profesor primero');
+                return;
+            }
+
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                profesorActual = {
+                    username: profesorUsername,
+                    ...usersObj[profesorUsername]
+                };
+
+                document.getElementById('profesorInfo').innerHTML = 
+                    `<strong>👨‍🏫 Profesor:</strong> ${profesorActual.displayName || profesorActual.username} (${profesorActual.username})`;
+                
+                log(`✅ Profesor cargado: ${profesorActual.displayName || profesorActual.username}`);
+                updateStats();
+            } catch (error) {
+                log(`❌ Error cargando datos del profesor: ${error.message}`);
+            }
+        }
+
+        function analizarNotificacionesExistentes() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const pendingNotifications = notifications.filter(n => n.type === 'pending_grading');
+                
+                log(`🔍 Analizando ${pendingNotifications.length} notificaciones pending_grading existentes`);
+                
+                let resultHTML = `<h4>📊 Análisis de Notificaciones Existentes</h4>`;
+                
+                if (pendingNotifications.length === 0) {
+                    resultHTML += `<div class="result warning">⚠️ No hay notificaciones pending_grading en el sistema</div>`;
+                } else {
+                    const problematicNotifications = pendingNotifications.filter(n => n.fromUsername !== 'system');
+                    const systemNotifications = pendingNotifications.filter(n => n.fromUsername === 'system');
+                    
+                    resultHTML += `
+                        <div class="result ${problematicNotifications.length > 0 ? 'error' : 'success'}">
+                            📋 Total notificaciones: ${pendingNotifications.length}<br>
+                            ✅ Notificaciones del sistema: ${systemNotifications.length}<br>
+                            ❌ Notificaciones problemáticas: ${problematicNotifications.length}
+                        </div>
+                    `;
+                    
+                    if (problematicNotifications.length > 0) {
+                        resultHTML += `<h5>❌ Notificaciones Problemáticas:</h5>`;
+                        problematicNotifications.forEach(notification => {
+                            resultHTML += `
+                                <div class="result error">
+                                    • ID: ${notification.id}<br>
+                                    • Tarea: ${notification.taskTitle}<br>
+                                    • fromUsername: ${notification.fromUsername} (debería ser 'system')<br>
+                                    • targetUsernames: ${notification.targetUsernames.join(', ')}
+                                </div>
+                            `;
+                        });
+                    }
+                }
+
+                document.getElementById('paso1Result').innerHTML = resultHTML;
+                log(`📊 Análisis completado: ${pendingNotifications.length} notificaciones encontradas`);
+                
+            } catch (error) {
+                showResult('paso1Result', 'error', `❌ Error analizando notificaciones: ${error.message}`);
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function crearTareaPrueba() {
+            if (!profesorActual) {
+                showResult('paso2Result', 'error', '❌ Selecciona y carga un profesor primero');
+                return;
+            }
+
+            try {
+                testTaskId = `test_task_pending_${Date.now()}`;
+                testNotificationId = `pending_grading_${testTaskId}_${Date.now()}`;
+                
+                // Crear tarea de prueba
+                const testTask = {
+                    id: testTaskId,
+                    title: 'Tarea de Prueba - Notificación Pendiente',
+                    description: 'Tarea creada para probar notificaciones pending_grading',
+                    subject: 'Ciencias Naturales',
+                    course: 'Ciencias Naturales',
+                    assignedBy: profesorActual.username,
+                    assignedByName: profesorActual.displayName || profesorActual.username,
+                    assignedTo: 'course',
+                    assignedStudents: [],
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    priority: 'medium',
+                    taskType: 'assignment',
+                    attachments: []
+                };
+
+                // Guardar la tarea
+                const storedTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                storedTasks.push(testTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(storedTasks));
+
+                // Crear notificación pending_grading con fromUsername correcto
+                const testNotification = {
+                    id: testNotificationId,
+                    type: 'pending_grading',
+                    taskId: testTaskId,
+                    taskTitle: testTask.title,
+                    targetUserRole: 'teacher',
+                    targetUsernames: [profesorActual.username],
+                    fromUsername: 'system', // ✅ CORRECTO: usar 'system'
+                    fromDisplayName: 'Sistema',
+                    course: 'Ciencias Naturales',
+                    subject: 'Ciencias Naturales',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                };
+
+                const storedNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                storedNotifications.push(testNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(storedNotifications));
+
+                showResult('paso2Result', 'success', 
+                    `✅ Tarea de prueba creada:
+                    <br>• Tarea: ${testTask.title}
+                    <br>• ID: ${testTaskId}
+                    <br>• Profesor: ${profesorActual.username}
+                    <br>• Notificación: ${testNotificationId}
+                    <br>• fromUsername: system (correcto)`
+                );
+
+                log(`✅ Tarea de prueba creada: ${testTaskId}`);
+                log(`✅ Notificación pending_grading creada: ${testNotificationId}`);
+                updateStats();
+                
+            } catch (error) {
+                showResult('paso2Result', 'error', `❌ Error creando tarea: ${error.message}`);
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function verificarNotificacionCreada() {
+            if (!testNotificationId) {
+                showResult('paso3Result', 'error', '❌ Ejecuta el Paso 2 primero');
+                return;
+            }
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const testNotification = notifications.find(n => n.id === testNotificationId);
+
+                if (testNotification) {
+                    const isCorrect = testNotification.fromUsername === 'system';
+                    
+                    showResult('paso3Result', isCorrect ? 'success' : 'error', 
+                        `${isCorrect ? '✅' : '❌'} Notificación encontrada:
+                        <br>• ID: ${testNotification.id}
+                        <br>• Tipo: ${testNotification.type}
+                        <br>• fromUsername: ${testNotification.fromUsername} ${isCorrect ? '(correcto)' : '(incorrecto)'}
+                        <br>• targetUsernames: ${testNotification.targetUsernames.join(', ')}
+                        <br>• Tarea: ${testNotification.taskTitle}`
+                    );
+
+                    log(`🔍 Notificación verificada: fromUsername = ${testNotification.fromUsername}`);
+                } else {
+                    showResult('paso3Result', 'error', '❌ Notificación no encontrada en el sistema');
+                }
+            } catch (error) {
+                showResult('paso3Result', 'error', `❌ Error verificando notificación: ${error.message}`);
+            }
+        }
+
+        function verificarVisibilidadProfesor() {
+            if (!profesorActual || !testNotificationId) {
+                showResult('paso4Result', 'error', '❌ Ejecuta los pasos anteriores primero');
+                return;
+            }
+
+            try {
+                // Simular la función getUnreadNotificationsForUser
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                const unreadForProfessor = notifications.filter(notification => 
+                    notification.targetUserRole === profesorActual.role &&
+                    notification.targetUsernames.includes(profesorActual.username) &&
+                    !notification.readBy.includes(profesorActual.username) &&
+                    notification.fromUsername !== profesorActual.username // El filtro actual
+                );
+
+                const testNotificationVisible = unreadForProfessor.find(n => n.id === testNotificationId);
+                
+                if (testNotificationVisible) {
+                    showResult('paso4Result', 'success', 
+                        `✅ CORRECTO: El profesor SÍ puede ver la notificación
+                        <br>• La notificación pasa el filtro correctamente
+                        <br>• fromUsername: ${testNotificationVisible.fromUsername} ≠ ${profesorActual.username}
+                        <br>• La notificación aparecerá en el panel del profesor`
+                    );
+                    log(`✅ CORRECTO: Notificación visible para el profesor`);
+                } else {
+                    // Verificar por qué no es visible
+                    const testNotification = notifications.find(n => n.id === testNotificationId);
+                    if (testNotification) {
+                        const reason = testNotification.fromUsername === profesorActual.username ? 
+                            'filtered by fromUsername check' : 'other filtering reason';
+                        
+                        showResult('paso4Result', 'error', 
+                            `❌ PROBLEMA: El profesor NO puede ver la notificación
+                            <br>• Razón: ${reason}
+                            <br>• fromUsername: ${testNotification.fromUsername}
+                            <br>• profesorUsername: ${profesorActual.username}
+                            <br>• Son iguales: ${testNotification.fromUsername === profesorActual.username}`
+                        );
+                        log(`❌ PROBLEMA: Notificación no visible - ${reason}`);
+                    } else {
+                        showResult('paso4Result', 'error', '❌ Notificación no encontrada');
+                    }
+                }
+
+                log(`📊 Total notificaciones para profesor: ${unreadForProfessor.length}`);
+                
+            } catch (error) {
+                showResult('paso4Result', 'error', `❌ Error verificando visibilidad: ${error.message}`);
+            }
+        }
+
+        function repararNotificaciones() {
+            try {
+                log('🔧 Iniciando reparación de notificaciones pending_grading...');
+                
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                let repaired = 0;
+                
+                const repairedNotifications = notifications.map(notification => {
+                    if ((notification.type === 'pending_grading' || notification.type === 'task_completed') && 
+                        notification.fromUsername !== 'system') {
+                        
+                        log(`🔧 Reparando notificación: ${notification.id} (${notification.type})`);
+                        repaired++;
+                        
+                        return {
+                            ...notification,
+                            fromUsername: 'system',
+                            fromDisplayName: 'Sistema'
+                        };
+                    }
+                    
+                    return notification;
+                });
+
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(repairedNotifications));
+                
+                showResult('paso5Result', 'success', 
+                    `✅ Reparación completada:
+                    <br>• Notificaciones reparadas: ${repaired}
+                    <br>• Ahora todas las notificaciones del sistema usan fromUsername: 'system'
+                    <br>• Los profesores podrán ver sus notificaciones pending_grading`
+                );
+                
+                log(`✅ Reparación completada: ${repaired} notificaciones reparadas`);
+                updateStats();
+                
+            } catch (error) {
+                showResult('paso5Result', 'error', `❌ Error reparando notificaciones: ${error.message}`);
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function limpiarTest() {
+            if (confirm('¿Limpiar todos los datos de prueba creados?')) {
+                try {
+                    // Limpiar tarea de prueba
+                    if (testTaskId) {
+                        const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                        const cleanTasks = tasks.filter(t => t.id !== testTaskId);
+                        localStorage.setItem('smart-student-tasks', JSON.stringify(cleanTasks));
+                    }
+
+                    // Limpiar notificación de prueba
+                    if (testNotificationId) {
+                        const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                        const cleanNotifications = notifications.filter(n => n.id !== testNotificationId);
+                        localStorage.setItem('smart-student-task-notifications', JSON.stringify(cleanNotifications));
+                    }
+
+                    // Reset variables
+                    testTaskId = null;
+                    testNotificationId = null;
+
+                    // Limpiar resultados
+                    ['paso1Result', 'paso2Result', 'paso3Result', 'paso4Result', 'paso5Result'].forEach(id => {
+                        document.getElementById(id).innerHTML = '';
+                    });
+
+                    log('🗑️ Datos de prueba limpiados');
+                    updateStats();
+                } catch (error) {
+                    log(`❌ Error limpiando: ${error.message}`);
+                }
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfesores();
+            updateStats();
+            log('🚀 Test de notificaciones pendientes iniciado');
+            log('📋 Pasos a seguir:');
+            log('1. Seleccionar y cargar un profesor');
+            log('2. Analizar notificaciones existentes');
+            log('3. Crear tarea de prueba');
+            log('4. Verificar notificación creada');
+            log('5. Verificar visibilidad para profesor');
+            log('6. Reparar notificaciones problemáticas si es necesario');
+        });
+    </script>
+</body>
+</html>

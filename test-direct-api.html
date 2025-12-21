@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Directo API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .result { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Directo API Jorge</h1>
+        <p>Probando los endpoints del backend para el profesor Jorge</p>
+        
+        <button onclick="testEndpoint('/api/users/jorge/profile', 'Profile')">🎯 Test Profile</button>
+        <button onclick="testEndpoint('/api/users/jorge/courses', 'Courses')">📚 Test Courses</button>
+        <button onclick="testEndpoint('/api/users/jorge/subjects', 'Subjects')">📖 Test Subjects</button>
+        <button onclick="testEndpoint('/api/test-jorge', 'Test Jorge')">🚀 Test Jorge Combined</button>
+        <button onclick="clearResults()">🗑️ Limpiar</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function testEndpoint(url, name) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            try {
+                showResult(`🔄 [${timestamp}] Probando ${name}...`, 'loading');
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ [${timestamp}] ${name} - Éxito (${response.status})`, 'success');
+                    showResult(JSON.stringify(data, null, 2), 'data');
+                } else {
+                    showResult(`❌ [${timestamp}] ${name} - Error (${response.status})`, 'error');
+                    showResult(JSON.stringify(data, null, 2), 'data');
+                }
+            } catch (error) {
+                showResult(`💥 [${timestamp}] ${name} - Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(content, type = 'result') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            
+            if (type === 'data') {
+                resultDiv.innerHTML = `<pre>${content}</pre>`;
+                resultDiv.className = 'result';
+            } else {
+                resultDiv.textContent = content;
+                resultDiv.className = `result ${type}`;
+            }
+            
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Test automático al cargar
+        window.onload = () => {
+            showResult('🚀 Página cargada - Listo para probar endpoints', 'success');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+                                // =====================================================
+                                // 📌 FILTRO CURSO → SECCIÓN (estricto - nunca mezclar cursos)
+                                // Reglas:
+                                // 1. SIEMPRE verificar que el courseId de la actividad coincida con el curso seleccionado
+                                // 2. Si la actividad tiene sectionId, también debe coincidir con la sección seleccionada
+                                // 3. Nunca permitir que actividades de otro curso "entren" sólo porque la letra coincide.
+                                if (cascadeSectionId) {
+                                  const actCourseId = act.courseId ? String(act.courseId) : null;
+                                  const actSectionId = act.sectionId != null ? String(act.sectionId) : null;
+
+                                  // Detectar si courseId es UUID vs string normalizado (ej: "1ro_bsico")
+                                  const isUUID = (id: string | null) => id && /[0-9a-f]{8}-[0-9a-f]{4}/.test(id.toLowerCase());
+                                  const actCourseIdIsValid = isUUID(actCourseId);
+
+                                  // REGLA CRÍTICA: La actividad DEBE tener courseId y DEBE coincidir
+                                  // Si no tiene courseId, rechazarla para evitar mezclas
+                                  if (!actCourseId) {
+                                    if (debugActivities) {
+                                      console.log(`❌ [DEBUG Filtro Curso] Rechazado: actividad sin courseId`, act.id, act.title);
+                                    }
+                                    return false;
+                                  }
+
+                                  // Verificar courseId - SIEMPRE debe coincidir
+                                  let courseMatches = false;
+                                  if (actCourseIdIsValid && selectedCourseId) {
+                                    // Comparar UUIDs
+                                    courseMatches = actCourseId === selectedCourseId;
+                                  } else if (!actCourseIdIsValid && selectedCourseNameNormalized) {
+                                    // Comparar strings normalizados
+                                    courseMatches = actCourseId === selectedCourseNameNormalized;
+                                  }
+
+                                  if (!courseMatches) {
+                                    if (debugActivities) {
+                                      console.log(`❌ [DEBUG Filtro Curso] Rechazado: act.courseId="${actCourseId}" no coincide con curso seleccionado`, act.id, act.title);
+                                    }
+                                    return false;
+                                  }
+
+                                  // Ahora verificar sectionId si existe
+                                  if (actSectionId) {
+                                    if (actSectionId.length <= 2) {
+                                      // Letra - verificar que coincida
+                                      if (!sectionLetter || actSectionId.toLowerCase() !== sectionLetter) {
+                                        if (debugActivities) {
+                                          console.log(`❌ [DEBUG Filtro Sección-Letra] Rechazado: act.sectionId="${actSectionId}" != sectionLetter="${sectionLetter}"`, act.id, act.title);
+                                        }
+                                        return false;
+                                      }
+                                    } else {
+                                      // UUID - verificar que coincida exactamente
+                                      if (actSectionId !== String(cascadeSectionId)) {
+                                        if (debugActivities) {
+                                          console.log(`❌ [DEBUG Filtro Sección-UUID] Rechazado: act.sectionId="${actSectionId}" != cascadeSectionId="${cascadeSectionId}"`, act.id, act.title);
+                                        }
+                                        return false;
+                                      }
+                                    }
+                                  }
+                                  // Si llegamos aquí, courseId coincide y sectionId (si existe) también
+                                }

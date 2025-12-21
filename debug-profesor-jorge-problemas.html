@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Problemas del Profesor Jorge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .problem { background-color: #ffebee; }
+        .solution { background-color: #e8f5e8; }
+        .info { background-color: #e3f2fd; }
+        .warning { background-color: #fff3e0; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        .warning-text { color: #f57c00; }
+        .info-text { color: #1976d2; }
+        
+        h1 { color: #1976d2; text-align: center; }
+        h2 { color: #333; border-bottom: 2px solid #1976d2; padding-bottom: 5px; }
+        h3 { color: #555; }
+        
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #1565c0; }
+        button.danger { background: #d32f2f; }
+        button.danger:hover { background: #c62828; }
+        button.success { background: #388e3c; }
+        button.success:hover { background: #2e7d32; }
+        
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #1976d2;
+        }
+        .notification.error { border-left-color: #d32f2f; background: #ffebee; }
+        .notification.success { border-left-color: #388e3c; background: #e8f5e8; }
+        .notification.warning { border-left-color: #f57c00; background: #fff3e0; }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .results-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge.evaluation { background: #e3f2fd; color: #1976d2; }
+        .badge.course { background: #e8f5e8; color: #388e3c; }
+        .badge.result { background: #fff3e0; color: #f57c00; }
+        
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .progress {
+            background: #e0e0e0;
+            border-radius: 5px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: #1976d2;
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificación de Problemas del Profesor Jorge</h1>
+        
+        <div class="section problem">
+            <h2>❌ Problemas Identificados</h2>
+            <div class="notification error">
+                <strong>Problema 1:</strong> Las notificaciones muestran "Sistema" en lugar del nombre de la evaluación y curso.
+            </div>
+            <div class="notification error">
+                <strong>Problema 2:</strong> La tabla de resultados de evaluación aparece vacía cuando ya hay estudiantes que completaron la evaluación.
+            </div>
+            <div class="notification error">
+                <strong>Problema 3:</strong> Las notificaciones muestran el resultado/porcentaje, lo que no es deseado.
+            </div>
+        </div>
+        
+        <div class="section info">
+            <h2>🔧 Panel de Control</h2>
+            <button onclick="setupTestScenario()">📋 Crear Escenario de Prueba</button>
+            <button onclick="simulateEvaluationCompletion()">✅ Simular Evaluación Completada</button>
+            <button onclick="checkNotifications()">🔔 Verificar Notificaciones</button>
+            <button onclick="checkResultsTable()">📊 Verificar Tabla de Resultados</button>
+            <button onclick="applyFixes()" class="success">🔧 Aplicar Correcciones</button>
+            <button onclick="clearAll()" class="danger">🗑️ Limpiar Todo</button>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Estado Actual</h2>
+            <div id="current-status">
+                <p class="info-text">Haz clic en "Crear Escenario de Prueba" para comenzar la verificación.</p>
+            </div>
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔔 Notificaciones del Profesor</h2>
+            <div id="notifications-display">
+                <p class="info-text">Las notificaciones aparecerán aquí después de crear el escenario de prueba.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Tabla de Resultados de Evaluación</h2>
+            <div id="results-table-display">
+                <p class="info-text">La tabla de resultados aparecerá aquí después de simular evaluaciones completadas.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Log de Verificación</h2>
+            <div id="verification-log" class="log">
+                <div class="info-text">Los logs de verificación aparecerán aquí...</div>
+            </div>
+        </div>
+        
+        <div class="section solution">
+            <h2>✅ Correcciones Aplicadas</h2>
+            <div id="fixes-applied">
+                <p class="info-text">Las correcciones aplicadas se mostrarán aquí.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = null;
+        let testNotificationId = null;
+        
+        // Utility functions
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('verification-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#d32f2f' : type === 'success' ? '#388e3c' : type === 'warning' ? '#f57c00' : '#1976d2';
+            logElement.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function updateProgress(percentage) {
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('current-status').innerHTML = `<p class="info-text">${message}</p>`;
+        }
+        
+        // Setup test scenario
+        function setupTestScenario() {
+            log('🚀 Iniciando configuración del escenario de prueba...', 'info');
+            updateProgress(10);
+            
+            // Create test users
+            const users = [
+                {
+                    username: 'jorge_profesor',
+                    password: 'profesor123',
+                    role: 'teacher',
+                    displayName: 'Prof. Jorge García',
+                    firstName: 'Jorge',
+                    lastName: 'García',
+                    email: 'jorge.garcia@escuela.edu',
+                    courses: ['4to Básico', '5to Básico'],
+                    subjects: ['Ciencias Naturales', 'Matemáticas']
+                },
+                {
+                    username: 'maria_estudiante',
+                    password: 'estudiante123',
+                    role: 'student',
+                    displayName: 'María González',
+                    firstName: 'María',
+                    lastName: 'González',
+                    email: 'maria.gonzalez@estudiante.edu',
+                    activeCourses: ['4to Básico']
+                },
+                {
+                    username: 'pedro_estudiante',
+                    password: 'estudiante123',
+                    role: 'student',
+                    displayName: 'Pedro Martínez',
+                    firstName: 'Pedro',
+                    lastName: 'Martínez',
+                    email: 'pedro.martinez@estudiante.edu',
+                    activeCourses: ['4to Básico']
+                }
+            ];
+            
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            log('✅ Usuarios de prueba creados', 'success');
+            updateProgress(25);
+            
+            // Create evaluation task with PROBLEMA: assignedByName = 'Sistema'
+            testTaskId = 'eval_ciencias_' + Date.now();
+            const evaluationTask = {
+                id: testTaskId,
+                title: 'Evaluación de Ciencias Naturales',
+                description: 'Evaluación sobre el sistema solar y planetas',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'jorge_profesor',
+                assignedByName: 'Sistema', // ❌ PROBLEMA: Muestra "Sistema" en lugar del nombre correcto
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Sistema Solar',
+                    questionCount: 10,
+                    timeLimit: 30
+                },
+                evaluationResults: {} // Vacío inicialmente
+            };
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            tasks.push(evaluationTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            log('✅ Tarea de evaluación creada con problema "Sistema"', 'warning');
+            updateProgress(50);
+            
+            // Create notification with the problem
+            testNotificationId = 'pending_grading_' + testTaskId + '_' + Date.now();
+            const problemNotification = {
+                id: testNotificationId,
+                type: 'pending_grading',
+                taskId: testTaskId,
+                taskTitle: evaluationTask.title,
+                targetUserRole: 'teacher',
+                targetUsernames: ['jorge_profesor'],
+                fromUsername: 'system',
+                fromDisplayName: 'Sistema', // ❌ PROBLEMA: Muestra "Sistema"
+                course: evaluationTask.course,
+                subject: evaluationTask.subject,
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: 'evaluation'
+            };
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            notifications.push(problemNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            log('❌ Notificación problemática creada: muestra "Sistema"', 'error');
+            updateProgress(75);
+            
+            updateStatus('Escenario de prueba configurado. Problemas identificados.');
+            updateProgress(100);
+            log('✅ Escenario de prueba configurado completamente', 'success');
+            
+            // Display current notifications
+            displayNotifications();
+        }
+        
+        // Simulate evaluation completion
+        function simulateEvaluationCompletion() {
+            if (!testTaskId) {
+                log('❌ Error: Primero debes crear el escenario de prueba', 'error');
+                return;
+            }
+            
+            log('🎯 Simulando evaluación completada por estudiante...', 'info');
+            
+            // Simulate student completing evaluation
+            const studentUsername = 'maria_estudiante';
+            const userTasksKey = `userTasks_${studentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            // Find or create the evaluation task for the student
+            let studentTask = userTasks.find(task => task.id === testTaskId);
+            if (!studentTask) {
+                // Create the task in student's userTasks
+                const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const globalTask = globalTasks.find(task => task.id === testTaskId);
+                if (globalTask) {
+                    studentTask = { ...globalTask };
+                    userTasks.push(studentTask);
+                }
+            }
+            
+            if (studentTask) {
+                // Mark as completed
+                studentTask.status = 'completed';
+                studentTask.completedAt = new Date().toISOString();
+                studentTask.score = 85;
+                studentTask.completionPercentage = 85;
+                
+                localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+                log('✅ Evaluación marcada como completada para María González', 'success');
+                
+                // Add results to global task
+                const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const globalTaskIndex = globalTasks.findIndex(task => task.id === testTaskId);
+                if (globalTaskIndex !== -1) {
+                    if (!globalTasks[globalTaskIndex].evaluationResults) {
+                        globalTasks[globalTaskIndex].evaluationResults = {};
+                    }
+                    globalTasks[globalTaskIndex].evaluationResults[studentUsername] = {
+                        score: 85,
+                        completionPercentage: 85,
+                        completedAt: new Date().toISOString(),
+                        totalQuestions: 10
+                    };
+                    localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+                    log('✅ Resultados sincronizados en tarea global', 'success');
+                }
+                
+                // Create evaluation completed notification with PROBLEMA: shows result percentage
+                const completedNotification = {
+                    id: `eval_completed_${testTaskId}_${studentUsername}_${Date.now()}`,
+                    type: 'task_completed',
+                    taskId: testTaskId,
+                    taskTitle: 'Evaluación de Ciencias Naturales',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge_profesor'],
+                    fromUsername: studentUsername,
+                    fromDisplayName: 'María González',
+                    course: '4to Básico',
+                    subject: 'Ciencias Naturales',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation',
+                    grade: 85 // ❌ PROBLEMA: Muestra el resultado en la notificación
+                };
+                
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                notifications.push(completedNotification);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                log('❌ Notificación de evaluación completada creada CON resultado visible', 'warning');
+                
+                displayNotifications();
+                displayResultsTable();
+            }
+        }
+        
+        // Check notifications
+        function checkNotifications() {
+            log('🔔 Verificando notificaciones del profesor...', 'info');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const teacherNotifications = notifications.filter(n => n.targetUsernames.includes('jorge_profesor'));
+            
+            log(`📊 Encontradas ${teacherNotifications.length} notificaciones para el profesor`, 'info');
+            
+            teacherNotifications.forEach(notif => {
+                if (notif.fromDisplayName === 'Sistema') {
+                    log(`❌ PROBLEMA: Notificación ${notif.id} muestra "Sistema" en lugar del nombre correcto`, 'error');
+                }
+                if (notif.grade !== undefined) {
+                    log(`❌ PROBLEMA: Notificación ${notif.id} muestra resultado ${notif.grade}%`, 'error');
+                }
+            });
+            
+            displayNotifications();
+        }
+        
+        // Check results table
+        function checkResultsTable() {
+            if (!testTaskId) {
+                log('❌ Error: Primero debes crear el escenario de prueba', 'error');
+                return;
+            }
+            
+            log('📊 Verificando tabla de resultados de evaluación...', 'info');
+            
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = globalTasks.find(task => task.id === testTaskId);
+            
+            if (!evaluationTask) {
+                log('❌ No se encontró la tarea de evaluación', 'error');
+                return;
+            }
+            
+            log('📋 Tarea de evaluación encontrada', 'success');
+            log(`📊 Resultados en tarea: ${JSON.stringify(evaluationTask.evaluationResults)}`, 'info');
+            
+            // Check if there are any results
+            const hasResults = evaluationTask.evaluationResults && Object.keys(evaluationTask.evaluationResults).length > 0;
+            
+            if (hasResults) {
+                log('✅ Se encontraron resultados en la tarea', 'success');
+                const resultsCount = Object.keys(evaluationTask.evaluationResults).length;
+                log(`📊 ${resultsCount} estudiante(s) han completado la evaluación`, 'success');
+            } else {
+                log('❌ PROBLEMA: No se encontraron resultados en la tarea (tabla aparecerá vacía)', 'error');
+            }
+            
+            displayResultsTable();
+        }
+        
+        // Apply fixes
+        function applyFixes() {
+            log('🔧 Aplicando correcciones a los problemas identificados...', 'info');
+            updateProgress(0);
+            
+            // Fix 1: Correct assignedByName in evaluation task
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const taskIndex = globalTasks.findIndex(task => task.id === testTaskId);
+            if (taskIndex !== -1) {
+                const task = globalTasks[taskIndex];
+                const originalAssignedByName = task.assignedByName;
+                task.assignedByName = `${task.title} (${task.course})`; // ✅ CORRECCIÓN: Usar título y curso
+                globalTasks[taskIndex] = task;
+                localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+                log(`✅ FIX 1: assignedByName cambiado de "${originalAssignedByName}" a "${task.assignedByName}"`, 'success');
+            }
+            updateProgress(25);
+            
+            // Fix 2: Correct notification fromDisplayName
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            let notificationsFixed = 0;
+            
+            notifications.forEach(notif => {
+                if (notif.taskId === testTaskId && notif.fromDisplayName === 'Sistema') {
+                    const task = globalTasks.find(t => t.id === testTaskId);
+                    if (task) {
+                        notif.fromDisplayName = `${task.title} (${task.course})`; // ✅ CORRECCIÓN
+                        notificationsFixed++;
+                    }
+                }
+            });
+            
+            if (notificationsFixed > 0) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                log(`✅ FIX 2: ${notificationsFixed} notificación(es) corregida(s) - fromDisplayName actualizado`, 'success');
+            }
+            updateProgress(50);
+            
+            // Fix 3: Remove grade from completed notifications
+            let gradeRemoved = 0;
+            notifications.forEach(notif => {
+                if (notif.taskId === testTaskId && notif.type === 'task_completed' && notif.grade !== undefined) {
+                    delete notif.grade; // ✅ CORRECCIÓN: Eliminar el campo grade
+                    gradeRemoved++;
+                }
+            });
+            
+            if (gradeRemoved > 0) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+                log(`✅ FIX 3: ${gradeRemoved} notificación(es) corregida(s) - resultado eliminado`, 'success');
+            }
+            updateProgress(75);
+            
+            // Fix 4: Ensure evaluation results are properly stored
+            if (testTaskId) {
+                const task = globalTasks.find(t => t.id === testTaskId);
+                if (task && (!task.evaluationResults || Object.keys(task.evaluationResults).length === 0)) {
+                    // Check if there are completed evaluations in student userTasks
+                    const studentUsernames = ['maria_estudiante', 'pedro_estudiante'];
+                    
+                    studentUsernames.forEach(studentUsername => {
+                        const userTasksKey = `userTasks_${studentUsername}`;
+                        const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                        const userTask = userTasks.find(ut => ut.id === testTaskId && ut.status === 'completed');
+                        
+                        if (userTask) {
+                            if (!task.evaluationResults) task.evaluationResults = {};
+                            task.evaluationResults[studentUsername] = {
+                                score: userTask.score || 0,
+                                completionPercentage: userTask.completionPercentage || 0,
+                                completedAt: userTask.completedAt,
+                                totalQuestions: userTask.evaluationConfig?.questionCount || task.evaluationConfig?.questionCount || 0
+                            };
+                            log(`✅ FIX 4: Resultados sincronizados para ${studentUsername}`, 'success');
+                        }
+                    });
+                    
+                    const updatedTaskIndex = globalTasks.findIndex(t => t.id === testTaskId);
+                    if (updatedTaskIndex !== -1) {
+                        globalTasks[updatedTaskIndex] = task;
+                        localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+                    }
+                }
+            }
+            updateProgress(100);
+            
+            log('✅ Todas las correcciones aplicadas exitosamente', 'success');
+            updateStatus('Correcciones aplicadas. Los problemas han sido solucionados.');
+            
+            // Update displays
+            displayNotifications();
+            displayResultsTable();
+            displayFixesApplied();
+        }
+        
+        // Display notifications
+        function displayNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const teacherNotifications = notifications.filter(n => n.targetUsernames.includes('jorge_profesor'));
+            
+            let html = '<h3>Notificaciones del Profesor Jorge:</h3>';
+            
+            if (teacherNotifications.length === 0) {
+                html += '<p class="info-text">No hay notificaciones.</p>';
+            } else {
+                teacherNotifications.forEach(notif => {
+                    const hasSystemProblem = notif.fromDisplayName === 'Sistema';
+                    const hasGradeProblem = notif.grade !== undefined;
+                    const problemClass = hasSystemProblem || hasGradeProblem ? 'error' : 'success';
+                    
+                    html += `
+                        <div class="notification ${problemClass}">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${notif.fromDisplayName || notif.fromUsername}</strong>
+                                    ${hasSystemProblem ? '<span class="error"> ❌ PROBLEMA: Muestra "Sistema"</span>' : ''}
+                                    <br>
+                                    <small>${notif.type === 'task_completed' ? 'Completó la evaluación' : 'Evaluación pendiente'}: ${notif.taskTitle}</small>
+                                    <br>
+                                    <small>Curso: ${notif.course} | Materia: ${notif.subject}</small>
+                                </div>
+                                <div>
+                                    <span class="badge course">${notif.course}</span>
+                                    ${notif.grade !== undefined ? `<span class="badge result">❌ ${notif.grade}%</span>` : ''}
+                                </div>
+                            </div>
+                            ${hasGradeProblem ? '<div class="error" style="margin-top: 10px;">❌ PROBLEMA: Muestra resultado en notificación</div>' : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('notifications-display').innerHTML = html;
+        }
+        
+        // Display results table
+        function displayResultsTable() {
+            if (!testTaskId) {
+                document.getElementById('results-table-display').innerHTML = '<p class="info-text">Primero debes crear el escenario de prueba.</p>';
+                return;
+            }
+            
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = globalTasks.find(task => task.id === testTaskId);
+            
+            if (!evaluationTask) {
+                document.getElementById('results-table-display').innerHTML = '<p class="error">No se encontró la tarea de evaluación.</p>';
+                return;
+            }
+            
+            let html = '<h3>Tabla de Resultados de Evaluación:</h3>';
+            
+            // Check if there are results
+            const hasResults = evaluationTask.evaluationResults && Object.keys(evaluationTask.evaluationResults).length > 0;
+            
+            if (!hasResults) {
+                html += '<div class="notification error">❌ PROBLEMA: No hay resultados en la tarea (tabla aparecerá vacía)</div>';
+                html += '<table class="results-table"><thead><tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th><th>Porcentaje</th><th>Fecha</th></tr></thead>';
+                html += '<tbody><tr><td colspan="5" style="text-align: center; font-style: italic; color: #999;">No hay resultados disponibles</td></tr></tbody></table>';
+            } else {
+                html += '<div class="notification success">✅ Resultados encontrados en la tarea</div>';
+                html += '<table class="results-table"><thead><tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th><th>Porcentaje</th><th>Fecha</th></tr></thead><tbody>';
+                
+                Object.keys(evaluationTask.evaluationResults).forEach(studentUsername => {
+                    const result = evaluationTask.evaluationResults[studentUsername];
+                    const studentData = getStudentData(studentUsername);
+                    
+                    html += `
+                        <tr>
+                            <td>${studentData.displayName || studentUsername}</td>
+                            <td><span class="badge evaluation">Completada</span></td>
+                            <td>${result.score || 0}</td>
+                            <td>${result.completionPercentage || 0}%</td>
+                            <td>${new Date(result.completedAt).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            document.getElementById('results-table-display').innerHTML = html;
+        }
+        
+        // Display fixes applied
+        function displayFixesApplied() {
+            const html = `
+                <div class="notification success">
+                    ✅ <strong>Corrección 1:</strong> assignedByName corregido en tareas de evaluación
+                </div>
+                <div class="notification success">
+                    ✅ <strong>Corrección 2:</strong> fromDisplayName corregido en notificaciones
+                </div>
+                <div class="notification success">
+                    ✅ <strong>Corrección 3:</strong> Campo grade eliminado de notificaciones completadas
+                </div>
+                <div class="notification success">
+                    ✅ <strong>Corrección 4:</strong> Resultados de evaluación sincronizados correctamente
+                </div>
+            `;
+            
+            document.getElementById('fixes-applied').innerHTML = html;
+        }
+        
+        // Helper function to get student data
+        function getStudentData(username) {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            return users.find(u => u.username === username) || { displayName: username };
+        }
+        
+        // Clear all test data
+        function clearAll() {
+            if (confirm('¿Estás seguro de que deseas limpiar todos los datos de prueba?')) {
+                localStorage.removeItem('smart-student-tasks');
+                localStorage.removeItem('smart-student-task-notifications');
+                localStorage.removeItem('smart-student-users');
+                localStorage.removeItem('userTasks_maria_estudiante');
+                localStorage.removeItem('userTasks_pedro_estudiante');
+                
+                testTaskId = null;
+                testNotificationId = null;
+                
+                document.getElementById('notifications-display').innerHTML = '<p class="info-text">Las notificaciones aparecerán aquí después de crear el escenario de prueba.</p>';
+                document.getElementById('results-table-display').innerHTML = '<p class="info-text">La tabla de resultados aparecerá aquí después de simular evaluaciones completadas.</p>';
+                document.getElementById('fixes-applied').innerHTML = '<p class="info-text">Las correcciones aplicadas se mostrarán aquí.</p>';
+                document.getElementById('verification-log').innerHTML = '<div class="info-text">Los logs de verificación aparecerán aquí...</div>';
+                
+                updateStatus('Todos los datos de prueba han sido limpiados.');
+                updateProgress(0);
+                log('🗑️ Todos los datos de prueba han sido limpiados', 'success');
+            }
+        }
+        
+        // Initialize
+        updateStatus('Listo para verificar los problemas del Profesor Jorge.');
+        log('🎯 Sistema de verificación inicializado', 'info');
+    </script>
+</body>
+</html>

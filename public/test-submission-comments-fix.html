@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Comentarios de Entrega vs Comentarios Regulares</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                🔧 Corrección: Comentarios de Entrega vs Comentarios Regulares
+            </h1>
+            <button 
+                onclick="document.documentElement.classList.toggle('dark')"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+                🌓 Cambiar Tema
+            </button>
+        </div>
+
+        <!-- Problema Identificado -->
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-6 rounded-lg mb-6">
+            <h2 class="text-red-800 dark:text-red-400 font-semibold text-lg mb-4">
+                🚨 Problema Identificado
+            </h2>
+            
+            <div class="text-red-700 dark:text-red-300 space-y-2">
+                <p><strong>Situación:</strong> Cuando un estudiante entrega su tarea/evaluación con comentario obligatorio</p>
+                <p><strong>Problema:</strong> Ese comentario de entrega aparecía como "nuevo comentario" para otros estudiantes</p>
+                <p><strong>Impacto:</strong> Notificaciones incorrectas y confusión entre comentarios de discusión vs entregas</p>
+            </div>
+        </div>
+
+        <!-- Análisis del Problema -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🔍 Análisis del Problema
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h3 class="text-blue-800 dark:text-blue-400 font-medium mb-2">📝 Tipos de Comentarios</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h4 class="text-blue-700 dark:text-blue-300 font-medium mb-1">Comentarios de Entrega (isSubmission: true)</h4>
+                            <ul class="text-blue-600 dark:text-blue-400 space-y-1">
+                                <li>• Comentario obligatorio al entregar</li>
+                                <li>• Parte integral del trabajo</li>
+                                <li>• NO es discusión pública</li>
+                                <li>• Adjunto al trabajo del estudiante</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-blue-700 dark:text-blue-300 font-medium mb-1">Comentarios Regulares (isSubmission: false)</h4>
+                            <ul class="text-blue-600 dark:text-blue-400 space-y-1">
+                                <li>• Comentarios de discusión</li>
+                                <li>• Preguntas al profesor</li>
+                                <li>• Feedback del profesor</li>
+                                <li>• Comunicación general</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+                    <h3 class="text-yellow-800 dark:text-yellow-400 font-medium mb-2">⚠️ Lógica Anterior (Problemática)</h3>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                        <code class="text-gray-800 dark:text-gray-200">
+                            const unread = comments.filter(comment => <br>
+                            &nbsp;&nbsp;comment.studentUsername !== user.username && // No propios<br>
+                            &nbsp;&nbsp;(!comment.readBy?.includes(user.username)) // No leídos<br>
+                            );<br><br>
+                            // ❌ PROBLEMA: Incluía comentarios de entrega (isSubmission: true)
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparación Antes/Después -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-red-600 dark:text-red-400 font-semibold mb-3">❌ ANTES (Problema)</h3>
+                
+                <div class="space-y-3">
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">Escenario problemático:</p>
+                    
+                    <!-- Simulación problema -->
+                    <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
+                        <div class="text-sm text-red-700 dark:text-red-300 space-y-2">
+                            <p><strong>📝 María entrega su tarea:</strong></p>
+                            <p class="bg-white dark:bg-gray-800 p-2 rounded italic">
+                                "Adjunto mi ensayo sobre la Guerra Civil. He investigado las causas y consecuencias principales."
+                            </p>
+                            <p><strong>🔔 Felipe ve notificación:</strong></p>
+                            <div class="bg-red-100 dark:bg-red-800/30 p-2 rounded">
+                                <span class="text-red-600 dark:text-red-400">❌ "Nuevo comentario de María" (Incorrecto)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-red-600 dark:text-red-400 text-sm">
+                        <strong>Resultado:</strong> Felipe recibe notificaciones innecesarias sobre entregas de otros estudiantes
+                    </p>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-green-600 dark:text-green-400 font-semibold mb-3">✅ DESPUÉS (Corregido)</h3>
+                
+                <div class="space-y-3">
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">Comportamiento corregido:</p>
+                    
+                    <!-- Simulación corrección -->
+                    <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-800">
+                        <div class="text-sm text-green-700 dark:text-green-300 space-y-2">
+                            <p><strong>📝 María entrega su tarea:</strong></p>
+                            <p class="bg-white dark:bg-gray-800 p-2 rounded italic">
+                                "Adjunto mi ensayo sobre la Guerra Civil. He investigado las causas y consecuencias principales."
+                            </p>
+                            <p><strong>🔕 Felipe NO ve notificación:</strong></p>
+                            <div class="bg-green-100 dark:bg-green-800/30 p-2 rounded">
+                                <span class="text-green-600 dark:text-green-400">✅ Sin notificación (Correcto - es una entrega)</span>
+                            </div>
+                            <p><strong>👨‍🏫 Profesor SÍ ve entrega pendiente:</strong></p>
+                            <div class="bg-blue-100 dark:bg-blue-800/30 p-2 rounded">
+                                <span class="text-blue-600 dark:text-blue-400">📋 "Nueva entrega para calificar"</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-green-600 dark:text-green-400 text-sm">
+                        <strong>Resultado:</strong> Solo notificaciones relevantes para cada rol
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cambio Técnico -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🛠️ Cambio Técnico Implementado
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h3 class="text-green-600 dark:text-green-400 font-medium mb-2">Archivo: src/app/dashboard/page.tsx</h3>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded text-sm">
+                        <p class="text-gray-600 dark:text-gray-400 mb-2">Modificación en 3 funciones:</p>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-red-600 dark:text-red-400 mb-1">❌ ANTES:</p>
+                                <code class="text-gray-800 dark:text-gray-200">
+                                    const unread = comments.filter(comment => <br>
+                                    &nbsp;&nbsp;comment.studentUsername !== user.username &&<br>
+                                    &nbsp;&nbsp;(!comment.readBy?.includes(user.username))<br>
+                                    );
+                                </code>
+                            </div>
+                            <div>
+                                <p class="text-green-600 dark:text-green-400 mb-1">✅ DESPUÉS:</p>
+                                <code class="text-gray-800 dark:text-gray-200">
+                                    const unread = comments.filter(comment => <br>
+                                    &nbsp;&nbsp;comment.studentUsername !== user.username &&<br>
+                                    &nbsp;&nbsp;(!comment.readBy?.includes(user.username)) &&<br>
+                                    &nbsp;&nbsp;<span class="bg-green-200 dark:bg-green-800 px-1 rounded">!comment.isSubmission</span> // NUEVO: Excluir entregas<br>
+                                    );
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funciones Modificadas -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                📝 Funciones Modificadas
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h3 class="text-blue-800 dark:text-blue-400 font-medium mb-2">1. loadUnreadComments()</h3>
+                    <p class="text-blue-700 dark:text-blue-300 text-sm">
+                        Carga inicial de comentarios no leídos al montar el componente
+                    </p>
+                </div>
+                
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                    <h3 class="text-purple-800 dark:text-purple-400 font-medium mb-2">2. handleStorageChange()</h3>
+                    <p class="text-purple-700 dark:text-purple-300 text-sm">
+                        Actualiza contadores cuando cambia localStorage
+                    </p>
+                </div>
+                
+                <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                    <h3 class="text-orange-800 dark:text-orange-400 font-medium mb-2">3. handleCommentsUpdated()</h3>
+                    <p class="text-orange-700 dark:text-orange-300 text-sm">
+                        Maneja eventos de comentarios marcados como leídos
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Casos de Uso -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🎯 Casos de Uso Corregidos
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Entrega de Tarea con Comentario</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Los comentarios de entrega NO aparecen como notificaciones para otros estudiantes</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Comentarios de Discusión</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Los comentarios regulares SÍ aparecen como notificaciones para estudiantes relevantes</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Entregas para Profesores</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Los profesores SÍ ven las entregas en su sistema de notificaciones específico</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <div>
+                        <p class="text-gray-900 dark:text-white font-medium">Feedback del Profesor</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Los comentarios del profesor SÍ aparecen como notificaciones para estudiantes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulación de Contadores -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                📊 Simulación de Contadores
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-gray-900 dark:text-white font-medium mb-3">❌ Antes (Problemático)</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                            <span>Comentario discusión Felipe</span>
+                            <span class="bg-red-100 dark:bg-red-800 px-2 py-1 rounded text-xs">+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                            <span>Entrega de María</span>
+                            <span class="bg-red-100 dark:bg-red-800 px-2 py-1 rounded text-xs">+1 ❌</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                            <span>Entrega de Carlos</span>
+                            <span class="bg-red-100 dark:bg-red-800 px-2 py-1 rounded text-xs">+1 ❌</span>
+                        </div>
+                        <div class="flex justify-between font-bold p-2 bg-red-100 dark:bg-red-800/30 rounded">
+                            <span>Total para Ana:</span>
+                            <span class="text-red-600 dark:text-red-400">3 comentarios</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-gray-900 dark:text-white font-medium mb-3">✅ Después (Corregido)</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                            <span>Comentario discusión Felipe</span>
+                            <span class="bg-green-100 dark:bg-green-800 px-2 py-1 rounded text-xs">+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded opacity-50">
+                            <span>Entrega de María</span>
+                            <span class="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">0 ✓</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded opacity-50">
+                            <span>Entrega de Carlos</span>
+                            <span class="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">0 ✓</span>
+                        </div>
+                        <div class="flex justify-between font-bold p-2 bg-green-100 dark:bg-green-800/30 rounded">
+                            <span>Total para Ana:</span>
+                            <span class="text-green-600 dark:text-green-400">1 comentario</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen Final -->
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-6 rounded-lg">
+            <h2 class="text-green-800 dark:text-green-400 font-semibold text-lg mb-4">
+                🎉 Corrección Implementada
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">✅ Problema Resuelto:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Comentarios de entrega excluidos de notificaciones</li>
+                        <li>• Solo comentarios de discusión son relevantes</li>
+                        <li>• Menos ruido en notificaciones</li>
+                        <li>• Experiencia más clara para estudiantes</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">🎯 Comportamiento Esperado:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Entregas → Solo visibles para profesor</li>
+                        <li>• Comentarios de discusión → Notifican estudiantes</li>
+                        <li>• Feedback del profesor → Notifica al estudiante</li>
+                        <li>• Comunicación clara por tipo</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-green-100 dark:bg-green-800/30 rounded-lg">
+                <p class="text-green-800 dark:text-green-300 text-sm">
+                    <strong>Resultado:</strong> Ahora los comentarios obligatorios de entrega no aparecen como "nuevos comentarios" para otros estudiantes, reduciendo notificaciones irrelevantes y mejorando la claridad del sistema.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simular comportamiento de contadores
+        function simulateCommentCounting() {
+            const comments = [
+                { studentUsername: "felipe", isSubmission: false, readBy: [], comment: "Tengo una duda sobre..." },
+                { studentUsername: "maria", isSubmission: true, readBy: [], comment: "Adjunto mi ensayo sobre..." },
+                { studentUsername: "carlos", isSubmission: true, readBy: [], comment: "Mi investigación incluye..." }
+            ];
+            
+            const currentUser = "ana";
+            
+            // Lógica anterior (problemática)
+            const unreadBefore = comments.filter(comment => 
+                comment.studentUsername !== currentUser && 
+                (!comment.readBy.includes(currentUser))
+            );
+            
+            // Lógica corregida
+            const unreadAfter = comments.filter(comment => 
+                comment.studentUsername !== currentUser && 
+                (!comment.readBy.includes(currentUser)) &&
+                !comment.isSubmission // NUEVO: Excluir entregas
+            );
+            
+            console.log(`[Simulation] Antes: ${unreadBefore.length} comentarios no leídos`);
+            console.log(`[Simulation] Después: ${unreadAfter.length} comentarios no leídos`);
+            console.log(`[Simulation] Comentarios de entrega excluidos: ${unreadBefore.length - unreadAfter.length}`);
+        }
+        
+        // Ejecutar simulación
+        simulateCommentCounting();
+    </script>
+</body>
+</html>

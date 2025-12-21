@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRUEBA: Nueva Lógica de Generación - Fotosíntesis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .test-section {
+            margin-bottom: 50px;
+        }
+
+        .test-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            font-weight: 600;
+            color: #34495e;
+            min-width: 120px;
+        }
+
+        input, select, button {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            min-width: 150px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .mindmap-container {
+            background: white;
+            border: 3px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: auto;
+        }
+
+        .mindmap-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mindmap-svg {
+            width: 100%;
+            height: auto;
+            max-height: 800px;
+            border: 2px solid #f1f3f4;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .info-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-panel li {
+            background: rgba(255,255,255,0.7);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .info-panel li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h4 {
+            color: #8b4513;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-card p {
+            color: #5d3a1a;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 NUEVA LÓGICA DE GENERACIÓN DE MAPAS MENTALES</h1>
+            <p>Validación completa del tema FOTOSÍNTESIS con diseño revolucionario</p>
+        </div>
+
+        <div class="content">
+            <div class="test-section">
+                <h2 class="test-title">🎯 Control de Pruebas</h2>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="tema">Tema:</label>
+                        <input type="text" id="tema" value="fotosíntesis" placeholder="Ingresa un tema">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="idioma">Idioma:</label>
+                        <select id="idioma">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="layout">Diseño:</label>
+                        <select id="layout">
+                            <option value="horizontal">Horizontal (Revolucionario)</option>
+                            <option value="radial">Radial (Moderno)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button onclick="generarMapaMental()">🚀 GENERAR MAPA MENTAL</button>
+                        <button onclick="exportarPDF()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);">📄 EXPORTAR PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2 class="test-title">🗺️ Mapa Mental Generado</h2>
+                
+                <div class="mindmap-container">
+                    <div class="mindmap-title" id="mapTitle">MAPA MENTAL - FOTOSÍNTESIS</div>
+                    <div id="mindmapContent">
+                        <p style="color: #666; font-size: 1.2rem; padding: 50px;">
+                            Haz clic en "GENERAR MAPA MENTAL" para ver la nueva lógica en acción
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>🎨 Características del Nuevo Diseño</h3>
+                <ul>
+                    <li>Formas geométricas avanzadas (hexágonos, diamantes, estrellas)</li>
+                    <li>Gradientes y sombras profesionales</li>
+                    <li>Conexiones curvas y suaves</li>
+                    <li>Distribución inteligente automática</li>
+                    <li>Colores modernos y vibrantes</li>
+                    <li>Tipografía optimizada y legible</li>
+                </ul>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>🔥 Diseño Horizontal</h4>
+                    <p>Nodo central hexagonal, ramas diamante, subnodos circulares con gradientes y sombras profesionales</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⭐ Diseño Radial</h4>
+                    <p>Nodo central estrella, distribución radial perfecta, formas geométricas variadas y atractivas</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎯 Tema Fotosíntesis</h4>
+                    <p>Contenido educativo específico con reactivos, productos, fases y ubicación del proceso</p>
+                </div>
+            </div>
+
+            <div id="status" class="status" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de la nueva función de generación de mapas mentales
+        function generateMockMindMapStructure(centralTheme, language = 'es') {
+            const topicMappings = {
+                'fotosíntesis': {
+                    centralLabel: language === 'es' ? 'Fotosíntesis' : 'Photosynthesis',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Reactivos' : 'Reactants',
+                            children: language === 'es' ? ['Dióxido de Carbono', 'Agua', 'Luz Solar'] : ['Carbon Dioxide', 'Water', 'Sunlight']
+                        },
+                        {
+                            label: language === 'es' ? 'Productos' : 'Products',
+                            children: language === 'es' ? ['Glucosa', 'Oxígeno'] : ['Glucose', 'Oxygen']
+                        },
+                        {
+                            label: language === 'es' ? 'Fases' : 'Phases',
+                            children: language === 'es' ? ['Fase Luminosa', 'Fase Oscura', 'Ciclo de Calvin'] : ['Light Phase', 'Dark Phase', 'Calvin Cycle']
+                        },
+                        {
+                            label: language === 'es' ? 'Ubicación' : 'Location',
+                            children: language === 'es' ? ['Cloroplastos', 'Hojas', 'Células Vegetales'] : ['Chloroplasts', 'Leaves', 'Plant Cells']
+                        }
+                    ]
+                }
+            };
+
+            return {
+                centralThemeLabel: centralTheme.toUpperCase(),
+                mainBranches: topicMappings[centralTheme]?.branches || [
+                    {
+                        label: language === 'es' ? 'Concepto Principal' : 'Main Concept',
+                        children: language === 'es' ? ['Subtema 1', 'Subtema 2'] : ['Subtopic 1', 'Subtopic 2']
+                    }
+                ]
+            };
+        }
+
+        function generarMapaMental() {
+            const tema = document.getElementById('tema').value || 'fotosíntesis';
+            const idioma = document.getElementById('idioma').value;
+            const layout = document.getElementById('layout').value;
+            
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status';
+            status.innerHTML = '🔄 Generando mapa mental con nueva lógica...';
+            
+            setTimeout(() => {
+                try {
+                    const structure = generateMockMindMapStructure(tema, idioma);
+                    const isHorizontal = layout === 'horizontal';
+                    
+                    // Aquí simularíamos la llamada a la nueva función generateMockSvg
+                    const svgContent = generateNewMockSvg(structure, isHorizontal);
+                    
+                    // Actualizar título
+                    const title = `MAPA MENTAL - ${tema.toUpperCase()}`;
+                    document.getElementById('mapTitle').textContent = title;
+                    
+                    // Mostrar SVG
+                    document.getElementById('mindmapContent').innerHTML = svgContent;
+                    
+                    status.className = 'status success';
+                    status.innerHTML = '✅ Mapa mental generado exitosamente con la nueva lógica revolucionaria';
+                    
+                } catch (error) {
+                    status.className = 'status error';
+                    status.innerHTML = '❌ Error al generar el mapa mental: ' + error.message;
+                }
+            }, 1500);
+        }
+
+        function generateNewMockSvg(structure, isHorizontal) {
+            // Simulación de la nueva lógica de generación SVG
+            const width = isHorizontal ? 1500 : 900;
+            const height = isHorizontal ? 1000 : 900;
+            const centerX = isHorizontal ? 200 : width / 2;
+            const centerY = height / 2;
+            
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" class="mindmap-svg">
+                <defs>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.3)"/>
+                    </filter>
+                    <linearGradient id="centralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb"/>
+                        <stop offset="100%" stop-color="#1d4ed8"/>
+                    </linearGradient>
+                    <linearGradient id="branchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#059669"/>
+                        <stop offset="100%" stop-color="#047857"/>
+                    </linearGradient>
+                    <linearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#dc2626"/>
+                        <stop offset="100%" stop-color="#b91c1c"/>
+                    </linearGradient>
+                </defs>
+                <style>
+                    .text-style { font-family: 'Segoe UI', Arial, sans-serif; text-anchor: middle; dominant-baseline: central; font-weight: 600; }
+                    .central-text { fill: white; font-size: 18px; }
+                    .branch-text { fill: white; font-size: 14px; }
+                    .sub-text { fill: white; font-size: 12px; }
+                    .connector { stroke: #6b7280; stroke-width: 4; stroke-linecap: round; opacity: 0.8; }
+                </style>`;
+
+            if (isHorizontal) {
+                // Nodo central hexagonal
+                const hexPoints = generateHexagonPoints(centerX, centerY, 90);
+                svg += `<polygon points="${hexPoints}" fill="url(#centralGrad)" stroke="#1d4ed8" stroke-width="3" filter="url(#shadow)"/>`;
+                svg += `<text x="${centerX}" y="${centerY}" class="text-style central-text">${structure.centralThemeLabel}</text>`;
+                
+                // Ramas principales
+                const branches = structure.mainBranches;
+                const verticalSpacing = (height - 200) / (branches.length + 1);
+                
+                branches.forEach((branch, index) => {
+                    const branchY = 100 + (index + 1) * verticalSpacing;
+                    const branchX = centerX + 320;
+                    
+                    // Línea curva
+                    const controlX = centerX + 160;
+                    svg += `<path d="M ${centerX + 60} ${centerY} Q ${controlX} ${(centerY + branchY) / 2} ${branchX - 90} ${branchY}" class="connector" fill="none"/>`;
+                    
+                    // Nodo rama (diamante)
+                    const diamondPoints = generateDiamondPoints(branchX, branchY, 45);
+                    svg += `<polygon points="${diamondPoints}" fill="url(#branchGrad)" stroke="#047857" stroke-width="2" filter="url(#shadow)"/>`;
+                    svg += `<text x="${branchX}" y="${branchY}" class="text-style branch-text">${branch.label}</text>`;
+                    
+                    // Subnodos
+                    if (branch.children) {
+                        branch.children.forEach((child, childIndex) => {
+                            const subX = branchX + 180 + (childIndex * 160);
+                            const subY = branchY;
+                            
+                            svg += `<line x1="${branchX + 45}" y1="${branchY}" x2="${subX - 40}" y2="${subY}" class="connector"/>`;
+                            svg += `<circle cx="${subX}" cy="${subY}" r="35" fill="url(#subGrad)" stroke="#b91c1c" stroke-width="2" filter="url(#shadow)"/>`;
+                            svg += `<text x="${subX}" y="${subY}" class="text-style sub-text">${child}</text>`;
+                        });
+                    }
+                });
+            } else {
+                // Diseño radial con estrella
+                const starPoints = generateStarPoints(centerX, centerY, 80, 8);
+                svg += `<polygon points="${starPoints}" fill="url(#centralGrad)" stroke="#1d4ed8" stroke-width="3" filter="url(#shadow)"/>`;
+                svg += `<text x="${centerX}" y="${centerY}" class="text-style central-text">${structure.centralThemeLabel}</text>`;
+                
+                // Ramas radiales
+                const branches = structure.mainBranches;
+                const angleStep = (2 * Math.PI) / branches.length;
+                
+                branches.forEach((branch, index) => {
+                    const angle = index * angleStep - Math.PI / 2;
+                    const branchX = centerX + Math.cos(angle) * 200;
+                    const branchY = centerY + Math.sin(angle) * 200;
+                    
+                    svg += `<line x1="${centerX + Math.cos(angle) * 80}" y1="${centerY + Math.sin(angle) * 80}" x2="${branchX - Math.cos(angle) * 70}" y2="${branchY - Math.sin(angle) * 25}" class="connector"/>`;
+                    svg += `<rect x="${branchX - 70}" y="${branchY - 25}" width="140" height="50" rx="15" fill="url(#branchGrad)" stroke="#047857" stroke-width="2" filter="url(#shadow)"/>`;
+                    svg += `<text x="${branchX}" y="${branchY}" class="text-style branch-text">${branch.label}</text>`;
+                    
+                    // Subnodos radiales
+                    if (branch.children) {
+                        branch.children.forEach((child, childIndex) => {
+                            const childAngle = angle + (childIndex - (branch.children.length - 1) / 2) * 0.4;
+                            const subX = branchX + Math.cos(childAngle) * 100;
+                            const subY = branchY + Math.sin(childAngle) * 100;
+                            
+                            svg += `<line x1="${branchX + Math.cos(childAngle) * 70}" y1="${branchY + Math.sin(childAngle) * 25}" x2="${subX - Math.cos(childAngle) * 25}" y2="${subY - Math.sin(childAngle) * 25}" class="connector"/>`;
+                            svg += `<ellipse cx="${subX}" cy="${subY}" rx="35" ry="25" fill="url(#subGrad)" stroke="#b91c1c" stroke-width="2" filter="url(#shadow)"/>`;
+                            svg += `<text x="${subX}" y="${subY}" class="text-style sub-text">${child}</text>`;
+                        });
+                    }
+                });
+            }
+            
+            svg += '</svg>';
+            return svg;
+        }
+
+        function generateHexagonPoints(centerX, centerY, radius) {
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                points.push(`${x},${y}`);
+            }
+            return points.join(' ');
+        }
+
+        function generateDiamondPoints(centerX, centerY, size) {
+            return `${centerX},${centerY - size} ${centerX + size},${centerY} ${centerX},${centerY + size} ${centerX - size},${centerY}`;
+        }
+
+        function generateStarPoints(centerX, centerY, radius, points) {
+            const coords = [];
+            const innerRadius = radius * 0.6;
+            
+            for (let i = 0; i < points * 2; i++) {
+                const angle = (i * Math.PI) / points;
+                const r = i % 2 === 0 ? radius : innerRadius;
+                const x = centerX + r * Math.cos(angle - Math.PI / 2);
+                const y = centerY + r * Math.sin(angle - Math.PI / 2);
+                coords.push(`${x},${y}`);
+            }
+            
+            return coords.join(' ');
+        }
+
+        function exportarPDF() {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status success';
+            status.innerHTML = '📄 Función de exportación a PDF lista para implementar';
+        }
+
+        // Generar mapa inicial
+        window.onload = function() {
+            generarMapaMental();
+        };
+    </script>
+</body>
+</html>

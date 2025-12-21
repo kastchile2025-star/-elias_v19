@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug: Notificaciones Fantasma</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .debug-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #45a049;
+        }
+
+        .button.danger {
+            background: #f44336;
+        }
+
+        .button.danger:hover {
+            background: #da190b;
+        }
+
+        .button.warning {
+            background: #ff9800;
+        }
+
+        .button.warning:hover {
+            background: #e68900;
+        }
+
+        .log-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+        .warning { color: #ffaa00; }
+        .info { color: #44aaff; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .ghost-notification {
+            background: #ffebee;
+            border: 1px solid #f44336;
+        }
+
+        .valid-notification {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+        }
+
+        .problem-item {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .select-dropdown {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug: Notificaciones Fantasma - SMART STUDENT</h1>
+        
+        <div class="debug-section">
+            <h2>👤 Configuración de Usuario</h2>
+            <label>Seleccionar Usuario:</label>
+            <select id="userSelect" class="select-dropdown" onchange="switchUser()">
+                <option value="">-- Seleccionar Usuario --</option>
+                <option value="felipe">Felipe (Estudiante)</option>
+                <option value="maria">María (Estudiante)</option>
+                <option value="luis">Luis (Estudiante)</option>
+                <option value="jorge">Jorge (Profesor)</option>
+                <option value="admin">Admin</option>
+            </select>
+            <div id="currentUser" class="log-output" style="max-height: 100px;">
+                Selecciona un usuario...
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📊 Estadísticas del Sistema</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalNotifications">0</div>
+                    <div class="stat-label">Notificaciones Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">Tareas Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalComments">0</div>
+                    <div class="stat-label">Comentarios Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ghostNotifications">0</div>
+                    <div class="stat-label">Notificaciones Fantasma</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🔍 Análisis de Notificaciones Fantasma</h2>
+            <button class="button" onclick="analyzeGhostNotifications()">🔍 Analizar Notificaciones Fantasma</button>
+            <button class="button warning" onclick="showAllNotifications()">📋 Mostrar Todas las Notificaciones</button>
+            <button class="button danger" onclick="cleanupGhostNotifications()">🧹 Limpiar Notificaciones Fantasma</button>
+            <div id="ghostAnalysis" class="log-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📋 Análisis de Tareas vs Notificaciones</h2>
+            <button class="button" onclick="analyzeTasksVsNotifications()">📊 Analizar Sincronización</button>
+            <div id="taskAnalysis" class="log-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>💬 Análisis de Comentarios</h2>
+            <button class="button" onclick="analyzeComments()">💬 Analizar Comentarios</button>
+            <div id="commentAnalysis" class="log-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🔧 Herramientas de Reparación</h2>
+            <button class="button" onclick="createTestData()">🧪 Crear Datos de Prueba</button>
+            <button class="button warning" onclick="resetSystem()">🔄 Resetear Sistema</button>
+            <button class="button danger" onclick="clearAllData()">🗑️ Limpiar Todo</button>
+            <div id="repairLog" class="log-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📈 Simulación de Flujo Completo</h2>
+            <button class="button" onclick="simulateCompleteFlow()">🎭 Simular Flujo Completo</button>
+            <div id="simulationLog" class="log-output"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let debugData = {
+            notifications: [],
+            tasks: [],
+            comments: [],
+            users: {}
+        };
+
+        // Usuarios de prueba
+        const testUsers = {
+            felipe: {
+                username: 'felipe',
+                displayName: 'Felipe Estudiante',
+                role: 'student',
+                activeCourses: ['matematicas_4to', 'ciencias_4to'],
+                email: 'felipe@estudiante.com'
+            },
+            maria: {
+                username: 'maria',
+                displayName: 'María Estudiante',
+                role: 'student',
+                activeCourses: ['matematicas_4to', 'historia_4to'],
+                email: 'maria@estudiante.com'
+            },
+            luis: {
+                username: 'luis',
+                displayName: 'Luis Estudiante',
+                role: 'student',
+                activeCourses: ['ciencias_4to', 'historia_4to'],
+                email: 'luis@estudiante.com'
+            },
+            jorge: {
+                username: 'jorge',
+                displayName: 'Jorge Profesor',
+                role: 'teacher',
+                activeCourses: ['matematicas_4to', 'ciencias_4to', 'historia_4to'],
+                email: 'jorge@profesor.com'
+            },
+            admin: {
+                username: 'admin',
+                displayName: 'Administrador',
+                role: 'admin',
+                activeCourses: [],
+                email: 'admin@sistema.com'
+            }
+        };
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDebugData();
+            updateStats();
+        });
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : 
+                             type === 'success' ? 'success' : 
+                             type === 'warning' ? 'warning' : 'info';
+            
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function switchUser() {
+            const userSelect = document.getElementById('userSelect');
+            const selectedUser = userSelect.value;
+            
+            if (selectedUser && testUsers[selectedUser]) {
+                currentUser = testUsers[selectedUser];
+                localStorage.setItem('smart-student-user', JSON.stringify(currentUser));
+                
+                document.getElementById('currentUser').innerHTML = `
+                    <span class="success">✅ Usuario activo: ${currentUser.displayName}</span>
+                    <span class="info">Rol: ${currentUser.role}</span>
+                    <span class="info">Cursos: ${currentUser.activeCourses.join(', ')}</span>
+                `;
+                
+                loadDebugData();
+                updateStats();
+            } else {
+                currentUser = null;
+                document.getElementById('currentUser').innerHTML = 'Selecciona un usuario...';
+            }
+        }
+
+        function loadDebugData() {
+            try {
+                debugData.notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                debugData.tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                debugData.comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                debugData.users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            } catch (error) {
+                console.error('Error loading debug data:', error);
+            }
+        }
+
+        function updateStats() {
+            loadDebugData();
+            
+            document.getElementById('totalNotifications').textContent = debugData.notifications.length;
+            document.getElementById('totalTasks').textContent = debugData.tasks.length;
+            document.getElementById('totalComments').textContent = debugData.comments.length;
+            
+            // Calcular notificaciones fantasma
+            const ghostCount = analyzeGhostNotificationsCount();
+            document.getElementById('ghostNotifications').textContent = ghostCount;
+        }
+
+        function analyzeGhostNotificationsCount() {
+            if (!debugData.notifications || debugData.notifications.length === 0) return 0;
+            
+            let ghostCount = 0;
+            
+            debugData.notifications.forEach(notification => {
+                // Verificar si la tarea existe
+                const taskExists = debugData.tasks.some(task => task.id === notification.taskId);
+                
+                if (!taskExists) {
+                    ghostCount++;
+                }
+            });
+            
+            return ghostCount;
+        }
+
+        function analyzeGhostNotifications() {
+            clearLog('ghostAnalysis');
+            log('ghostAnalysis', '🔍 Iniciando análisis de notificaciones fantasma...', 'info');
+            
+            loadDebugData();
+            
+            if (debugData.notifications.length === 0) {
+                log('ghostAnalysis', '✅ No hay notificaciones en el sistema', 'success');
+                return;
+            }
+            
+            let ghostNotifications = [];
+            let validNotifications = [];
+            
+            debugData.notifications.forEach(notification => {
+                const taskExists = debugData.tasks.some(task => task.id === notification.taskId);
+                
+                if (!taskExists) {
+                    ghostNotifications.push(notification);
+                } else {
+                    validNotifications.push(notification);
+                }
+            });
+            
+            log('ghostAnalysis', `📊 Resumen del análisis:`, 'info');
+            log('ghostAnalysis', `✅ Notificaciones válidas: ${validNotifications.length}`, 'success');
+            log('ghostAnalysis', `👻 Notificaciones fantasma: ${ghostNotifications.length}`, 'error');
+            
+            if (ghostNotifications.length > 0) {
+                log('ghostAnalysis', '🚨 NOTIFICACIONES FANTASMA DETECTADAS:', 'error');
+                ghostNotifications.forEach((notification, index) => {
+                    log('ghostAnalysis', `${index + 1}. ID: ${notification.id}`, 'error');
+                    log('ghostAnalysis', `   Tipo: ${notification.type}`, 'error');
+                    log('ghostAnalysis', `   Tarea: ${notification.taskTitle}`, 'error');
+                    log('ghostAnalysis', `   TaskId: ${notification.taskId} (NO EXISTE)`, 'error');
+                    log('ghostAnalysis', `   Destinatarios: ${notification.targetUsernames.join(', ')}`, 'error');
+                    log('ghostAnalysis', `   Fecha: ${notification.timestamp}`, 'error');
+                    log('ghostAnalysis', '   ---', 'error');
+                });
+            }
+            
+            updateStats();
+        }
+
+        function analyzeTasksVsNotifications() {
+            clearLog('taskAnalysis');
+            log('taskAnalysis', '📊 Analizando sincronización entre tareas y notificaciones...', 'info');
+            
+            loadDebugData();
+            
+            // Analizar tareas sin notificaciones
+            const tasksWithoutNotifications = debugData.tasks.filter(task => {
+                return !debugData.notifications.some(notification => notification.taskId === task.id);
+            });
+            
+            // Analizar notificaciones sin tareas
+            const notificationsWithoutTasks = debugData.notifications.filter(notification => {
+                return !debugData.tasks.some(task => task.id === notification.taskId);
+            });
+            
+            log('taskAnalysis', `📋 Tareas totales: ${debugData.tasks.length}`, 'info');
+            log('taskAnalysis', `🔔 Notificaciones totales: ${debugData.notifications.length}`, 'info');
+            log('taskAnalysis', `⚠️ Tareas sin notificaciones: ${tasksWithoutNotifications.length}`, 'warning');
+            log('taskAnalysis', `👻 Notificaciones sin tareas: ${notificationsWithoutTasks.length}`, 'error');
+            
+            if (tasksWithoutNotifications.length > 0) {
+                log('taskAnalysis', '📋 TAREAS SIN NOTIFICACIONES:', 'warning');
+                tasksWithoutNotifications.forEach((task, index) => {
+                    log('taskAnalysis', `${index + 1}. ${task.title} (ID: ${task.id})`, 'warning');
+                    log('taskAnalysis', `   Curso: ${task.course}`, 'warning');
+                    log('taskAnalysis', `   Creado por: ${task.assignedBy}`, 'warning');
+                });
+            }
+            
+            if (notificationsWithoutTasks.length > 0) {
+                log('taskAnalysis', '👻 NOTIFICACIONES SIN TAREAS (FANTASMA):', 'error');
+                notificationsWithoutTasks.forEach((notification, index) => {
+                    log('taskAnalysis', `${index + 1}. ${notification.taskTitle} (TaskId: ${notification.taskId})`, 'error');
+                    log('taskAnalysis', `   Tipo: ${notification.type}`, 'error');
+                    log('taskAnalysis', `   Destinatarios: ${notification.targetUsernames.join(', ')}`, 'error');
+                });
+            }
+        }
+
+        function analyzeComments() {
+            clearLog('commentAnalysis');
+            log('commentAnalysis', '💬 Analizando comentarios...', 'info');
+            
+            loadDebugData();
+            
+            if (debugData.comments.length === 0) {
+                log('commentAnalysis', '✅ No hay comentarios en el sistema', 'success');
+                return;
+            }
+            
+            // Analizar comentarios huérfanos
+            const orphanComments = debugData.comments.filter(comment => {
+                return !debugData.tasks.some(task => task.id === comment.taskId);
+            });
+            
+            // Analizar comentarios no leídos
+            const unreadComments = debugData.comments.filter(comment => {
+                return !comment.readBy || comment.readBy.length === 0;
+            });
+            
+            log('commentAnalysis', `💬 Comentarios totales: ${debugData.comments.length}`, 'info');
+            log('commentAnalysis', `👻 Comentarios huérfanos: ${orphanComments.length}`, 'error');
+            log('commentAnalysis', `📩 Comentarios no leídos: ${unreadComments.length}`, 'warning');
+            
+            if (orphanComments.length > 0) {
+                log('commentAnalysis', '👻 COMENTARIOS HUÉRFANOS:', 'error');
+                orphanComments.forEach((comment, index) => {
+                    log('commentAnalysis', `${index + 1}. TaskId: ${comment.taskId} (NO EXISTE)`, 'error');
+                    log('commentAnalysis', `   Autor: ${comment.studentName}`, 'error');
+                    log('commentAnalysis', `   Texto: ${comment.comment.substring(0, 50)}...`, 'error');
+                });
+            }
+            
+            if (currentUser && currentUser.role === 'student') {
+                const userUnreadComments = debugData.comments.filter(comment => 
+                    comment.studentUsername !== currentUser.username && 
+                    (!comment.readBy || !comment.readBy.includes(currentUser.username))
+                );
+                
+                log('commentAnalysis', `📩 Comentarios no leídos para ${currentUser.displayName}: ${userUnreadComments.length}`, 'info');
+            }
+        }
+
+        function showAllNotifications() {
+            clearLog('ghostAnalysis');
+            log('ghostAnalysis', '📋 Mostrando todas las notificaciones...', 'info');
+            
+            loadDebugData();
+            
+            if (debugData.notifications.length === 0) {
+                log('ghostAnalysis', '✅ No hay notificaciones en el sistema', 'success');
+                return;
+            }
+            
+            debugData.notifications.forEach((notification, index) => {
+                const taskExists = debugData.tasks.some(task => task.id === notification.taskId);
+                const type = taskExists ? 'success' : 'error';
+                const status = taskExists ? '✅ VÁLIDA' : '👻 FANTASMA';
+                
+                log('ghostAnalysis', `${index + 1}. ${status} - ${notification.taskTitle}`, type);
+                log('ghostAnalysis', `   ID: ${notification.id}`, type);
+                log('ghostAnalysis', `   Tipo: ${notification.type}`, type);
+                log('ghostAnalysis', `   TaskId: ${notification.taskId}`, type);
+                log('ghostAnalysis', `   Destinatarios: ${notification.targetUsernames.join(', ')}`, type);
+                log('ghostAnalysis', `   Fecha: ${new Date(notification.timestamp).toLocaleString()}`, type);
+                log('ghostAnalysis', '   ---', type);
+            });
+        }
+
+        function cleanupGhostNotifications() {
+            if (!confirm('¿Estás seguro de que quieres eliminar todas las notificaciones fantasma?')) {
+                return;
+            }
+            
+            clearLog('ghostAnalysis');
+            log('ghostAnalysis', '🧹 Limpiando notificaciones fantasma...', 'warning');
+            
+            loadDebugData();
+            
+            const initialCount = debugData.notifications.length;
+            
+            // Filtrar solo las notificaciones válidas
+            const validNotifications = debugData.notifications.filter(notification => {
+                return debugData.tasks.some(task => task.id === notification.taskId);
+            });
+            
+            const removedCount = initialCount - validNotifications.length;
+            
+            // Guardar las notificaciones válidas
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(validNotifications));
+            
+            log('ghostAnalysis', `✅ Limpieza completada`, 'success');
+            log('ghostAnalysis', `📊 Notificaciones iniciales: ${initialCount}`, 'info');
+            log('ghostAnalysis', `✅ Notificaciones válidas: ${validNotifications.length}`, 'success');
+            log('ghostAnalysis', `🗑️ Notificaciones eliminadas: ${removedCount}`, 'warning');
+            
+            updateStats();
+        }
+
+        function createTestData() {
+            clearLog('repairLog');
+            log('repairLog', '🧪 Creando datos de prueba...', 'info');
+            
+            // Crear usuarios
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            
+            // Crear tareas de prueba
+            const testTasks = [
+                {
+                    id: 'task_001',
+                    title: 'Matemáticas - Fracciones',
+                    description: 'Resolver ejercicios de fracciones',
+                    course: 'matematicas_4to',
+                    subject: 'Matemáticas',
+                    assignedBy: 'jorge',
+                    assignedByName: 'Jorge Profesor',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    taskType: 'assignment'
+                },
+                {
+                    id: 'task_002',
+                    title: 'Ciencias - Sistema Solar',
+                    description: 'Evaluación sobre el sistema solar',
+                    course: 'ciencias_4to',
+                    subject: 'Ciencias',
+                    assignedBy: 'jorge',
+                    assignedByName: 'Jorge Profesor',
+                    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    taskType: 'evaluation'
+                }
+            ];
+            
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testTasks));
+            
+            // Crear notificaciones válidas
+            const validNotifications = [
+                {
+                    id: 'notif_001',
+                    type: 'new_task',
+                    taskId: 'task_001',
+                    taskTitle: 'Matemáticas - Fracciones',
+                    targetUserRole: 'student',
+                    targetUsernames: ['felipe', 'maria'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'matematicas_4to',
+                    subject: 'Matemáticas',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                },
+                {
+                    id: 'notif_002',
+                    type: 'new_task',
+                    taskId: 'task_002',
+                    taskTitle: 'Ciencias - Sistema Solar',
+                    targetUserRole: 'student',
+                    targetUsernames: ['felipe', 'luis'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'ciencias_4to',
+                    subject: 'Ciencias',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                }
+            ];
+            
+            // Crear algunas notificaciones fantasma para testing
+            const ghostNotifications = [
+                {
+                    id: 'ghost_001',
+                    type: 'new_task',
+                    taskId: 'task_nonexistent_001',
+                    taskTitle: 'Tarea Fantasma 1',
+                    targetUserRole: 'student',
+                    targetUsernames: ['felipe'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'matematicas_4to',
+                    subject: 'Matemáticas',
+                    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'assignment'
+                },
+                {
+                    id: 'ghost_002',
+                    type: 'teacher_comment',
+                    taskId: 'task_nonexistent_002',
+                    taskTitle: 'Comentario Fantasma',
+                    targetUserRole: 'student',
+                    targetUsernames: ['maria'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    course: 'ciencias_4to',
+                    subject: 'Ciencias',
+                    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+                    read: false,
+                    readBy: []
+                }
+            ];
+            
+            const allNotifications = [...validNotifications, ...ghostNotifications];
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(allNotifications));
+            
+            // Crear comentarios de prueba
+            const testComments = [
+                {
+                    id: 'comment_001',
+                    taskId: 'task_001',
+                    studentUsername: 'felipe',
+                    studentName: 'Felipe Estudiante',
+                    comment: '¿Podrías explicar mejor la parte de fracciones mixtas?',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                },
+                {
+                    id: 'comment_002',
+                    taskId: 'task_nonexistent_003',
+                    studentUsername: 'maria',
+                    studentName: 'María Estudiante',
+                    comment: 'Comentario huérfano sin tarea',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                }
+            ];
+            
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+            
+            log('repairLog', '✅ Datos de prueba creados:', 'success');
+            log('repairLog', `📋 Tareas: ${testTasks.length}`, 'info');
+            log('repairLog', `🔔 Notificaciones válidas: ${validNotifications.length}`, 'success');
+            log('repairLog', `👻 Notificaciones fantasma: ${ghostNotifications.length}`, 'warning');
+            log('repairLog', `💬 Comentarios: ${testComments.length}`, 'info');
+            
+            updateStats();
+        }
+
+        function resetSystem() {
+            if (!confirm('¿Estás seguro de que quieres resetear el sistema? Esto eliminará datos inconsistentes.')) {
+                return;
+            }
+            
+            clearLog('repairLog');
+            log('repairLog', '🔄 Reseteando sistema...', 'warning');
+            
+            // Limpiar solo las notificaciones fantasma y comentarios huérfanos
+            loadDebugData();
+            
+            // Mantener solo notificaciones válidas
+            const validNotifications = debugData.notifications.filter(notification => {
+                return debugData.tasks.some(task => task.id === notification.taskId);
+            });
+            
+            // Mantener solo comentarios válidos
+            const validComments = debugData.comments.filter(comment => {
+                return debugData.tasks.some(task => task.id === comment.taskId);
+            });
+            
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(validNotifications));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(validComments));
+            
+            log('repairLog', '✅ Sistema reseteado', 'success');
+            log('repairLog', `🔔 Notificaciones válidas mantenidas: ${validNotifications.length}`, 'success');
+            log('repairLog', `💬 Comentarios válidos mantenidos: ${validComments.length}`, 'success');
+            
+            updateStats();
+        }
+
+        function clearAllData() {
+            if (!confirm('¿Estás seguro de que quieres eliminar TODOS los datos? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            clearLog('repairLog');
+            log('repairLog', '🗑️ Eliminando todos los datos...', 'error');
+            
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-user');
+            
+            log('repairLog', '✅ Todos los datos eliminados', 'success');
+            
+            updateStats();
+        }
+
+        function simulateCompleteFlow() {
+            clearLog('simulationLog');
+            log('simulationLog', '🎭 Simulando flujo completo...', 'info');
+            
+            // Paso 1: Crear usuarios
+            log('simulationLog', '👥 Paso 1: Creando usuarios...', 'info');
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            
+            // Paso 2: Profesor crea tarea
+            log('simulationLog', '📋 Paso 2: Profesor crea tarea...', 'info');
+            const taskId = 'simulation_task_' + Date.now();
+            const newTask = {
+                id: taskId,
+                title: 'Simulación - Tarea de Prueba',
+                description: 'Tarea creada durante la simulación',
+                course: 'matematicas_4to',
+                subject: 'Matemáticas',
+                assignedBy: 'jorge',
+                assignedByName: 'Jorge Profesor',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                taskType: 'assignment'
+            };
+            
+            localStorage.setItem('smart-student-tasks', JSON.stringify([newTask]));
+            
+            // Paso 3: Crear notificación válida
+            log('simulationLog', '🔔 Paso 3: Creando notificación válida...', 'info');
+            const validNotification = {
+                id: 'simulation_notif_' + Date.now(),
+                type: 'new_task',
+                taskId: taskId,
+                taskTitle: newTask.title,
+                targetUserRole: 'student',
+                targetUsernames: ['felipe', 'maria'],
+                fromUsername: 'jorge',
+                fromDisplayName: 'Jorge Profesor',
+                course: 'matematicas_4to',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: 'assignment'
+            };
+            
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify([validNotification]));
+            
+            // Paso 4: Simular que el estudiante ve la notificación
+            log('simulationLog', '👀 Paso 4: Estudiante ve la notificación...', 'success');
+            
+            // Paso 5: Verificar sincronización
+            log('simulationLog', '🔍 Paso 5: Verificando sincronización...', 'info');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const taskExists = tasks.some(task => task.id === taskId);
+            const notificationExists = notifications.some(notif => notif.taskId === taskId);
+            
+            if (taskExists && notificationExists) {
+                log('simulationLog', '✅ ÉXITO: Tarea y notificación sincronizadas correctamente', 'success');
+            } else {
+                log('simulationLog', '❌ ERROR: Falta de sincronización detectada', 'error');
+            }
+            
+            // Paso 6: Simular eliminación de tarea para crear notificación fantasma
+            log('simulationLog', '👻 Paso 6: Simulando eliminación de tarea (crear fantasma)...', 'warning');
+            localStorage.setItem('smart-student-tasks', JSON.stringify([]));
+            
+            // Verificar que ahora hay una notificación fantasma
+            const remainingNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const remainingTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const hasGhost = remainingNotifications.some(notif => 
+                !remainingTasks.some(task => task.id === notif.taskId)
+            );
+            
+            if (hasGhost) {
+                log('simulationLog', '👻 CONFIRMADO: Notificación fantasma creada', 'warning');
+            }
+            
+            log('simulationLog', '🎭 Simulación completada', 'success');
+            updateStats();
+        }
+    </script>
+</body>
+</html>

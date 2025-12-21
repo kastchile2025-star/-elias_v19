@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Botón Marcar Todo como Leído (Profesor)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .notification {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .submission {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .comment {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .count {
+            font-weight: bold;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test: Botón "Marcar Todo como Leído" - Profesor</h1>
+        
+        <div class="section">
+            <h3>Usuario Actual: <span id="currentUser">Profesor Jorge</span></h3>
+            <button class="button" onclick="switchUser('teacher', 'profesor_jorge')">Cambiar a Profesor Jorge</button>
+            <button class="button" onclick="switchUser('student', 'felipe_estudiante')">Cambiar a Felipe (Estudiante)</button>
+        </div>
+
+        <div class="section">
+            <h3>Estado Inicial</h3>
+            <button class="button" onclick="setupTestData()">Configurar Datos de Prueba</button>
+            <button class="button" onclick="clearAllData()">Limpiar Todos los Datos</button>
+        </div>
+
+        <div class="section">
+            <h3>Notificaciones del Profesor</h3>
+            <p>Entregas Pendientes: <span id="submissionsCount" class="count">0</span></p>
+            <div id="submissions"></div>
+            
+            <p>Comentarios No Leídos: <span id="commentsCount" class="count">0</span></p>
+            <div id="comments"></div>
+            
+            <button class="button" onclick="markAllAsRead()" style="background: #28a745;">
+                Marcar Todo como Leído
+            </button>
+        </div>
+
+        <div class="section">
+            <h3>Verificación</h3>
+            <button class="button" onclick="checkNotifications()">Actualizar Vista</button>
+            <p><strong>Comportamiento Esperado:</strong></p>
+            <ul>
+                <li>✅ Los comentarios se marcan como leídos</li>
+                <li>✅ Las entregas pendientes permanecen (hasta ser calificadas)</li>
+                <li>✅ El contador de notificaciones se actualiza correctamente</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Log de Acciones</h3>
+            <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 5px; height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = {
+            username: 'profesor_jorge',
+            role: 'teacher',
+            displayName: 'Profesor Jorge'
+        };
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function switchUser(role, username) {
+            const displayNames = {
+                'profesor_jorge': 'Profesor Jorge',
+                'felipe_estudiante': 'Felipe (Estudiante)'
+            };
+            
+            currentUser = {
+                username: username,
+                role: role,
+                displayName: displayNames[username] || username
+            };
+            
+            document.getElementById('currentUser').textContent = currentUser.displayName;
+            log(`Cambiado a usuario: ${currentUser.displayName} (${role})`);
+            checkNotifications();
+        }
+
+        function setupTestData() {
+            // Crear tareas
+            const tasks = [
+                {
+                    id: 'task-1',
+                    title: 'Ensayo de Historia',
+                    description: 'Escribir un ensayo sobre la Revolución Industrial',
+                    course: 'Historia',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    assignedBy: 'profesor_jorge',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'task-2',
+                    title: 'Matemáticas - Ejercicios',
+                    description: 'Resolver ejercicios de álgebra',
+                    course: 'Matemáticas',
+                    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    assignedBy: 'profesor_jorge',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+
+            // Crear comentarios y entregas
+            const comments = [
+                // Entrega de Felipe para la tarea de Historia (SIN CALIFICAR)
+                {
+                    id: 'comment-1',
+                    taskId: 'task-1',
+                    studentUsername: 'felipe_estudiante',
+                    comment: 'Aquí está mi ensayo sobre la Revolución Industrial. He incluido referencias y análisis detallado.',
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    readBy: []
+                },
+                // Entrega de Ana para la tarea de Matemáticas (SIN CALIFICAR)
+                {
+                    id: 'comment-2',
+                    taskId: 'task-2',
+                    studentUsername: 'ana_estudiante',
+                    comment: 'He resuelto todos los ejercicios de álgebra. Por favor revise mi trabajo.',
+                    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    readBy: []
+                },
+                // Comentario de Felipe en la tarea de Historia (NO LEÍDO)
+                {
+                    id: 'comment-3',
+                    taskId: 'task-1',
+                    studentUsername: 'felipe_estudiante',
+                    comment: 'Profesor, tengo una duda sobre la parte de las consecuencias sociales.',
+                    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                },
+                // Comentario de Ana en la tarea de Matemáticas (NO LEÍDO)
+                {
+                    id: 'comment-4',
+                    taskId: 'task-2',
+                    studentUsername: 'ana_estudiante',
+                    comment: '¿Podría explicar mejor el ejercicio número 5?',
+                    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                }
+            ];
+
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+            
+            log('✅ Datos de prueba configurados:');
+            log('- 2 tareas creadas por el profesor');
+            log('- 2 entregas de estudiantes (sin calificar)');
+            log('- 2 comentarios de estudiantes (no leídos)');
+            
+            checkNotifications();
+        }
+
+        function clearAllData() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            log('🗑️ Todos los datos han sido eliminados');
+            checkNotifications();
+        }
+
+        function checkNotifications() {
+            if (currentUser.role !== 'teacher') {
+                log('⚠️ Esta prueba es solo para profesores');
+                return;
+            }
+
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+
+            if (!storedTasks || !storedComments) {
+                document.getElementById('submissionsCount').textContent = '0';
+                document.getElementById('commentsCount').textContent = '0';
+                document.getElementById('submissions').innerHTML = '<p>No hay datos</p>';
+                document.getElementById('comments').innerHTML = '<p>No hay datos</p>';
+                return;
+            }
+
+            const tasks = JSON.parse(storedTasks);
+            const comments = JSON.parse(storedComments);
+
+            // Filtrar tareas del profesor actual
+            const teacherTasks = tasks.filter(task => task.assignedBy === currentUser.username);
+            const teacherTaskIds = teacherTasks.map(task => task.id);
+
+            // Filtrar entregas pendientes (sin calificar)
+            const submissions = comments.filter(comment => 
+                comment.isSubmission && 
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== currentUser.username &&
+                !comment.grade // Sin calificar
+            );
+
+            // Filtrar comentarios no leídos (que no sean entregas)
+            const unreadComments = comments.filter(comment => 
+                !comment.isSubmission &&
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== currentUser.username &&
+                (!comment.readBy?.includes(currentUser.username))
+            );
+
+            // Actualizar contadores
+            document.getElementById('submissionsCount').textContent = submissions.length;
+            document.getElementById('commentsCount').textContent = unreadComments.length;
+
+            // Mostrar entregas
+            const submissionsDiv = document.getElementById('submissions');
+            if (submissions.length === 0) {
+                submissionsDiv.innerHTML = '<p>No hay entregas pendientes</p>';
+            } else {
+                submissionsDiv.innerHTML = submissions.map(submission => {
+                    const task = tasks.find(t => t.id === submission.taskId);
+                    return `
+                        <div class="submission">
+                            <strong>${submission.studentUsername}</strong> - ${task?.title || 'Tarea'}<br>
+                            <small>${new Date(submission.createdAt).toLocaleString()}</small><br>
+                            ${submission.comment.substring(0, 100)}...
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Mostrar comentarios
+            const commentsDiv = document.getElementById('comments');
+            if (unreadComments.length === 0) {
+                commentsDiv.innerHTML = '<p>No hay comentarios sin leer</p>';
+            } else {
+                commentsDiv.innerHTML = unreadComments.map(comment => {
+                    const task = tasks.find(t => t.id === comment.taskId);
+                    return `
+                        <div class="comment">
+                            <strong>${comment.studentUsername}</strong> - ${task?.title || 'Tarea'}<br>
+                            <small>${new Date(comment.createdAt).toLocaleString()}</small><br>
+                            ${comment.comment}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            log(`📊 Estado actual: ${submissions.length} entregas, ${unreadComments.length} comentarios no leídos`);
+        }
+
+        function markAllAsRead() {
+            if (currentUser.role !== 'teacher') {
+                log('❌ Solo los profesores pueden marcar todo como leído');
+                return;
+            }
+
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            if (!storedComments) {
+                log('❌ No hay comentarios para marcar');
+                return;
+            }
+
+            const comments = JSON.parse(storedComments);
+            let updatedCount = 0;
+
+            // Solo marcar comentarios como leídos (NO entregas)
+            const updatedComments = comments.map(comment => {
+                if (
+                    !comment.isSubmission && // Solo comentarios, NO entregas
+                    comment.studentUsername !== currentUser.username &&
+                    (!comment.readBy?.includes(currentUser.username))
+                ) {
+                    updatedCount++;
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), currentUser.username]
+                    };
+                }
+                return comment;
+            });
+
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+            
+            log(`✅ Marcados ${updatedCount} comentarios como leídos`);
+            log(`📝 IMPORTANTE: Las entregas NO se marcan como leídas, permanecen hasta ser calificadas`);
+            
+            checkNotifications();
+        }
+
+        // Inicializar
+        switchUser('teacher', 'profesor_jorge');
+        log('🚀 Test inicializado para el botón "Marcar Todo como Leído" del profesor');
+    </script>
+</body>
+</html>

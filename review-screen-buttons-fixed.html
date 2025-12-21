@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Pantalla de Revisión - Botones Corregidos</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fcff;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+        .section h2 {
+            color: #3498db;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status.fixed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.issue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before-after > div {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .before {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+        .flow-diagram {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .flow-step {
+            background: #e3f2fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .screenshot-placeholder {
+            background: #f0f4f8;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #718096;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Pantalla de Revisión - Botones Corregidos</h1>
+        
+        <div class="section">
+            <h2><span class="icon">🔍</span> Problema Identificado y Solucionado</h2>
+            
+            <div class="status issue" style="margin-bottom: 15px;">
+                ❌ PROBLEMA: Después de cerrar el diálogo de resultados, aparecía la pantalla de revisión con botones incorrectos
+            </div>
+            
+            <div class="status fixed">
+                ✅ SOLUCIONADO: Botones de la pantalla de revisión ahora se adaptan al tipo de evaluación
+            </div>
+
+            <div class="flow-diagram">
+                <h3>Flujo donde ocurría el problema:</h3>
+                <div class="flow-step">1. Estudiante completa evaluación de tarea</div>
+                <div class="flow-step">2. Aparece diálogo con puntuación (✅ CORREGIDO - solo botón "Cerrar")</div>
+                <div class="flow-step">3. Click "Cerrar" → Aparece pantalla de revisión</div>
+                <div class="flow-step">4. ❌ ANTES: Botones "Nueva Evaluación" y "Repetir Evaluación"</div>
+                <div class="flow-step">5. ✅ AHORA: Solo botón "Cerrar" → Va a /dashboard/evaluacion</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔄</span> Cambios en Pantalla de Revisión</h2>
+            
+            <div class="before-after">
+                <div class="before">
+                    <h3>❌ ANTES (Problemático)</h3>
+                    <div class="screenshot-placeholder">
+                        <p><strong>Pantalla de Revisión</strong></p>
+                        <p>📝 Pregunta 1/15: Tu respuesta vs Correcta</p>
+                        <p>📝 Pregunta 2/15: Tu respuesta vs Correcta</p>
+                        <p>...</p>
+                        <p>📝 Pregunta 15/15: Tu respuesta vs Correcta</p>
+                        <hr>
+                        <button style="background: #8e44ad; color: white; padding: 8px 16px; border: none; border-radius: 4px; margin: 5px;">Repetir Evaluación</button>
+                        <button style="background: #95a5a6; color: white; padding: 8px 16px; border: none; border-radius: 4px; margin: 5px;">Nueva Evaluación</button>
+                    </div>
+                    <p><strong>Problema:</strong> Los botones no eran apropiados para evaluaciones de tareas</p>
+                </div>
+                <div class="after">
+                    <h3>✅ AHORA (Corregido)</h3>
+                    <div class="screenshot-placeholder">
+                        <p><strong>Pantalla de Revisión</strong></p>
+                        <p>📝 Pregunta 1/15: Tu respuesta vs Correcta</p>
+                        <p>📝 Pregunta 2/15: Tu respuesta vs Correcta</p>
+                        <p>...</p>
+                        <p>📝 Pregunta 15/15: Tu respuesta vs Correcta</p>
+                        <hr>
+                        <div style="text-align: center;">
+                            <button style="background: #8e44ad; color: white; padding: 8px 24px; border: none; border-radius: 4px;">Cerrar</button>
+                        </div>
+                    </div>
+                    <p><strong>Solución:</strong> Solo botón "Cerrar" que navega a la pestaña Evaluaciones</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔧</span> Implementación Técnica</h2>
+            
+            <p><strong>Archivo modificado:</strong> <code>/src/app/dashboard/evaluacion/page.tsx</code></p>
+            
+            <p><strong>Sección modificada:</strong> Pantalla de revisión (cuando <code>evaluationFinished && !showResultDialog</code>)</p>
+
+            <div class="code-block">
+// ❌ ANTES: Siempre mostraba ambos botones
+&lt;div className="mt-8 pt-6 border-t flex flex-col sm:flex-row gap-3 justify-center"&gt;
+  &lt;Button onClick={handleRepeatEvaluation}&gt;
+    Repetir Evaluación
+  &lt;/Button&gt;
+  &lt;Button onClick={handleStartNewEvaluation}&gt;
+    Nueva Evaluación
+  &lt;/Button&gt;
+&lt;/div&gt;
+
+// ✅ AHORA: Lógica condicional según tipo de evaluación
+&lt;div className="mt-8 pt-6 border-t flex flex-col sm:flex-row gap-3 justify-center"&gt;
+  {isAutoStartMode ? (
+    // Para evaluaciones de tareas: solo botón Cerrar
+    &lt;Button onClick={handleCloseTaskEvaluation}&gt;
+      Cerrar
+    &lt;/Button&gt;
+  ) : (
+    // Para evaluaciones normales: botones Repetir y Nueva Evaluación
+    &lt;&gt;
+      &lt;Button onClick={handleRepeatEvaluation}&gt;
+        Repetir Evaluación
+      &lt;/Button&gt;
+      &lt;Button onClick={handleStartNewEvaluation}&gt;
+        Nueva Evaluación
+      &lt;/Button&gt;
+    &lt;/&gt;
+  )}
+&lt;/div&gt;
+            </div>
+
+            <p><strong>Variable de detección:</strong> <code>isAutoStartMode</code> - indica si la evaluación viene de una tarea</p>
+            <p><strong>Función de navegación:</strong> <code>handleCloseTaskEvaluation()</code> - navega a <code>/dashboard/evaluacion</code></p>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📋</span> Resumen Completo de Cambios</h2>
+            
+            <p>Ahora tenemos <strong>3 puntos de control</strong> para evaluaciones de tareas:</p>
+            
+            <ol>
+                <li><strong>✅ Diálogo de Resultados:</strong>
+                    <ul>
+                        <li>Evaluaciones de tareas: Solo botón "Cerrar"</li>
+                        <li>Evaluaciones normales: Botones "Repetir" y "Cerrar"</li>
+                    </ul>
+                </li>
+                <li><strong>✅ Pantalla de Revisión:</strong>
+                    <ul>
+                        <li>Evaluaciones de tareas: Solo botón "Cerrar"</li>
+                        <li>Evaluaciones normales: Botones "Repetir" y "Nueva Evaluación"</li>
+                    </ul>
+                </li>
+                <li><strong>✅ Navegación:</strong>
+                    <ul>
+                        <li>Ambos botones "Cerrar" navegan a <code>/dashboard/evaluacion</code></li>
+                        <li>La página se abre limpia, sin datos pre-cargados</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🧪</span> Flujo de Prueba Completo</h2>
+            
+            <a href="http://localhost:3000/dashboard/tareas" class="test-link" target="_blank">
+                📝 Probar Flujo Completo
+            </a>
+            
+            <div style="margin-top: 20px;">
+                <h3>Pasos de validación:</h3>
+                <ol>
+                    <li>Ir a Tareas → Buscar evaluación → Click "Realizar Evaluación"</li>
+                    <li>Completar la evaluación</li>
+                    <li><strong>Diálogo de resultados:</strong> Verificar que solo aparece botón "Cerrar"</li>
+                    <li>Click "Cerrar" → Aparece pantalla de revisión</li>
+                    <li><strong>Pantalla de revisión:</strong> Verificar que solo aparece botón "Cerrar"</li>
+                    <li>Click "Cerrar" → Debe navegar a /dashboard/evaluacion</li>
+                    <li><strong>Página Evaluaciones:</strong> Verificar que está limpia, sin datos</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">✅</span> Estado Final</h2>
+            
+            <div class="status fixed">
+                ✅ TODOS LOS CAMBIOS IMPLEMENTADOS CORRECTAMENTE
+            </div>
+            
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 5px 0;">✅ Eliminada ventana "Cargando Evaluación"</li>
+                <li style="padding: 5px 0;">✅ Botones del diálogo de resultados corregidos</li>
+                <li style="padding: 5px 0;">✅ Botones de la pantalla de revisión corregidos</li>
+                <li style="padding: 5px 0;">✅ Navegación a pestaña Evaluaciones funcionando</li>
+                <li style="padding: 5px 0;">✅ Experiencia de usuario mejorada para evaluaciones de tareas</li>
+                <li style="padding: 5px 0;">✅ Compatibilidad mantenida para evaluaciones normales</li>
+            </ul>
+            
+            <p style="margin-top: 20px; font-weight: bold; color: #3498db;">
+                🎉 Flujo de evaluaciones de tareas completamente optimizado
+            </p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎯 Corrección de pantalla de revisión completada');
+        console.log('📋 Cambio realizado:');
+        console.log('  - Pantalla de revisión ahora muestra botones correctos según tipo de evaluación');
+        console.log('  - Evaluaciones de tareas: Solo botón "Cerrar"');
+        console.log('  - Evaluaciones normales: Botones "Repetir" y "Nueva Evaluación"');
+        console.log('🚀 Flujo completo optimizado y listo');
+    </script>
+</body>
+</html>

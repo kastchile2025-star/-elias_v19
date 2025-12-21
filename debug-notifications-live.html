@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴 LIVE Debug - Sistema de Notificaciones</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            background: #ff4757;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #ffeaa7;
+            border-bottom: 2px solid #ffeaa7;
+            padding-bottom: 10px;
+        }
+
+        .count-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #00b894;
+        }
+
+        .count-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00cec9;
+        }
+
+        .count-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .status.good {
+            background: rgba(0, 184, 148, 0.2);
+            border: 2px solid #00b894;
+        }
+
+        .status.warning {
+            background: rgba(253, 203, 110, 0.2);
+            border: 2px solid #fdcb6e;
+            color: #fdcb6e;
+        }
+
+        .status.error {
+            background: rgba(255, 71, 87, 0.2);
+            border: 2px solid #ff4757;
+            color: #ff4757;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .data-table {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+
+        .problem-indicator {
+            background: #ff4757;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            opacity: 0.7;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔴 LIVE Debug - Sistema de Notificaciones</h1>
+            <span class="live-indicator">● LIVE</span>
+            <div class="timestamp" id="timestamp"></div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <button class="refresh-btn" onclick="refreshData()">🔄 Actualizar Datos</button>
+            <button class="refresh-btn" onclick="autoRefresh()">⚡ Auto-Refresh (5s)</button>
+            <button class="refresh-btn" onclick="stopAutoRefresh()">⏹️ Detener Auto</button>
+        </div>
+
+        <div id="userInfo" class="status good">
+            <div>👤 Cargando información del usuario...</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>📊 Contadores Actuales</h3>
+                <div id="currentCounts"></div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Cálculo Dashboard</h3>
+                <div id="dashboardCalculation"></div>
+            </div>
+
+            <div class="card">
+                <h3>🔔 Estado NotificationsPanel</h3>
+                <div id="notificationsPanelState"></div>
+            </div>
+
+            <div class="card">
+                <h3>📝 Entregas sin Calificar</h3>
+                <div id="pendingSubmissions"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>💬 Comentarios No Leídos</h3>
+            <div id="unreadComments"></div>
+        </div>
+
+        <div class="card">
+            <h3>🔍 Análisis de Problemas</h3>
+            <div id="problemAnalysis"></div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = 
+                `Última actualización: ${new Date().toLocaleString()}`;
+        }
+
+        function refreshData() {
+            updateTimestamp();
+            
+            // Obtener usuario actual
+            const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || 'null');
+            
+            if (!currentUser) {
+                document.getElementById('userInfo').innerHTML = 
+                    '<div class="status error">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            // Mostrar info del usuario
+            document.getElementById('userInfo').innerHTML = 
+                `<div>👤 Usuario: <strong>${currentUser.username}</strong> | Rol: <strong>${currentUser.role}</strong></div>`;
+
+            if (currentUser.role === 'teacher') {
+                analyzeTeacherNotifications(currentUser);
+            } else if (currentUser.role === 'student') {
+                analyzeStudentNotifications(currentUser);
+            } else {
+                document.getElementById('currentCounts').innerHTML = 
+                    '<div class="status warning">⚠️ Rol no soportado para análisis</div>';
+            }
+        }
+
+        function analyzeTeacherNotifications(user) {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            // Filtrar tareas del profesor
+            const teacherTasks = tasks.filter(task => task.assignedBy === user.username);
+            const teacherTaskIds = teacherTasks.map(task => task.id);
+
+            // Entregas pendientes
+            const pendingSubmissions = comments.filter(comment => 
+                comment.isSubmission === true && 
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== user.username &&
+                (!comment.grade || comment.grade === null || comment.grade === undefined)
+            );
+
+            // Eliminar duplicados de entregas
+            const uniqueSubmissions = pendingSubmissions.reduce((acc, submission) => {
+                const key = `${submission.taskId}_${submission.studentUsername}`;
+                const existing = acc.find(s => `${s.taskId}_${s.studentUsername}` === key);
+                
+                if (!existing) {
+                    acc.push(submission);
+                } else if (new Date(submission.timestamp) > new Date(existing.timestamp)) {
+                    const index = acc.indexOf(existing);
+                    acc[index] = submission;
+                }
+                
+                return acc;
+            }, []);
+
+            // Comentarios de estudiantes no leídos
+            const studentComments = comments.filter(comment => 
+                !comment.isSubmission &&
+                teacherTaskIds.includes(comment.taskId) &&
+                comment.studentUsername !== user.username &&
+                !comment.readBy?.includes(user.username)
+            );
+
+            // Notificaciones de tareas
+            const taskNotifications = getTaskNotifications(user.username, user.role);
+
+            // Mostrar contadores
+            const totalCount = uniqueSubmissions.length + studentComments.length + taskNotifications;
+
+            document.getElementById('currentCounts').innerHTML = `
+                <div class="count-box">
+                    <div class="count-number">${uniqueSubmissions.length}</div>
+                    <div class="count-label">Entregas Pendientes</div>
+                </div>
+                <div class="count-box">
+                    <div class="count-number">${studentComments.length}</div>
+                    <div class="count-label">Comentarios No Leídos</div>
+                </div>
+                <div class="count-box">
+                    <div class="count-number">${taskNotifications}</div>
+                    <div class="count-label">Notificaciones de Tareas</div>
+                </div>
+                <div class="count-box" style="border-left-color: #ff4757;">
+                    <div class="count-number">${totalCount}</div>
+                    <div class="count-label">TOTAL CALCULADO</div>
+                </div>
+            `;
+
+            // Cálculo del dashboard
+            document.getElementById('dashboardCalculation').innerHTML = `
+                <div class="count-box">
+                    <div class="count-label">Fórmula Dashboard:</div>
+                    <div style="font-family: monospace; margin: 10px 0;">
+                        ${uniqueSubmissions.length} + ${studentComments.length} + ${taskNotifications} = <strong>${totalCount}</strong>
+                    </div>
+                </div>
+            `;
+
+            // Estado del panel de notificaciones
+            const notificationsPanelVisible = document.querySelector('[data-testid="notifications-panel"]') !== null;
+            document.getElementById('notificationsPanelState').innerHTML = `
+                <div class="count-box">
+                    <div class="count-label">Panel Visible: ${notificationsPanelVisible ? '✅ Sí' : '❌ No'}</div>
+                    <div class="count-label">Debería mostrar: <strong>${totalCount}</strong></div>
+                </div>
+            `;
+
+            // Detalles de entregas pendientes
+            if (uniqueSubmissions.length > 0) {
+                let submissionsHtml = '<div class="data-table"><table><tr><th>Estudiante</th><th>Tarea</th><th>Fecha</th><th>Calificación</th></tr>';
+                uniqueSubmissions.forEach(sub => {
+                    const task = tasks.find(t => t.id === sub.taskId);
+                    submissionsHtml += `<tr>
+                        <td>${sub.studentName}</td>
+                        <td>${task?.title || 'N/A'}</td>
+                        <td>${new Date(sub.timestamp).toLocaleString()}</td>
+                        <td>${sub.grade || '❌ Sin calificar'}</td>
+                    </tr>`;
+                });
+                submissionsHtml += '</table></div>';
+                document.getElementById('pendingSubmissions').innerHTML = submissionsHtml;
+            } else {
+                document.getElementById('pendingSubmissions').innerHTML = 
+                    '<div class="status good">✅ No hay entregas pendientes</div>';
+            }
+
+            // Detalles de comentarios no leídos
+            if (studentComments.length > 0) {
+                let commentsHtml = '<div class="data-table"><table><tr><th>Estudiante</th><th>Tarea</th><th>Comentario</th><th>Fecha</th></tr>';
+                studentComments.forEach(comment => {
+                    const task = tasks.find(t => t.id === comment.taskId);
+                    commentsHtml += `<tr>
+                        <td>${comment.studentName}</td>
+                        <td>${task?.title || 'N/A'}</td>
+                        <td>${comment.comment.substring(0, 50)}...</td>
+                        <td>${new Date(comment.timestamp).toLocaleString()}</td>
+                    </tr>`;
+                });
+                commentsHtml += '</table></div>';
+                document.getElementById('unreadComments').innerHTML = commentsHtml;
+            } else {
+                document.getElementById('unreadComments').innerHTML = 
+                    '<div class="status good">✅ No hay comentarios no leídos</div>';
+            }
+
+            // Análisis de problemas
+            analyzePotentialProblems(totalCount, uniqueSubmissions, studentComments, taskNotifications);
+        }
+
+        function analyzeStudentNotifications(user) {
+            // Implementar análisis para estudiantes si es necesario
+            document.getElementById('currentCounts').innerHTML = 
+                '<div class="status warning">⚠️ Análisis de estudiantes no implementado aún</div>';
+        }
+
+        function getTaskNotifications(username, role) {
+            // Simular la llamada al TaskNotificationManager
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                return notifications.filter(notif => 
+                    !notif.readBy.includes(username) &&
+                    ((role === 'teacher' && notif.type === 'student_comment') ||
+                     (role === 'student' && ['task_graded', 'teacher_comment'].includes(notif.type)))
+                ).length;
+            } catch {
+                return 0;
+            }
+        }
+
+        function analyzePotentialProblems(totalCount, submissions, comments, taskNotifs) {
+            let problems = [];
+
+            if (totalCount === 0 && (submissions.length > 0 || comments.length > 0 || taskNotifs > 0)) {
+                problems.push('🔴 CÁLCULO INCORRECTO: Total es 0 pero hay elementos individuales');
+            }
+
+            if (submissions.length === 0 && comments.length === 0 && taskNotifs === 0 && totalCount > 0) {
+                problems.push('🔴 DATOS INCONSISTENTES: Total > 0 pero no hay elementos');
+            }
+
+            // Verificar si el DOM muestra el número correcto
+            const notificationBadge = document.querySelector('[data-testid="notification-badge"]');
+            const displayedCount = notificationBadge ? parseInt(notificationBadge.textContent) : 0;
+            
+            if (displayedCount !== totalCount) {
+                problems.push(`🔴 PROBLEMA DE VISUALIZACIÓN: Calculado=${totalCount}, Mostrado=${displayedCount}`);
+            }
+
+            if (problems.length === 0) {
+                document.getElementById('problemAnalysis').innerHTML = 
+                    '<div class="status good">✅ No se detectaron problemas</div>';
+            } else {
+                let problemsHtml = '<div class="status error">';
+                problems.forEach(problem => {
+                    problemsHtml += `<div style="margin: 10px 0;">${problem}</div>`;
+                });
+                problemsHtml += '</div>';
+                document.getElementById('problemAnalysis').innerHTML = problemsHtml;
+            }
+        }
+
+        function autoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            autoRefreshInterval = setInterval(refreshData, 5000);
+            refreshData();
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        // Inicializar
+        refreshData();
+    </script>
+</body>
+</html>

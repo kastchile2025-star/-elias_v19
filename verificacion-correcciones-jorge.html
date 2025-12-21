@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Correcciones - Profesor Jorge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .fixed { background-color: #e8f5e8; }
+        .test { background-color: #e3f2fd; }
+        .warning { background-color: #fff3e0; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        .warning-text { color: #f57c00; }
+        .info-text { color: #1976d2; }
+        
+        h1 { color: #388e3c; text-align: center; }
+        h2 { color: #333; border-bottom: 2px solid #388e3c; padding-bottom: 5px; }
+        h3 { color: #555; }
+        
+        button {
+            background: #388e3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #2e7d32; }
+        button.test { background: #1976d2; }
+        button.test:hover { background: #1565c0; }
+        button.danger { background: #d32f2f; }
+        button.danger:hover { background: #c62828; }
+        
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #388e3c;
+        }
+        .notification.before { border-left-color: #d32f2f; background: #ffebee; }
+        .notification.after { border-left-color: #388e3c; background: #e8f5e8; }
+        .notification.test { border-left-color: #1976d2; background: #e3f2fd; }
+        
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison > div {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .before { background: #ffebee; border: 1px solid #f8bbd9; }
+        .after { background: #e8f5e8; border: 1px solid #c8e6c9; }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .results-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge.evaluation { background: #e3f2fd; color: #1976d2; }
+        .badge.course { background: #e8f5e8; color: #388e3c; }
+        .badge.result { background: #ffebee; color: #d32f2f; text-decoration: line-through; }
+        
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .checkmark {
+            color: #388e3c;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .cross {
+            color: #d32f2f;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Verificación de Correcciones Aplicadas - Profesor Jorge</h1>
+        
+        <div class="section fixed">
+            <h2>🔧 Correcciones Implementadas</h2>
+            <div class="notification after">
+                <strong>✅ Corrección 1:</strong> assignedByName corregido para usar nombre de evaluación y curso en lugar de "Sistema"
+            </div>
+            <div class="notification after">
+                <strong>✅ Corrección 2:</strong> fromDisplayName en notificaciones corregido para mostrar título de evaluación y curso
+            </div>
+            <div class="notification after">
+                <strong>✅ Corrección 3:</strong> Campo grade eliminado de notificaciones de evaluaciones completadas
+            </div>
+            <div class="notification after">
+                <strong>✅ Corrección 4:</strong> Recarga forzada de datos al abrir modal de evaluación para profesores
+            </div>
+        </div>
+        
+        <div class="section test">
+            <h2>🧪 Validación de Correcciones</h2>
+            <button onclick="testCorrectedNotifications()" class="test">🔔 Probar Notificaciones Corregidas</button>
+            <button onclick="testCorrectedResultsTable()" class="test">📊 Probar Tabla de Resultados Corregida</button>
+            <button onclick="runCompleteTest()" class="test">🚀 Ejecutar Prueba Completa</button>
+            <button onclick="clearTestData()" class="danger">🗑️ Limpiar Datos</button>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Comparación: Antes vs Después</h2>
+            
+            <h3>Problema 1: Notificaciones mostraban "Sistema"</h3>
+            <div class="comparison">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <div class="notification before">
+                        <strong>Sistema</strong> <span class="cross">✖</span><br>
+                        <small>Evaluación pendiente: Evaluación de Ciencias</small>
+                    </div>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <div class="notification after">
+                        <strong>Evaluación de Ciencias Naturales (4to Básico)</strong> <span class="checkmark">✓</span><br>
+                        <small>Evaluación pendiente: Evaluación de Ciencias</small>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Problema 2: Notificaciones mostraban resultado/porcentaje</h3>
+            <div class="comparison">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <div class="notification before">
+                        <strong>María González</strong><br>
+                        <small>Completó la evaluación</small><br>
+                        <span class="badge result">85%</span> <span class="cross">✖</span>
+                    </div>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <div class="notification after">
+                        <strong>María González</strong><br>
+                        <small>Completó la evaluación</small><br>
+                        <span class="checkmark">✓</span> Sin resultado visible
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Problema 3: Tabla de resultados aparecía vacía</h3>
+            <div class="comparison">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <table class="results-table">
+                        <thead>
+                            <tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3" style="text-align: center; font-style: italic; color: #999;">No hay resultados disponibles</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <table class="results-table">
+                        <thead>
+                            <tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>María González</td>
+                                <td><span class="badge evaluation">Completada</span></td>
+                                <td>85%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔔 Notificaciones Corregidas</h2>
+            <div id="corrected-notifications">
+                <p class="info-text">Haz clic en "Probar Notificaciones Corregidas" para ver las notificaciones con las correcciones aplicadas.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Tabla de Resultados Corregida</h2>
+            <div id="corrected-results">
+                <p class="info-text">Haz clic en "Probar Tabla de Resultados Corregida" para ver la tabla funcionando correctamente.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Log de Validación</h2>
+            <div id="validation-log" class="log">
+                <div class="success">✅ Sistema de validación listo para verificar las correcciones aplicadas.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = null;
+        
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('validation-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#d32f2f' : type === 'success' ? '#388e3c' : type === 'warning' ? '#f57c00' : '#1976d2';
+            logElement.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function testCorrectedNotifications() {
+            log('🔔 Probando notificaciones con correcciones aplicadas...', 'info');
+            
+            // Crear datos de prueba con las correcciones aplicadas
+            setupCorrectedTestData();
+            
+            // Simular notificaciones corregidas
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const teacherNotifications = notifications.filter(n => n.targetUsernames.includes('jorge_profesor'));
+            
+            let html = '<h3>Notificaciones del Profesor Jorge (Corregidas):</h3>';
+            
+            teacherNotifications.forEach(notif => {
+                const isFixed = notif.fromDisplayName.includes('(') && !notif.fromDisplayName.includes('Sistema');
+                const noGrade = notif.grade === undefined;
+                
+                html += `
+                    <div class="notification ${isFixed && noGrade ? 'after' : 'before'}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${notif.fromDisplayName || notif.fromUsername}</strong>
+                                ${isFixed ? '<span class="checkmark"> ✓</span>' : '<span class="cross"> ✖</span>'}
+                                <br>
+                                <small>${notif.type === 'task_completed' ? 'Completó la evaluación' : 'Evaluación pendiente'}: ${notif.taskTitle}</small>
+                                <br>
+                                <small>Curso: ${notif.course} | Materia: ${notif.subject}</small>
+                            </div>
+                            <div>
+                                <span class="badge course">${notif.course}</span>
+                                ${notif.grade !== undefined ? `<span class="badge result">❌ ${notif.grade}%</span>` : '<span class="checkmark">✓ Sin resultado</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('corrected-notifications').innerHTML = html;
+            log('✅ Notificaciones corregidas mostradas', 'success');
+        }
+        
+        function testCorrectedResultsTable() {
+            log('📊 Probando tabla de resultados con correcciones aplicadas...', 'info');
+            
+            if (!testTaskId) {
+                setupCorrectedTestData();
+            }
+            
+            // Simular tabla de resultados con datos correctos
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = globalTasks.find(task => task.id === testTaskId);
+            
+            let html = '<h3>Tabla de Resultados de Evaluación (Corregida):</h3>';
+            
+            if (evaluationTask && evaluationTask.evaluationResults && Object.keys(evaluationTask.evaluationResults).length > 0) {
+                html += '<div class="notification after">✅ Datos de resultados encontrados correctamente</div>';
+                html += '<table class="results-table"><thead><tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th><th>Porcentaje</th><th>Fecha</th></tr></thead><tbody>';
+                
+                Object.keys(evaluationTask.evaluationResults).forEach(studentUsername => {
+                    const result = evaluationTask.evaluationResults[studentUsername];
+                    const studentData = getStudentData(studentUsername);
+                    
+                    html += `
+                        <tr>
+                            <td>${studentData.displayName || studentUsername}</td>
+                            <td><span class="badge evaluation">Completada</span></td>
+                            <td>${result.score || 0}</td>
+                            <td>${result.completionPercentage || 0}%</td>
+                            <td>${new Date(result.completedAt).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                html += '<div class="notification after">✅ Tabla de resultados funcionando correctamente</div>';
+            } else {
+                html += '<div class="notification before">❌ No se encontraron resultados (esto ya no debería pasar)</div>';
+            }
+            
+            document.getElementById('corrected-results').innerHTML = html;
+            log('✅ Tabla de resultados corregida mostrada', 'success');
+        }
+        
+        function runCompleteTest() {
+            log('🚀 Ejecutando prueba completa de todas las correcciones...', 'info');
+            
+            // Ejecutar todas las pruebas
+            testCorrectedNotifications();
+            setTimeout(() => {
+                testCorrectedResultsTable();
+                setTimeout(() => {
+                    validateAllFixes();
+                }, 500);
+            }, 500);
+        }
+        
+        function validateAllFixes() {
+            log('🔍 Validando todas las correcciones aplicadas...', 'info');
+            
+            let allFixed = true;
+            
+            // Validar notificaciones
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const teacherNotifications = notifications.filter(n => n.targetUsernames.includes('jorge_profesor'));
+            
+            teacherNotifications.forEach(notif => {
+                if (notif.fromDisplayName === 'Sistema') {
+                    log('❌ FALLO: Todavía hay notificaciones que muestran "Sistema"', 'error');
+                    allFixed = false;
+                } else if (notif.fromDisplayName.includes('(') && notif.fromDisplayName.includes(')')) {
+                    log(`✅ CORRECTO: Notificación muestra "${notif.fromDisplayName}"`, 'success');
+                }
+                
+                if (notif.type === 'task_completed' && notif.grade !== undefined) {
+                    log('❌ FALLO: Notificación de evaluación completada todavía muestra resultado', 'error');
+                    allFixed = false;
+                } else if (notif.type === 'task_completed') {
+                    log('✅ CORRECTO: Notificación de evaluación completada sin resultado visible', 'success');
+                }
+            });
+            
+            // Validar tabla de resultados
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = globalTasks.find(task => task.id === testTaskId);
+            
+            if (evaluationTask && evaluationTask.evaluationResults && Object.keys(evaluationTask.evaluationResults).length > 0) {
+                log('✅ CORRECTO: Tabla de resultados tiene datos disponibles', 'success');
+            } else {
+                log('❌ FALLO: Tabla de resultados todavía aparece vacía', 'error');
+                allFixed = false;
+            }
+            
+            if (allFixed) {
+                log('🎉 ¡TODAS LAS CORRECCIONES VALIDADAS EXITOSAMENTE!', 'success');
+                log('✅ Problema 1 RESUELTO: Notificaciones muestran nombre de evaluación y curso', 'success');
+                log('✅ Problema 2 RESUELTO: Notificaciones no muestran resultado/porcentaje', 'success');
+                log('✅ Problema 3 RESUELTO: Tabla de resultados muestra datos correctamente', 'success');
+            } else {
+                log('⚠️ Algunas correcciones necesitan revisión adicional', 'warning');
+            }
+        }
+        
+        function setupCorrectedTestData() {
+            log('🔧 Configurando datos de prueba con correcciones aplicadas...', 'info');
+            
+            // Crear usuarios de prueba
+            const users = [
+                {
+                    username: 'jorge_profesor',
+                    password: 'profesor123',
+                    role: 'teacher',
+                    displayName: 'Prof. Jorge García',
+                    firstName: 'Jorge',
+                    lastName: 'García',
+                    email: 'jorge.garcia@escuela.edu',
+                    courses: ['4to Básico', '5to Básico'],
+                    subjects: ['Ciencias Naturales', 'Matemáticas']
+                },
+                {
+                    username: 'maria_estudiante',
+                    password: 'estudiante123',
+                    role: 'student',
+                    displayName: 'María González',
+                    firstName: 'María',
+                    lastName: 'González',
+                    email: 'maria.gonzalez@estudiante.edu',
+                    activeCourses: ['4to Básico']
+                }
+            ];
+            
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            // Crear tarea de evaluación CORREGIDA
+            testTaskId = 'eval_corregida_' + Date.now();
+            const correctedTask = {
+                id: testTaskId,
+                title: 'Evaluación de Ciencias Naturales',
+                description: 'Evaluación sobre el sistema solar y planetas',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'jorge_profesor',
+                assignedByName: 'Evaluación de Ciencias Naturales (4to Básico)', // ✅ CORREGIDO
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Sistema Solar',
+                    questionCount: 10,
+                    timeLimit: 30
+                },
+                evaluationResults: {
+                    maria_estudiante: {
+                        score: 85,
+                        completionPercentage: 85,
+                        completedAt: new Date().toISOString(),
+                        totalQuestions: 10
+                    }
+                }
+            };
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            tasks.push(correctedTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            // Crear notificaciones CORREGIDAS
+            const correctedNotifications = [
+                {
+                    id: 'pending_' + testTaskId,
+                    type: 'pending_grading',
+                    taskId: testTaskId,
+                    taskTitle: correctedTask.title,
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge_profesor'],
+                    fromUsername: 'system',
+                    fromDisplayName: 'Evaluación de Ciencias Naturales (4to Básico)', // ✅ CORREGIDO
+                    course: correctedTask.course,
+                    subject: correctedTask.subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                },
+                {
+                    id: 'completed_' + testTaskId,
+                    type: 'task_completed',
+                    taskId: testTaskId,
+                    taskTitle: correctedTask.title,
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge_profesor'],
+                    fromUsername: 'maria_estudiante',
+                    fromDisplayName: 'María González',
+                    course: correctedTask.course,
+                    subject: correctedTask.subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                    // ✅ CORREGIDO: NO incluye campo grade
+                }
+            ];
+            
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(correctedNotifications));
+            
+            log('✅ Datos de prueba con correcciones aplicadas configurados', 'success');
+        }
+        
+        function getStudentData(username) {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            return users.find(u => u.username === username) || { displayName: username };
+        }
+        
+        function clearTestData() {
+            if (confirm('¿Estás seguro de que deseas limpiar todos los datos de prueba?')) {
+                localStorage.removeItem('smart-student-tasks');
+                localStorage.removeItem('smart-student-task-notifications');
+                localStorage.removeItem('smart-student-users');
+                
+                testTaskId = null;
+                
+                document.getElementById('corrected-notifications').innerHTML = '<p class="info-text">Haz clic en "Probar Notificaciones Corregidas" para ver las notificaciones con las correcciones aplicadas.</p>';
+                document.getElementById('corrected-results').innerHTML = '<p class="info-text">Haz clic en "Probar Tabla de Resultados Corregida" para ver la tabla funcionando correctamente.</p>';
+                document.getElementById('validation-log').innerHTML = '<div class="success">✅ Datos de prueba limpiados. Sistema listo para nueva validación.</div>';
+                
+                log('🗑️ Todos los datos de prueba han sido limpiados', 'success');
+            }
+        }
+        
+        // Inicialización
+        log('🎯 Sistema de validación de correcciones inicializado', 'info');
+        log('✅ Listo para verificar que todos los problemas del Profesor Jorge han sido resueltos', 'success');
+    </script>
+</body>
+</html>

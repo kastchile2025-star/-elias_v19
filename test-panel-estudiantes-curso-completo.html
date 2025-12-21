@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 PRUEBA: Panel de Estudiantes - Curso Completo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .success { border-color: #27ae60; background-color: #d5f4e6; }
+        .error { border-color: #e74c3c; background-color: #fadbd8; }
+        .warning { border-color: #f39c12; background-color: #fef5e7; }
+        .info { border-color: #3498db; background-color: #ebf3fd; }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result-box {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            background: #2c3e50;
+            color: #ecf0f1;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .student-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .problem-before {
+            background: #fadbd8;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .solution-after {
+            background: #d5f4e6;
+            border-left: 4px solid #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 PRUEBA: Panel de Estudiantes - Curso Completo</h1>
+            <p>Verificación de la corrección para mostrar estudiantes en tareas asignadas a curso completo</p>
+        </div>
+
+        <div class="test-section info">
+            <h3>📋 Problema Corregido</h3>
+            <p><strong>Antes:</strong> Las tareas asignadas a curso completo mostraban "No hay estudiantes asignados" porque la función era muy restrictiva.</p>
+            <p><strong>Ahora:</strong> Se muestran todos los estudiantes que están en el curso, sin restricciones adicionales de asignación específica al profesor.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Simulación del Problema y Solución</h3>
+            
+            <button onclick="simularProblemaAnterior()">
+                📊 Simular Lógica Anterior (Problemática)
+            </button>
+            <div id="resultado-anterior" class="result-box"></div>
+
+            <button onclick="simularSolucionActual()">
+                ✅ Simular Lógica Corregida (Actual)
+            </button>
+            <div id="resultado-actual" class="result-box"></div>
+
+            <button onclick="compararResultados()">
+                🔍 Comparar Antes vs Después
+            </button>
+            <div id="resultado-comparacion"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Datos de Prueba</h3>
+            
+            <button onclick="configurarDatosPrueba()">
+                📝 Configurar Datos de Prueba
+            </button>
+            <div id="resultado-configuracion" class="result-box"></div>
+
+            <button onclick="probarEnSistemaReal()">
+                🎯 Probar en Sistema Real
+            </button>
+            <div id="resultado-sistema" class="result-box"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Análisis de Resultados</h3>
+            <div id="panel-analisis"></div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de prueba simulados
+        const datosPrueba = {
+            profesor: {
+                id: 'prof_001',
+                username: 'prof_jorge',
+                displayName: 'Prof. Jorge García',
+                role: 'teacher'
+            },
+            estudiantes: [
+                // Estudiante SIN asignaciones específicas (problema típico)
+                {
+                    id: 'est_001',
+                    username: 'felipe_est',
+                    displayName: 'Felipe Estudiante',
+                    role: 'student',
+                    activeCourses: ['ciencias_5to']
+                    // Sin assignedTeacher, assignedTeachers, ni assignedTeacherId
+                },
+                // Estudiante CON asignación específica
+                {
+                    id: 'est_002',
+                    username: 'maria_est',
+                    displayName: 'María González',
+                    role: 'student',
+                    activeCourses: ['ciencias_5to'],
+                    assignedTeacher: 'prof_jorge'
+                },
+                // Estudiante con asignación por ID
+                {
+                    id: 'est_003',
+                    username: 'carlos_est',
+                    displayName: 'Carlos Rodríguez',
+                    role: 'student',
+                    activeCourses: ['ciencias_5to'],
+                    assignedTeacherId: 'prof_001'
+                },
+                // Estudiante en múltiples cursos
+                {
+                    id: 'est_004',
+                    username: 'ana_est',
+                    displayName: 'Ana López',
+                    role: 'student',
+                    activeCourses: ['ciencias_5to', 'matematicas_5to'],
+                    assignedTeachers: { 'Ciencias': 'prof_jorge', 'Matemáticas': 'prof_math' }
+                },
+                // Estudiante de otro curso (no debería aparecer)
+                {
+                    id: 'est_005',
+                    username: 'luis_est',
+                    displayName: 'Luis Martínez',
+                    role: 'student',
+                    activeCourses: ['historia_5to']
+                }
+            ],
+            tarea: {
+                id: 'task_001',
+                title: 'Tarea de Ciencias para Todo el Curso',
+                course: 'ciencias_5to',
+                assignedTo: 'course',
+                assignedById: 'prof_001'
+            }
+        };
+
+        function log(message, type = 'info') {
+            console.log(message);
+            return `[${new Date().toLocaleTimeString()}] ${message}\n`;
+        }
+
+        // Simulación de la lógica ANTERIOR (problemática)
+        function getStudentsFromCourseRelevantToTask_Anterior(courseId, teacherId, currentTeacherUsername, allUsers) {
+            return allUsers.filter(u => {
+                const isStudent = u.role === 'student';
+                const isInCourse = u.activeCourses?.includes(courseId);
+                
+                // Lógica anterior MUY RESTRICTIVA
+                const isAssignedToTeacher = 
+                    // Método 1: assignedTeacher (string con username)
+                    (currentTeacherUsername && u.assignedTeacher === currentTeacherUsername) ||
+                    // Método 2: assignedTeachers (objeto con asignaturas)
+                    (currentTeacherUsername && u.assignedTeachers && Object.values(u.assignedTeachers).includes(currentTeacherUsername)) ||
+                    // Método 3: assignedTeacherId (si existe, comparar con teacher ID)
+                    (teacherId && u.assignedTeacherId === teacherId) ||
+                    // Método 4: Si no hay asignaciones específicas, incluir todos los estudiantes del curso
+                    (!u.assignedTeacher && !u.assignedTeachers && !u.assignedTeacherId);
+                
+                return isStudent && isInCourse && isAssignedToTeacher;
+            }).map(u => ({
+                id: u.id,
+                username: u.username,
+                displayName: u.displayName || u.username
+            }));
+        }
+
+        // Simulación de la lógica ACTUAL (corregida)
+        function getStudentsFromCourseRelevantToTask_Actual(courseId, teacherId, currentTeacherUsername, allUsers) {
+            return allUsers.filter(u => {
+                const isStudent = u.role === 'student';
+                const isInCourse = u.activeCourses?.includes(courseId);
+                
+                // Lógica nueva SIMPLIFICADA
+                if (isStudent && isInCourse) {
+                    return true;
+                }
+                
+                return false;
+            }).map(u => ({
+                id: u.id,
+                username: u.username,
+                displayName: u.displayName || u.username
+            }));
+        }
+
+        function simularProblemaAnterior() {
+            let resultado = '';
+            
+            resultado += log('🔍 === SIMULACIÓN: LÓGICA ANTERIOR (PROBLEMÁTICA) ===');
+            resultado += log('📋 Analizando estudiantes con lógica restrictiva...');
+            
+            const estudiantes = getStudentsFromCourseRelevantToTask_Anterior(
+                datosPrueba.tarea.course,
+                datosPrueba.tarea.assignedById,
+                datosPrueba.profesor.username,
+                datosPrueba.estudiantes
+            );
+            
+            resultado += log(`👥 Estudiantes encontrados: ${estudiantes.length}`);
+            
+            if (estudiantes.length === 0) {
+                resultado += log('❌ PROBLEMA: "No hay estudiantes asignados a esta tarea"');
+                resultado += log('🔍 Análisis del filtrado:');
+                
+                datosPrueba.estudiantes.forEach(est => {
+                    if (est.activeCourses?.includes(datosPrueba.tarea.course)) {
+                        const tieneAsignacion = 
+                            est.assignedTeacher === datosPrueba.profesor.username ||
+                            (est.assignedTeachers && Object.values(est.assignedTeachers).includes(datosPrueba.profesor.username)) ||
+                            est.assignedTeacherId === datosPrueba.profesor.id ||
+                            (!est.assignedTeacher && !est.assignedTeachers && !est.assignedTeacherId);
+                        
+                        resultado += log(`   • ${est.displayName}: en curso=✅, asignado=${tieneAsignacion ? '✅' : '❌'}`);
+                        if (!tieneAsignacion) {
+                            resultado += log('     Razón: No está específicamente asignado al profesor');
+                        }
+                    }
+                });
+            } else {
+                estudiantes.forEach(est => {
+                    resultado += log(`   ✅ ${est.displayName} (${est.username})`);
+                });
+            }
+            
+            document.getElementById('resultado-anterior').textContent = resultado;
+        }
+
+        function simularSolucionActual() {
+            let resultado = '';
+            
+            resultado += log('✅ === SIMULACIÓN: LÓGICA CORREGIDA (ACTUAL) ===');
+            resultado += log('📋 Analizando estudiantes con lógica simplificada...');
+            
+            const estudiantes = getStudentsFromCourseRelevantToTask_Actual(
+                datosPrueba.tarea.course,
+                datosPrueba.tarea.assignedById,
+                datosPrueba.profesor.username,
+                datosPrueba.estudiantes
+            );
+            
+            resultado += log(`👥 Estudiantes encontrados: ${estudiantes.length}`);
+            
+            if (estudiantes.length > 0) {
+                resultado += log('✅ SOLUCIÓN: Todos los estudiantes del curso aparecen');
+                estudiantes.forEach(est => {
+                    resultado += log(`   ✅ ${est.displayName} (${est.username})`);
+                });
+            } else {
+                resultado += log('❌ Error inesperado: No se encontraron estudiantes');
+            }
+            
+            resultado += log('');
+            resultado += log('🔍 Criterios aplicados:');
+            resultado += log('   1. role === "student" ✅');
+            resultado += log('   2. activeCourses incluye el curso ✅');
+            resultado += log('   3. Sin restricciones adicionales ✅');
+            
+            document.getElementById('resultado-actual').textContent = resultado;
+        }
+
+        function compararResultados() {
+            const estudiantesAnterior = getStudentsFromCourseRelevantToTask_Anterior(
+                datosPrueba.tarea.course,
+                datosPrueba.tarea.assignedById,
+                datosPrueba.profesor.username,
+                datosPrueba.estudiantes
+            );
+
+            const estudiantesActual = getStudentsFromCourseRelevantToTask_Actual(
+                datosPrueba.tarea.course,
+                datosPrueba.tarea.assignedById,
+                datosPrueba.profesor.username,
+                datosPrueba.estudiantes
+            );
+
+            let html = '<h4>📊 Comparación de Resultados</h4>';
+            
+            html += '<table class="comparison-table">';
+            html += '<thead><tr><th>Aspecto</th><th>Lógica Anterior</th><th>Lógica Corregida</th><th>Mejora</th></tr></thead>';
+            html += '<tbody>';
+            
+            html += '<tr>';
+            html += '<td><strong>Estudiantes Encontrados</strong></td>';
+            html += `<td>${estudiantesAnterior.length}</td>`;
+            html += `<td>${estudiantesActual.length}</td>`;
+            html += `<td>${estudiantesActual.length > estudiantesAnterior.length ? '✅ Mejorado' : '📊 Igual'}</td>`;
+            html += '</tr>';
+            
+            html += '<tr>';
+            html += '<td><strong>Panel de Estudiantes</strong></td>';
+            html += `<td>${estudiantesAnterior.length === 0 ? '❌ Vacío' : '✅ Con datos'}</td>`;
+            html += `<td>${estudiantesActual.length === 0 ? '❌ Vacío' : '✅ Con datos'}</td>`;
+            html += `<td>${estudiantesActual.length > 0 ? '✅ Funcional' : '❌ Problema'}</td>`;
+            html += '</tr>';
+            
+            html += '<tr>';
+            html += '<td><strong>Complejidad de Lógica</strong></td>';
+            html += '<td>🔴 Alta (4 verificaciones)</td>';
+            html += '<td>🟢 Baja (2 verificaciones)</td>';
+            html += '<td>✅ Simplificado</td>';
+            html += '</tr>';
+            
+            html += '</tbody></table>';
+            
+            // Detalles de estudiantes
+            html += '<h4>👥 Estudiantes Detectados</h4>';
+            
+            html += '<div class="student-item problem-before">';
+            html += '<h5>❌ Lógica Anterior (Problemática)</h5>';
+            if (estudiantesAnterior.length === 0) {
+                html += '<p><em>"No hay estudiantes asignados a esta tarea"</em></p>';
+            } else {
+                estudiantesAnterior.forEach(est => {
+                    html += `<p>• ${est.displayName} (${est.username})</p>`;
+                });
+            }
+            html += '</div>';
+            
+            html += '<div class="student-item solution-after">';
+            html += '<h5>✅ Lógica Corregida (Actual)</h5>';
+            if (estudiantesActual.length === 0) {
+                html += '<p><em>"No hay estudiantes asignados a esta tarea"</em></p>';
+            } else {
+                estudiantesActual.forEach(est => {
+                    html += `<p>• ${est.displayName} (${est.username})</p>`;
+                });
+            }
+            html += '</div>';
+            
+            document.getElementById('resultado-comparacion').innerHTML = html;
+        }
+
+        function configurarDatosPrueba() {
+            let resultado = '';
+            
+            try {
+                // Guardar datos de prueba en localStorage
+                const usuariosExistentes = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const usuariosFiltrados = usuariosExistentes.filter(u => !u.username.includes('_test_panel'));
+                
+                const nuevosUsuarios = [
+                    datosPrueba.profesor,
+                    ...datosPrueba.estudiantes.map(est => ({
+                        ...est,
+                        username: est.username + '_test_panel'
+                    }))
+                ];
+                
+                const usuariosFinales = [...usuariosFiltrados, ...nuevosUsuarios];
+                localStorage.setItem('smart-student-users', JSON.stringify(usuariosFinales));
+                
+                // Crear tarea de prueba
+                const tareasExistentes = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const tareasLimpiadas = tareasExistentes.filter(t => !t.id.includes('_test_panel'));
+                
+                const tareaPrueba = {
+                    ...datosPrueba.tarea,
+                    id: datosPrueba.tarea.id + '_test_panel',
+                    title: datosPrueba.tarea.title + ' (Prueba)'
+                };
+                
+                tareasLimpiadas.push(tareaPrueba);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tareasLimpiadas));
+                
+                resultado += log('✅ Datos de prueba configurados en localStorage');
+                resultado += log(`👥 ${nuevosUsuarios.length} usuarios creados`);
+                resultado += log('📝 1 tarea de prueba creada');
+                resultado += log('');
+                resultado += log('🔍 Usuarios creados:');
+                nuevosUsuarios.forEach(user => {
+                    resultado += log(`   • ${user.displayName} (${user.username})`);
+                });
+                
+            } catch (error) {
+                resultado += log(`❌ Error: ${error.message}`);
+            }
+            
+            document.getElementById('resultado-configuracion').textContent = resultado;
+        }
+
+        function probarEnSistemaReal() {
+            let resultado = '';
+            
+            try {
+                resultado += log('🎯 === PRUEBA EN SISTEMA REAL ===');
+                
+                // Verificar si estamos en el entorno correcto
+                if (typeof localStorage === 'undefined') {
+                    resultado += log('❌ localStorage no disponible');
+                    document.getElementById('resultado-sistema').textContent = resultado;
+                    return;
+                }
+                
+                // Obtener datos reales
+                const usuarios = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const tareas = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const usuarioActual = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+                
+                resultado += log(`👥 Usuarios en sistema: ${usuarios.length}`);
+                resultado += log(`📝 Tareas en sistema: ${tareas.length}`);
+                resultado += log(`👨‍🏫 Usuario actual: ${usuarioActual.displayName || usuarioActual.username || 'No logueado'}`);
+                
+                // Encontrar tareas de curso
+                const tareasDelCurso = tareas.filter(t => t.assignedTo === 'course');
+                resultado += log(`📚 Tareas de curso: ${tareasDelCurso.length}`);
+                
+                if (tareasDelCurso.length === 0) {
+                    resultado += log('ℹ️ No hay tareas asignadas a curso completo para probar');
+                    resultado += log('💡 Crear una tarea asignada a "Todo el curso" para probar');
+                } else {
+                    // Probar con la primera tarea de curso
+                    const tarea = tareasDelCurso[0];
+                    resultado += log(`🧪 Probando con tarea: "${tarea.title}"`);
+                    resultado += log(`📚 Curso: ${tarea.course}`);
+                    
+                    // Simular función corregida
+                    const estudiantesCorregidos = usuarios.filter(u => {
+                        const isStudent = u.role === 'student';
+                        const isInCourse = u.activeCourses?.includes(tarea.course);
+                        return isStudent && isInCourse;
+                    });
+                    
+                    resultado += log(`✅ Estudiantes que deberían aparecer: ${estudiantesCorregidos.length}`);
+                    
+                    if (estudiantesCorregidos.length > 0) {
+                        resultado += log('📋 Estudiantes encontrados:');
+                        estudiantesCorregidos.forEach(est => {
+                            resultado += log(`   • ${est.displayName || est.username} (${est.username})`);
+                        });
+                        resultado += log('');
+                        resultado += log('✅ La corrección debería funcionar correctamente');
+                        resultado += log('💡 Ve a /dashboard/tareas y verifica que estos estudiantes aparecen');
+                    } else {
+                        resultado += log('⚠️ No se encontraron estudiantes en el curso');
+                        resultado += log('💡 Verifica que hay estudiantes con activeCourses que incluyen este curso');
+                    }
+                }
+                
+            } catch (error) {
+                resultado += log(`❌ Error: ${error.message}`);
+            }
+            
+            document.getElementById('resultado-sistema').textContent = resultado;
+        }
+
+        // Ejecutar simulaciones iniciales al cargar
+        window.addEventListener('load', function() {
+            console.log('🧪 Sistema de prueba de panel de estudiantes cargado');
+            
+            // Mostrar análisis inicial
+            const analisis = document.getElementById('panel-analisis');
+            analisis.innerHTML = `
+                <h4>🔍 Análisis del Problema Corregido</h4>
+                <p><strong>Problema identificado:</strong> La función <code>getStudentsFromCourseRelevantToTask</code> era demasiado restrictiva.</p>
+                <p><strong>Solución implementada:</strong> Simplificar la lógica para mostrar todos los estudiantes del curso cuando la tarea está asignada a curso completo.</p>
+                <p><strong>Impacto:</strong> Los profesores ahora ven todos los estudiantes del curso en el panel, permitiendo gestión completa de calificaciones.</p>
+                <div class="test-section success">
+                    <h5>✅ Beneficios de la Corrección</h5>
+                    <ul>
+                        <li><strong>Panel completo:</strong> Muestra todos los estudiantes del curso</li>
+                        <li><strong>Lógica simplificada:</strong> Menos verificaciones complejas</li>
+                        <li><strong>Mejor UX:</strong> No más mensajes de "No hay estudiantes asignados"</li>
+                        <li><strong>Retrocompatible:</strong> No afecta tareas específicas</li>
+                    </ul>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

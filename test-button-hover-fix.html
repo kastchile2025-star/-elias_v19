@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Estado Hover del Botón Calificar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .button-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .button-demo {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .button-demo h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .state-demo {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .hover-simulation {
+            background: #e3f2fd !important;
+            border: 2px solid #2196f3 !important;
+        }
+        .problem {
+            background: #ffebee !important;
+            border: 2px solid #f44336 !important;
+        }
+        .solution {
+            background: #e8f5e8 !important;
+            border: 2px solid #4caf50 !important;
+        }
+        .interactive-demo {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .table-demo {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table-demo th, .table-demo td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .table-demo th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-entregada {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .status-pendiente {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Prueba - Estado Hover del Botón Calificar</h1>
+    <p>Esta prueba demuestra la mejora en la visibilidad del botón "Calificar" cuando el cursor está sobre él (estado hover).</p>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Problema Identificado</h2>
+        <div class="button-comparison">
+            <div class="button-demo problem">
+                <h4>❌ ANTES (Problema)</h4>
+                <p>Sin hover:text-orange-900 específico</p>
+                <div class="state-demo">
+                    <strong>Estado Normal:</strong><br>
+                    <button class="bg-orange-50 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mt-2">
+                        Calificar
+                    </button>
+                </div>
+                <div class="state-demo hover-simulation">
+                    <strong>Estado Hover (problemático):</strong><br>
+                    <button class="bg-orange-100 text-orange-700 border border-orange-200 px-3 py-1 rounded text-sm mt-2">
+                        Calificar
+                    </button>
+                    <br><small>❌ Texto poco visible en hover</small>
+                </div>
+            </div>
+            
+            <div class="button-demo solution">
+                <h4>✅ DESPUÉS (Solucionado)</h4>
+                <p>Con hover:text-orange-900 explícito</p>
+                <div class="state-demo">
+                    <strong>Estado Normal:</strong><br>
+                    <button class="bg-orange-50 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mt-2">
+                        Calificar
+                    </button>
+                </div>
+                <div class="state-demo hover-simulation">
+                    <strong>Estado Hover (mejorado):</strong><br>
+                    <button class="bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mt-2">
+                        Calificar
+                    </button>
+                    <br><small>✅ Texto claramente visible</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Demostración Interactiva</h2>
+        <div class="interactive-demo">
+            <h3>Pasa el cursor sobre estos botones para ver la diferencia:</h3>
+            
+            <div style="margin: 20px 0;">
+                <strong>Botón PROBLEMÁTICO (sin hover:text específico):</strong><br>
+                <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mt-2 transition-all duration-200">
+                    Calificar (problemático)
+                </button>
+                <br><small class="text-red-600">⚠️ Nota: El texto puede volverse menos visible en hover</small>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <strong>Botón CORREGIDO (con hover:text-orange-900):</strong><br>
+                <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 hover:text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm mt-2 transition-all duration-200">
+                    Calificar (corregido)
+                </button>
+                <br><small class="text-green-600">✅ El texto mantiene visibilidad en hover</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Contexto en Tabla de Estudiantes</h2>
+        <table class="table-demo">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Estado</th>
+                    <th>Fecha Entrega</th>
+                    <th>Calificación</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Luis Estudiante</td>
+                    <td><span class="status-badge status-pendiente">Pendiente</span></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><span class="text-gray-500 text-sm">Sin entrega</span></td>
+                </tr>
+                <tr>
+                    <td>Sofia Estudiante</td>
+                    <td><span class="status-badge status-entregada">Entregada</span></td>
+                    <td>25 jun 2025, 23:03</td>
+                    <td>Sin calificar</td>
+                    <td>
+                        <button class="bg-orange-50 hover:bg-orange-100 text-orange-900 hover:text-orange-900 border border-orange-200 px-3 py-1 rounded text-sm transition-all duration-200">
+                            Calificar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p><em>💡 Pasa el cursor sobre el botón "Calificar" para ver la mejora en visibilidad</em></p>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Especificaciones Técnicas</h2>
+        
+        <div class="state-demo">
+            <h4>🔧 Clases CSS Aplicadas:</h4>
+            <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+className="bg-orange-50 hover:bg-orange-100 text-orange-900 hover:text-orange-900 border-orange-200 
+           dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700"</pre>
+        </div>
+        
+        <div class="state-demo">
+            <h4>🎨 Colores Utilizados:</h4>
+            <ul>
+                <li><strong>Fondo normal:</strong> bg-orange-50 (#fff7ed)</li>
+                <li><strong>Fondo hover:</strong> hover:bg-orange-100 (#ffedd5)</li>
+                <li><strong>Texto normal:</strong> text-orange-900 (#7c2d12)</li>
+                <li><strong>Texto hover:</strong> hover:text-orange-900 (#7c2d12) ← ¡NUEVA ADICIÓN!</li>
+                <li><strong>Borde:</strong> border-orange-200 (#fed7aa)</li>
+            </ul>
+        </div>
+        
+        <div class="state-demo">
+            <h4>✅ Beneficios del Cambio:</h4>
+            <ul>
+                <li>Mantiene el contraste en estado hover</li>
+                <li>Evita que el texto se vuelva invisible</li>
+                <li>Mejora la experiencia de usuario</li>
+                <li>Cumple estándares de accesibilidad</li>
+                <li>Compatible con modo dark (sin cambios)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Comparación de Estados</h2>
+        
+        <div class="button-comparison">
+            <div class="button-demo">
+                <h4>Estado Normal</h4>
+                <button class="bg-orange-50 text-orange-900 border border-orange-200 px-4 py-2 rounded text-sm">
+                    Calificar Entrega
+                </button>
+            </div>
+            
+            <div class="button-demo">
+                <h4>Estado Hover (Mejorado)</h4>
+                <button class="bg-orange-100 text-orange-900 border border-orange-200 px-4 py-2 rounded text-sm">
+                    Calificar Entrega
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Agregar efectos visuales para demostrar el hover
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

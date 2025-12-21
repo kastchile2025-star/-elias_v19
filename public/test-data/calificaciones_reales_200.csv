@@ -1,0 +1,201 @@
+nombre,rut,curso,seccion,asignatura,tipo,fecha,nota
+Miguel Martinez,10.000.505-0,6to Básico,B,Lenguaje y Comunicacion,prueba,2025-03-03,53
+Sandra Molina,10.000.790-8,1ro Medio,B,Matematicas,evaluacion,2025-03-08,77
+Luis Martinez,10.000.405-4,5to Básico,B,Matematicas,tarea,2025-04-11,65
+Andres Herrera,10.001.013-5,4to Medio,A,Lenguaje y Comunicacion,evaluacion,2025-04-06,87
+Teresa Arancibia,10.000.568-9,7mo Básico,A,Ciencias Naturales,evaluacion,2025-05-08,64
+Sofia Carmona,10.000.295-7,4to Básico,A,Historia y Geografia,tarea,2025-08-28,89
+Raquel Diaz,10.000.657-K,8vo Básico,A,Historia y Geografia,tarea,2025-07-20,83
+Carla Arancibia,10.000.468-2,6to Básico,A,Ciencias Naturales,prueba,2025-04-28,95
+Mariana Castillo,10.000.378-3,5to Básico,A,Lenguaje y Comunicacion,evaluacion,2025-03-09,89
+Martin Carmona,10.000.245-0,3ro Básico,B,Historia y Geografia,evaluacion,2025-08-16,86
+Teresa Fernandez,10.000.552-2,7mo Básico,A,Ciencias Naturales,tarea,2025-08-20,91
+Miguel Herrera,10.000.513-1,6to Básico,B,Lenguaje y Comunicacion,tarea,2025-03-17,50
+Mariana Vera,10.000.361-9,5to Básico,A,Matematicas,prueba,2025-07-30,93
+Luis Caceres,10.000.435-6,5to Básico,B,Ciencias Naturales,prueba,2025-07-16,88
+Lucia Perez,10.000.103-9,2do Básico,A,Lenguaje y Comunicacion,tarea,2025-06-13,91
+Teresa Vera,10.000.561-1,7mo Básico,A,Lenguaje y Comunicacion,tarea,2025-05-16,92
+Javier Gonzalez,10.000.301-5,4to Básico,A,Matematicas,prueba,2025-06-03,49
+Lucia Castillo,10.000.128-4,2do Básico,A,Matematicas,prueba,2025-08-27,59
+Teresa Sepulveda,10.000.597-2,7mo Básico,B,Matematicas,prueba,2025-08-06,44
+Jose Cubillos,10.000.733-9,1ro Medio,A,Matematicas,tarea,2025-08-27,87
+Lucia Serrano,10.000.144-6,2do Básico,B,Lenguaje y Comunicacion,prueba,2025-03-02,42
+Juan Sepulveda,10.000.647-2,8vo Básico,A,Ciencias Naturales,evaluacion,2025-07-30,94
+Mariana Cruz,10.000.387-2,5to Básico,A,Lenguaje y Comunicacion,evaluacion,2025-03-27,96
+Raquel Campos,10.000.699-5,8vo Básico,B,Ciencias Naturales,tarea,2025-06-22,78
+Jose Rodriguez,10.000.710-K,8vo Básico,B,Ciencias Naturales,tarea,2025-05-01,99
+Juan Munoz,10.000.616-2,7mo Básico,B,Historia y Geografia,tarea,2025-05-09,78
+Pedro Nunez,10.000.082-2,1ro Básico,B,Historia y Geografia,prueba,2025-06-04,77
+Ana Ramirez,10.000.006-7,1ro Básico,A,Historia y Geografia,tarea,2025-06-23,92
+Andres Ibarra,10.001.030-5,4to Medio,A,Matematicas,tarea,2025-08-08,83
+Marcos Silva,10.000.815-7,2do Medio,A,Lenguaje y Comunicacion,tarea,2025-07-20,77
+Patricia Sepulveda,10.000.897-1,2do Medio,B,Matematicas,tarea,2025-05-29,67
+Jose Lopez,10.000.700-2,8vo Básico,B,Historia y Geografia,evaluacion,2025-03-15,46
+Pedro Vega,10.000.075-K,1ro Básico,B,Matematicas,tarea,2025-04-27,81
+Sofia Miranda,10.000.284-1,4to Básico,A,Lenguaje y Comunicacion,prueba,2025-05-07,80
+Teresa Vega,10.000.575-1,7mo Básico,A,Lenguaje y Comunicacion,prueba,2025-03-11,92
+Martin Diaz,10.000.207-8,3ro Básico,A,Matematicas,tarea,2025-05-03,61
+Andres Vega,10.001.025-9,4to Medio,A,Matematicas,evaluacion,2025-03-06,65
+Javier Cruz,10.000.337-6,4to Básico,B,Matematicas,prueba,2025-08-01,57
+Luis Caceres,10.000.435-6,5to Básico,B,Matematicas,prueba,2025-03-14,57
+Veronica Campos,10.000.999-4,4to Medio,A,Matematicas,tarea,2025-07-21,75
+Juan Arancibia,10.000.618-9,7mo Básico,B,Historia y Geografia,evaluacion,2025-06-09,78
+Ana Ibarra,10.000.030-K,1ro Básico,A,Lenguaje y Comunicacion,tarea,2025-04-02,94
+Raquel Serrano,10.000.694-4,8vo Básico,B,Historia y Geografia,evaluacion,2025-05-22,84
+Luis Cubillos,10.000.433-K,5to Básico,B,Matematicas,prueba,2025-08-13,69
+Teresa Soto,10.000.576-K,7mo Básico,A,Lenguaje y Comunicacion,evaluacion,2025-04-20,52
+Carlos Morales,10.000.159-4,2do Básico,B,Ciencias Naturales,prueba,2025-04-10,89
+Patricia Ibarra,10.000.880-7,2do Medio,B,Matematicas,evaluacion,2025-03-02,61
+Mariana Rojas,10.000.372-4,5to Básico,A,Matematicas,tarea,2025-04-30,75
+Andres Valenzuela,10.001.038-0,4to Medio,B,Matematicas,tarea,2025-06-04,97
+Lucia Lopez,10.000.100-4,2do Básico,A,Matematicas,tarea,2025-05-09,54
+Esteban Miranda,10.000.934-K,3ro Medio,A,Matematicas,prueba,2025-06-02,61
+Patricia Perez,10.000.853-K,2do Medio,A,Matematicas,evaluacion,2025-04-24,63
+Sandra Ibarra,10.000.780-0,1ro Medio,B,Matematicas,tarea,2025-07-15,73
+Carlos Castro,10.000.170-5,2do Básico,B,Matematicas,prueba,2025-03-16,100
+Marcos Mendez,10.000.823-8,2do Medio,A,Matematicas,prueba,2025-07-25,97
+Javier Serrano,10.000.344-9,4to Básico,B,Lenguaje y Comunicacion,tarea,2025-07-23,43
+Esteban Tapia,10.000.943-9,3ro Medio,A,Matematicas,evaluacion,2025-05-04,89
+Raquel Castillo,10.000.678-2,8vo Básico,B,Matematicas,prueba,2025-03-29,84
+Andres Rojas,10.001.022-4,4to Medio,A,Matematicas,prueba,2025-07-08,49
+Juan Bravo,10.000.624-3,7mo Básico,B,Matematicas,tarea,2025-04-08,57
+Mariana Cruz,10.000.387-2,5to Básico,A,Historia y Geografia,tarea,2025-07-30,89
+Patricia Arancibia,10.000.868-8,2do Medio,B,Matematicas,prueba,2025-03-06,70
+Marcos Ramirez,10.000.806-8,1ro Medio,B,Matematicas,tarea,2025-08-21,58
+Marcos Gomez,10.000.804-1,1ro Medio,B,Historia y Geografia,tarea,2025-06-30,50
+Jose Silva,10.000.715-0,8vo Básico,B,Matematicas,tarea,2025-05-30,67
+Jose Rodriguez,10.000.710-K,8vo Básico,B,Matematicas,evaluacion,2025-07-19,68
+Pedro Nunez,10.000.082-2,1ro Básico,B,Lenguaje y Comunicacion,tarea,2025-03-06,53
+Juan Leiva,10.000.642-1,8vo Básico,A,Lenguaje y Comunicacion,tarea,2025-07-14,61
+Jose Arancibia,10.000.718-5,8vo Básico,B,Ciencias Naturales,evaluacion,2025-05-19,86
+Sofia Ramirez,10.000.256-6,3ro Básico,B,Historia y Geografia,prueba,2025-07-26,42
+Esteban Rios,10.000.912-9,3ro Medio,A,Matematicas,prueba,2025-07-10,70
+Andres Quinteros,10.001.046-1,4to Medio,B,Matematicas,tarea,2025-04-16,72
+Martin Cubillos,10.000.233-7,3ro Básico,B,Lenguaje y Comunicacion,prueba,2025-03-03,96
+Patricia Leiva,10.000.892-0,2do Medio,B,Matematicas,prueba,2025-03-24,85
+Veronica Silva,10.000.965-K,3ro Medio,B,Matematicas,tarea,2025-05-06,59
+Jose Rodriguez,10.000.710-K,8vo Básico,B,Historia y Geografia,tarea,2025-08-03,48
+Ana Gonzalez,10.000.001-6,1ro Básico,A,Historia y Geografia,evaluacion,2025-07-28,79
+Carla Soto,10.000.476-3,6to Básico,A,Historia y Geografia,evaluacion,2025-04-06,69
+Sandra Salinas,10.000.781-9,1ro Medio,B,Matematicas,tarea,2025-08-16,57
+Jose Palma,10.000.721-5,1ro Medio,A,Matematicas,evaluacion,2025-04-08,50
+Martin Aguirre,10.000.241-8,3ro Básico,B,Historia y Geografia,evaluacion,2025-04-25,86
+Juan Sepulveda,10.000.647-2,8vo Básico,A,Historia y Geografia,tarea,2025-05-31,86
+Miguel Castillo,10.000.528-K,6to Básico,B,Lenguaje y Comunicacion,prueba,2025-07-23,90
+Carlos Martinez,10.000.155-1,2do Básico,B,Historia y Geografia,tarea,2025-03-03,66
+Martin Perez,10.000.203-5,3ro Básico,A,Lenguaje y Comunicacion,prueba,2025-06-08,46
+Andres Quinteros,10.001.046-1,4to Medio,B,Matematicas,tarea,2025-05-14,87
+Pedro Valenzuela,10.000.088-1,1ro Básico,B,Ciencias Naturales,prueba,2025-07-22,56
+Pedro Cruz,10.000.087-3,1ro Básico,B,Historia y Geografia,tarea,2025-03-04,49
+Andres Sepulveda,10.001.047-K,4to Medio,B,Matematicas,prueba,2025-04-24,56
+Sandra Ortiz,10.000.777-0,1ro Medio,B,Matematicas,evaluacion,2025-06-06,90
+Patricia Rodriguez,10.000.860-2,2do Medio,B,Matematicas,evaluacion,2025-05-09,72
+Mariana Tapia,10.000.393-7,5to Básico,A,Lenguaje y Comunicacion,prueba,2025-06-11,46
+Veronica Carmona,10.000.995-1,4to Medio,A,Matematicas,tarea,2025-04-01,76
+Esteban Rojas,10.000.922-6,3ro Medio,A,Matematicas,evaluacion,2025-05-20,60
+Teresa Nunez,10.000.582-4,7mo Básico,A,Matematicas,prueba,2025-04-09,64
+Jose Nunez,10.000.732-0,1ro Medio,A,Matematicas,tarea,2025-08-12,86
+Sandra Palma,10.000.771-1,1ro Medio,B,Matematicas,prueba,2025-06-22,52
+Javier Fernandez,10.000.302-3,4to Básico,A,Historia y Geografia,prueba,2025-07-25,99
+Carla Mendez,10.000.473-9,6to Básico,A,Lenguaje y Comunicacion,evaluacion,2025-08-27,57
+Patricia Leiva,10.000.892-0,2do Medio,B,Matematicas,tarea,2025-08-17,85
+Miguel Tapia,10.000.543-3,7mo Básico,A,Ciencias Naturales,evaluacion,2025-06-02,44
+Marcos Bravo,10.000.824-6,2do Medio,A,Lenguaje y Comunicacion,evaluacion,2025-06-14,93
+Veronica Herrera,10.000.963-3,3ro Medio,B,Matematicas,prueba,2025-05-11,40
+Miguel Ortiz,10.000.527-1,6to Básico,B,Ciencias Naturales,evaluacion,2025-03-01,80
+Marcos Vera,10.000.811-4,2do Medio,A,Matematicas,prueba,2025-03-28,48
+Ana Cortes,10.000.029-6,1ro Básico,A,Historia y Geografia,tarea,2025-07-14,89
+Juan Salinas,10.000.631-6,8vo Básico,A,Matematicas,evaluacion,2025-04-11,49
+Jose Castro,10.000.720-7,1ro Medio,A,Matematicas,tarea,2025-04-27,49
+Marcos Gonzalez,10.000.801-7,1ro Medio,B,Matematicas,tarea,2025-07-08,43
+Luis Mendez,10.000.423-2,5to Básico,B,Historia y Geografia,prueba,2025-04-30,59
+Lucia Benitez,10.000.148-9,2do Básico,B,Ciencias Naturales,tarea,2025-05-24,49
+Andres Mendez,10.001.023-2,4to Medio,A,Historia y Geografia,evaluacion,2025-03-04,80
+Juan Lopez,10.000.600-6,7mo Básico,B,Matematicas,tarea,2025-04-21,72
+Catalina Rodriguez,10.001.060-7,4to Medio,B,Matematicas,tarea,2025-05-13,87
+Carlos Nunez,10.000.182-9,3ro Básico,A,Matematicas,evaluacion,2025-07-10,60
+Mariana Lopez,10.000.350-3,4to Básico,B,Historia y Geografia,evaluacion,2025-08-18,82
+Teresa Bravo,10.000.574-3,7mo Básico,A,Historia y Geografia,evaluacion,2025-08-13,78
+Marcos Molina,10.000.840-8,2do Medio,A,Lenguaje y Comunicacion,tarea,2025-03-07,92
+Catalina Arancibia,10.001.068-2,4to Medio,B,Matematicas,evaluacion,2025-08-15,80
+Veronica Ramirez,10.000.956-0,3ro Medio,B,Matematicas,prueba,2025-07-01,95
+Mariana Caceres,10.000.385-6,5to Básico,A,Matematicas,tarea,2025-04-25,43
+Marcos Sanchez,10.000.808-4,1ro Medio,B,Matematicas,prueba,2025-03-22,68
+Patricia Perez,10.000.853-K,2do Medio,A,Matematicas,tarea,2025-05-24,49
+Mariana Valenzuela,10.000.388-0,5to Básico,A,Ciencias Naturales,evaluacion,2025-06-23,75
+Marcos Gonzalez,10.000.801-7,1ro Medio,B,Matematicas,evaluacion,2025-06-05,92
+Jose Rodriguez,10.000.710-K,8vo Básico,B,Matematicas,tarea,2025-05-31,99
+Lucia Arancibia,10.000.118-7,2do Básico,A,Matematicas,tarea,2025-03-22,56
+Raquel Benitez,10.000.698-7,8vo Básico,B,Ciencias Naturales,prueba,2025-03-24,56
+Luis Palma,10.000.421-6,5to Básico,B,Matematicas,prueba,2025-03-24,95
+Catalina Navarro,10.001.064-K,4to Medio,B,Historia y Geografia,tarea,2025-06-08,67
+Jose Perez,10.000.703-7,8vo Básico,B,Matematicas,evaluacion,2025-03-14,95
+Raquel Gonzalez,10.000.651-0,8vo Básico,A,Lenguaje y Comunicacion,prueba,2025-03-05,93
+Ana Lopez,10.000.000-8,1ro Básico,A,Ciencias Naturales,tarea,2025-06-25,70
+Marcos Caceres,10.000.835-1,2do Medio,A,Lenguaje y Comunicacion,tarea,2025-05-02,56
+Jose Valenzuela,10.000.738-K,1ro Medio,A,Matematicas,evaluacion,2025-04-16,58
+Pedro Herrera,10.000.063-6,1ro Básico,B,Matematicas,tarea,2025-08-04,76
+Andres Serrano,10.001.044-5,4to Medio,B,Lenguaje y Comunicacion,prueba,2025-07-19,88
+Veronica Fuentes,10.000.967-6,3ro Medio,B,Historia y Geografia,tarea,2025-07-09,96
+Carlos Sanchez,10.000.158-6,2do Básico,B,Ciencias Naturales,evaluacion,2025-03-24,73
+Pedro Alvarez,10.000.069-5,1ro Básico,B,Matematicas,tarea,2025-06-25,70
+Martin Palma,10.000.221-3,3ro Básico,A,Ciencias Naturales,evaluacion,2025-08-12,89
+Martin Alvarez,10.000.219-1,3ro Básico,A,Matematicas,tarea,2025-06-10,74
+Martin Cubillos,10.000.233-7,3ro Básico,B,Matematicas,tarea,2025-05-23,93
+Mariana Rojas,10.000.372-4,5to Básico,A,Matematicas,evaluacion,2025-04-24,76
+Lucia Rios,10.000.112-8,2do Básico,A,Ciencias Naturales,prueba,2025-03-17,81
+Jose Tapia,10.000.743-6,1ro Medio,A,Matematicas,evaluacion,2025-07-28,88
+Raquel Fuentes,10.000.667-7,8vo Básico,A,Historia y Geografia,evaluacion,2025-08-21,54
+Carla Tapia,10.000.493-3,6to Básico,A,Lenguaje y Comunicacion,evaluacion,2025-05-10,65
+Veronica Diaz,10.000.957-9,3ro Medio,B,Matematicas,evaluacion,2025-05-13,82
+Miguel Ramirez,10.000.506-9,6to Básico,B,Lenguaje y Comunicacion,evaluacion,2025-03-31,54
+Sofia Palma,10.000.271-K,4to Básico,A,Matematicas,prueba,2025-05-16,77
+Mariana Lopez,10.000.350-3,4to Básico,B,Matematicas,prueba,2025-06-05,77
+Carla Salinas,10.000.481-K,6to Básico,A,Ciencias Naturales,prueba,2025-06-25,43
+Juan Ramirez,10.000.606-5,7mo Básico,B,Historia y Geografia,tarea,2025-04-06,44
+Catalina Rios,10.001.062-3,4to Medio,B,Historia y Geografia,tarea,2025-06-06,98
+Sandra Cortes,10.000.779-7,1ro Medio,B,Matematicas,prueba,2025-06-15,89
+Esteban Martinez,10.000.905-6,3ro Medio,A,Matematicas,tarea,2025-08-07,100
+Pedro Rodriguez,10.000.060-1,1ro Básico,B,Lenguaje y Comunicacion,prueba,2025-05-12,84
+Catalina Gomez,10.001.054-2,4to Medio,B,Historia y Geografia,tarea,2025-07-01,50
+Veronica Palma,10.000.971-4,3ro Medio,B,Matematicas,evaluacion,2025-06-21,61
+Esteban Benitez,10.000.948-K,3ro Medio,B,Matematicas,prueba,2025-06-04,47
+Marcos Soto,10.000.826-2,2do Medio,A,Matematicas,tarea,2025-04-25,75
+Marcos Gonzalez,10.000.801-7,1ro Medio,B,Matematicas,tarea,2025-07-06,45
+Mariana Silva,10.000.365-1,5to Básico,A,Ciencias Naturales,tarea,2025-06-01,92
+Veronica Gonzalez,10.000.951-K,3ro Medio,B,Matematicas,tarea,2025-03-29,76
+Javier Morales,10.000.309-0,4to Básico,A,Matematicas,prueba,2025-08-27,86
+Miguel Carmona,10.000.545-K,7mo Básico,A,Ciencias Naturales,tarea,2025-05-01,97
+Esteban Ortiz,10.000.927-7,3ro Medio,A,Historia y Geografia,evaluacion,2025-05-26,47
+Juan Morales,10.000.609-K,7mo Básico,B,Historia y Geografia,evaluacion,2025-06-06,92
+Sofia Sepulveda,10.000.297-3,4to Básico,A,Historia y Geografia,prueba,2025-06-25,82
+Miguel Cortes,10.000.529-8,6to Básico,B,Lenguaje y Comunicacion,tarea,2025-08-04,94
+Andres Sepulveda,10.001.047-K,4to Medio,B,Matematicas,evaluacion,2025-06-09,76
+Andres Campos,10.001.049-6,4to Medio,B,Matematicas,prueba,2025-04-18,87
+Teresa Ibarra,10.000.580-8,7mo Básico,A,Lenguaje y Comunicacion,evaluacion,2025-03-26,43
+Carla Vega,10.000.475-5,6to Básico,A,Lenguaje y Comunicacion,evaluacion,2025-08-19,93
+Martin Paredes,10.000.239-6,3ro Básico,B,Lenguaje y Comunicacion,tarea,2025-05-13,77
+Veronica Castro,10.000.970-6,3ro Medio,B,Matematicas,tarea,2025-05-15,45
+Patricia Cubillos,10.000.883-1,2do Medio,B,Matematicas,evaluacion,2025-06-21,58
+Andres Castillo,10.001.028-3,4to Medio,A,Matematicas,prueba,2025-03-24,53
+Luis Tapia,10.000.443-7,5to Básico,B,Lenguaje y Comunicacion,evaluacion,2025-07-26,55
+Teresa Cubillos,10.000.583-2,7mo Básico,A,Historia y Geografia,tarea,2025-03-04,47
+Patricia Mendez,10.000.873-4,2do Medio,B,Lenguaje y Comunicacion,evaluacion,2025-03-25,97
+Marcos Caceres,10.000.835-1,2do Medio,A,Matematicas,prueba,2025-06-23,98
+Marcos Campos,10.000.849-1,2do Medio,A,Matematicas,prueba,2025-04-25,53
+Ana Bravo,10.000.024-5,1ro Básico,A,Matematicas,evaluacion,2025-04-11,51
+Luis Leiva,10.000.442-9,5to Básico,B,Matematicas,tarea,2025-05-15,48
+Lucia Morales,10.000.109-8,2do Básico,A,Lenguaje y Comunicacion,tarea,2025-04-12,71
+Luis Vega,10.000.425-9,5to Básico,B,Ciencias Naturales,prueba,2025-08-26,87
+Pedro Silva,10.000.065-2,1ro Básico,B,Matematicas,tarea,2025-03-04,75
+Veronica Valenzuela,10.000.988-9,3ro Medio,B,Matematicas,prueba,2025-03-14,40
+Lucia Mendez,10.000.123-3,2do Básico,A,Lenguaje y Comunicacion,prueba,2025-03-03,41
+Martin Palma,10.000.221-3,3ro Básico,A,Lenguaje y Comunicacion,prueba,2025-07-25,48
+Sofia Salinas,10.000.281-7,4to Básico,A,Ciencias Naturales,evaluacion,2025-06-10,49
+Carlos Caceres,10.000.185-3,3ro Básico,A,Ciencias Naturales,tarea,2025-07-06,56
+Javier Morales,10.000.309-0,4to Básico,A,Historia y Geografia,evaluacion,2025-07-21,72
+Teresa Munoz,10.000.566-2,7mo Básico,A,Matematicas,tarea,2025-04-11,88
+Pedro Rodriguez,10.000.060-1,1ro Básico,B,Matematicas,evaluacion,2025-04-21,61
+Lucia Fernandez,10.000.102-0,2do Básico,A,Lenguaje y Comunicacion,prueba,2025-03-03,71
+Luis Fuentes,10.000.417-8,5to Básico,B,Historia y Geografia,tarea,2025-05-10,48
+Sofia Sepulveda,10.000.297-3,4to Básico,A,Ciencias Naturales,evaluacion,2025-06-10,76

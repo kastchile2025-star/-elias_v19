@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SmartStudent • Corregir Asignaciones</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;background:#0b1220;color:#e7eef7;margin:0;padding:24px}
+  .card{max-width:800px;margin:0 auto;background:#111a2b;border:1px solid #1f2a44;border-radius:12px;padding:24px}
+  h1{font-size:22px;margin:0 0 6px}
+  p{margin:8px 0 16px;color:#aecdff}
+  button{appearance:none;border:0;background:#2563eb;color:white;padding:12px 16px;border-radius:10px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  pre{white-space:pre-wrap;background:#0b1426;border:1px solid #1f2a44;border-radius:8px;padding:12px;max-height:300px;overflow:auto}
+  .ok{color:#22c55e}
+  .warn{color:#f59e0b}
+  .err{color:#ef4444}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Corregir Asignación de Estudiantes</h1>
+    <p>Este asistente ejecuta el fix oficial para asignar estudiantes a curso/sección y recalcular contadores (24×45).</p>
+    <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+      <button id="run">▶️ Corregir ahora</button>
+      <button id="verify">🔍 Verificar estado</button>
+      <span id="status"></span>
+    </div>
+    <pre id="log"></pre>
+  </div>
+<script>
+(function(){
+  const logEl = document.getElementById('log');
+  const statusEl = document.getElementById('status');
+  const append = (msg, cls) => {
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  };
+  const year = 2025;
+  function verify(){
+    try{
+      const students = JSON.parse(localStorage.getItem(`smart-student-students-${year}`)||'[]');
+      const ok = students.filter(s=>s.courseId && s.sectionId).length;
+      append(`Estudiantes: ${students.length} | Con asignación: ${ok} | ${(ok/students.length*100||0).toFixed(1)}%`, ok===students.length?'ok':'warn');
+      const sections = JSON.parse(localStorage.getItem(`smart-student-sections-${year}`)||'[]');
+      const lines = [];
+      const courses = JSON.parse(localStorage.getItem(`smart-student-courses-${year}`)||'[]');
+      const courseById = new Map(courses.map(c=>[c.id,c]));
+      for(const sec of sections){
+        const c = courseById.get(sec.courseId); lines.push(`${c?c.name:'?'} ${sec.name}: ${sec.studentCount||0}`);
+      }
+      append(lines.join('\n'));
+    }catch(e){ append('Error en verificación: '+e.message,'err'); }
+  }
+  async function runFix(){
+    document.getElementById('run').disabled = true;
+    statusEl.textContent = 'Ejecutando…';
+    append('Intentando cargar /test-data/corregir-asignaciones.js');
+    try{
+      const r = await fetch('/test-data/corregir-asignaciones.js', { cache: 'no-store' });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const code = await r.text();
+      append('Script descargado, ejecutando…');
+      // Ejecutar en ámbito global
+      (0,eval)(code);
+      append('✅ Script ejecutado');
+      statusEl.textContent = 'Completado';
+    }catch(e){
+      append('No se pudo descargar o ejecutar el script: '+e.message,'err');
+      append('Ejecutando rutina mínima integrada (fallback)…','warn');
+      try{
+        // Fallback mínimo: asignar por índice 24×45
+        const students = JSON.parse(localStorage.getItem(`smart-student-students-${year}`)||'[]');
+        const courses = JSON.parse(localStorage.getItem(`smart-student-courses-${year}`)||'[]');
+        const sections = JSON.parse(localStorage.getItem(`smart-student-sections-${year}`)||'[]');
+        const norm = s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\u00ba\u00b0]/g,'').replace(/(\d+)\s*(ro|do|to|mo|vo)/g,'$1').replace(/\s+/g,' ').trim();
+        const cMap = new Map(courses.map(c=>[norm(c.name), c]));
+        const secMap = new Map(sections.map(s=>[`${s.courseId}|${norm(s.name)}`, s]));
+        const blocks = [
+          ['1ro Básico','A',0,45],['1ro Básico','B',45,90],
+          ['2do Básico','A',90,135],['2do Básico','B',135,180],
+          ['3ro Básico','A',180,225],['3ro Básico','B',225,270],
+          ['4to Básico','A',270,315],['4to Básico','B',315,360],
+          ['5to Básico','A',360,405],['5to Básico','B',405,450],
+          ['6to Básico','A',450,495],['6to Básico','B',495,540],
+          ['7mo Básico','A',540,585],['7mo Básico','B',585,630],
+          ['8vo Básico','A',630,675],['8vo Básico','B',675,720],
+          ['1ro Medio','A',720,765],['1ro Medio','B',765,810],
+          ['2do Medio','A',810,855],['2do Medio','B',855,900],
+          ['3ro Medio','A',900,945],['3ro Medio','B',945,990],
+          ['4to Medio','A',990,1035],['4to Medio','B',1035,1080]
+        ];
+        let fixed=0; for(const [cName,sName,inicio,fin] of blocks){
+          const c = cMap.get(norm(cName)); if(!c) continue;
+          const sec = secMap.get(`${c.id}|${norm(sName)}`); if(!sec) continue;
+          for(let i=inicio;i<fin && i<students.length;i++){
+            const st=students[i]; if(st.courseId && st.sectionId) continue;
+            st.course=cName; st.section=sName; st.courseId=c.id; st.sectionId=sec.id; fixed++;
+          }
+        }
+        localStorage.setItem(`smart-student-students-${year}`, JSON.stringify(students));
+        const counts = new Map();
+        for(const st of students){ if(st.sectionId){ counts.set(st.sectionId,(counts.get(st.sectionId)||0)+1); } }
+        for(const s of sections){ s.studentCount = counts.get(s.id)||0; }
+        localStorage.setItem(`smart-student-sections-${year}`, JSON.stringify(sections));
+        window.dispatchEvent(new CustomEvent('usersUpdated',{detail:{action:'fix-fallback',fixed}}));
+        window.dispatchEvent(new CustomEvent('sectionsChanged',{detail:{source:'fix-fallback'}}));
+        append(`✅ Fallback aplicado. Estudiantes reasignados: ${fixed}`,'ok');
+      }catch(e2){ append('Error en fallback: '+e2.message,'err'); }
+      statusEl.textContent='Listo con observaciones';
+    }
+  }
+  document.getElementById('run').onclick = runFix;
+  document.getElementById('verify').onclick = verify;
+  // Auto-verificar al abrir
+  verify();
+})();
+</script>
+</body>
+</html>

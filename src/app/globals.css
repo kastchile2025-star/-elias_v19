@@ -1,0 +1,1166 @@
+@import '../styles/custom-select.css';
+@import '../styles/date-formats.css';
+@import '../styles/tables.css';
+@import '../styles/badge-styles.css';
+@import '../styles/button-styles.css';
+@import '../styles/card-styles.css';
+@import '../styles/select-no-outline.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Estilos personalizados para scrollbars */
+@layer utilities {
+  /* Scrollbar base */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225) transparent;
+  }
+
+  .scrollbar-custom:hover {
+    scrollbar-color: rgb(148 163 184) transparent;
+  }
+
+  /* Para navegadores webkit (Chrome, Safari, Edge) */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgb(203 213 225);
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgb(148 163 184);
+    background-clip: content-box;
+  }
+
+  /* Dark mode */
+  .dark .scrollbar-custom {
+    scrollbar-color: rgb(71 85 105) transparent;
+  }
+
+  .dark .scrollbar-custom:hover {
+    scrollbar-color: rgb(100 116 139) transparent;
+  }
+
+  .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgb(71 85 105);
+  }
+
+  .dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgb(100 116 139);
+  }
+
+  /* Scrollbar más visible para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .scrollbar-custom::-webkit-scrollbar {
+      width: 12px;
+    }
+    
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+      background: rgb(148 163 184);
+    }
+    
+    .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+      background: rgb(100 116 139);
+    }
+  }
+
+  /* Clean native select arrows (for custom chevron) */
+  .select-clean {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none !important;
+  }
+
+  .select-clean::-ms-expand { display: none; }
+}
+
+  /* ===== Slides Preview Bullet Animations ===== */
+  @keyframes ss-fade-in-up {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ss-anim {
+    animation-name: ss-fade-in-up;
+    animation-duration: 0.4s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+  }
+
+@layer base {
+  :root {
+    --background: 220 17% 98%; /* #F9FAFB */
+    --foreground: 222 47% 11%; /* Tailwind gray-800 as base text */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 243 75% 59%; /* Indigo #4F46E5 - Default primary */
+    --primary-foreground: 0 0% 100%; /* White for primary contrast - Default primary foreground */
+    --secondary: 220 14% 93%; /* Tailwind gray-200 */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 14% 93%;
+    --muted-foreground: 220 9% 46%; /* Tailwind gray-500 */
+    --accent: 160 54% 52%; /* Teal #34D399 - Default accent */
+    --accent-foreground: 0 0% 100%; /* White for accent contrast - Default accent foreground */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%; /* Tailwind gray-200 for borders */
+    --input: 220 13% 91%;
+    --ring: hsl(var(--border));
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+
+    /* Custom color HSL values */
+    --custom-green-100: 145 75% 90%;
+    --custom-green-100-hover: 145 75% 83%; 
+    --custom-green-800: 150 65% 30%;
+    --custom-green-solid-bg-light: 145 60% 45%;
+    --custom-green-solid-fg-light: 0 0% 100%;
+
+    --custom-blue-100: 220 100% 92%;
+    --custom-blue-100-hover: 220 100% 87%;
+    --custom-blue-800: 220 70% 45%;
+
+    --custom-yellow-100: 45 100% 88%;
+    --custom-yellow-100-hover: 45 100% 83%;
+    --custom-yellow-800: 45 85% 40%;
+
+    --custom-cyan-100: 185 90% 88%;
+    --custom-cyan-100-hover: 185 90% 83%;
+    --custom-cyan-800: 185 75% 35%;
+
+    --custom-purple-100: 260 100% 92%;
+    --custom-purple-100-hover: 260 100% 87%;
+    --custom-purple-800: 260 70% 50%;
+
+    --custom-orange-100: 25 100% 88%;
+    --custom-orange-100-hover: 25 100% 83%;
+    --custom-orange-800: 25 90% 35%;
+
+    --custom-teal-100: 175 80% 88%;
+    --custom-teal-100-hover: 175 80% 83%;
+    --custom-teal-800: 175 60% 35%;
+
+    --custom-rose-50: 347 77% 95%;
+    --custom-rose-100: 347 77% 90%;
+    --custom-rose-600: 347 87% 65%;
+    --custom-rose-700: 347 87% 60%;
+    --custom-rose-800: 347 77% 50%;
+
+    --custom-emerald-50: 152 76% 95%;
+    --custom-emerald-100: 152 76% 90%;
+    --custom-emerald-600: 152 76% 50%;
+    --custom-emerald-700: 152 76% 45%;
+    --custom-emerald-800: 152 76% 40%;
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* #111827 */
+    --foreground: 220 17% 98%; /* #F9FAFB */
+    --card: 215 28% 17%; /* #1f2937 */
+    --card-foreground: 220 17% 98%;
+    --popover: 215 28% 17%;
+    --popover-foreground: 220 17% 98%;
+    --primary: 243 80% 69%; /* Lighter Indigo for dark mode - Default primary */
+    --primary-foreground: 222 47% 11%; /* Default primary foreground */
+    --secondary: 217 33% 20%; /* Darker gray for secondary */
+    --secondary-foreground: 220 17% 98%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 20% 65%; /* Lighter gray text */
+    --accent: 160 60% 62%; /* Lighter Teal for dark mode - Default accent */
+    --accent-foreground: 222 47% 11%; /* Default accent foreground */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 28% 23%; /* Darker border #374151 */
+    --input: 215 28% 23%;
+    --ring: hsl(var(--border));
+
+    /* Custom color HSL values for dark mode */
+    --custom-green-100: 145 75% 90%; 
+    --custom-green-800: 150 65% 30%; 
+    --custom-green-solid-bg-dark: 145 55% 55%;
+    --custom-green-solid-fg-dark: 0 0% 100%;
+
+    --custom-blue-100: 220 100% 95%; 
+    --custom-blue-800: 220 70% 40%; 
+
+    --custom-yellow-100: 45 100% 95%;
+    --custom-yellow-800: 45 85% 40%;
+
+    --custom-cyan-100: 185 100% 95%;
+    --custom-cyan-800: 185 75% 35%;
+
+    --custom-purple-100: 260 100% 95%;
+    --custom-purple-800: 260 70% 50%;
+
+    --custom-orange-100: 25 100% 95%;
+    --custom-orange-800: 25 90% 35%;
+
+    --custom-teal-100: 175 100% 95%;
+    --custom-teal-800: 175 60% 35%;
+
+    --custom-rose-50: 347 77% 95%;
+    --custom-rose-100: 347 77% 90%;
+    --custom-rose-600: 347 87% 65%;
+    --custom-rose-700: 347 87% 60%;
+    --custom-rose-800: 347 77% 50%;
+
+    --custom-emerald-50: 152 76% 95%;
+    --custom-emerald-100: 152 76% 90%;
+    --custom-emerald-600: 152 76% 50%;
+    --custom-emerald-700: 152 76% 45%;
+    --custom-emerald-800: 152 76% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    @apply antialiased;
+  }
+  .dark select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+  /* Evitar ícono repetido en el select de cantidad de diapositivas (se usa una chevron personalizada del navegador) */
+  .dark select.no-chevron {
+    background-image: none !important;
+  }
+  select:disabled {
+    @apply bg-gray-100 cursor-not-allowed dark:bg-muted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+/* Light Mode Theme-specific primary, accent colors. */
+html.theme-accent-default {
+  --primary: 243 75% 59%; /* Indigo #4F46E5 */
+  --primary-foreground: 0 0% 100%; /* White */
+  --accent: 160 54% 52%; /* Teal #34D399 */
+  --accent-foreground: 0 0% 100%; /* White */
+}
+html.theme-accent-blue {
+  --primary: hsl(var(--custom-blue-100)); --primary-foreground: hsl(var(--custom-blue-800));
+  --accent: hsl(var(--custom-blue-800)); --accent-foreground: hsl(var(--custom-blue-100));
+}
+html.theme-accent-green {
+  --primary: hsl(var(--custom-green-solid-bg-light));
+  --primary-foreground: hsl(var(--custom-green-solid-fg-light));
+  --accent: hsl(var(--custom-green-800));
+  --accent-foreground: hsl(var(--custom-green-100));
+}
+html.theme-accent-yellow {
+  --primary: hsl(var(--custom-yellow-100)); --primary-foreground: hsl(var(--custom-yellow-800));
+  --accent: hsl(var(--custom-yellow-800)); --accent-foreground: hsl(var(--custom-yellow-100));
+}
+html.theme-accent-cyan {
+  --primary: hsl(var(--custom-cyan-100)); --primary-foreground: hsl(var(--custom-cyan-800));
+  --accent: hsl(var(--custom-cyan-800)); --accent-foreground: hsl(var(--custom-cyan-100));
+}
+html.theme-accent-purple {
+  --primary: hsl(var(--custom-purple-100)); --primary-foreground: hsl(var(--custom-purple-800));
+  --accent: hsl(var(--custom-purple-800)); --accent-foreground: hsl(var(--custom-purple-100));
+}
+html.theme-accent-teal {
+  /* Use emerald palette for Statistics */
+  --primary: hsl(var(--custom-emerald-100));
+  --primary-foreground: hsl(var(--custom-emerald-800));
+  --accent: hsl(var(--custom-emerald-800));
+  --accent-foreground: hsl(var(--custom-emerald-100));
+}
+html.theme-accent-rose {
+  --primary: hsl(var(--custom-rose-100));
+  --primary-foreground: hsl(var(--custom-rose-800));
+  --accent: hsl(var(--custom-rose-700));
+  --accent-foreground: hsl(var(--custom-rose-50));
+}
+
+/* Dark Mode Theme-specific primary, accent colors. */
+html.dark.theme-accent-default {
+  --primary: 243 80% 69%;
+  --primary-foreground: 222 47% 11%;
+  --accent: 160 60% 62%;
+  --accent-foreground: 222 47% 11%;
+}
+html.dark.theme-accent-blue {
+  --primary: hsl(var(--custom-blue-800));
+  --primary-foreground: hsl(var(--custom-blue-100));
+  --accent: hsl(var(--custom-blue-100));
+  --accent-foreground: hsl(var(--custom-blue-800));
+}
+html.dark.theme-accent-green {
+  --primary: hsl(var(--custom-green-solid-bg-dark));
+  --primary-foreground: hsl(var(--custom-green-solid-fg-dark));
+  --accent: hsl(var(--custom-green-100));
+  --accent-foreground: hsl(var(--custom-green-800));
+}
+html.dark.theme-accent-yellow {
+  --primary: hsl(var(--custom-yellow-800));
+  --primary-foreground: hsl(var(--custom-yellow-100));
+  --accent: hsl(var(--custom-yellow-100));
+  --accent-foreground: hsl(var(--custom-yellow-800));
+}
+html.dark.theme-accent-cyan {
+  --primary: hsl(var(--custom-cyan-800));
+  --primary-foreground: hsl(var(--custom-cyan-100));
+  --accent: hsl(var(--custom-cyan-100));
+  --accent-foreground: hsl(var(--custom-cyan-800));
+}
+html.dark.theme-accent-purple {
+  --primary: hsl(var(--custom-purple-800));
+  --primary-foreground: hsl(var(--custom-purple-100));
+  --accent: hsl(var(--custom-purple-100));
+  --accent-foreground: hsl(var(--custom-purple-800));
+}
+html.dark.theme-accent-teal {
+  /* Use emerald palette for Statistics */
+  --primary: hsl(var(--custom-emerald-800));
+  --primary-foreground: hsl(var(--custom-emerald-100));
+  --accent: hsl(var(--custom-emerald-100));
+  --accent-foreground: hsl(var(--custom-emerald-800));
+}
+html.dark.theme-accent-rose {
+  --primary: hsl(var(--custom-rose-700));
+  --primary-foreground: hsl(var(--custom-rose-50));
+  --accent: hsl(var(--custom-rose-100));
+  --accent-foreground: hsl(var(--custom-rose-800));
+}
+
+
+/* Specific styles for color pairings from proposal (used for nav items, etc.) */
+.bg-custom-green-100 { @apply bg-[hsl(var(--custom-green-100))]; }
+.text-custom-green-800 { @apply text-[hsl(var(--custom-green-800))]; }
+.hover\:bg-custom-green-100\/80:hover { @apply hover:bg-[hsl(var(--custom-green-100-hover))]; }
+
+.bg-custom-blue-100 { @apply bg-[hsl(var(--custom-blue-100))]; }
+.text-custom-blue-800 { @apply text-[hsl(var(--custom-blue-800))]; }
+.hover\:bg-custom-blue-100\/80:hover { @apply hover:bg-[hsl(var(--custom-blue-100-hover))]; }
+
+.bg-custom-yellow-100 { @apply bg-[hsl(var(--custom-yellow-100))]; }
+.text-custom-yellow-800 { @apply text-[hsl(var(--custom-yellow-800))]; }
+.hover\:bg-custom-yellow-100\/80:hover { @apply hover:bg-[hsl(var(--custom-yellow-100-hover))]; }
+
+.bg-custom-cyan-100 { @apply bg-[hsl(var(--custom-cyan-100))]; }
+.text-custom-cyan-800 { @apply text-[hsl(var(--custom-cyan-800))]; }
+.hover\:bg-custom-cyan-100\/80:hover { @apply hover:bg-[hsl(var(--custom-cyan-100-hover))]; }
+
+.bg-custom-purple-100 { @apply bg-[hsl(var(--custom-purple-100))]; }
+.text-custom-purple-800 { @apply text-[hsl(var(--custom-purple-800))]; }
+.hover\:bg-custom-purple-100\/80:hover { @apply hover:bg-[hsl(var(--custom-purple-100-hover))]; }
+
+.bg-custom-orange-100 { @apply bg-[hsl(var(--custom-orange-100))]; }
+.text-custom-orange-800 { @apply text-[hsl(var(--custom-orange-800))]; }
+.hover\:bg-custom-orange-100\/80:hover { @apply hover:bg-[hsl(var(--custom-orange-100-hover))]; }
+
+.bg-custom-teal-100 { @apply bg-[hsl(var(--custom-teal-100))]; }
+.text-custom-teal-800 { @apply text-[hsl(var(--custom-teal-800))]; }
+.hover\:bg-custom-teal-100\/80:hover { @apply hover:bg-[hsl(var(--custom-teal-100-hover))]; }
+
+
+/* For buttons on home cards and main action buttons on feature pages */
+.home-card-button {
+  @apply w-full font-semibold py-2 px-6 rounded-lg border-transparent hover:border-transparent; 
+}
+
+/* GREEN BUTTON (Digital Library) - Bounce and Glow Effect */
+.home-card-button-green {
+  @apply border-transparent bg-[hsl(var(--custom-green-100))] text-[hsl(var(--custom-green-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-green-800))] hover:text-[hsl(var(--custom-green-100))]
+         active:bg-[hsl(var(--custom-green-800))] active:text-[hsl(var(--custom-green-100))] active:scale-105
+         focus:bg-[hsl(var(--custom-green-800))] focus:text-[hsl(var(--custom-green-100))]
+         hover:shadow-2xl hover:shadow-green-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-green-100)) !important;
+  color: hsl(var(--custom-green-800)) !important;
+  border: none !important;
+}
+.home-card-button-green:hover {
+  background-color: hsl(var(--custom-green-800)) !important;
+  color: hsl(var(--custom-green-100)) !important;
+  border: none !important;
+}
+.home-card-button-green:active {
+  background-color: hsl(var(--custom-green-800)) !important;
+  color: hsl(var(--custom-green-100)) !important;
+  transform: scale(1.05) !important;
+  transition: all 0.3s ease-out !important;
+  /* Efectos consistentes con otros botones */
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.home-card-button-green:focus {
+  background-color: hsl(var(--custom-green-800)) !important;
+  color: hsl(var(--custom-green-100)) !important;
+  box-shadow: 0 25px 50px -12px rgba(217, 70, 239, 0.5) !important; /* similar a hover:shadow-2xl */
+  transform: scale(1.10) translateY(-4px) !important; /* hover:scale-110 hover:-translate-y-1 */
+  border: none !important;
+}
+.dark .home-card-button-green {
+  @apply border-transparent bg-[hsl(var(--custom-green-800))] text-[hsl(var(--custom-green-100))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-green-100))] hover:text-[hsl(var(--custom-green-800))]
+         hover:shadow-2xl hover:shadow-green-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+}
+.dark .home-card-button-green:active {
+  background-color: hsl(var(--custom-green-100)) !important;
+  color: hsl(var(--custom-green-800)) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+
+/* BLUE BUTTON (Summaries) - Lift and Glow Effect */
+.home-card-button-blue {
+  @apply border-transparent bg-[hsl(var(--custom-blue-100))] text-[hsl(var(--custom-blue-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-blue-800))] hover:text-[hsl(var(--custom-blue-100))]
+         hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-blue-100)) !important;
+  color: hsl(var(--custom-blue-800)) !important;
+  border: none !important;
+}
+.home-card-button-blue:hover {
+  background-color: hsl(var(--custom-blue-800)) !important;
+  color: hsl(var(--custom-blue-100)) !important;
+  border: none !important;
+}
+.home-card-button-blue:active {
+  background-color: hsl(var(--custom-blue-800)) !important;
+  color: hsl(var(--custom-blue-100)) !important;
+  border: none !important;
+}
+.home-card-button-blue:focus {
+  background-color: hsl(var(--custom-blue-800)) !important;
+  color: hsl(var(--custom-blue-100)) !important;
+  border: none !important;
+  box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.5) !important; /* azul-500, consistente con hover */
+}
+
+.dark .home-card-button-blue {
+  @apply border-transparent bg-[hsl(var(--custom-blue-800))] text-[hsl(var(--custom-blue-100))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-blue-100))] hover:text-[hsl(var(--custom-blue-800))]
+         hover:shadow-2xl hover:shadow-blue-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+}
+
+/* YELLOW BUTTON (Concept Maps) - Lift and Glow Effect */
+.home-card-button-yellow {
+  @apply border-transparent bg-[hsl(var(--custom-yellow-100))] text-[hsl(var(--custom-yellow-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-yellow-800))] hover:text-[hsl(var(--custom-yellow-100))]
+         hover:shadow-2xl hover:shadow-yellow-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-yellow-100)) !important;
+  color: hsl(var(--custom-yellow-800)) !important;
+  border: none !important;
+}
+.home-card-button-yellow:hover {
+  background-color: hsl(var(--custom-yellow-800)) !important;
+  color: hsl(var(--custom-yellow-100)) !important;
+  border: none !important;
+}
+.home-card-button-yellow:active {
+  background-color: hsl(var(--custom-yellow-800)) !important;
+  color: hsl(var(--custom-yellow-100)) !important;
+  border: none !important;
+}
+.home-card-button-yellow:focus {
+  background-color: hsl(var(--custom-yellow-800)) !important;
+  color: hsl(var(--custom-yellow-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-yellow {
+  @apply border-transparent bg-[hsl(var(--custom-yellow-800))] text-[hsl(var(--custom-yellow-100))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-yellow-100))] hover:text-[hsl(var(--custom-yellow-800))]
+         hover:shadow-2xl hover:shadow-yellow-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+}
+
+/* CYAN BUTTON (Quizzes) - Lift and Glow Effect */
+.home-card-button-cyan {
+  @apply border-transparent bg-[hsl(var(--custom-cyan-100))] text-[hsl(var(--custom-cyan-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-cyan-800))] hover:text-[hsl(var(--custom-cyan-100))]
+         hover:shadow-2xl hover:shadow-cyan-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-cyan-100)) !important;
+  color: hsl(var(--custom-cyan-800)) !important;
+  border: none !important;
+}
+.home-card-button-cyan:hover {
+  background-color: hsl(var(--custom-cyan-800)) !important;
+  color: hsl(var(--custom-cyan-100)) !important;
+  border: none !important;
+}
+.home-card-button-cyan:active {
+  background-color: hsl(var(--custom-cyan-800)) !important;
+  color: hsl(var(--custom-cyan-100)) !important;
+  border: none !important;
+}
+.home-card-button-cyan:focus {
+  background-color: hsl(var(--custom-cyan-800)) !important;
+  color: hsl(var(--custom-cyan-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-cyan {
+  @apply border-transparent bg-[hsl(var(--custom-cyan-800))] text-[hsl(var(--custom-cyan-100))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-cyan-100))] hover:text-[hsl(var(--custom-cyan-800))]
+         hover:shadow-2xl hover:shadow-cyan-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+}
+
+/* PURPLE BUTTON (Evaluations) - Lift and Glow Effect */
+.home-card-button-purple {
+  @apply border-transparent bg-[hsl(var(--custom-purple-100))] text-[hsl(var(--custom-purple-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-purple-800))] hover:text-[hsl(var(--custom-purple-100))]
+         hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-purple-100)) !important;
+  color: hsl(var(--custom-purple-800)) !important;
+  border: none !important;
+}
+.home-card-button-purple:hover {
+  background-color: hsl(var(--custom-purple-800)) !important;
+  color: hsl(var(--custom-purple-100)) !important;
+  border: none !important;
+}
+.home-card-button-purple:active {
+  background-color: hsl(var(--custom-purple-800)) !important;
+  color: hsl(var(--custom-purple-100)) !important;
+  border: none !important;
+}
+.home-card-button-purple:focus {
+  background-color: hsl(var(--custom-purple-800)) !important;
+  color: hsl(var(--custom-purple-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-purple {
+  @apply border-transparent bg-[hsl(var(--custom-purple-800))] text-[hsl(var(--custom-purple-100))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-purple-100))] hover:text-[hsl(var(--custom-purple-800))]
+         hover:shadow-2xl hover:shadow-purple-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+}
+
+/* Red button styles for admin functionality */
+.home-card-button-red {
+  @apply border-transparent bg-red-100 text-red-800 
+         hover:border-transparent hover:bg-red-800 hover:text-red-100
+         hover:shadow-2xl hover:shadow-red-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out
+         relative overflow-hidden;
+  background-color: rgb(254 226 226) !important; /* red-100 */
+  color: rgb(153 27 27) !important; /* red-800 */
+  border: none !important;
+}
+.home-card-button-red:hover {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  border: none !important;
+}
+.home-card-button-red:active {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-red:focus {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  border: none !important;
+}
+.home-card-button-red::before {
+  @apply content-[''] absolute top-0 left-[-100%] w-full h-full 
+         bg-gradient-to-r from-transparent via-white/20 to-transparent
+         transition-all duration-500 ease-out;
+}
+.home-card-button-red:hover::before {
+  @apply left-[100%];
+}
+.dark .home-card-button-red {
+  @apply border-transparent bg-red-100 text-red-800
+         hover:border-transparent hover:bg-red-800 hover:text-red-100
+         hover:shadow-2xl hover:shadow-red-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out
+         relative overflow-hidden;
+  background-color: rgb(254 226 226) !important; /* red-100 */
+  color: rgb(153 27 27) !important; /* red-800 */
+  border: none !important;
+}
+.dark .home-card-button-red:hover {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  border: none !important;
+}
+.dark .home-card-button-red:active {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-red:focus {
+  background-color: rgb(153 27 27) !important; /* red-800 */
+  color: rgb(254 226 226) !important; /* red-100 */
+  border: none !important;
+}
+.dark .home-card-button-red::before {
+  @apply content-[''] absolute top-0 left-[-100%] w-full h-full 
+         bg-gradient-to-r from-transparent via-white/30 to-transparent
+         transition-all duration-500 ease-out;
+}
+.dark .home-card-button-red:hover::before {
+  @apply left-[100%];
+}
+
+/* Orange button styles for admin requests functionality */
+.home-card-button-orange {
+  @apply border-transparent bg-orange-100 text-orange-800 
+         hover:border-transparent hover:bg-orange-800 hover:text-orange-100
+         hover:shadow-2xl hover:shadow-orange-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out
+         relative overflow-hidden;
+  background-color: rgb(254 215 170) !important; /* orange-100 */
+  color: rgb(154 52 18) !important; /* orange-800 */
+  border: none !important;
+}
+.home-card-button-orange:hover {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  border: none !important;
+}
+.home-card-button-orange:active {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-orange:focus {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  border: none !important;
+}
+.home-card-button-orange::before {
+  @apply content-[''] absolute top-0 left-[-100%] w-full h-full 
+         bg-gradient-to-r from-transparent via-white/20 to-transparent
+         transition-all duration-500 ease-out;
+}
+.home-card-button-orange:hover::before {
+  @apply left-[100%];
+}
+.dark .home-card-button-orange {
+  @apply border-transparent bg-orange-100 text-orange-800
+         hover:border-transparent hover:bg-orange-800 hover:text-orange-100
+         hover:shadow-2xl hover:shadow-orange-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out
+         relative overflow-hidden;
+  background-color: rgb(254 215 170) !important; /* orange-100 */
+  color: rgb(154 52 18) !important; /* orange-800 */
+  border: none !important;
+}
+.dark .home-card-button-orange:hover {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  border: none !important;
+}
+.dark .home-card-button-orange:active {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-orange:focus {
+  background-color: rgb(154 52 18) !important; /* orange-800 */
+  color: rgb(254 215 170) !important; /* orange-100 */
+  border: none !important;
+}
+.dark .home-card-button-orange::before {
+  @apply content-[''] absolute top-0 left-[-100%] w-full h-full 
+         bg-gradient-to-r from-transparent via-white/30 to-transparent
+         transition-all duration-500 ease-out;
+}
+.dark .home-card-button-orange:hover::before {
+  @apply left-[100%];
+}
+
+/* Teal button styles for chat functionality */
+.home-card-button-teal {
+  @apply border-transparent bg-[hsl(var(--custom-teal-100))] text-[hsl(var(--custom-teal-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-teal-800))] hover:text-[hsl(var(--custom-teal-100))]
+         hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-teal-100)) !important;
+  color: hsl(var(--custom-teal-800)) !important;
+  border: none !important;
+}
+.home-card-button-teal:hover {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  border: none !important;
+}
+.home-card-button-teal:active {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-teal:focus {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-teal {
+  @apply border-transparent bg-[hsl(var(--custom-teal-100))] text-[hsl(var(--custom-teal-800))]
+         hover:border-transparent hover:bg-[hsl(var(--custom-teal-800))] hover:text-[hsl(var(--custom-teal-100))]
+         hover:shadow-2xl hover:shadow-teal-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-teal-100)) !important;
+  color: hsl(var(--custom-teal-800)) !important;
+  border: none !important;
+}
+.dark .home-card-button-teal:hover {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-teal:active {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-teal:focus {
+  background-color: hsl(var(--custom-teal-800)) !important;
+  color: hsl(var(--custom-teal-100)) !important;
+  border: none !important;
+}
+
+/* Rose button styles */
+.home-card-button-rose {
+  background-color: hsl(var(--custom-rose-600)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+  border: none !important;
+  transition: all 0.2s ease-in-out !important;
+}
+.home-card-button-rose:hover {
+  background-color: hsl(var(--custom-rose-700)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+}
+.home-card-button-rose:active {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+  transform: scale(0.98);
+}
+.home-card-button-rose:focus {
+  background-color: hsl(var(--custom-rose-700)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+  border: none !important;
+}
+.dark .home-card-button-rose {
+  background-color: hsl(var(--custom-rose-700)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+  border: none !important;
+}
+.dark .home-card-button-rose:hover {
+  background-color: hsl(var(--custom-rose-600)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+}
+.dark .home-card-button-rose:active {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+}
+.dark .home-card-button-rose:focus {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+  border: none !important;
+}
+
+/* Rose button variant for statistics (alias) */
+.home-card-button-stats {
+  @apply home-card-button; /* base */
+}
+.home-card-button-stats { /* light-first (como otros botones de tarjetas) */
+  @apply border-transparent hover:border-transparent hover:shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-rose-100)) !important;
+  color: hsl(var(--custom-rose-800)) !important;
+  border: none !important;
+  box-shadow: 0 0 0 0 rgba(244, 63, 94, 0) !important; /* base sin sombra */
+}
+.home-card-button-stats:hover {
+  background-color: hsl(var(--custom-rose-700)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+  box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.5) !important; /* glow como libros */
+}
+.home-card-button-stats:active {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+  transform: scale(1.05) !important;
+}
+.home-card-button-stats:focus {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+  box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.5) !important; /* similar a hover:shadow-2xl */
+  transform: scale(1.10) translateY(-4px) !important; /* hover:scale-110 hover:-translate-y-1 */
+  border: none !important;
+}
+
+/* Dark mode para stats: también light-first (igual a otras tarjetas) */
+.dark .home-card-button-stats {
+  @apply border-transparent hover:border-transparent hover:shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+  background-color: hsl(var(--custom-rose-100)) !important;
+  color: hsl(var(--custom-rose-800)) !important;
+  border: none !important;
+}
+.dark .home-card-button-stats:hover {
+  background-color: hsl(var(--custom-rose-700)) !important;
+  color: hsl(var(--custom-rose-50)) !important;
+  box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.5) !important;
+}
+.dark .home-card-button-stats:active,
+.dark .home-card-button-stats:focus {
+  background-color: hsl(var(--custom-rose-800)) !important;
+  color: hsl(var(--custom-rose-100)) !important;
+}
+
+/* Emerald button styles */
+.home-card-button-emerald {
+  background-color: rgb(209 250 229) !important;
+  color: rgb(6 95 70) !important;
+  border: none !important;
+  transition: all 0.3s ease-out !important;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0) !important;
+}
+
+/* Lime button styles (lima limón) */
+.home-card-button-lime {
+  background-color: rgb(236 252 203) !important; /* lime-100 */
+  color: rgb(77 124 15) !important; /* lime-700 */
+  border: none !important;
+  transition: all 0.3s ease-out !important;
+  box-shadow: 0 0 0 0 rgba(132, 204, 22, 0) !important; /* lime-500 shadow base */
+}
+.home-card-button-lime:hover {
+  background-color: rgb(63 98 18) !important; /* lime-800 */
+  color: rgb(236 252 203) !important; /* lime-100 */
+  transform: scale(1.1) translateY(-4px) !important;
+  box-shadow: 0 25px 50px -12px rgba(132, 204, 22, 0.5) !important; /* lime-500 */
+}
+.home-card-button-lime:active,
+.home-card-button-lime:focus {
+  background-color: rgb(63 98 18) !important; /* lime-800 */
+  color: rgb(236 252 203) !important; /* lime-100 */
+  transform: scale(1.05) !important;
+}
+.dark .home-card-button-lime {
+  background-color: rgb(236 252 203) !important; /* lime-100 */
+  color: rgb(63 98 18) !important; /* lime-800 */
+  border: none !important;
+  transition: all 0.3s ease-out !important;
+}
+.dark .home-card-button-lime:hover {
+  background-color: rgb(63 98 18) !important; /* lime-800 */
+  color: rgb(236 252 203) !important; /* lime-100 */
+  transform: scale(1.1) translateY(-4px) !important;
+  box-shadow: 0 25px 50px -12px rgba(190, 242, 100, 0.4) !important; /* lime-300 */
+}
+.dark .home-card-button-lime:active,
+.dark .home-card-button-lime:focus {
+  background-color: rgb(63 98 18) !important; /* lime-800 */
+  color: rgb(236 252 203) !important; /* lime-100 */
+}
+
+/* GRAY button (Calendar/Admin) - efecto similar a Libros pero gris */
+.home-card-button-gray {
+  @apply border-transparent bg-gray-100 text-gray-800 hover:border-transparent hover:bg-gray-800 hover:text-gray-100 hover:shadow-2xl hover:shadow-gray-500/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+  background-color: rgb(243 244 246) !important; /* gray-100 */
+  color: rgb(31 41 55) !important; /* gray-800 */
+  border: none !important;
+}
+.home-card-button-gray:hover {
+  background-color: rgb(31 41 55) !important;
+  color: rgb(243 244 246) !important;
+}
+.home-card-button-gray:active {
+  background-color: rgb(31 41 55) !important;
+  color: rgb(243 244 246) !important;
+  transform: scale(1.05) !important;
+}
+.dark .home-card-button-gray {
+  @apply border-transparent hover:shadow-2xl hover:shadow-gray-400/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+}
+
+/* SILVER button (Calendar/Admin) */
+.home-card-button-silver {
+  @apply border-transparent hover:border-transparent hover:shadow-2xl hover:shadow-zinc-400/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+  background-color: rgb(244 244 245) !important; /* zinc-100 */
+  color: rgb(39 39 42) !important; /* zinc-800 */
+  border: 1px solid rgb(212 212 216) !important; /* zinc-300 */
+}
+.home-card-button-silver:hover {
+  background-color: rgb(39 39 42) !important; /* zinc-800 */
+  color: rgb(244 244 245) !important; /* zinc-100 */
+  border-color: rgb(82 82 91) !important; /* zinc-600 */
+}
+.home-card-button-silver:active {
+  transform: scale(1.05) !important;
+}
+.dark .home-card-button-silver {
+  @apply border-transparent hover:shadow-2xl hover:shadow-zinc-500/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+}
+.home-card-button-emerald:hover {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  border: none !important;
+  transform: scale(1.1) translateY(-4px) !important;
+  box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.5) !important;
+}
+.home-card-button-emerald:active {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-emerald:focus {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  border: none !important;
+}
+.dark .home-card-button-emerald {
+  background-color: rgb(209 250 229) !important;
+  color: rgb(6 95 70) !important;
+  border: none !important;
+  transition: all 0.3s ease-out !important;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0) !important;
+}
+.dark .home-card-button-emerald:hover {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  border: none !important;
+  transform: scale(1.1) translateY(-4px) !important;
+  box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.5) !important;
+}
+.dark .home-card-button-emerald:active {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-emerald:focus {
+  background-color: rgb(6 95 70) !important;
+  color: rgb(209 250 229) !important;
+  border: none !important;
+}
+
+/* STONE button (Calificaciones) */
+.home-card-button-stone {
+  @apply border-transparent hover:shadow-2xl hover:shadow-stone-400/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+  background-color: rgb(245 245 244) !important; /* stone-100 */
+  color: rgb(41 37 36) !important; /* stone-800 */
+  border: 1px solid rgb(214 211 209) !important; /* stone-300 */
+}
+.home-card-button-stone:hover {
+  background-color: rgb(41 37 36) !important; /* stone-800 */
+  color: rgb(245 245 244) !important; /* stone-100 */
+  border-color: rgb(120 113 108) !important; /* stone-500 */
+}
+.home-card-button-stone:active {
+  transform: scale(1.05) !important;
+}
+.dark .home-card-button-stone {
+  @apply border-transparent hover:shadow-2xl hover:shadow-stone-500/30 hover:scale-110 hover:-translate-y-1 transition-all duration-300 ease-out;
+}
+
+
+/* FAQ specific styles */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+.faq-answer.open {
+    /* max-height will be set by JS */
+}
+
+/* Ensure input autofill respects dark mode text color */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    -webkit-box-shadow: 0 0 0px 1000px hsl(var(--input)) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: hsl(var(--foreground)) !important; /* Ensure text color is correct in light mode too */
+    -webkit-box-shadow: 0 0 0px 1000px hsl(var(--input)) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Page transition placeholder */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Indigo button styles */
+.home-card-button-indigo {
+  @apply border-transparent bg-indigo-100 text-indigo-800
+         hover:border-transparent hover:bg-indigo-800 hover:text-indigo-100
+         hover:shadow-2xl hover:shadow-indigo-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: rgb(224 231 255) !important;
+  color: rgb(55 48 163) !important;
+  border: none !important;
+}
+.home-card-button-indigo:hover {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  border: none !important;
+}
+.home-card-button-indigo:active {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-indigo:focus {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  border: none !important;
+}
+.dark .home-card-button-indigo {
+  @apply border-transparent bg-indigo-100 text-indigo-800
+         hover:border-transparent hover:bg-indigo-800 hover:text-indigo-100
+         hover:shadow-2xl hover:shadow-indigo-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: rgb(224 231 255) !important;
+  color: rgb(55 48 163) !important;
+  border: none !important;
+}
+.dark .home-card-button-indigo:hover {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  border: none !important;
+}
+.dark .home-card-button-indigo:active {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-indigo:focus {
+  background-color: rgb(55 48 163) !important;
+  color: rgb(224 231 255) !important;
+  border: none !important;
+}
+
+/* FUCHSIA button styles (Pruebas) - light-first + lift/glow */
+.home-card-button-fuchsia {
+  @apply border-transparent bg-fuchsia-100 text-fuchsia-800
+         hover:border-transparent hover:bg-fuchsia-700 hover:text-fuchsia-50
+         hover:shadow-2xl hover:shadow-fuchsia-500/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: rgb(250 232 255) !important; /* fuchsia-100 */
+  color: rgb(134 25 143) !important; /* fuchsia-800 */
+  border: none !important;
+}
+.home-card-button-fuchsia:hover {
+  background-color: rgb(162 28 175) !important; /* fuchsia-700 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  border: none !important;
+}
+.home-card-button-fuchsia:active {
+  background-color: rgb(192 38 211) !important; /* fuchsia-600 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.home-card-button-fuchsia:focus {
+  background-color: rgb(192 38 211) !important; /* fuchsia-600 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  border: none !important;
+}
+.dark .home-card-button-fuchsia {
+  @apply border-transparent bg-fuchsia-100 text-fuchsia-800
+         hover:border-transparent hover:bg-fuchsia-700 hover:text-fuchsia-50
+         hover:shadow-2xl hover:shadow-fuchsia-400/50 hover:scale-110 hover:-translate-y-1
+         transition-all duration-300 ease-out;
+  background-color: rgb(250 232 255) !important; /* fuchsia-100 */
+  color: rgb(134 25 143) !important; /* fuchsia-800 */
+  border: none !important;
+}
+.dark .home-card-button-fuchsia:hover {
+  background-color: rgb(162 28 175) !important; /* fuchsia-700 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  border: none !important;
+}
+.dark .home-card-button-fuchsia:active {
+  background-color: rgb(192 38 211) !important; /* fuchsia-600 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  transform: scale(1.05) !important;
+  border: none !important;
+}
+.dark .home-card-button-fuchsia:focus {
+  background-color: rgb(192 38 211) !important; /* fuchsia-600 */
+  color: rgb(250 245 255) !important; /* fuchsia-50 */
+  border: none !important;
+}

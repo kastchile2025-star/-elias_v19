@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Botones en Pantalla de Resultados</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 6px; border-left: 4px solid #007bff; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .critical { border-left-color: #dc3545; background: #f8d7da; border: 2px solid #dc3545; }
+        .debug-flow { background: #e8f4f8; padding: 15px; border-radius: 6px; border: 2px solid #17a2b8; margin: 10px 0; }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        .highlight { background: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        .code-block { background: #f8f9fa; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 12px; margin: 10px 0; border: 1px solid #e9ecef; }
+        .status-good { color: #28a745; font-weight: bold; }
+        .status-bad { color: #dc3545; font-weight: bold; }
+        button { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .step { background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 4px; border-left: 3px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐛 Debug - Botones en Pantalla de Resultados</h1>
+        
+        <div class="test-section critical">
+            <h2>🚨 PROBLEMA REPORTADO</h2>
+            <p><strong>Issue:</strong> Después de hacer clic en "Cerrar", se refresca la pantalla y aparecen nuevamente los botones "Repetir Evaluación" y "Nueva Evaluación".</p>
+            <p><strong>Esperado:</strong> Solo debe aparecer el botón "Cerrar" para evaluaciones de tareas.</p>
+            <p><strong>Contexto:</strong> Evaluación de 2 preguntas en 1 minuto asignada por profesor.</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 Análisis del Flujo de Detección</h2>
+            
+            <h3>📍 Puntos de Detección Implementados:</h3>
+            <div class="debug-flow">
+                <h4>Métodos de Detección (OR logic):</h4>
+                <ol>
+                    <li><strong>React State:</strong> <code>isTaskEvaluationSession</code></li>
+                    <li><strong>localStorage:</strong> <code>isTaskEvaluation === 'true'</code></li>
+                    <li><strong>sessionStorage:</strong> <code>isTaskEvaluation === 'true'</code></li>
+                    <li><strong>URL autoStart:</strong> <code>autoStart === 'true'</code></li>
+                    <li><strong>URL taskId:</strong> <code>taskId</code> presente</li>
+                    <li><strong>AutoStart Mode:</strong> <code>isAutoStartMode</code></li>
+                </ol>
+                <p><strong>Lógica:</strong> Si CUALQUIERA es verdadero → Mostrar solo "Cerrar"</p>
+            </div>
+
+            <h3>📺 Pantallas con Botones:</h3>
+            <div class="step">
+                <strong>1. Results Dialog:</strong> Modal inmediato después de terminar la evaluación
+            </div>
+            <div class="step">
+                <strong>2. Review Screen:</strong> Pantalla de revisión con todas las preguntas y respuestas
+            </div>
+        </div>
+
+        <div class="test-section warning">
+            <h2>⚠️ Posibles Causas del Problema</h2>
+            
+            <h3>Teorías sobre por qué aparecen los botones incorrectos:</h3>
+            <ol>
+                <li><strong>Estado se limpia demasiado pronto:</strong> <code>handleCloseTaskEvaluation</code> limpia el estado antes de que se complete la navegación</li>
+                <li><strong>Re-render después del cierre:</strong> El componente se re-renderiza después de la navegación pero con estado limpio</li>
+                <li><strong>URL se pierde:</strong> Los parámetros de URL (autoStart, taskId) se pierden después de la navegación</li>
+                <li><strong>Race condition:</strong> El estado se limpia mientras el componente aún está renderizando</li>
+                <li><strong>Evaluación cached:</strong> Los datos de la evaluación permanecen en el estado local después del cierre</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Correcciones Aplicadas</h2>
+            
+            <h3>1. Logging Mejorado:</h3>
+            <div class="code-block">
+console.log('🔍🔍🔍 REVIEW SCREEN - DETAILED DETECTION:', {
+  reactState,
+  localStorageState, 
+  sessionStorageState,
+  autoStartParam,
+  taskIdParam,
+  autoStartModeState,
+  evaluationFinished,
+  showResultDialog,
+  evaluationStarted
+});
+            </div>
+
+            <h3>2. Reset Completo en handleCloseTaskEvaluation:</h3>
+            <div class="code-block">
+// Limpiar TODOS los estados de evaluación
+setShowResultDialog(false);
+setIsTaskEvaluationSession(false);
+setIsAutoStartMode(false);
+setEvaluationStarted(false);
+setEvaluationFinished(false);
+setEvaluationQuestions([]);
+setCurrentQuestionIndex(0);
+setUserAnswers([]);
+setScore(0);
+setMotivationalMessageKey('');
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Pasos para Debuggear</h2>
+            
+            <h3>Para verificar el problema:</h3>
+            <ol>
+                <li>Abre las herramientas de desarrollador (F12)</li>
+                <li>Ve a la pestaña Console</li>
+                <li>Realiza una evaluación de tarea (2 preguntas, 1 minuto)</li>
+                <li>Termina la evaluación</li>
+                <li>Revisa los logs de detección en la consola</li>
+                <li>Haz clic en "Cerrar"</li>
+                <li>Observa si aparecen los botones incorrectos</li>
+                <li>Verifica los logs adicionales</li>
+            </ol>
+
+            <h3>Logs a buscar:</h3>
+            <div class="code-block">
+🔍🔍🔍 RESULTS DIALOG - DETAILED DETECTION:
+🔍🔍🔍 REVIEW SCREEN - DETAILED DETECTION:
+🎯 FINAL DECISION:
+✅ Showing CLOSE button for task evaluation
+❌ Showing REPEAT & NEW buttons for normal evaluation
+🔄 Closing task evaluation...
+🧹 Cleared task evaluation state from all storages
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Test de Evaluación de Tarea</h2>
+            <p>Haz clic para probar el flujo completo y observar el comportamiento de los botones:</p>
+            <button onclick="testTaskEvaluation()">
+                🚀 Test: 2 preguntas, 1 minuto - Observar botones
+            </button>
+            
+            <h3>🔍 Qué observar:</h3>
+            <ul>
+                <li>¿El modal de resultados muestra solo "Cerrar"?</li>
+                <li>¿La pantalla de revisión muestra solo "Cerrar"?</li>
+                <li>¿Al hacer clic en "Cerrar" aparecen otros botones?</li>
+                <li>¿Los logs muestran la detección correcta?</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Checklist de Validación</h2>
+            
+            <h3>✅ Estados que deben detectar evaluación de tarea:</h3>
+            <ul>
+                <li>□ localStorage.isTaskEvaluation === 'true'</li>
+                <li>□ sessionStorage.isTaskEvaluation === 'true'</li>
+                <li>□ URL param autoStart === 'true'</li>
+                <li>□ URL param taskId presente</li>
+                <li>□ React state isTaskEvaluationSession === true</li>
+                <li>□ React state isAutoStartMode === true</li>
+            </ul>
+
+            <h3>✅ Comportamiento esperado:</h3>
+            <ul>
+                <li>□ Modal de resultados: Solo botón "Cerrar"</li>
+                <li>□ Pantalla de revisión: Solo botón "Cerrar"</li>
+                <li>□ Al hacer clic en "Cerrar": Navegar a /dashboard/evaluacion</li>
+                <li>□ No mostrar "Repetir Evaluación" ni "Nueva Evaluación"</li>
+            </ul>
+        </div>
+
+        <script>
+            function testTaskEvaluation() {
+                const url = '/dashboard/evaluacion?course=4to%20Básico&book=Ciencias%20Naturales&topic=sistema%20respiratorio&autoStart=true&taskId=debug123&questionCount=2&timeLimit=1';
+                
+                console.log('🧪 Testing task evaluation button behavior');
+                console.log('🔗 URL:', url);
+                console.log('📊 Expected: Only "Cerrar" buttons should appear');
+                console.log('🔍 Check console logs for detection details');
+                
+                window.open(url, '_blank');
+            }
+            
+            console.log('🐛 Debug page loaded for button behavior analysis');
+            console.log('📊 Use F12 to monitor console logs during evaluation');
+        </script>
+    </div>
+</body>
+</html>

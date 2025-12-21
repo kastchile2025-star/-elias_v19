@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Task Notification</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px; padding: 10px; }
+        .output { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Test Task Notification System</h1>
+    
+    <div>
+        <h2>Step 1: Create Test Task</h2>
+        <button id="createTask">Create Test Task</button>
+        <div id="taskOutput" class="output"></div>
+    </div>
+    
+    <div>
+        <h2>Step 2: Create Test Notification</h2>
+        <button id="createNotification">Create Test Notification</button>
+        <div id="notificationOutput" class="output"></div>
+    </div>
+    
+    <div>
+        <h2>Step 3: Test Notification Filter</h2>
+        <button id="testFilter">Test Filter for 'jorge'</button>
+        <div id="filterOutput" class="output"></div>
+    </div>
+    
+    <div>
+        <h2>Actions</h2>
+        <button id="clearAll">Clear All Data</button>
+        <button id="refreshPage">Refresh Page</button>
+    </div>
+
+    <script>
+        function log(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        document.getElementById('createTask').addEventListener('click', () => {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const testTask = {
+                id: 'test_task_notification_123',
+                title: 'Test Task for Notification',
+                description: 'This is a test task for notification testing',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                subject: 'Matemáticas',
+                course: 'course1',
+                assignedById: 'jorge',
+                assignedByName: 'Jorge',
+                assignedTo: 'course',
+                status: 'pending',
+                taskType: 'assignment',
+                timestamp: new Date().toISOString()
+            };
+
+            tasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            log('taskOutput', '✅ Test task created with ID: ' + testTask.id);
+            log('taskOutput', 'Total tasks: ' + tasks.length);
+        });
+
+        document.getElementById('createNotification').addEventListener('click', () => {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const testNotification = {
+                id: 'task_pending_test_task_notification_123_' + Date.now(),
+                type: 'pending_grading',
+                taskId: 'test_task_notification_123',
+                taskTitle: 'Test Task for Notification',
+                targetUserRole: 'teacher',
+                targetUsernames: ['jorge'],
+                fromUsername: 'system',
+                fromDisplayName: 'Tarea Pendiente: Test Task for Notification',
+                teacherName: 'Jorge',
+                course: 'course1',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: 'assignment'
+            };
+
+            notifications.push(testNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            log('notificationOutput', '✅ Test notification created');
+            log('notificationOutput', 'Notification ID: ' + testNotification.id);
+            log('notificationOutput', 'Total notifications: ' + notifications.length);
+        });
+
+        document.getElementById('testFilter').addEventListener('click', () => {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const username = 'jorge';
+            const userRole = 'teacher';
+            
+            log('filterOutput', 'Testing filter for username: ' + username + ', role: ' + userRole);
+            log('filterOutput', 'Total notifications: ' + notifications.length);
+            
+            const filtered = notifications.filter(notification => {
+                const basicFilters = notification.targetUserRole === userRole &&
+                    notification.targetUsernames.includes(username) &&
+                    !notification.readBy.includes(username) &&
+                    (notification.fromUsername !== username || notification.fromUsername === 'system');
+                
+                log('filterOutput', 'Checking: ' + notification.type + ' from ' + notification.fromUsername + ' - Result: ' + basicFilters);
+                return basicFilters;
+            });
+            
+            log('filterOutput', '✅ Filtered notifications: ' + filtered.length);
+            filtered.forEach(n => {
+                log('filterOutput', '- ' + n.type + ': ' + n.taskTitle + ' (from: ' + n.fromUsername + ')');
+            });
+        });
+
+        document.getElementById('clearAll').addEventListener('click', () => {
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-tasks');
+            log('filterOutput', '✅ All data cleared');
+        });
+
+        document.getElementById('refreshPage').addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        // Show current state
+        const currentTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+        const currentNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+        
+        log('taskOutput', 'Current tasks: ' + currentTasks.length);
+        log('notificationOutput', 'Current notifications: ' + currentNotifications.length);
+    </script>
+</body>
+</html>

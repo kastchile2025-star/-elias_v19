@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Notifications</title>
+</head>
+<body>
+    <h1>Debug Notifications</h1>
+    <button id="clearNotifications">Clear All Notifications</button>
+    <button id="createTestNotification">Create Test Notification</button>
+    <div id="output"></div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        document.getElementById('clearNotifications').addEventListener('click', () => {
+            localStorage.removeItem('smart-student-task-notifications');
+            log('✅ Notifications cleared');
+        });
+
+        document.getElementById('createTestNotification').addEventListener('click', () => {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const testNotification = {
+                id: `task_pending_test_${Date.now()}`,
+                type: 'pending_grading',
+                taskId: 'test_task_123',
+                taskTitle: 'Test Task',
+                targetUserRole: 'teacher',
+                targetUsernames: ['jorge'],
+                fromUsername: 'system',
+                fromDisplayName: 'Tarea Pendiente: Test Task',
+                teacherName: 'Jorge',
+                course: 'course1',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: 'assignment'
+            };
+
+            notifications.push(testNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            log('✅ Test notification created');
+            log('Total notifications: ' + notifications.length);
+        });
+
+        // Load and display current notifications
+        const currentNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+        log('Current notifications count: ' + currentNotifications.length);
+        
+        currentNotifications.forEach((n, i) => {
+            log(`${i + 1}. ${n.type} - ${n.taskTitle} (from: ${n.fromUsername}, to: ${n.targetUsernames.join(',')})`);
+        });
+    </script>
+</body>
+</html>

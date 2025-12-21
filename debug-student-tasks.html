@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Tareas No Visibles para Estudiante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f8f9fa;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug: Tareas No Visibles para Estudiante</h1>
+    
+    <div class="debug-section">
+        <h2>Diagnóstico del Problema</h2>
+        <div class="status info">
+            <strong>Síntoma:</strong> La tarea creada por el profesor aparece en notificaciones pero no en la página de tareas del estudiante.
+        </div>
+        <div class="status warning">
+            <strong>Posibles Causas:</strong>
+            <ul>
+                <li>Campo <code>assignedTo</code> no configurado correctamente</li>
+                <li>Estudiante no está en <code>activeCourses</code> correctos</li>
+                <li>Si es asignación individual, estudiante no está en <code>assignedStudents</code></li>
+                <li>Problema en la función de filtrado <code>getFilteredTasks()</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Análisis de Datos</h2>
+        <button onclick="analyzeData()">🔍 Analizar Datos del Sistema</button>
+        <button onclick="debugTaskFiltering()">🎯 Debug Filtrado de Tareas</button>
+        <button onclick="checkUserData()">👤 Verificar Datos del Usuario</button>
+        <div id="analysisResults"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Datos del Usuario Actual</h2>
+        <div id="userData"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Tareas en el Sistema</h2>
+        <div id="tasksData"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Notificaciones</h2>
+        <div id="notificationsData"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Soluciones Recomendadas</h2>
+        <div id="solutions"></div>
+    </div>
+
+    <script>
+        function addResult(containerId, content, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function addTable(containerId, data, title) {
+            const container = document.getElementById(containerId);
+            
+            const titleDiv = document.createElement('h3');
+            titleDiv.textContent = title;
+            container.appendChild(titleDiv);
+            
+            if (!data || (Array.isArray(data) && data.length === 0)) {
+                addResult(containerId, '❌ No hay datos disponibles', 'error');
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'data-table';
+            
+            if (Array.isArray(data) && data.length > 0) {
+                // Headers
+                const headers = Object.keys(data[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+                
+                // Data rows
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        const value = item[header];
+                        td.textContent = typeof value === 'object' ? JSON.stringify(value) : value;
+                        if (header === 'assignedTo' || header === 'course' || header === 'assignedStudents') {
+                            td.classList.add('highlight');
+                        }
+                        row.appendChild(td);
+                    });
+                    table.appendChild(row);
+                });
+            }
+            
+            container.appendChild(table);
+        }
+
+        function getCurrentUser() {
+            try {
+                return JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getTasks() {
+            try {
+                return JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function getTaskNotifications() {
+            try {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function checkUserData() {
+            const container = document.getElementById('userData');
+            container.innerHTML = '';
+            
+            const user = getCurrentUser();
+            
+            if (!user) {
+                addResult('userData', '❌ No hay usuario logueado', 'error');
+                return;
+            }
+
+            addResult('userData', `✅ Usuario: <strong>${user.username}</strong> (${user.role})`, 'success');
+            addResult('userData', `📚 Cursos Activos: <span class="highlight">${JSON.stringify(user.activeCourses)}</span>`, 'info');
+            
+            if (user.role === 'student') {
+                addResult('userData', `🎓 Datos relevantes para filtrado:`, 'info');
+                const pre = document.createElement('pre');
+                pre.textContent = JSON.stringify({
+                    username: user.username,
+                    activeCourses: user.activeCourses,
+                    role: user.role
+                }, null, 2);
+                document.getElementById('userData').appendChild(pre);
+            }
+        }
+
+        function analyzeData() {
+            const container = document.getElementById('analysisResults');
+            container.innerHTML = '';
+            
+            const user = getCurrentUser();
+            const tasks = getTasks();
+            const notifications = getTaskNotifications();
+            
+            if (!user) {
+                addResult('analysisResults', '❌ No se puede analizar sin usuario logueado', 'error');
+                return;
+            }
+
+            addResult('analysisResults', `📊 Análisis para usuario: <strong>${user.username}</strong>`, 'info');
+            addResult('analysisResults', `📋 Tareas totales en sistema: ${tasks.length}`, 'info');
+            addResult('analysisResults', `🔔 Notificaciones: ${notifications.length}`, 'info');
+            
+            // Análisis específico para estudiantes
+            if (user.role === 'student') {
+                const studentTasks = tasks.filter(task => {
+                    if (task.assignedTo === 'course') {
+                        return user.activeCourses?.includes(task.course);
+                    } else {
+                        return task.assignedStudents?.includes(user.username);
+                    }
+                });
+                
+                addResult('analysisResults', `🎯 Tareas que debería ver el estudiante: ${studentTasks.length}`, studentTasks.length > 0 ? 'success' : 'warning');
+                
+                if (studentTasks.length === 0 && tasks.length > 0) {
+                    addResult('analysisResults', '⚠️ PROBLEMA DETECTADO: Hay tareas en el sistema pero ninguna es visible para este estudiante', 'error');
+                }
+            }
+        }
+
+        function debugTaskFiltering() {
+            const container = document.getElementById('analysisResults');
+            const user = getCurrentUser();
+            const tasks = getTasks();
+            
+            if (!user || user.role !== 'student') {
+                addResult('analysisResults', '❌ Debug solo disponible para estudiantes', 'error');
+                return;
+            }
+
+            addResult('analysisResults', '🔍 Debugging filtrado de tareas paso a paso:', 'info');
+            
+            tasks.forEach((task, index) => {
+                let shouldShow = false;
+                let reason = '';
+                
+                if (task.assignedTo === 'course') {
+                    shouldShow = user.activeCourses?.includes(task.course);
+                    reason = `Asignada al curso "${task.course}", estudiante tiene cursos: ${JSON.stringify(user.activeCourses)}`;
+                } else if (task.assignedTo === 'student') {
+                    shouldShow = task.assignedStudents?.includes(user.username);
+                    reason = `Asignada a estudiantes específicos: ${JSON.stringify(task.assignedStudents)}`;
+                } else {
+                    reason = `assignedTo no válido: "${task.assignedTo}"`;
+                }
+                
+                const status = shouldShow ? 'success' : 'error';
+                const icon = shouldShow ? '✅' : '❌';
+                
+                addResult('analysisResults', 
+                    `${icon} Tarea "${task.title}" - ${reason}`,
+                    status
+                );
+            });
+        }
+
+        // Cargar datos al inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserData();
+            
+            const tasks = getTasks();
+            addTable('tasksData', tasks, 'Todas las Tareas en el Sistema');
+            
+            const notifications = getTaskNotifications();
+            addTable('notificationsData', notifications, 'Notificaciones de Tareas');
+            
+            // Mostrar soluciones
+            const solutionsContainer = document.getElementById('solutions');
+            solutionsContainer.innerHTML = `
+                <div class="status info">
+                    <strong>🔧 Soluciones Posibles:</strong>
+                    <ol>
+                        <li><strong>Verificar assignedTo:</strong> Asegurarse de que las tareas tengan <code>assignedTo: 'course'</code> o <code>assignedTo: 'student'</code></li>
+                        <li><strong>Verificar curso del estudiante:</strong> El estudiante debe tener el curso correcto en <code>activeCourses</code></li>
+                        <li><strong>Verificar asignación individual:</strong> Si es asignación específica, el estudiante debe estar en <code>assignedStudents</code></li>
+                        <li><strong>Verificar localStorage:</strong> Los datos deben persistir correctamente</li>
+                    </ol>
+                </div>
+                <button onclick="fixCommonIssues()">🔧 Intentar Reparación Automática</button>
+            `;
+        });
+
+        function fixCommonIssues() {
+            const user = getCurrentUser();
+            const tasks = getTasks();
+            
+            if (!user || !tasks) {
+                addResult('solutions', '❌ No se pueden reparar: datos insuficientes', 'error');
+                return;
+            }
+
+            let fixed = false;
+            const updatedTasks = tasks.map(task => {
+                // Reparar tareas sin assignedTo
+                if (!task.assignedTo) {
+                    task.assignedTo = 'course'; // Asumir que es para curso
+                    fixed = true;
+                    addResult('solutions', `🔧 Reparado: Tarea "${task.title}" ahora asignada al curso`, 'success');
+                }
+                return task;
+            });
+
+            if (fixed) {
+                localStorage.setItem('smart-student-tasks', JSON.stringify(updatedTasks));
+                addResult('solutions', '✅ Reparaciones aplicadas. Recarga la página de tareas.', 'success');
+            } else {
+                addResult('solutions', 'ℹ️ No se encontraron problemas comunes para reparar', 'info');
+            }
+        }
+    </script>
+</body>
+</html>

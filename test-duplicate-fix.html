@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Corrección Duplicados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        .count-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: #f9fafb;
+        }
+        .before {
+            background: #fef2f2;
+            border-color: #f87171;
+        }
+        .after {
+            background: #f0fdf4;
+            border-color: #4ade80;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test - Corrección de Duplicados en Notificaciones</h1>
+    <p>Verificar que las notificaciones de comentarios no se dupliquen en el conteo</p>
+
+    <div class="container">
+        <h2>🎯 Escenario de Prueba</h2>
+        
+        <div class="section">
+            <h3>1. Crear Escenario con Duplicación</h3>
+            <button onclick="createDuplicateScenario()">🔧 Crear Escenario Problemático</button>
+            <div id="scenario-status"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Comparación ANTES vs DESPUÉS</h2>
+        
+        <div class="comparison">
+            <div class="section">
+                <h3>❌ ANTES (Lógica Anterior)</h3>
+                <button onclick="calculateOldLogic()">📊 Calcular con Lógica Anterior</button>
+                <div id="old-logic-result"></div>
+            </div>
+            
+            <div class="section">
+                <h3>✅ DESPUÉS (Lógica Corregida)</h3>
+                <button onclick="calculateNewLogic()">📊 Calcular con Lógica Corregida</button>
+                <div id="new-logic-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🎯 Verificación Final</h2>
+        
+        <div class="section">
+            <button onclick="verifyCorrection()">✅ Verificar Corrección</button>
+            <div id="verification-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let felipeUser = {
+            username: 'felipe_estudiante',
+            name: 'Felipe Estudiante',
+            role: 'student',
+            activeCourses: ['10A']
+        };
+
+        function createDuplicateScenario() {
+            // Crear tarea pendiente
+            const testTask = {
+                id: 'task-ciencias-naturales',
+                title: 'Ciencias Naturales',
+                description: 'Sistema respiratorio',
+                dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                priority: 'medium',
+                status: 'pending',
+                assignedBy: 'profesor_martinez',
+                course: '10A',
+                subject: 'Ciencias Naturales',
+                taskType: 'assignment',
+                createdAt: new Date().toISOString()
+            };
+
+            // Crear comentario del profesor
+            const testComment = {
+                id: 'comment-jorge-1',
+                taskId: 'task-ciencias-naturales',
+                comment: 'pronto',
+                author: 'Jorge Profesor',
+                userRole: 'teacher',
+                studentUsername: 'felipe_estudiante', // Dirigido a Felipe
+                studentName: 'Felipe Estudiante',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                readBy: [], // No leído por Felipe
+                isNew: true
+            };
+
+            // Crear notificación del sistema para el mismo comentario
+            const testNotification = {
+                id: 'notification-comment-1',
+                type: 'teacher_comment',
+                taskId: 'task-ciencias-naturales',
+                taskTitle: 'Ciencias Naturales',
+                targetUserRole: 'student',
+                targetUsernames: ['felipe_estudiante'],
+                fromUsername: 'jorge_profesor',
+                fromDisplayName: 'Jorge Profesor',
+                course: '10A',
+                subject: 'Ciencias Naturales',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+
+            // Guardar datos
+            localStorage.setItem('smart-student-user', JSON.stringify(felipeUser));
+            localStorage.setItem('smart-student-tasks', JSON.stringify([testTask]));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify([testComment]));
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify([testNotification]));
+
+            const status = document.getElementById('scenario-status');
+            status.innerHTML = `
+                <div class="success">✅ Escenario creado</div>
+                <div class="info">📚 1 tarea pendiente</div>
+                <div class="info">💬 1 comentario del profesor</div>
+                <div class="info">🔔 1 notificación del sistema (del mismo comentario)</div>
+                <div class="warning">⚠️ Esto debería causar conteo duplicado en la lógica anterior</div>
+            `;
+        }
+
+        function calculateOldLogic() {
+            // Simular la lógica ANTERIOR (sin exclusión de teacher_comment)
+            const pendingTasksCount = countPendingTasks();
+            const unreadCommentsCount = countUnreadComments();
+            const taskNotificationsCountOld = countTaskNotificationsOldLogic(); // SIN exclusión
+            
+            const totalOld = pendingTasksCount + unreadCommentsCount + taskNotificationsCountOld;
+            
+            const result = document.getElementById('old-logic-result');
+            result.innerHTML = `
+                <div class="count-item before">
+                    <strong>📚 Tareas Pendientes:</strong> ${pendingTasksCount}
+                </div>
+                <div class="count-item before">
+                    <strong>💬 Comentarios No Leídos:</strong> ${unreadCommentsCount}
+                    <br><small>Incluye el comentario "pronto" del profesor</small>
+                </div>
+                <div class="count-item before">
+                    <strong>🔔 Notificaciones del Sistema:</strong> ${taskNotificationsCountOld}
+                    <br><small>Incluye notificación teacher_comment del mismo comentario</small>
+                </div>
+                <div class="count-item before" style="border: 2px solid #f87171; font-weight: bold;">
+                    <strong>❌ TOTAL ANTERIOR:</strong> ${totalOld}
+                    <br><small>PROBLEMA: El comentario se cuenta 2 veces</small>
+                </div>
+            `;
+        }
+
+        function calculateNewLogic() {
+            // Simular la lógica NUEVA (con exclusión de teacher_comment)
+            const pendingTasksCount = countPendingTasks();
+            const unreadCommentsCount = countUnreadComments();
+            const taskNotificationsCountNew = countTaskNotificationsNewLogic(); // CON exclusión
+            
+            const totalNew = pendingTasksCount + unreadCommentsCount + taskNotificationsCountNew;
+            
+            const result = document.getElementById('new-logic-result');
+            result.innerHTML = `
+                <div class="count-item after">
+                    <strong>📚 Tareas Pendientes:</strong> ${pendingTasksCount}
+                </div>
+                <div class="count-item after">
+                    <strong>💬 Comentarios No Leídos:</strong> ${unreadCommentsCount}
+                    <br><small>Incluye el comentario "pronto" del profesor</small>
+                </div>
+                <div class="count-item after">
+                    <strong>🔔 Notificaciones del Sistema:</strong> ${taskNotificationsCountNew}
+                    <br><small>EXCLUYE teacher_comment para evitar duplicados</small>
+                </div>
+                <div class="count-item after" style="border: 2px solid #4ade80; font-weight: bold;">
+                    <strong>✅ TOTAL CORREGIDO:</strong> ${totalNew}
+                    <br><small>SOLUCIONADO: El comentario se cuenta 1 sola vez</small>
+                </div>
+            `;
+        }
+
+        function countPendingTasks() {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const user = felipeUser;
+            
+            const now = new Date();
+            return tasks.filter(task => {
+                const isAssigned = task.course && user.activeCourses?.includes(task.course);
+                const dueDate = new Date(task.dueDate);
+                const isApproaching = dueDate > now;
+                
+                const hasSubmitted = comments.some(comment => 
+                    comment.taskId === task.id && 
+                    comment.studentUsername === user.username && 
+                    comment.isSubmission
+                );
+                
+                return isAssigned && isApproaching && !hasSubmitted;
+            }).length;
+        }
+
+        function countUnreadComments() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const user = felipeUser;
+            
+            return comments.filter(comment => 
+                comment.studentUsername !== user.username &&
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            ).length;
+        }
+
+        function countTaskNotificationsOldLogic() {
+            // Lógica ANTERIOR - cuenta TODAS las notificaciones sin exclusión
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const user = felipeUser;
+            
+            return notifications.filter(notification => 
+                notification.targetUserRole === user.role &&
+                notification.targetUsernames.includes(user.username) &&
+                !notification.readBy.includes(user.username)
+            ).length;
+        }
+
+        function countTaskNotificationsNewLogic() {
+            // Lógica NUEVA - excluye teacher_comment para estudiantes
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const user = felipeUser;
+            
+            const unreadNotifications = notifications.filter(notification => 
+                notification.targetUserRole === user.role &&
+                notification.targetUsernames.includes(user.username) &&
+                !notification.readBy.includes(user.username)
+            );
+            
+            // Para estudiantes, excluir teacher_comment
+            if (user.role === 'student') {
+                return unreadNotifications.filter(n => n.type !== 'teacher_comment').length;
+            }
+            
+            return unreadNotifications.length;
+        }
+
+        function verifyCorrection() {
+            const oldTotal = countPendingTasks() + countUnreadComments() + countTaskNotificationsOldLogic();
+            const newTotal = countPendingTasks() + countUnreadComments() + countTaskNotificationsNewLogic();
+            
+            const expectedTotal = 2; // 1 tarea + 1 comentario
+            
+            const result = document.getElementById('verification-result');
+            result.innerHTML = `
+                <div class="info">🎯 Análisis de la corrección:</div>
+                <div class="count-item">
+                    <strong>📊 Conteo Esperado:</strong> ${expectedTotal}<br>
+                    <small>• 1 tarea pendiente (Ciencias Naturales)</small><br>
+                    <small>• 1 comentario del profesor (Jorge - "pronto")</small>
+                </div>
+                <div class="count-item before">
+                    <strong>❌ Lógica Anterior:</strong> ${oldTotal}<br>
+                    <small>${oldTotal === expectedTotal ? '✅ Correcto' : `❌ Incorrecto (+${oldTotal - expectedTotal} duplicados)`}</small>
+                </div>
+                <div class="count-item after">
+                    <strong>✅ Lógica Corregida:</strong> ${newTotal}<br>
+                    <small>${newTotal === expectedTotal ? '✅ Correcto' : `❌ Incorrecto (+${newTotal - expectedTotal} duplicados)`}</small>
+                </div>
+                <div class="count-item ${newTotal === expectedTotal ? 'after' : 'before'}" style="border: 2px solid ${newTotal === expectedTotal ? '#4ade80' : '#f87171'}; font-weight: bold;">
+                    <strong>🎯 Resultado:</strong> ${newTotal === expectedTotal ? '✅ CORRECCIÓN EXITOSA' : '❌ AÚN HAY PROBLEMAS'}<br>
+                    <small>${newTotal === expectedTotal ? 'Las notificaciones ahora se cuentan correctamente' : 'Se requieren más ajustes'}</small>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

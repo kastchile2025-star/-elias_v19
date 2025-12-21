@@ -1,0 +1,1001 @@
+3fecha,curso,seccion,nombre,rut,asignatura,tipo,actividad,tema,nota
+2025-06-21,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 1 - S1,Ecuaciones,73
+2025-06-12,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Tarea,Tarea 2 - S1,Funciones,68
+2025-04-01,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 3 - S1,Trigonometría,89
+2025-04-06,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Tarea,Tarea 4 - S1,Porcentajes,90
+2025-04-16,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 5 - S1,Proporciones,13
+2025-06-16,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 6 - S1,Funciones,76
+2025-05-17,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 7 - S1,Álgebra,100
+2025-04-20,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 8 - S1,Porcentajes,93
+2025-04-27,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Tarea,Tarea 9 - S1,Porcentajes,71
+2025-03-20,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 10 - S1,Trigonometría,96
+2025-08-02,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 1 - S2,Álgebra,28
+2025-07-08,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 2 - S2,Estadística,45
+2025-09-02,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 3 - S2,Geometría,87
+2025-10-17,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 4 - S2,Estadística,60
+2025-10-19,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 5 - S2,Álgebra,68
+2025-08-04,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 6 - S2,Estadística,2
+2025-10-26,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 7 - S2,Álgebra,88
+2025-10-28,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Tarea,Tarea 8 - S2,Números,70
+2025-11-08,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Evaluación,Evaluación 9 - S2,Funciones,63
+2025-07-04,1ro Básico,A,Sofía González Soto,10000000-0,Matemáticas,Prueba,Prueba 10 - S2,Estadística,83
+2025-05-03,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Tarea,Tarea 1 - S1,Géneros Literarios,94
+2025-03-13,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Análisis Textual,72
+2025-03-25,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Gramática,58
+2025-04-19,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Expresión Oral,75
+2025-03-01,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Tarea,Tarea 5 - S1,Vocabulario,64
+2025-05-12,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S1,Géneros Literarios,21
+2025-04-04,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S1,Gramática,85
+2025-04-12,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Prueba,Prueba 8 - S1,Análisis Textual,89
+2025-04-23,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S1,Análisis Textual,61
+2025-04-21,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Prueba,Prueba 10 - S1,Géneros Literarios,40
+2025-07-25,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Literatura,93
+2025-11-02,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S2,Literatura,92
+2025-11-03,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Prueba,Prueba 3 - S2,Vocabulario,26
+2025-07-09,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Vocabulario,88
+2025-09-17,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Géneros Literarios,85
+2025-10-10,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S2,Gramática,72
+2025-09-19,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Tarea,Tarea 7 - S2,Ortografía,10
+2025-12-14,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Tarea,Tarea 8 - S2,Análisis Textual,80
+2025-09-25,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S2,Redacción,1
+2025-07-19,1ro Básico,A,Sofía González Soto,10000000-0,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S2,Gramática,28
+2025-06-18,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Geografía,96
+2025-04-16,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Cultura,96
+2025-03-27,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S1,Civilizaciones,82
+2025-03-21,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S1,Revolución,84
+2025-03-23,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S1,Independencia,85
+2025-03-15,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Globalización,66
+2025-03-28,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S1,Civilizaciones,62
+2025-04-17,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S1,Historia de Chile,79
+2025-03-20,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S1,Independencia,73
+2025-04-26,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S1,Geografía,92
+2025-10-22,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 1 - S2,Globalización,29
+2025-10-06,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S2,Civilizaciones,76
+2025-08-16,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S2,Globalización,87
+2025-07-21,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S2,Revolución,98
+2025-10-16,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S2,Democracia,77
+2025-12-20,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S2,Geografía,76
+2025-07-23,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Democracia,32
+2025-12-12,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S2,Cultura,77
+2025-07-20,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S2,Democracia,69
+2025-12-05,1ro Básico,A,Sofía González Soto,10000000-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S2,Economía,94
+2025-05-26,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 1 - S1,Materia,29
+2025-03-07,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 2 - S1,Energía,83
+2025-05-28,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 3 - S1,Biología,94
+2025-03-15,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 4 - S1,Biología,50
+2025-06-05,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 5 - S1,Biología,78
+2025-06-09,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Cuerpo Humano,84
+2025-06-07,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 7 - S1,Química,66
+2025-06-18,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 8 - S1,Biología,67
+2025-04-18,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 9 - S1,Química,92
+2025-06-09,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 10 - S1,Método Científico,82
+2025-10-07,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 1 - S2,Medio Ambiente,72
+2025-07-16,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 2 - S2,Medio Ambiente,71
+2025-12-06,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 3 - S2,Cuerpo Humano,79
+2025-07-25,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 4 - S2,Física,87
+2025-12-05,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 5 - S2,Medio Ambiente,78
+2025-11-11,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 6 - S2,Materia,76
+2025-09-14,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Evaluación,Evaluación 7 - S2,Química,73
+2025-08-14,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 8 - S2,Ciclos Naturales,35
+2025-12-15,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Prueba,Prueba 9 - S2,Ecosistemas,95
+2025-09-04,1ro Básico,A,Sofía González Soto,10000000-0,Ciencias Naturales,Tarea,Tarea 10 - S2,Método Científico,63
+2025-04-06,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 1 - S1,Ecuaciones,63
+2025-03-28,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 2 - S1,Geometría,80
+2025-05-22,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Tarea,Tarea 3 - S1,Trigonometría,91
+2025-05-22,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Tarea,Tarea 4 - S1,Números,90
+2025-06-25,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 5 - S1,Ecuaciones,74
+2025-06-25,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 6 - S1,Trigonometría,100
+2025-06-16,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 7 - S1,Porcentajes,36
+2025-06-10,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 8 - S1,Geometría,8
+2025-05-01,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 9 - S1,Funciones,73
+2025-06-20,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 10 - S1,Geometría,46
+2025-08-02,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 1 - S2,Porcentajes,49
+2025-12-05,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 2 - S2,Fracciones,73
+2025-12-01,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 3 - S2,Geometría,57
+2025-10-02,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 4 - S2,Fracciones,78
+2025-07-11,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 5 - S2,Proporciones,95
+2025-08-04,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Tarea,Tarea 6 - S2,Ecuaciones,82
+2025-08-03,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Evaluación,Evaluación 7 - S2,Números,78
+2025-11-17,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 8 - S2,Geometría,34
+2025-11-24,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 9 - S2,Trigonometría,86
+2025-08-04,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Matemáticas,Prueba,Prueba 10 - S2,Porcentajes,71
+2025-04-04,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S1,Literatura,64
+2025-03-25,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Gramática,77
+2025-06-03,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 3 - S1,Redacción,85
+2025-06-03,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Géneros Literarios,71
+2025-04-18,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 5 - S1,Comunicación,74
+2025-06-18,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 6 - S1,Literatura,81
+2025-03-01,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 7 - S1,Comprensión Lectora,76
+2025-04-11,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 8 - S1,Gramática,76
+2025-04-23,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 9 - S1,Expresión Oral,80
+2025-06-24,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Redacción,90
+2025-08-11,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 1 - S2,Expresión Oral,87
+2025-08-25,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S2,Comprensión Lectora,23
+2025-08-27,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 3 - S2,Literatura,81
+2025-11-28,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 4 - S2,Análisis Textual,9
+2025-10-19,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 5 - S2,Análisis Textual,85
+2025-09-10,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 6 - S2,Literatura,57
+2025-08-23,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S2,Gramática,67
+2025-10-15,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Prueba,Prueba 8 - S2,Análisis Textual,65
+2025-12-22,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S2,Literatura,81
+2025-11-18,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Lenguaje y Comunicación,Tarea,Tarea 10 - S2,Redacción,80
+2025-06-01,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 1 - S1,Historia de Chile,90
+2025-04-23,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 2 - S1,Economía,79
+2025-04-20,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S1,Revolución,52
+2025-04-06,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S1,Historia de Chile,60
+2025-06-08,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S1,Revolución,68
+2025-04-08,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S1,Independencia,79
+2025-04-07,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S1,Sociedad,76
+2025-04-14,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S1,Globalización,74
+2025-03-27,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S1,Democracia,7
+2025-05-27,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S1,Cultura,66
+2025-09-27,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 1 - S2,Independencia,30
+2025-10-24,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S2,Cultura,60
+2025-07-09,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Revolución,90
+2025-09-23,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Revolución,59
+2025-11-09,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Historia de Chile,97
+2025-08-16,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S2,Democracia,71
+2025-12-20,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S2,Geografía,38
+2025-09-16,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S2,Economía,98
+2025-11-08,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S2,Sociedad,96
+2025-10-03,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S2,Democracia,62
+2025-05-06,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 1 - S1,Medio Ambiente,35
+2025-04-12,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Evaluación,Evaluación 2 - S1,Cuerpo Humano,33
+2025-05-02,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 3 - S1,Método Científico,44
+2025-04-07,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 4 - S1,Materia,20
+2025-03-26,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Evaluación,Evaluación 5 - S1,Química,96
+2025-04-07,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 6 - S1,Materia,79
+2025-03-21,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 7 - S1,Ecosistemas,7
+2025-06-22,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 8 - S1,Química,99
+2025-06-17,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 9 - S1,Cuerpo Humano,72
+2025-03-18,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 10 - S1,Cuerpo Humano,93
+2025-08-20,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 1 - S2,Medio Ambiente,94
+2025-08-02,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 2 - S2,Física,100
+2025-11-07,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 3 - S2,Biología,63
+2025-11-05,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Prueba,Prueba 4 - S2,Método Científico,74
+2025-09-24,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Evaluación,Evaluación 5 - S2,Energía,93
+2025-11-16,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 6 - S2,Energía,73
+2025-12-06,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Prueba,Prueba 7 - S2,Medio Ambiente,74
+2025-11-04,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 8 - S2,Ciclos Naturales,83
+2025-11-25,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 9 - S2,Energía,67
+2025-12-04,1ro Básico,A,Matías Muñoz Contreras,10000001-1,Ciencias Naturales,Tarea,Tarea 10 - S2,Energía,81
+2025-05-28,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Tarea,Tarea 1 - S1,Fracciones,88
+2025-04-02,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 2 - S1,Álgebra,64
+2025-05-17,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 3 - S1,Funciones,55
+2025-06-24,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Tarea,Tarea 4 - S1,Estadística,57
+2025-03-04,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Tarea,Tarea 5 - S1,Porcentajes,65
+2025-04-05,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 6 - S1,Funciones,5
+2025-04-10,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 7 - S1,Álgebra,9
+2025-03-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 8 - S1,Fracciones,29
+2025-05-21,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 9 - S1,Números,81
+2025-06-24,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 10 - S1,Fracciones,77
+2025-11-24,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 1 - S2,Trigonometría,76
+2025-09-18,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Tarea,Tarea 2 - S2,Álgebra,70
+2025-12-19,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Tarea,Tarea 3 - S2,Álgebra,75
+2025-07-17,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 4 - S2,Álgebra,62
+2025-08-21,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 5 - S2,Proporciones,96
+2025-07-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 6 - S2,Estadística,88
+2025-07-12,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 7 - S2,Estadística,73
+2025-09-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 8 - S2,Fracciones,61
+2025-08-14,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Evaluación,Evaluación 9 - S2,Álgebra,64
+2025-11-15,1ro Básico,A,Valentina Rojas Silva,10000002-2,Matemáticas,Prueba,Prueba 10 - S2,Álgebra,89
+2025-05-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Análisis Textual,99
+2025-03-23,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Comprensión Lectora,65
+2025-06-13,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Redacción,27
+2025-05-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Expresión Oral,64
+2025-06-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 5 - S1,Expresión Oral,81
+2025-05-27,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Tarea,Tarea 6 - S1,Vocabulario,70
+2025-05-27,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 7 - S1,Expresión Oral,80
+2025-03-28,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 8 - S1,Comprensión Lectora,95
+2025-03-11,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Análisis Textual,63
+2025-05-04,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Redacción,94
+2025-09-09,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 1 - S2,Gramática,66
+2025-10-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 2 - S2,Comprensión Lectora,91
+2025-08-23,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 3 - S2,Ortografía,56
+2025-08-27,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Tarea,Tarea 4 - S2,Comunicación,65
+2025-10-04,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Vocabulario,49
+2025-11-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S2,Géneros Literarios,62
+2025-09-07,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 7 - S2,Vocabulario,5
+2025-07-27,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Evaluación,Evaluación 8 - S2,Literatura,62
+2025-08-10,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Ortografía,83
+2025-07-16,1ro Básico,A,Valentina Rojas Silva,10000002-2,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Redacción,62
+2025-06-06,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Globalización,73
+2025-04-01,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S1,Cultura,97
+2025-04-10,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S1,Independencia,23
+2025-04-19,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Cultura,72
+2025-06-13,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Geografía,64
+2025-03-25,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Democracia,69
+2025-05-27,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S1,Democracia,61
+2025-04-28,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S1,Cultura,68
+2025-04-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Geografía,69
+2025-03-28,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S1,Economía,62
+2025-11-22,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 1 - S2,Independencia,91
+2025-10-20,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S2,Revolución,62
+2025-10-10,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Democracia,71
+2025-10-01,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Historia de Chile,90
+2025-10-25,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Cultura,93
+2025-11-06,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S2,Economía,64
+2025-11-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Sociedad,60
+2025-08-06,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Civilizaciones,84
+2025-10-25,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S2,Cultura,63
+2025-12-08,1ro Básico,A,Valentina Rojas Silva,10000002-2,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S2,Cultura,77
+2025-03-05,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Evaluación,Evaluación 1 - S1,Química,64
+2025-04-09,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 2 - S1,Cuerpo Humano,92
+2025-05-22,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 3 - S1,Física,69
+2025-05-15,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 4 - S1,Método Científico,58
+2025-03-14,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 5 - S1,Ciclos Naturales,34
+2025-06-25,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Energía,78
+2025-04-14,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Evaluación,Evaluación 7 - S1,Química,62
+2025-03-24,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 8 - S1,Energía,73
+2025-04-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 9 - S1,Materia,63
+2025-06-16,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 10 - S1,Materia,78
+2025-10-20,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 1 - S2,Materia,78
+2025-08-20,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 2 - S2,Energía,83
+2025-12-22,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 3 - S2,Ciclos Naturales,89
+2025-07-18,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Evaluación,Evaluación 4 - S2,Cuerpo Humano,70
+2025-10-08,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 5 - S2,Energía,68
+2025-11-22,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 6 - S2,Cuerpo Humano,81
+2025-09-03,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 7 - S2,Biología,53
+2025-10-06,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Prueba,Prueba 8 - S2,Ciclos Naturales,97
+2025-09-15,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Evaluación,Evaluación 9 - S2,Ecosistemas,83
+2025-11-26,1ro Básico,A,Valentina Rojas Silva,10000002-2,Ciencias Naturales,Tarea,Tarea 10 - S2,Energía,67
+2025-03-02,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Evaluación,Evaluación 1 - S1,Proporciones,73
+2025-04-13,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Evaluación,Evaluación 2 - S1,Proporciones,94
+2025-03-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 3 - S1,Números,71
+2025-03-02,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 4 - S1,Números,68
+2025-04-06,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Evaluación,Evaluación 5 - S1,Geometría,62
+2025-05-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 6 - S1,Funciones,71
+2025-03-06,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 7 - S1,Geometría,95
+2025-06-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 8 - S1,Funciones,70
+2025-06-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 9 - S1,Números,76
+2025-04-02,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 10 - S1,Proporciones,81
+2025-08-08,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 1 - S2,Álgebra,21
+2025-12-23,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 2 - S2,Trigonometría,47
+2025-08-12,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 3 - S2,Estadística,79
+2025-11-22,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 4 - S2,Proporciones,14
+2025-10-11,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 5 - S2,Proporciones,76
+2025-10-17,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Evaluación,Evaluación 6 - S2,Álgebra,96
+2025-11-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Tarea,Tarea 7 - S2,Proporciones,65
+2025-08-14,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Evaluación,Evaluación 8 - S2,Álgebra,76
+2025-08-08,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 9 - S2,Fracciones,96
+2025-10-07,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Matemáticas,Prueba,Prueba 10 - S2,Trigonometría,44
+2025-04-27,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Expresión Oral,89
+2025-04-18,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S1,Análisis Textual,60
+2025-06-19,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Comprensión Lectora,73
+2025-03-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Análisis Textual,77
+2025-05-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S1,Comunicación,90
+2025-06-19,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S1,Análisis Textual,42
+2025-03-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 7 - S1,Gramática,79
+2025-06-09,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Gramática,83
+2025-03-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S1,Redacción,55
+2025-04-26,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S1,Comprensión Lectora,84
+2025-09-15,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Géneros Literarios,2
+2025-08-11,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S2,Géneros Literarios,76
+2025-12-13,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Géneros Literarios,80
+2025-12-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Géneros Literarios,89
+2025-09-19,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 5 - S2,Géneros Literarios,86
+2025-10-12,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 6 - S2,Redacción,40
+2025-11-27,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Tarea,Tarea 7 - S2,Literatura,46
+2025-08-16,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 8 - S2,Comprensión Lectora,80
+2025-12-08,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Tarea,Tarea 9 - S2,Análisis Textual,61
+2025-11-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Redacción,86
+2025-04-09,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 1 - S1,Cultura,96
+2025-04-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S1,Revolución,51
+2025-03-18,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S1,Civilizaciones,72
+2025-03-14,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S1,Independencia,92
+2025-04-18,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Civilizaciones,38
+2025-03-10,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S1,Sociedad,61
+2025-03-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S1,Independencia,97
+2025-03-23,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S1,Cultura,56
+2025-03-18,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S1,Globalización,78
+2025-06-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S1,Revolución,100
+2025-08-23,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Revolución,85
+2025-10-11,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S2,Independencia,61
+2025-07-16,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Independencia,73
+2025-11-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Civilizaciones,100
+2025-08-19,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S2,Geografía,2
+2025-12-12,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S2,Globalización,16
+2025-10-03,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 7 - S2,Cultura,68
+2025-07-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Sociedad,74
+2025-12-20,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S2,Cultura,65
+2025-12-27,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S2,Independencia,27
+2025-04-19,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Evaluación,Evaluación 1 - S1,Química,99
+2025-05-07,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 2 - S1,Ecosistemas,62
+2025-03-01,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 3 - S1,Materia,7
+2025-05-06,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 4 - S1,Cuerpo Humano,80
+2025-06-26,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 5 - S1,Método Científico,95
+2025-06-10,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Biología,92
+2025-03-24,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 7 - S1,Cuerpo Humano,69
+2025-03-27,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 8 - S1,Cuerpo Humano,65
+2025-04-15,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Evaluación,Evaluación 9 - S1,Física,72
+2025-06-23,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 10 - S1,Cuerpo Humano,68
+2025-08-13,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Evaluación,Evaluación 1 - S2,Energía,85
+2025-10-14,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 2 - S2,Método Científico,72
+2025-07-07,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 3 - S2,Cuerpo Humano,90
+2025-09-11,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 4 - S2,Química,62
+2025-07-21,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 5 - S2,Física,87
+2025-10-06,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Evaluación,Evaluación 6 - S2,Materia,97
+2025-08-09,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 7 - S2,Ecosistemas,27
+2025-07-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Prueba,Prueba 8 - S2,Ecosistemas,83
+2025-11-27,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 9 - S2,Energía,60
+2025-12-04,1ro Básico,A,Benjamín Díaz Martínez,10000003-3,Ciencias Naturales,Tarea,Tarea 10 - S2,Ecosistemas,76
+2025-03-19,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 1 - S1,Álgebra,98
+2025-03-17,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 2 - S1,Ecuaciones,93
+2025-03-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 3 - S1,Geometría,77
+2025-04-16,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 4 - S1,Geometría,80
+2025-03-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 5 - S1,Trigonometría,80
+2025-04-25,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Tarea,Tarea 6 - S1,Fracciones,68
+2025-05-27,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Tarea,Tarea 7 - S1,Números,92
+2025-03-03,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 8 - S1,Números,47
+2025-03-25,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 9 - S1,Geometría,89
+2025-05-28,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 10 - S1,Fracciones,88
+2025-08-21,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Tarea,Tarea 1 - S2,Trigonometría,30
+2025-10-04,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 2 - S2,Ecuaciones,86
+2025-09-05,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 3 - S2,Funciones,74
+2025-09-23,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 4 - S2,Álgebra,61
+2025-12-03,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 5 - S2,Números,84
+2025-09-23,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 6 - S2,Números,85
+2025-10-17,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Prueba,Prueba 7 - S2,Funciones,72
+2025-09-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Evaluación,Evaluación 8 - S2,Proporciones,55
+2025-08-26,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Tarea,Tarea 9 - S2,Ecuaciones,67
+2025-08-08,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Matemáticas,Tarea,Tarea 10 - S2,Estadística,87
+2025-04-11,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Comprensión Lectora,96
+2025-06-26,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Redacción,91
+2025-05-07,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Vocabulario,84
+2025-06-13,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Vocabulario,88
+2025-06-22,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 5 - S1,Redacción,91
+2025-06-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 6 - S1,Géneros Literarios,26
+2025-03-04,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 7 - S1,Comprensión Lectora,19
+2025-03-23,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Comunicación,99
+2025-05-05,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Vocabulario,100
+2025-03-17,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Redacción,77
+2025-08-12,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Redacción,98
+2025-07-15,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 2 - S2,Géneros Literarios,70
+2025-07-25,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Ortografía,68
+2025-11-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Literatura,72
+2025-10-13,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 5 - S2,Literatura,20
+2025-07-06,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Tarea,Tarea 6 - S2,Literatura,66
+2025-09-21,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 7 - S2,Comprensión Lectora,3
+2025-11-28,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Evaluación,Evaluación 8 - S2,Análisis Textual,61
+2025-12-14,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Géneros Literarios,98
+2025-12-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Redacción,61
+2025-05-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Globalización,74
+2025-04-11,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Cultura,66
+2025-06-10,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 3 - S1,Democracia,60
+2025-06-13,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Economía,62
+2025-04-21,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S1,Geografía,14
+2025-04-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Geografía,49
+2025-05-12,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S1,Democracia,66
+2025-04-25,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S1,Democracia,73
+2025-05-02,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S1,Economía,71
+2025-03-21,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S1,Sociedad,75
+2025-12-13,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Sociedad,74
+2025-12-24,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S2,Democracia,66
+2025-10-03,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Democracia,99
+2025-07-26,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Globalización,18
+2025-10-17,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Globalización,53
+2025-08-27,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S2,Revolución,80
+2025-11-03,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Globalización,84
+2025-08-18,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Civilizaciones,64
+2025-11-05,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S2,Economía,86
+2025-08-23,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S2,Democracia,85
+2025-06-07,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 1 - S1,Energía,5
+2025-04-04,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Prueba,Prueba 2 - S1,Materia,71
+2025-05-07,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 3 - S1,Materia,62
+2025-03-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 4 - S1,Biología,77
+2025-03-11,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 5 - S1,Biología,97
+2025-06-15,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Cuerpo Humano,80
+2025-04-17,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 7 - S1,Biología,64
+2025-04-26,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 8 - S1,Método Científico,61
+2025-04-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 9 - S1,Medio Ambiente,79
+2025-03-23,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 10 - S1,Método Científico,94
+2025-11-24,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 1 - S2,Ciclos Naturales,88
+2025-07-05,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Prueba,Prueba 2 - S2,Materia,46
+2025-09-26,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Prueba,Prueba 3 - S2,Cuerpo Humano,75
+2025-07-14,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 4 - S2,Ciclos Naturales,85
+2025-08-03,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Prueba,Prueba 5 - S2,Energía,61
+2025-12-09,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 6 - S2,Energía,80
+2025-07-22,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 7 - S2,Biología,43
+2025-09-05,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 8 - S2,Biología,65
+2025-07-22,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Tarea,Tarea 9 - S2,Ecosistemas,64
+2025-07-16,1ro Básico,A,Martina Pérez Sepúlveda,10000004-4,Ciencias Naturales,Evaluación,Evaluación 10 - S2,Biología,68
+2025-03-10,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 1 - S1,Funciones,94
+2025-06-02,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 2 - S1,Ecuaciones,69
+2025-05-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 3 - S1,Ecuaciones,39
+2025-06-07,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 4 - S1,Fracciones,97
+2025-03-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 5 - S1,Funciones,91
+2025-06-27,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Evaluación,Evaluación 6 - S1,Números,68
+2025-05-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 7 - S1,Estadística,63
+2025-05-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 8 - S1,Trigonometría,83
+2025-05-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Evaluación,Evaluación 9 - S1,Ecuaciones,28
+2025-04-11,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 10 - S1,Álgebra,98
+2025-10-02,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 1 - S2,Porcentajes,29
+2025-09-13,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 2 - S2,Trigonometría,94
+2025-11-18,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 3 - S2,Porcentajes,74
+2025-09-11,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 4 - S2,Fracciones,48
+2025-11-25,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 5 - S2,Porcentajes,73
+2025-11-21,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Tarea,Tarea 6 - S2,Proporciones,27
+2025-11-06,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 7 - S2,Números,81
+2025-12-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 8 - S2,Álgebra,60
+2025-11-07,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Prueba,Prueba 9 - S2,Porcentajes,92
+2025-07-10,1ro Básico,A,Lucas Soto Morales,10000005-5,Matemáticas,Evaluación,Evaluación 10 - S2,Números,3
+2025-03-19,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Géneros Literarios,80
+2025-06-07,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S1,Expresión Oral,86
+2025-04-25,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 3 - S1,Gramática,72
+2025-03-05,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Expresión Oral,95
+2025-03-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 5 - S1,Redacción,64
+2025-06-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 6 - S1,Comunicación,91
+2025-06-04,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S1,Géneros Literarios,26
+2025-03-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Ortografía,70
+2025-05-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Literatura,93
+2025-06-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S1,Gramática,64
+2025-11-27,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Análisis Textual,73
+2025-09-01,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 2 - S2,Géneros Literarios,82
+2025-10-13,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Gramática,29
+2025-10-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 4 - S2,Literatura,75
+2025-07-26,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Análisis Textual,94
+2025-10-04,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 6 - S2,Expresión Oral,73
+2025-09-27,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S2,Análisis Textual,10
+2025-09-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 8 - S2,Comunicación,66
+2025-09-15,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Comprensión Lectora,84
+2025-11-20,1ro Básico,A,Lucas Soto Morales,10000005-5,Lenguaje y Comunicación,Tarea,Tarea 10 - S2,Análisis Textual,75
+2025-06-08,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Historia de Chile,91
+2025-03-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 2 - S1,Independencia,84
+2025-06-04,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S1,Historia de Chile,72
+2025-04-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Civilizaciones,92
+2025-06-27,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Sociedad,88
+2025-06-11,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Cultura,60
+2025-06-07,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S1,Historia de Chile,65
+2025-06-16,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S1,Sociedad,89
+2025-05-20,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Economía,77
+2025-05-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S1,Economía,66
+2025-07-08,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 1 - S2,Geografía,72
+2025-09-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 2 - S2,Cultura,94
+2025-08-06,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Independencia,89
+2025-09-21,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S2,Civilizaciones,65
+2025-08-19,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S2,Independencia,82
+2025-09-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S2,Economía,90
+2025-11-15,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S2,Sociedad,92
+2025-10-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Civilizaciones,74
+2025-12-28,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S2,Economía,62
+2025-11-21,1ro Básico,A,Lucas Soto Morales,10000005-5,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S2,Globalización,95
+2025-06-04,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Prueba,Prueba 1 - S1,Energía,72
+2025-05-07,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 2 - S1,Materia,91
+2025-06-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 3 - S1,Cuerpo Humano,62
+2025-06-10,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 4 - S1,Física,86
+2025-03-27,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 5 - S1,Método Científico,73
+2025-05-04,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 6 - S1,Física,95
+2025-06-23,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 7 - S1,Ciclos Naturales,89
+2025-03-11,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Prueba,Prueba 8 - S1,Física,80
+2025-04-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 9 - S1,Método Científico,89
+2025-06-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Prueba,Prueba 10 - S1,Biología,74
+2025-12-25,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 1 - S2,Ciclos Naturales,45
+2025-11-23,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 2 - S2,Medio Ambiente,70
+2025-11-03,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 3 - S2,Materia,88
+2025-11-21,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 4 - S2,Método Científico,87
+2025-09-19,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Prueba,Prueba 5 - S2,Materia,76
+2025-11-02,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 6 - S2,Biología,88
+2025-07-17,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 7 - S2,Cuerpo Humano,62
+2025-11-24,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 8 - S2,Medio Ambiente,84
+2025-09-16,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Tarea,Tarea 9 - S2,Química,61
+2025-11-22,1ro Básico,A,Lucas Soto Morales,10000005-5,Ciencias Naturales,Evaluación,Evaluación 10 - S2,Medio Ambiente,88
+2025-05-10,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 1 - S1,Geometría,15
+2025-05-15,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 2 - S1,Funciones,4
+2025-05-09,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 3 - S1,Funciones,3
+2025-06-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 4 - S1,Geometría,93
+2025-06-22,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Prueba,Prueba 5 - S1,Fracciones,85
+2025-05-21,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 6 - S1,Porcentajes,84
+2025-03-28,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 7 - S1,Funciones,69
+2025-06-15,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 8 - S1,Ecuaciones,62
+2025-03-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 9 - S1,Fracciones,51
+2025-05-11,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Prueba,Prueba 10 - S1,Trigonometría,14
+2025-09-18,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 1 - S2,Fracciones,6
+2025-07-03,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 2 - S2,Trigonometría,28
+2025-08-27,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 3 - S2,Geometría,98
+2025-07-17,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 4 - S2,Fracciones,67
+2025-12-09,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 5 - S2,Trigonometría,6
+2025-09-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Evaluación,Evaluación 6 - S2,Geometría,26
+2025-07-25,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 7 - S2,Trigonometría,7
+2025-09-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Prueba,Prueba 8 - S2,Fracciones,93
+2025-09-27,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Prueba,Prueba 9 - S2,Ecuaciones,91
+2025-08-17,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Matemáticas,Tarea,Tarea 10 - S2,Ecuaciones,100
+2025-05-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 1 - S1,Ortografía,81
+2025-05-03,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S1,Análisis Textual,3
+2025-03-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 3 - S1,Comprensión Lectora,89
+2025-04-28,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Expresión Oral,88
+2025-05-16,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S1,Análisis Textual,94
+2025-03-04,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 6 - S1,Gramática,79
+2025-03-07,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S1,Análisis Textual,91
+2025-03-18,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 8 - S1,Redacción,62
+2025-05-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Vocabulario,76
+2025-04-12,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Vocabulario,74
+2025-09-04,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Literatura,53
+2025-12-04,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 2 - S2,Redacción,97
+2025-09-09,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 3 - S2,Comunicación,90
+2025-08-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 4 - S2,Vocabulario,65
+2025-08-03,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Ortografía,87
+2025-09-08,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 6 - S2,Análisis Textual,92
+2025-08-05,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 7 - S2,Comunicación,93
+2025-11-28,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Prueba,Prueba 8 - S2,Vocabulario,62
+2025-07-05,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S2,Expresión Oral,89
+2025-08-16,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Lenguaje y Comunicación,Tarea,Tarea 10 - S2,Análisis Textual,97
+2025-04-13,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 1 - S1,Economía,80
+2025-04-27,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Geografía,87
+2025-04-04,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 3 - S1,Revolución,66
+2025-06-14,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 4 - S1,Cultura,87
+2025-06-13,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S1,Revolución,81
+2025-03-19,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S1,Democracia,79
+2025-06-02,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 7 - S1,Globalización,84
+2025-05-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S1,Globalización,96
+2025-03-07,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S1,Cultura,90
+2025-05-08,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S1,Historia de Chile,63
+2025-09-23,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Independencia,86
+2025-10-26,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S2,Historia de Chile,93
+2025-10-14,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Globalización,52
+2025-08-05,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S2,Geografía,52
+2025-08-27,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Revolución,62
+2025-10-18,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S2,Revolución,80
+2025-07-07,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Democracia,83
+2025-09-28,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Geografía,73
+2025-07-01,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S2,Independencia,66
+2025-09-23,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S2,Historia de Chile,76
+2025-03-01,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 1 - S1,Biología,92
+2025-05-02,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 2 - S1,Energía,65
+2025-06-17,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 3 - S1,Método Científico,69
+2025-05-17,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 4 - S1,Materia,77
+2025-05-09,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 5 - S1,Medio Ambiente,83
+2025-03-03,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Método Científico,77
+2025-06-08,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 7 - S1,Física,83
+2025-06-12,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 8 - S1,Energía,81
+2025-05-05,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 9 - S1,Método Científico,61
+2025-06-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 10 - S1,Química,100
+2025-11-02,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 1 - S2,Ciclos Naturales,73
+2025-08-25,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 2 - S2,Ecosistemas,25
+2025-12-25,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Evaluación,Evaluación 3 - S2,Método Científico,44
+2025-10-07,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 4 - S2,Ecosistemas,62
+2025-08-24,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 5 - S2,Método Científico,74
+2025-10-01,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 6 - S2,Química,90
+2025-09-24,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Prueba,Prueba 7 - S2,Energía,95
+2025-10-22,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 8 - S2,Medio Ambiente,97
+2025-07-04,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 9 - S2,Ciclos Naturales,65
+2025-09-06,1ro Básico,A,Florencia Contreras Rodríguez,10000006-6,Ciencias Naturales,Tarea,Tarea 10 - S2,Ecosistemas,67
+2025-05-15,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Tarea,Tarea 1 - S1,Proporciones,91
+2025-04-12,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 2 - S1,Geometría,73
+2025-05-13,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Tarea,Tarea 3 - S1,Álgebra,94
+2025-05-08,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Tarea,Tarea 4 - S1,Estadística,80
+2025-06-18,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 5 - S1,Porcentajes,98
+2025-05-27,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 6 - S1,Ecuaciones,29
+2025-04-23,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 7 - S1,Estadística,88
+2025-04-17,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 8 - S1,Álgebra,73
+2025-03-11,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 9 - S1,Proporciones,67
+2025-06-10,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 10 - S1,Números,41
+2025-07-21,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Tarea,Tarea 1 - S2,Ecuaciones,61
+2025-11-16,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 2 - S2,Funciones,83
+2025-07-20,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 3 - S2,Porcentajes,78
+2025-11-11,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 4 - S2,Estadística,98
+2025-12-08,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 5 - S2,Álgebra,92
+2025-10-11,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 6 - S2,Trigonometría,63
+2025-09-07,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 7 - S2,Proporciones,67
+2025-09-19,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Tarea,Tarea 8 - S2,Álgebra,91
+2025-11-10,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Prueba,Prueba 9 - S2,Álgebra,93
+2025-08-09,1ro Básico,A,Agustín Silva López,10000007-7,Matemáticas,Evaluación,Evaluación 10 - S2,Funciones,61
+2025-06-10,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S1,Comprensión Lectora,94
+2025-06-28,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Redacción,88
+2025-05-04,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Expresión Oral,70
+2025-04-06,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Ortografía,81
+2025-04-03,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S1,Ortografía,82
+2025-05-07,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 6 - S1,Géneros Literarios,97
+2025-03-16,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 7 - S1,Gramática,86
+2025-05-08,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 8 - S1,Vocabulario,87
+2025-05-04,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 9 - S1,Expresión Oral,93
+2025-05-24,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S1,Vocabulario,75
+2025-09-04,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Literatura,63
+2025-12-16,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 2 - S2,Ortografía,66
+2025-07-25,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 3 - S2,Ortografía,66
+2025-10-02,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 4 - S2,Comprensión Lectora,65
+2025-11-17,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Análisis Textual,90
+2025-09-14,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 6 - S2,Redacción,66
+2025-11-26,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 7 - S2,Gramática,78
+2025-10-24,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 8 - S2,Vocabulario,99
+2025-12-25,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Tarea,Tarea 9 - S2,Géneros Literarios,6
+2025-09-16,1ro Básico,A,Agustín Silva López,10000007-7,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Vocabulario,88
+2025-06-11,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Tarea,Tarea 1 - S1,Democracia,33
+2025-04-06,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Globalización,62
+2025-05-01,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S1,Globalización,87
+2025-03-15,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Sociedad,94
+2025-06-12,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Economía,91
+2025-05-05,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S1,Geografía,73
+2025-04-10,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S1,Sociedad,26
+2025-06-19,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S1,Globalización,83
+2025-06-21,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Economía,7
+2025-06-18,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S1,Historia de Chile,65
+2025-08-12,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Globalización,100
+2025-10-15,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 2 - S2,Sociedad,81
+2025-07-28,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S2,Economía,88
+2025-10-20,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Historia de Chile,90
+2025-08-19,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S2,Historia de Chile,46
+2025-09-09,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S2,Geografía,81
+2025-09-16,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Sociedad,13
+2025-09-05,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S2,Civilizaciones,80
+2025-10-23,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Prueba,Prueba 9 - S2,Democracia,74
+2025-12-14,1ro Básico,A,Agustín Silva López,10000007-7,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S2,Sociedad,88
+2025-03-14,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 1 - S1,Física,59
+2025-06-10,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 2 - S1,Biología,96
+2025-03-01,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 3 - S1,Método Científico,75
+2025-05-16,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 4 - S1,Ecosistemas,14
+2025-06-02,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 5 - S1,Química,91
+2025-04-02,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 6 - S1,Medio Ambiente,93
+2025-03-22,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 7 - S1,Ciclos Naturales,16
+2025-06-13,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 8 - S1,Método Científico,65
+2025-04-22,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 9 - S1,Energía,64
+2025-04-15,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 10 - S1,Materia,68
+2025-12-09,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 1 - S2,Cuerpo Humano,97
+2025-09-25,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 2 - S2,Cuerpo Humano,100
+2025-12-20,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 3 - S2,Energía,84
+2025-10-17,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 4 - S2,Método Científico,71
+2025-07-24,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 5 - S2,Cuerpo Humano,91
+2025-09-03,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 6 - S2,Ecosistemas,61
+2025-08-04,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 7 - S2,Química,87
+2025-12-19,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Tarea,Tarea 8 - S2,Biología,33
+2025-12-17,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Evaluación,Evaluación 9 - S2,Materia,76
+2025-12-09,1ro Básico,A,Agustín Silva López,10000007-7,Ciencias Naturales,Prueba,Prueba 10 - S2,Materia,91
+2025-06-11,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 1 - S1,Porcentajes,44
+2025-03-16,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 2 - S1,Álgebra,32
+2025-03-11,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 3 - S1,Geometría,99
+2025-06-25,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 4 - S1,Estadística,70
+2025-04-24,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 5 - S1,Ecuaciones,69
+2025-04-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Evaluación,Evaluación 6 - S1,Geometría,77
+2025-05-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 7 - S1,Funciones,80
+2025-05-26,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 8 - S1,Estadística,91
+2025-03-06,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 9 - S1,Proporciones,87
+2025-06-25,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 10 - S1,Ecuaciones,92
+2025-11-19,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 1 - S2,Funciones,90
+2025-08-11,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Evaluación,Evaluación 2 - S2,Ecuaciones,82
+2025-11-15,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Evaluación,Evaluación 3 - S2,Fracciones,100
+2025-12-20,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 4 - S2,Proporciones,73
+2025-07-27,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Evaluación,Evaluación 5 - S2,Números,91
+2025-08-15,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Evaluación,Evaluación 6 - S2,Álgebra,81
+2025-12-12,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 7 - S2,Estadística,69
+2025-11-23,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 8 - S2,Estadística,79
+2025-07-02,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Tarea,Tarea 9 - S2,Trigonometría,52
+2025-12-10,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Matemáticas,Prueba,Prueba 10 - S2,Estadística,97
+2025-03-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Vocabulario,88
+2025-03-03,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Ortografía,89
+2025-04-16,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 3 - S1,Literatura,96
+2025-04-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Géneros Literarios,68
+2025-03-12,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 5 - S1,Comunicación,63
+2025-06-04,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 6 - S1,Gramática,32
+2025-06-10,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 7 - S1,Ortografía,78
+2025-03-11,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Comprensión Lectora,98
+2025-03-02,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Gramática,66
+2025-04-19,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S1,Comprensión Lectora,66
+2025-10-20,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 1 - S2,Gramática,78
+2025-12-10,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 2 - S2,Ortografía,19
+2025-10-16,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Comprensión Lectora,4
+2025-08-10,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Redacción,73
+2025-07-02,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 5 - S2,Géneros Literarios,77
+2025-10-18,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 6 - S2,Vocabulario,25
+2025-10-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 7 - S2,Vocabulario,89
+2025-11-04,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Tarea,Tarea 8 - S2,Comprensión Lectora,15
+2025-11-09,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Análisis Textual,65
+2025-09-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Comprensión Lectora,88
+2025-04-17,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Revolución,66
+2025-05-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S1,Globalización,80
+2025-03-22,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 3 - S1,Revolución,93
+2025-06-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Civilizaciones,100
+2025-06-23,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Economía,91
+2025-05-13,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Cultura,36
+2025-04-04,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S1,Geografía,89
+2025-03-27,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S1,Economía,73
+2025-06-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Cultura,77
+2025-05-25,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 10 - S1,Economía,69
+2025-07-23,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Independencia,45
+2025-07-16,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S2,Civilizaciones,92
+2025-08-06,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S2,Cultura,80
+2025-07-27,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 4 - S2,Independencia,70
+2025-12-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Revolución,55
+2025-10-15,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S2,Cultura,38
+2025-12-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 7 - S2,Cultura,73
+2025-07-03,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Revolución,85
+2025-08-19,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S2,Democracia,51
+2025-12-01,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S2,Historia de Chile,94
+2025-03-28,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 1 - S1,Ciclos Naturales,75
+2025-03-25,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 2 - S1,Ciclos Naturales,84
+2025-05-28,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 3 - S1,Biología,87
+2025-04-06,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 4 - S1,Energía,38
+2025-04-07,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 5 - S1,Medio Ambiente,71
+2025-03-28,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Tarea,Tarea 6 - S1,Ciclos Naturales,62
+2025-04-27,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 7 - S1,Física,100
+2025-03-14,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Tarea,Tarea 8 - S1,Ecosistemas,80
+2025-03-19,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Tarea,Tarea 9 - S1,Método Científico,88
+2025-04-03,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 10 - S1,Cuerpo Humano,71
+2025-12-13,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 1 - S2,Física,63
+2025-07-12,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 2 - S2,Química,84
+2025-08-21,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 3 - S2,Física,72
+2025-12-20,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 4 - S2,Medio Ambiente,74
+2025-10-27,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 5 - S2,Método Científico,78
+2025-09-05,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 6 - S2,Química,24
+2025-07-04,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 7 - S2,Materia,97
+2025-11-13,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Prueba,Prueba 8 - S2,Medio Ambiente,57
+2025-09-02,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 9 - S2,Ciclos Naturales,80
+2025-12-12,1ro Básico,A,Isidora Martínez Fuentes,10000008-8,Ciencias Naturales,Evaluación,Evaluación 10 - S2,Biología,68
+2025-04-18,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 1 - S1,Porcentajes,80
+2025-06-27,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 2 - S1,Funciones,78
+2025-06-10,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 3 - S1,Geometría,70
+2025-03-14,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 4 - S1,Geometría,97
+2025-06-15,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 5 - S1,Funciones,73
+2025-03-10,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 6 - S1,Estadística,79
+2025-06-15,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 7 - S1,Funciones,72
+2025-06-03,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 8 - S1,Proporciones,6
+2025-06-02,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Evaluación,Evaluación 9 - S1,Fracciones,67
+2025-03-20,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Evaluación,Evaluación 10 - S1,Álgebra,66
+2025-09-28,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 1 - S2,Porcentajes,64
+2025-12-02,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 2 - S2,Álgebra,95
+2025-07-08,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Evaluación,Evaluación 3 - S2,Fracciones,80
+2025-07-04,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 4 - S2,Fracciones,82
+2025-07-08,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 5 - S2,Porcentajes,74
+2025-09-25,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Evaluación,Evaluación 6 - S2,Estadística,77
+2025-07-12,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Evaluación,Evaluación 7 - S2,Geometría,72
+2025-07-10,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 8 - S2,Funciones,71
+2025-09-18,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Tarea,Tarea 9 - S2,Porcentajes,97
+2025-08-06,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Matemáticas,Prueba,Prueba 10 - S2,Ecuaciones,38
+2025-05-19,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S1,Redacción,32
+2025-04-17,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Gramática,78
+2025-05-26,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Prueba,Prueba 3 - S1,Literatura,51
+2025-06-03,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Ortografía,92
+2025-03-23,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S1,Ortografía,64
+2025-06-24,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Prueba,Prueba 6 - S1,Análisis Textual,14
+2025-04-11,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 7 - S1,Comprensión Lectora,69
+2025-04-22,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 8 - S1,Expresión Oral,99
+2025-03-09,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Prueba,Prueba 9 - S1,Redacción,71
+2025-06-17,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Prueba,Prueba 10 - S1,Géneros Literarios,62
+2025-09-17,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 1 - S2,Gramática,23
+2025-10-09,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 2 - S2,Comprensión Lectora,63
+2025-09-23,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 3 - S2,Redacción,76
+2025-07-14,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 4 - S2,Vocabulario,66
+2025-11-02,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Ortografía,65
+2025-11-23,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S2,Gramática,85
+2025-08-13,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 7 - S2,Ortografía,78
+2025-10-08,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 8 - S2,Gramática,93
+2025-12-06,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S2,Comprensión Lectora,92
+2025-09-19,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Lenguaje y Comunicación,Tarea,Tarea 10 - S2,Gramática,88
+2025-06-26,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Historia de Chile,98
+2025-03-04,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Sociedad,88
+2025-03-15,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 3 - S1,Economía,98
+2025-04-14,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Globalización,33
+2025-05-03,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S1,Geografía,78
+2025-06-06,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S1,Economía,75
+2025-04-05,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Tarea,Tarea 7 - S1,Sociedad,85
+2025-05-22,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S1,Economía,69
+2025-03-01,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Geografía,69
+2025-03-08,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S1,Sociedad,90
+2025-08-19,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Cultura,84
+2025-10-05,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S2,Civilizaciones,72
+2025-12-16,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 3 - S2,Globalización,98
+2025-11-11,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S2,Independencia,80
+2025-12-04,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 5 - S2,Democracia,59
+2025-11-06,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Prueba,Prueba 6 - S2,Geografía,75
+2025-10-10,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S2,Civilizaciones,57
+2025-09-14,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 8 - S2,Revolución,74
+2025-11-20,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S2,Revolución,90
+2025-09-05,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S2,Cultura,87
+2025-03-28,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Tarea,Tarea 1 - S1,Ecosistemas,67
+2025-05-21,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 2 - S1,Medio Ambiente,47
+2025-04-24,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 3 - S1,Ciclos Naturales,86
+2025-06-09,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Tarea,Tarea 4 - S1,Energía,81
+2025-05-27,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Tarea,Tarea 5 - S1,Física,80
+2025-05-13,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 6 - S1,Medio Ambiente,33
+2025-05-15,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 7 - S1,Ecosistemas,77
+2025-06-24,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 8 - S1,Química,63
+2025-04-06,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 9 - S1,Ciclos Naturales,28
+2025-06-15,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 10 - S1,Ecosistemas,2
+2025-11-14,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 1 - S2,Ciclos Naturales,66
+2025-09-23,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 2 - S2,Cuerpo Humano,60
+2025-08-07,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 3 - S2,Física,80
+2025-11-23,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 4 - S2,Cuerpo Humano,98
+2025-12-18,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 5 - S2,Energía,61
+2025-08-03,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 6 - S2,Materia,95
+2025-11-09,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Tarea,Tarea 7 - S2,Materia,72
+2025-10-21,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Prueba,Prueba 8 - S2,Método Científico,81
+2025-07-12,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Evaluación,Evaluación 9 - S2,Medio Ambiente,82
+2025-08-02,1ro Básico,A,Tomás Sepúlveda Hernández,10000009-9,Ciencias Naturales,Tarea,Tarea 10 - S2,Energía,97
+2025-06-22,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 1 - S1,Números,88
+2025-03-10,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 2 - S1,Ecuaciones,71
+2025-05-04,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 3 - S1,Proporciones,63
+2025-03-05,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 4 - S1,Geometría,89
+2025-05-23,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 5 - S1,Ecuaciones,97
+2025-05-22,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Evaluación,Evaluación 6 - S1,Fracciones,2
+2025-03-16,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 7 - S1,Números,73
+2025-04-27,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 8 - S1,Porcentajes,80
+2025-04-28,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 9 - S1,Números,65
+2025-04-25,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 10 - S1,Fracciones,1
+2025-12-27,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 1 - S2,Porcentajes,66
+2025-09-23,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Evaluación,Evaluación 2 - S2,Ecuaciones,79
+2025-09-09,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Evaluación,Evaluación 3 - S2,Trigonometría,72
+2025-12-10,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 4 - S2,Trigonometría,78
+2025-09-08,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Evaluación,Evaluación 5 - S2,Porcentajes,63
+2025-12-13,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 6 - S2,Álgebra,99
+2025-12-19,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Prueba,Prueba 7 - S2,Trigonometría,84
+2025-07-14,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 8 - S2,Ecuaciones,81
+2025-07-09,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 9 - S2,Porcentajes,69
+2025-09-20,1ro Básico,A,Catalina Morales García,10000010-0,Matemáticas,Tarea,Tarea 10 - S2,Números,73
+2025-06-26,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Literatura,80
+2025-05-27,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 2 - S1,Gramática,86
+2025-04-17,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 3 - S1,Ortografía,48
+2025-03-27,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Géneros Literarios,37
+2025-05-10,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 5 - S1,Vocabulario,71
+2025-06-28,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S1,Géneros Literarios,43
+2025-03-10,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 7 - S1,Expresión Oral,88
+2025-05-27,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Géneros Literarios,95
+2025-04-11,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 9 - S1,Comprensión Lectora,72
+2025-04-25,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 10 - S1,Análisis Textual,91
+2025-08-21,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Expresión Oral,69
+2025-09-04,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 2 - S2,Ortografía,91
+2025-09-05,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 3 - S2,Vocabulario,12
+2025-10-23,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 4 - S2,Análisis Textual,94
+2025-09-09,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Comunicación,90
+2025-07-02,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S2,Expresión Oral,66
+2025-09-03,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Tarea,Tarea 7 - S2,Análisis Textual,54
+2025-08-17,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 8 - S2,Expresión Oral,96
+2025-11-03,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Redacción,67
+2025-10-06,1ro Básico,A,Catalina Morales García,10000010-0,Lenguaje y Comunicación,Evaluación,Evaluación 10 - S2,Análisis Textual,36
+2025-04-07,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Democracia,79
+2025-03-12,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S1,Economía,77
+2025-04-14,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 3 - S1,Economía,95
+2025-06-21,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 4 - S1,Historia de Chile,65
+2025-04-04,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S1,Sociedad,80
+2025-05-11,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S1,Cultura,67
+2025-06-07,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S1,Sociedad,75
+2025-03-13,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S1,Revolución,63
+2025-04-14,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 9 - S1,Civilizaciones,74
+2025-04-25,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S1,Cultura,96
+2025-09-19,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S2,Historia de Chile,68
+2025-07-28,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 2 - S2,Globalización,74
+2025-12-28,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S2,Cultura,67
+2025-10-03,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 4 - S2,Independencia,98
+2025-10-21,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S2,Globalización,88
+2025-12-05,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S2,Sociedad,94
+2025-11-03,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 7 - S2,Cultura,84
+2025-10-13,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 8 - S2,Democracia,80
+2025-12-14,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S2,Geografía,81
+2025-11-22,1ro Básico,A,Catalina Morales García,10000010-0,Historia Geografía y Ciencias Sociales,Tarea,Tarea 10 - S2,Cultura,85
+2025-04-23,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 1 - S1,Ecosistemas,78
+2025-06-23,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 2 - S1,Física,71
+2025-03-11,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 3 - S1,Cuerpo Humano,29
+2025-04-06,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 4 - S1,Cuerpo Humano,87
+2025-05-23,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 5 - S1,Ciclos Naturales,14
+2025-06-18,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Ciclos Naturales,65
+2025-05-28,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 7 - S1,Materia,75
+2025-05-02,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 8 - S1,Ciclos Naturales,81
+2025-04-07,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 9 - S1,Química,82
+2025-05-25,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 10 - S1,Química,84
+2025-09-20,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 1 - S2,Medio Ambiente,81
+2025-10-02,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 2 - S2,Química,95
+2025-10-20,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 3 - S2,Ecosistemas,76
+2025-08-03,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 4 - S2,Medio Ambiente,38
+2025-08-04,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 5 - S2,Medio Ambiente,70
+2025-12-08,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Prueba,Prueba 6 - S2,Química,99
+2025-09-28,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 7 - S2,Química,97
+2025-09-20,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Evaluación,Evaluación 8 - S2,Método Científico,74
+2025-10-08,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 9 - S2,Ciclos Naturales,69
+2025-11-14,1ro Básico,A,Catalina Morales García,10000010-0,Ciencias Naturales,Tarea,Tarea 10 - S2,Materia,88
+2025-03-19,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 1 - S1,Números,63
+2025-03-07,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 2 - S1,Trigonometría,87
+2025-04-16,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Evaluación,Evaluación 3 - S1,Funciones,61
+2025-04-27,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Evaluación,Evaluación 4 - S1,Geometría,99
+2025-03-06,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 5 - S1,Fracciones,78
+2025-05-12,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Evaluación,Evaluación 6 - S1,Porcentajes,28
+2025-03-16,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 7 - S1,Ecuaciones,62
+2025-05-01,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 8 - S1,Funciones,66
+2025-06-13,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 9 - S1,Geometría,97
+2025-03-19,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 10 - S1,Números,98
+2025-09-26,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 1 - S2,Álgebra,65
+2025-12-20,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 2 - S2,Estadística,66
+2025-09-11,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 3 - S2,Funciones,66
+2025-10-05,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 4 - S2,Números,67
+2025-07-06,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 5 - S2,Porcentajes,72
+2025-08-26,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 6 - S2,Fracciones,91
+2025-10-25,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Evaluación,Evaluación 7 - S2,Ecuaciones,83
+2025-07-21,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Evaluación,Evaluación 8 - S2,Proporciones,82
+2025-08-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Tarea,Tarea 9 - S2,Funciones,94
+2025-09-17,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Matemáticas,Prueba,Prueba 10 - S2,Trigonometría,69
+2025-03-22,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 1 - S1,Redacción,81
+2025-06-08,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 2 - S1,Redacción,63
+2025-03-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 3 - S1,Expresión Oral,84
+2025-05-28,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 4 - S1,Comunicación,97
+2025-05-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 5 - S1,Comprensión Lectora,96
+2025-05-03,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 6 - S1,Ortografía,97
+2025-06-05,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 7 - S1,Redacción,76
+2025-03-18,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 8 - S1,Comprensión Lectora,98
+2025-03-28,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 9 - S1,Expresión Oral,80
+2025-06-23,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Géneros Literarios,94
+2025-09-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Literatura,80
+2025-07-10,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 2 - S2,Gramática,68
+2025-12-05,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Expresión Oral,88
+2025-11-24,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Ortografía,64
+2025-12-12,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 5 - S2,Análisis Textual,65
+2025-07-28,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Evaluación,Evaluación 6 - S2,Análisis Textual,66
+2025-12-01,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 7 - S2,Ortografía,74
+2025-10-01,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Tarea,Tarea 8 - S2,Literatura,89
+2025-11-24,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 9 - S2,Ortografía,65
+2025-09-09,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Lenguaje y Comunicación,Prueba,Prueba 10 - S2,Comprensión Lectora,67
+2025-05-06,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 1 - S1,Historia de Chile,61
+2025-06-17,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 2 - S1,Civilizaciones,78
+2025-06-10,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S1,Globalización,45
+2025-03-17,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 4 - S1,Geografía,100
+2025-06-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 5 - S1,Civilizaciones,64
+2025-06-27,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 6 - S1,Revolución,8
+2025-06-07,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 7 - S1,Revolución,40
+2025-04-26,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S1,Economía,72
+2025-05-12,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S1,Economía,66
+2025-03-04,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S1,Democracia,69
+2025-09-27,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 1 - S2,Revolución,73
+2025-12-27,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 2 - S2,Cultura,61
+2025-07-09,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 3 - S2,Economía,62
+2025-10-22,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Tarea,Tarea 4 - S2,Economía,88
+2025-10-01,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 5 - S2,Globalización,61
+2025-09-28,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 6 - S2,Civilizaciones,82
+2025-09-06,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 7 - S2,Cultura,39
+2025-12-10,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 8 - S2,Democracia,94
+2025-08-09,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Evaluación,Evaluación 9 - S2,Cultura,96
+2025-09-04,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Historia Geografía y Ciencias Sociales,Prueba,Prueba 10 - S2,Geografía,70
+2025-06-16,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 1 - S1,Química,87
+2025-03-04,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 2 - S1,Energía,99
+2025-06-23,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Prueba,Prueba 3 - S1,Materia,72
+2025-04-11,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 4 - S1,Energía,36
+2025-03-12,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 5 - S1,Biología,81
+2025-05-12,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 6 - S1,Método Científico,50
+2025-03-15,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 7 - S1,Biología,67
+2025-05-24,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 8 - S1,Materia,77
+2025-06-16,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 9 - S1,Física,90
+2025-03-06,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 10 - S1,Cuerpo Humano,60
+2025-07-27,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 1 - S2,Ecosistemas,74
+2025-12-01,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Prueba,Prueba 2 - S2,Cuerpo Humano,65
+2025-10-26,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 3 - S2,Energía,62
+2025-07-14,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Prueba,Prueba 4 - S2,Física,93
+2025-07-05,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 5 - S2,Método Científico,58
+2025-07-17,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 6 - S2,Química,72
+2025-10-22,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Prueba,Prueba 7 - S2,Biología,41
+2025-08-02,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 8 - S2,Cuerpo Humano,66
+2025-11-16,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Evaluación,Evaluación 9 - S2,Método Científico,61
+2025-07-03,1ro Básico,A,Joaquín Rodríguez Garrido,10000011-1,Ciencias Naturales,Tarea,Tarea 10 - S2,Física,63
+2025-04-13,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 1 - S1,Números,88
+2025-06-02,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 2 - S1,Funciones,41
+2025-05-27,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 3 - S1,Proporciones,86
+2025-05-05,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 4 - S1,Números,11
+2025-03-01,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 5 - S1,Trigonometría,19
+2025-03-09,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Prueba,Prueba 6 - S1,Números,81
+2025-03-11,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Prueba,Prueba 7 - S1,Funciones,78
+2025-03-12,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 8 - S1,Números,67
+2025-06-10,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 9 - S1,Proporciones,78
+2025-04-21,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 10 - S1,Proporciones,74
+2025-07-09,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 1 - S2,Trigonometría,66
+2025-09-27,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 2 - S2,Porcentajes,9
+2025-09-12,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Prueba,Prueba 3 - S2,Estadística,96
+2025-10-01,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Tarea,Tarea 4 - S2,Estadística,85
+2025-07-05,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 5 - S2,Trigonometría,69
+2025-12-24,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 6 - S2,Fracciones,72
+2025-10-11,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 7 - S2,Funciones,85
+2025-09-16,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 8 - S2,Trigonometría,75
+2025-10-26,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Prueba,Prueba 9 - S2,Funciones,89
+2025-10-08,1ro Básico,A,Antonia López Bravo,10000012-2,Matemáticas,Evaluación,Evaluación 10 - S2,Álgebra,94
+2025-05-10,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S1,Vocabulario,11
+2025-05-22,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Prueba,Prueba 2 - S1,Comunicación,65
+2025-05-02,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S1,Expresión Oral,85
+2025-03-26,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Prueba,Prueba 4 - S1,Literatura,79
+2025-04-09,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 5 - S1,Literatura,72
+2025-04-14,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 6 - S1,Análisis Textual,71
+2025-03-01,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Prueba,Prueba 7 - S1,Comprensión Lectora,65
+2025-04-05,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 8 - S1,Géneros Literarios,73
+2025-03-28,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 9 - S1,Literatura,45
+2025-04-19,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 10 - S1,Redacción,72
+2025-07-24,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 1 - S2,Expresión Oral,22
+2025-09-08,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Prueba,Prueba 2 - S2,Literatura,72
+2025-08-09,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 3 - S2,Comunicación,78
+2025-10-09,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 4 - S2,Ortografía,73
+2025-09-24,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 5 - S2,Comprensión Lectora,73
+2025-11-22,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 6 - S2,Análisis Textual,68
+2025-10-21,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 7 - S2,Análisis Textual,91
+2025-11-24,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Prueba,Prueba 8 - S2,Gramática,32
+2025-10-16,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Evaluación,Evaluación 9 - S2,Comprensión Lectora,2
+2025-08-25,1ro Básico,A,Antonia López Bravo,10000012-2,Lenguaje y Comunicación,Tarea,Tarea 10 - S2,Comunicación,96

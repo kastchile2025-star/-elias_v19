@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Flujo Completo de Evaluación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .step {
+            background: #f1f5f9;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .step.current {
+            background: #dbeafe;
+            border-left-color: #2563eb;
+        }
+        .step.completed {
+            background: #dcfce7;
+            border-left-color: #16a34a;
+        }
+        .button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .button:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+        .button.green {
+            background: #059669;
+        }
+        .button.green:hover {
+            background: #047857;
+        }
+        .mock-modal {
+            background: #1e293b;
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .mock-modal h3 {
+            color: #e2e8f0;
+            margin-top: 0;
+        }
+        .mock-info-box {
+            background: #6366f1;
+            border: 1px solid #4f46e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .mock-info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .highlight {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .loading-screen {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #8b5cf6;
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress 3s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Demo: Flujo Completo de Evaluación con Progreso y Transición</h1>
+    
+    <div class="highlight">
+        <h3>💡 Funcionalidad Final Implementada</h3>
+        <p>Los estudiantes ahora tienen una experiencia completa: <strong>Carga con progreso</strong> → <strong>Transición emocionante</strong> → <strong>Evaluación directa</strong></p>
+    </div>
+
+    <div class="demo-container">
+        <div class="demo-card">
+            <h3>📋 Paso 1: Modal de Tarea (Simulado)</h3>
+            <div class="mock-modal">
+                <h3>evaluacion ciencias naturales</h3>
+                <p>Jorge Profesor • 4to Básico • Ciencias Naturales</p>
+                <hr style="border-color: #475569;">
+                <p><strong>Descripción:</strong> evaluacion cn</p>
+                <p><strong>Fecha límite:</strong> 29 jun 2025, 04:06</p>
+                
+                <div class="mock-info-box">
+                    <p>📝 Esta es una evaluación. Haz clic en el botón para comenzar.</p>
+                    <p style="font-size: 12px; margin-top: 10px;">
+                        📚 Tema: Fotosíntesis<br>
+                        ❓ Preguntas: 15<br>
+                        ⏱️ Tiempo límite: 30 minutos
+                    </p>
+                    <button class="button" onclick="startDemo()" style="margin-top: 10px;">
+                        🎓 Realizar Evaluación
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <h3>⚡ Paso 2: Carga con Progreso</h3>
+            <div id="loading-demo" class="loading-screen" style="display: none;">
+                <div style="position: relative; display: inline-block;">
+                    <div class="spinner"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; color: #8b5cf6; font-size: 18px;">
+                        75%
+                    </div>
+                </div>
+                <h4 style="color: #8b5cf6;">Preparando tu Evaluación</h4>
+                <p>Estamos generando las preguntas para tu evaluación de <strong>Fotosíntesis</strong></p>
+                
+                <div style="background: #f3e8ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>📚 Detalles de tu Evaluación:</strong></p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; text-align: left;">
+                        <p><strong>Curso:</strong> 4to Básico</p>
+                        <p><strong>Asignatura:</strong> Ciencias Naturales</p>
+                        <p><strong>Tema:</strong> Fotosíntesis</p>
+                        <p><strong>Preguntas:</strong> 15</p>
+                        <p style="grid-column: 1 / -1;"><strong>Tiempo disponible:</strong> 2 minutos</p>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 10px 0;">
+                    <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;">75%</div>
+                    <div style="font-size: 14px; color: #6b7280;">completado</div>
+                </div>
+                <p style="font-size: 12px; color: #6b7280;">Generando preguntas personalizadas...</p>
+            </div>
+            
+            <div id="transition-demo" class="loading-screen" style="display: none; background: #f0fdf4; border-color: #16a34a;">
+                <div style="width: 60px; height: 60px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                    <div style="width: 36px; height: 36px; background: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <svg style="width: 24px; height: 24px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h4 style="color: #16a34a; font-size: 28px; margin-bottom: 10px;">¡Evaluación Lista!</h4>
+                <p>Tu evaluación de <strong style="color: #16a34a;">Fotosíntesis</strong> ha sido generada exitosamente</p>
+                
+                <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #16a34a;">
+                    <p><strong style="color: #15803d;">🎯 Tu evaluación incluye:</strong></p>
+                    <div style="font-size: 14px; color: #16a34a; text-align: left;">
+                        <p>✅ 15 preguntas personalizadas sobre Fotosíntesis</p>
+                        <p>✅ Tiempo límite: 2 minutos</p>
+                        <p>✅ Preguntas de diferentes tipos</p>
+                        <p>✅ Sistema de puntuación automático</p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <div style="font-size: 18px; font-weight: 600; color: #16a34a; margin-bottom: 10px;">🚀 Comenzando en...</div>
+                    <div style="font-size: 48px; font-weight: bold; color: #16a34a; animation: pulse 1s infinite;">2</div>
+                    <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Prepárate para demostrar tu conocimiento</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-card">
+        <h3>🎯 Paso 3: Evaluación Directa</h3>
+        <p>Después de la carga, el estudiante accede directamente a:</p>
+        <ul>
+            <li>✅ 15 preguntas sobre Fotosíntesis</li>
+            <li>✅ Timer de 2 minutos iniciado automáticamente</li>
+            <li>✅ Sin configuración manual requerida</li>
+            <li>✅ Parámetros del profesor aplicados automáticamente</li>
+        </ul>
+        
+        <a href="http://localhost:3000/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=Fotos%C3%ADntesis&autoStart=true&taskId=demo-eval" 
+           class="button green" target="_blank">
+            🚀 Ver Evaluación Directa
+        </a>
+    </div>
+
+    <div class="demo-card">
+        <h3>📋 Flujo de Navegación</h3>
+        <div class="step completed">
+            <strong>1. Estudiante ve tarea</strong><br>
+            <small>Ve la evaluación asignada por el profesor</small>
+        </div>
+        <div class="step completed">
+            <strong>2. Clic en "Realizar Evaluación"</strong><br>
+            <small>Botón del modal de tarea</small>
+        </div>
+        <div class="step current">
+            <strong>3. Carga con progreso visual</strong><br>
+            <small>Spinner con porcentaje y barra de progreso</small>
+        </div>
+        <div class="step">
+            <strong>4. Transición "¡Evaluación Lista!"</strong><br>
+            <small>Confirmación verde con cuenta regresiva</small>
+        </div>
+        <div class="step">
+            <strong>5. Evaluación iniciada</strong><br>
+            <small>Preguntas listas y timer activado</small>
+        </div>
+    </div>
+
+    <div class="demo-card">
+        <h3>🔗 Enlaces de Prueba</h3>
+        <p>Para probar el flujo completo:</p>
+        <ul>
+            <li><a href="http://localhost:3000/dashboard/tareas" target="_blank">📋 Dashboard de Tareas</a></li>
+            <li><a href="http://localhost:3000/dashboard/evaluacion" target="_blank">📊 Evaluación Normal</a></li>
+            <li><a href="file:///workspaces/SMART_STUDENT_HTML/test-evaluation-flow.html" target="_blank">🧪 Tests Técnicos</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function startDemo() {
+            // Simular el flujo del botón
+            document.getElementById('loading-demo').style.display = 'block';
+            
+            // Después de 4 segundos, mostrar la transición
+            setTimeout(() => {
+                document.getElementById('loading-demo').style.display = 'none';
+                document.getElementById('transition-demo').style.display = 'block';
+            }, 4000);
+            
+            // Simular redirección después de 3 segundos más
+            setTimeout(() => {
+                window.open('http://localhost:3000/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=Fotos%C3%ADntesis&autoStart=true&taskId=demo-eval', '_blank');
+            }, 7000);
+        }
+    </script>
+
+</body>
+</html>

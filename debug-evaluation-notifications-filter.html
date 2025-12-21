@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Filtro de Notificaciones de Evaluaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #047857;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #dc2626;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+        .info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+        .notification-item {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .evaluation-completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .evaluation-pending {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug - Filtro de Notificaciones de Evaluaciones</h1>
+    <p>Verificar por qué las notificaciones de evaluaciones completadas siguen apareciendo en el panel de campana.</p>
+
+    <div class="container">
+        <h2>🎯 Simulación de Usuario Estudiante</h2>
+        
+        <div class="section">
+            <h3>1. Configurar Usuario de Prueba</h3>
+            <button onclick="setupTestStudent()">👨‍🎓 Configurar Estudiante Felipe</button>
+            <div id="userSetup"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Crear Evaluación de Prueba</h3>
+            <button onclick="createTestEvaluation()">📝 Crear Evaluación</button>
+            <div id="evaluationSetup"></div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Completar Evaluación</h3>
+            <button onclick="completeEvaluation()">✅ Completar Evaluación</button>
+            <div id="completionStatus"></div>
+        </div>
+        
+        <div class="section">
+            <h3>4. Verificar Filtro de Notificaciones</h3>
+            <button onclick="testNotificationFilter()">🔍 Probar Filtro</button>
+            <div id="filterResults"></div>
+        </div>
+        
+        <div class="section">
+            <h3>5. Debug del Sistema de Notificaciones</h3>
+            <button onclick="debugNotificationSystem()">🐛 Debug Completo</button>
+            <div id="debugResults"></div>
+        </div>
+    </div>
+
+    <script>
+        let testEvaluationId = null;
+        let testStudentUsername = 'felipe';
+
+        // Simulación del TaskNotificationManager
+        const TaskNotificationManager = {
+            getNotifications() {
+                try {
+                    return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            saveNotifications(notifications) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            },
+
+            isEvaluationCompletedByStudent(taskId, studentUsername) {
+                try {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    
+                    const task = userTasks.find(t => t.id === taskId);
+                    const isCompleted = task && task.status === 'completed';
+                    
+                    console.log(`[isEvaluationCompletedByStudent] TaskId: ${taskId}, Student: ${studentUsername}, Completed: ${isCompleted}`);
+                    if (task) {
+                      console.log(`[isEvaluationCompletedByStudent] Task found:`, task);
+                    }
+                    
+                    return isCompleted;
+                } catch (error) {
+                    console.error('Error checking evaluation completion:', error);
+                    return false;
+                }
+            },
+
+            getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => {
+                    // Filtros básicos
+                    const basicFilters = notification.targetUserRole === userRole &&
+                        notification.targetUsernames.includes(username) &&
+                        !notification.readBy.includes(username) &&
+                        notification.fromUsername !== username;
+
+                    if (!basicFilters) return false;
+
+                    // Para estudiantes: filtrar evaluaciones completadas
+                    if (userRole === 'student' && notification.type === 'new_task') {
+                        // Verificar si la tarea es una evaluación y si ya fue completada
+                        if (notification.taskType === 'evaluation') {
+                            const isCompleted = this.isEvaluationCompletedByStudent(notification.taskId, username);
+                            if (isCompleted) {
+                                console.log(`[getUnreadNotificationsForUser] Filtering out completed evaluation: ${notification.taskTitle} for student: ${username}`);
+                                return false; // No mostrar notificaciones de evaluaciones completadas
+                            }
+                        }
+                    }
+
+                    return true;
+                });
+            },
+
+            getUnreadCountForUser(username, userRole) {
+                const unreadNotifications = this.getUnreadNotificationsForUser(username, userRole);
+                
+                if (userRole === 'teacher') {
+                    return unreadNotifications.filter(n => n.type !== 'task_submission').length;
+                }
+                
+                if (userRole === 'student') {
+                    return unreadNotifications.filter(n => 
+                        n.type !== 'teacher_comment'
+                    ).length;
+                }
+                
+                return unreadNotifications.length;
+            }
+        };
+
+        function addResult(containerId, content, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function setupTestStudent() {
+            const container = document.getElementById('userSetup');
+            container.innerHTML = '';
+
+            // Configurar usuario Felipe
+            const felipe = {
+                username: 'felipe',
+                role: 'student',
+                course: 'A',
+                displayName: 'Felipe Estudiante'
+            };
+
+            localStorage.setItem('smart-student-current-user', JSON.stringify(felipe));
+
+            addResult('userSetup', `✅ Usuario configurado: ${felipe.username} (${felipe.role})`, 'success');
+        }
+
+        function createTestEvaluation() {
+            const container = document.getElementById('evaluationSetup');
+            container.innerHTML = '';
+
+            testEvaluationId = `eval_test_${Date.now()}`;
+            
+            // Crear evaluación en tareas globales
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const testEvaluation = {
+                id: testEvaluationId,
+                title: 'Evaluación de Prueba - Matemáticas',
+                description: 'Evaluación para probar el filtro',
+                subject: 'Matemáticas',
+                taskType: 'evaluation',
+                assignedTo: 'course',
+                course: 'A',
+                dueDate: new Date(Date.now() + 86400000).toISOString(), // Mañana
+                createdBy: 'profesor_matematicas',
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(testEvaluation);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+            // Agregar a tareas del usuario
+            const userTasksKey = `userTasks_${testStudentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            const userTask = {
+                ...testEvaluation,
+                status: 'pending'
+            };
+            userTasks.push(userTask);
+            localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+
+            // Crear notificación de nueva evaluación
+            const notifications = TaskNotificationManager.getNotifications();
+            const newNotification = {
+                id: `new_eval_${testEvaluationId}_${Date.now()}`,
+                type: 'new_task',
+                taskType: 'evaluation',
+                taskId: testEvaluationId,
+                taskTitle: testEvaluation.title,
+                targetUserRole: 'student',
+                targetUsernames: [testStudentUsername],
+                fromUsername: 'profesor_matematicas',
+                fromDisplayName: 'Profesor Matemáticas',
+                course: 'A',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+
+            notifications.push(newNotification);
+            TaskNotificationManager.saveNotifications(notifications);
+
+            addResult('evaluationSetup', `✅ Evaluación creada: ${testEvaluation.title}`, 'success');
+            addResult('evaluationSetup', `📝 ID de evaluación: ${testEvaluationId}`, 'info');
+            addResult('evaluationSetup', `🔔 Notificación creada`, 'info');
+        }
+
+        function completeEvaluation() {
+            const container = document.getElementById('completionStatus');
+            container.innerHTML = '';
+
+            if (!testEvaluationId) {
+                addResult('completionStatus', '❌ Primero crea una evaluación de prueba', 'error');
+                return;
+            }
+
+            // Actualizar estado en tareas del usuario
+            const userTasksKey = `userTasks_${testStudentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            const taskIndex = userTasks.findIndex(t => t.id === testEvaluationId);
+            if (taskIndex !== -1) {
+                userTasks[taskIndex].status = 'completed';
+                userTasks[taskIndex].completedAt = new Date().toISOString();
+                localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+                
+                addResult('completionStatus', `✅ Evaluación marcada como completada`, 'success');
+                addResult('completionStatus', `📊 Estado de la tarea: completed`, 'info');
+            } else {
+                addResult('completionStatus', `❌ No se encontró la evaluación en las tareas del usuario`, 'error');
+            }
+        }
+
+        function testNotificationFilter() {
+            const container = document.getElementById('filterResults');
+            container.innerHTML = '';
+
+            if (!testEvaluationId) {
+                addResult('filterResults', '❌ Primero crea y completa una evaluación de prueba', 'error');
+                return;
+            }
+
+            // Probar el filtro
+            const allNotifications = TaskNotificationManager.getNotifications();
+            const filteredNotifications = TaskNotificationManager.getUnreadNotificationsForUser(testStudentUsername, 'student');
+            const notificationCount = TaskNotificationManager.getUnreadCountForUser(testStudentUsername, 'student');
+
+            addResult('filterResults', `📊 Total de notificaciones en sistema: ${allNotifications.length}`, 'info');
+            addResult('filterResults', `🔍 Notificaciones filtradas para ${testStudentUsername}: ${filteredNotifications.length}`, 'info');
+            addResult('filterResults', `🔢 Contador final: ${notificationCount}`, 'info');
+
+            // Verificar si la evaluación completada está siendo filtrada
+            const evaluationNotifications = allNotifications.filter(n => 
+                n.taskId === testEvaluationId && 
+                n.type === 'new_task' && 
+                n.taskType === 'evaluation'
+            );
+
+            if (evaluationNotifications.length > 0) {
+                const evalNotification = evaluationNotifications[0];
+                const isFiltered = !filteredNotifications.some(n => n.id === evalNotification.id);
+                const isCompleted = TaskNotificationManager.isEvaluationCompletedByStudent(testEvaluationId, testStudentUsername);
+
+                addResult('filterResults', `📝 Notificación de evaluación encontrada: ${evalNotification.taskTitle}`, 'info');
+                addResult('filterResults', `✅ Evaluación completada: ${isCompleted}`, isCompleted ? 'success' : 'warning');
+                addResult('filterResults', `🚫 Notificación filtrada: ${isFiltered}`, isFiltered ? 'success' : 'error');
+
+                if (!isFiltered && isCompleted) {
+                    addResult('filterResults', `❌ ERROR: La notificación debería estar filtrada pero no lo está`, 'error');
+                } else if (isFiltered && isCompleted) {
+                    addResult('filterResults', `✅ ÉXITO: La notificación está correctamente filtrada`, 'success');
+                }
+            } else {
+                addResult('filterResults', `⚠️ No se encontró notificación de evaluación para el ID: ${testEvaluationId}`, 'warning');
+            }
+        }
+
+        function debugNotificationSystem() {
+            const container = document.getElementById('debugResults');
+            container.innerHTML = '';
+
+            // Debug completo del sistema
+            const allNotifications = TaskNotificationManager.getNotifications();
+            const userTasksKey = `userTasks_${testStudentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+
+            addResult('debugResults', `🔍 ANÁLISIS COMPLETO DEL SISTEMA`, 'info');
+            addResult('debugResults', `👤 Usuario: ${testStudentUsername}`, 'info');
+            addResult('debugResults', `📋 Total tareas del usuario: ${userTasks.length}`, 'info');
+            addResult('debugResults', `🔔 Total notificaciones: ${allNotifications.length}`, 'info');
+
+            // Mostrar tareas del usuario
+            const completedTasks = userTasks.filter(t => t.status === 'completed');
+            const pendingTasks = userTasks.filter(t => t.status === 'pending');
+            
+            addResult('debugResults', `✅ Tareas completadas: ${completedTasks.length}`, 'success');
+            addResult('debugResults', `⏳ Tareas pendientes: ${pendingTasks.length}`, 'warning');
+
+            // Mostrar notificaciones relevantes
+            const studentNotifications = allNotifications.filter(n => 
+                n.targetUsernames.includes(testStudentUsername) && 
+                n.targetUserRole === 'student'
+            );
+
+            addResult('debugResults', `📨 Notificaciones para el estudiante: ${studentNotifications.length}`, 'info');
+
+            studentNotifications.forEach((notification, index) => {
+                const isRead = notification.readBy.includes(testStudentUsername);
+                const isEvaluation = notification.taskType === 'evaluation';
+                let isCompleted = false;
+                
+                if (isEvaluation) {
+                    isCompleted = TaskNotificationManager.isEvaluationCompletedByStudent(notification.taskId, testStudentUsername);
+                }
+
+                const statusClass = isRead ? 'success' : (isEvaluation && isCompleted ? 'evaluation-completed' : 'evaluation-pending');
+                
+                addResult('debugResults', `
+                    <div class="notification-item ${statusClass}">
+                        <strong>${index + 1}. ${notification.taskTitle}</strong><br>
+                        <small>🏷️ Tipo: ${notification.type} ${isEvaluation ? '(Evaluación)' : ''}</small><br>
+                        <small>📋 ID Tarea: ${notification.taskId}</small><br>
+                        <small>📖 Leída: ${isRead ? 'Sí' : 'No'}</small><br>
+                        ${isEvaluation ? `<small>✅ Completada: ${isCompleted ? 'Sí' : 'No'}</small><br>` : ''}
+                        <small>🕐 Fecha: ${new Date(notification.timestamp).toLocaleString()}</small>
+                    </div>
+                `, 'info');
+            });
+
+            // Prueba final
+            const finalFilteredNotifications = TaskNotificationManager.getUnreadNotificationsForUser(testStudentUsername, 'student');
+            const finalCount = TaskNotificationManager.getUnreadCountForUser(testStudentUsername, 'student');
+
+            addResult('debugResults', `
+                <div class="highlight">
+                    🏁 RESULTADO FINAL:<br>
+                    • Notificaciones filtradas: ${finalFilteredNotifications.length}<br>
+                    • Contador final: ${finalCount}<br>
+                    • Test ID: ${testEvaluationId}
+                </div>
+            `, finalCount === 0 ? 'success' : 'warning');
+        }
+
+        // Auto-setup cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Debug de Filtro de Notificaciones de Evaluaciones cargado');
+        });
+    </script>
+</body>
+</html>

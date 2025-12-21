@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Error Selección de Libro Resuelto</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #e74c3c;
+        }
+        .section h2 {
+            color: #e74c3c;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status.fixed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.critical {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        .problem-details {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .fix-details {
+            background: #d1ecf1;
+            border: 1px solid #b8daff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+        .error-trace {
+            background: #ffebee;
+            border: 1px solid #ef5350;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug - Error Selección Libro</h1>
+        
+        <div class="section">
+            <h2><span class="icon">❌</span> Error Persistente Identificado</h2>
+            
+            <div class="error-trace">Error: No book selected. Current state: {}
+    at EvaluacionPage.useCallback[handleCreateEvaluation]
+    at EvaluacionPage.useEffect
+
+Error al generar. Por favor, selecciona un libro.</div>
+            
+            <div class="problem-details">
+                <strong>Problema raíz:</strong> El estado React está completamente vacío <code>{}</code> cuando se ejecuta la función, indicando un problema de timing crítico entre:
+                <ul>
+                    <li>La lectura de parámetros URL</li>
+                    <li>El establecimiento del estado React</li>
+                    <li>La ejecución de handleCreateEvaluation</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🛠️</span> Solución Implementada</h2>
+            
+            <div class="fix-details">
+                <strong>Nueva estrategia:</strong> Eliminación completa de dependencia del estado React para parámetros URL.
+                <div class="code-block">
+// ❌ ANTES: Dependía del estado (problemático)
+let bookToUse = selectedBook;
+if (isAutoStartMode && bookFromQuery) {
+    bookToUse = decodeURIComponent(bookFromQuery);
+}
+
+// ✅ AHORA: Siempre prioriza URL sobre estado
+const bookFromQuery = searchParams.get('book');
+let bookToUse = bookFromQuery ? decodeURIComponent(bookFromQuery) : selectedBook;
+
+console.log('Parameters:', { 
+    fromURL: { book: bookFromQuery },
+    fromState: { selectedBook },
+    toUse: { bookToUse }
+});
+                </div>
+            </div>
+
+            <div class="fix-details">
+                <strong>Cambios críticos realizados:</strong>
+                <ol>
+                    <li><strong>Eliminado setTimeout:</strong> Ya no hay retraso que cause problemas de timing</li>
+                    <li><strong>Prioridad URL:</strong> Siempre usa parámetros URL si están disponibles</li>
+                    <li><strong>Logging mejorado:</strong> Debug completo de todos los valores</li>
+                    <li><strong>Validación robusta:</strong> Verifica múltiples fuentes antes de fallar</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🧪</span> Tests de Validación</h2>
+            
+            <p><strong>URLs de prueba directa:</strong></p>
+            
+            <a href="http://localhost:3000/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=sistema%20respiratorio&autoStart=true" class="test-link" target="_blank">
+                🔗 Test 1: AutoStart Ciencias
+            </a>
+            
+            <a href="http://localhost:3000/dashboard/evaluacion?course=3ro%20B%C3%A1sico&book=Matem%C3%A1ticas&topic=multiplicaci%C3%B3n&autoStart=true" class="test-link" target="_blank">
+                🔗 Test 2: AutoStart Matemáticas
+            </a>
+            
+            <a href="http://localhost:3000/dashboard/tareas" class="test-link" target="_blank">
+                📝 Test 3: Desde Tareas (flujo normal)
+            </a>
+            
+            <div style="margin-top: 20px;">
+                <h3>🎯 Checklist de validación:</h3>
+                <div class="code-block">
+✅ Abrir DevTools (F12) → Console
+✅ Hacer clic en "Realizar Evaluación"
+✅ Verificar log: "Parameters: { fromURL: {...}, fromState: {...}, toUse: {...} }"
+✅ Confirmar que bookToUse NO esté vacío
+✅ Verificar que NO aparezca: "Error: No book selected"
+✅ Confirmar que la evaluación se genere exitosamente
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔍</span> Detalles Técnicos del Fix</h2>
+            
+            <h3>Archivo modificado: <code>/src/app/dashboard/evaluacion/page.tsx</code></h3>
+            
+            <div class="code-block">
+const handleCreateEvaluation = useCallback(async () => {
+    // 🔥 NUEVO: Siempre priorizar URL sobre estado
+    const courseFromQuery = searchParams.get('course');
+    const bookFromQuery = searchParams.get('book');
+    const topicFromQuery = searchParams.get('topic');
+    
+    let courseToUse = courseFromQuery ? decodeURIComponent(courseFromQuery) : selectedCourse;
+    let bookToUse = bookFromQuery ? decodeURIComponent(bookFromQuery) : selectedBook;
+    let topicToUse = topicFromQuery ? decodeURIComponent(topicFromQuery) : topic;
+    
+    // 🔥 NUEVO: Logging completo para debug
+    console.log('handleCreateEvaluation - Parameters:', { 
+        fromURL: { course: courseFromQuery, book: bookFromQuery, topic: topicFromQuery },
+        fromState: { selectedCourse, selectedBook, topic },
+        toUse: { courseToUse, bookToUse, topicToUse },
+        isAutoStartMode 
+    });
+    
+    if (!bookToUse) {
+        // 🔥 NUEVO: Error logging detallado
+        console.error('No book selected. Current state:', { 
+            selectedBook, 
+            bookFromQuery, 
+            bookToUse, 
+            isAutoStartMode,
+            searchParams: Object.fromEntries(searchParams.entries())
+        });
+        // ... resto del error handling
+    }
+    
+    // ... resto de la función usa bookToUse consistentemente
+}, [...]);
+            </div>
+
+            <h3>Cambio en useEffect:</h3>
+            <div class="code-block">
+// ❌ ANTES: setTimeout causaba problemas de timing
+setTimeout(() => {
+    handleCreateEvaluation();
+}, 500);
+
+// ✅ AHORA: Llamada directa, los parámetros se obtienen de URL
+handleCreateEvaluation();
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">⚡</span> Estado de la Solución</h2>
+            <div class="status fixed">
+                ✅ Lógica de priorización URL implementada
+            </div>
+            <div class="status fixed">
+                ✅ Eliminado setTimeout problemático
+            </div>
+            <div class="status fixed">
+                ✅ Logging mejorado para debug
+            </div>
+            <div class="status fixed">
+                ✅ Validación robusta de parámetros
+            </div>
+            
+            <p style="margin-top: 20px;">
+                <strong>🎯 Resultado esperado:</strong> El error "No book selected" debe desaparecer completamente, ya que ahora la función siempre tiene acceso a los parámetros de la URL independientemente del estado de React.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔧 Debug page loaded - Testing book selection fix');
+        console.log('📋 Key changes:');
+        console.log('  1. URL parameters always take priority over React state');
+        console.log('  2. Removed setTimeout that caused timing issues');
+        console.log('  3. Added comprehensive logging for debugging');
+        console.log('  4. Robust parameter validation');
+        console.log('🚀 Test the evaluation flow using the links above');
+        console.log('👀 Watch the console for the new detailed logging');
+    </script>
+</body>
+</html>

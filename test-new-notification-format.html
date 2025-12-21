@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Formato de Notificaciones Mejorado</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .old-format {
+            background: #ffebee;
+            border-color: #ffcdd2;
+        }
+        .new-format {
+            background: #e8f5e8;
+            border-color: #c8e6c9;
+        }
+        .before::before {
+            content: "❌ ANTES: ";
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .after::before {
+            content: "✅ DESPUÉS: ";
+            color: #388e3c;
+            font-weight: bold;
+        }
+        .demo-notification {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 4px solid #ff9800;
+            font-size: 14px;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        .success {
+            background: #4caf50;
+        }
+        .warning {
+            background: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test - Formato de Notificaciones Mejorado</h1>
+        
+        <div class="section">
+            <h2>📋 Cambios Implementados</h2>
+            <p><strong>Objetivo:</strong> Cambiar el formato de notificaciones de "X tareas pendientes de calificar" a "Tareas Pendientes (X)"</p>
+        </div>
+
+        <div class="section old-format">
+            <h3 class="before">Formato Anterior</h3>
+            <div class="demo-notification">
+                <strong>1 tareas pendientes de calificar</strong>
+                <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    Matemáticas - Ejercicios de Álgebra
+                </div>
+            </div>
+            <div class="demo-notification">
+                <strong>3 tareas pendientes de calificar</strong>
+                <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    Múltiples tareas por calificar
+                </div>
+            </div>
+        </div>
+
+        <div class="section new-format">
+            <h3 class="after">Formato Nuevo (Mejorado)</h3>
+            <div class="demo-notification">
+                <strong>Tareas Pendientes (1)</strong>
+                <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    Matemáticas - Ejercicios de Álgebra
+                </div>
+            </div>
+            <div class="demo-notification">
+                <strong>Tareas Pendientes (3)</strong>
+                <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    Múltiples tareas por calificar
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🎯 Beneficios del Nuevo Formato</h3>
+            <ul>
+                <li>✅ <strong>Más limpio:</strong> "Tareas Pendientes (1)" vs "1 tareas pendientes de calificar"</li>
+                <li>✅ <strong>Más legible:</strong> El número entre paréntesis es más claro</li>
+                <li>✅ <strong>Consistente:</strong> Formato uniforme para todas las notificaciones</li>
+                <li>✅ <strong>Profesional:</strong> Se ve más pulido y moderno</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>🧪 Pruebas de Formato</h3>
+            <button onclick="testNotificationFormats()">🔍 Probar Formatos</button>
+            <button onclick="simulateNotifications()" class="success">✨ Simular Notificaciones</button>
+            <button onclick="testTranslations()" class="warning">🌐 Test Traducciones</button>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Comparación de Formatos</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Cantidad</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Formato Anterior</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Formato Nuevo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">1</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">1 tareas pendientes de calificar</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"><strong>Tareas Pendientes (1)</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">2</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">2 tareas pendientes de calificar</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"><strong>Tareas Pendientes (2)</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">5</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">5 tareas pendientes de calificar</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"><strong>Tareas Pendientes (5)</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Archivos Modificados</h3>
+            <ul>
+                <li><code>/src/locales/es.json</code> - Traducción en español</li>
+                <li><code>/src/locales/en.json</code> - Traducción en inglés</li>
+            </ul>
+            
+            <h4>📝 Cambios Específicos:</h4>
+            <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; font-size: 12px;">
+// ANTES:
+"pendingGradingNotifications": "{{count}} tareas pendientes de calificar"
+
+// DESPUÉS:
+"pendingGradingNotifications": "Tareas Pendientes ({{count}})"
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        function testNotificationFormats() {
+            const results = document.getElementById('test-results');
+            const formats = [
+                { count: 1, old: "1 tareas pendientes de calificar", new: "Tareas Pendientes (1)" },
+                { count: 2, old: "2 tareas pendientes de calificar", new: "Tareas Pendientes (2)" },
+                { count: 5, old: "5 tareas pendientes de calificar", new: "Tareas Pendientes (5)" },
+                { count: 10, old: "10 tareas pendientes de calificar", new: "Tareas Pendientes (10)" }
+            ];
+
+            let html = '<div style="margin-top: 15px;"><h4>🔍 Resultados de Prueba:</h4>';
+            
+            formats.forEach(format => {
+                html += `
+                    <div style="margin: 8px 0; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <div style="color: #d32f2f;">❌ Anterior: ${format.old}</div>
+                        <div style="color: #388e3c;">✅ Nuevo: <strong>${format.new}</strong></div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            results.innerHTML = html;
+        }
+
+        function simulateNotifications() {
+            const results = document.getElementById('test-results');
+            
+            // Simular diferentes escenarios
+            const scenarios = [
+                { type: 'single', count: 1, description: 'Una tarea pendiente' },
+                { type: 'multiple', count: 3, description: 'Múltiples tareas pendientes' },
+                { type: 'many', count: 7, description: 'Muchas tareas pendientes' }
+            ];
+
+            let html = '<div style="margin-top: 15px;"><h4>✨ Simulación de Notificaciones:</h4>';
+            
+            scenarios.forEach(scenario => {
+                html += `
+                    <div style="margin: 10px 0; padding: 12px; background: white; border: 1px solid #e0e0e0; border-radius: 6px; border-left: 4px solid #ff9800;">
+                        <div style="font-weight: bold; color: #333;">Tareas Pendientes (${scenario.count})</div>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${scenario.description}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 2px;">Formato mejorado y limpio ✨</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            results.innerHTML = html;
+        }
+
+        function testTranslations() {
+            const results = document.getElementById('test-results');
+            
+            const translations = {
+                es: {
+                    old: "{{count}} tareas pendientes de calificar",
+                    new: "Tareas Pendientes ({{count}})",
+                    examples: [
+                        { count: 1, result: "Tareas Pendientes (1)" },
+                        { count: 3, result: "Tareas Pendientes (3)" }
+                    ]
+                },
+                en: {
+                    old: "{{count}} tasks pending grading",
+                    new: "Pending Tasks ({{count}})",
+                    examples: [
+                        { count: 1, result: "Pending Tasks (1)" },
+                        { count: 3, result: "Pending Tasks (3)" }
+                    ]
+                }
+            };
+
+            let html = '<div style="margin-top: 15px;"><h4>🌐 Test de Traducciones:</h4>';
+            
+            Object.keys(translations).forEach(lang => {
+                const t = translations[lang];
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                        <strong>Idioma: ${lang.toUpperCase()}</strong>
+                        <div style="margin: 5px 0; font-size: 13px;">
+                            <span style="color: #d32f2f;">❌ Anterior:</span> ${t.old}
+                        </div>
+                        <div style="margin: 5px 0; font-size: 13px;">
+                            <span style="color: #388e3c;">✅ Nuevo:</span> ${t.new}
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <strong>Ejemplos:</strong>
+                            ${t.examples.map(ex => `<div style="margin: 2px 0; font-size: 12px; color: #555;">→ ${ex.result}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            results.innerHTML = html;
+        }
+
+        // Auto-ejecutar una prueba inicial
+        window.onload = function() {
+            console.log('🔔 Test de Formato de Notificaciones cargado');
+            console.log('✅ Cambios implementados:');
+            console.log('   - ES: "{{count}} tareas pendientes de calificar" → "Tareas Pendientes ({{count}})"');
+            console.log('   - EN: "{{count}} tasks pending grading" → "Pending Tasks ({{count}})"');
+        };
+    </script>
+</body>
+</html>

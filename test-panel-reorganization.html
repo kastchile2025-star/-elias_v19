@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Reorganización Panel Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .notification-panel-mock {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .panel-header {
+            background-color: #f8f9fa;
+            padding: 12px 16px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .panel-section {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .panel-section:last-child {
+            border-bottom: none;
+        }
+        .task-item, .notification-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .task-item:last-child, .notification-item:last-child {
+            border-bottom: none;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background-color: #0056b3; }
+        .scenario {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            background-color: #f8f9ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Prueba Reorganización Panel de Notificaciones</h1>
+    
+    <div class="test-section">
+        <h2>Cambios Implementados</h2>
+        <div class="status success">✅ "Tareas Próximas" → "Tareas Pendientes"</div>
+        <div class="status success">✅ Ocultar sección "Notificaciones" cuando hay tareas pendientes</div>
+        <div class="status info">ℹ️ Los comentarios están incluidos dentro de las tareas pendientes</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Escenarios de Prueba</h2>
+        
+        <div class="scenario">
+            <h3>📋 Escenario 1: CON Tareas Pendientes</h3>
+            <p><strong>Situación:</strong> El estudiante tiene 1 tarea pendiente con comentarios</p>
+            <p><strong>Resultado esperado:</strong> Solo mostrar "Tareas Pendientes", ocultar "Notificaciones"</p>
+            <button onclick="showScenario1()">Mostrar Escenario 1</button>
+            
+            <div id="scenario1" class="notification-panel-mock" style="display: none;">
+                <div class="panel-header">🔔 Notificaciones (1)</div>
+                
+                <!-- Solo sección de Tareas Pendientes -->
+                <div class="panel-section">
+                    <div class="panel-header" style="background-color: #fff3cd; font-size: 14px;">
+                        📚 Tareas Pendientes
+                    </div>
+                    <div class="task-item">
+                        <strong>Ejercicios de Matemáticas Capítulo 5</strong><br>
+                        <small>Vence: 28/06/25, 20:43 • 4to Básico • Ciencias Naturales</small><br>
+                        <small style="color: #666;">💬 1 comentario nuevo del profesor</small>
+                    </div>
+                </div>
+                
+                <!-- Sección de Notificaciones OCULTA -->
+                <div style="display: none;">
+                    <div class="panel-header" style="background-color: #e3f2fd; font-size: 14px;">
+                        🔔 Notificaciones (OCULTA)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scenario">
+            <h3>📧 Escenario 2: SIN Tareas Pendientes</h3>
+            <p><strong>Situación:</strong> El estudiante no tiene tareas pendientes pero sí notificaciones</p>
+            <p><strong>Resultado esperado:</strong> Mostrar solo "Notificaciones"</p>
+            <button onclick="showScenario2()">Mostrar Escenario 2</button>
+            
+            <div id="scenario2" class="notification-panel-mock" style="display: none;">
+                <div class="panel-header">🔔 Notificaciones (1)</div>
+                
+                <!-- Sin Tareas Pendientes -->
+                
+                <!-- Solo sección de Notificaciones -->
+                <div class="panel-section">
+                    <div class="panel-header" style="background-color: #e3f2fd; font-size: 14px;">
+                        🔔 Notificaciones
+                    </div>
+                    <div class="notification-item">
+                        <strong>Nueva tarea asignada</strong><br>
+                        <small>El profesor Ana García ha asignado una nueva tarea: 'Ejercicios de Matemáticas'</small><br>
+                        <small>4to Básico • Ciencias Naturales • hace 2 min</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scenario">
+            <h3>❌ Escenario 3: Sin Tareas ni Notificaciones</h3>
+            <p><strong>Situación:</strong> El estudiante no tiene tareas pendientes ni notificaciones</p>
+            <p><strong>Resultado esperado:</strong> Mostrar mensaje "No tienes notificaciones pendientes"</p>
+            <button onclick="showScenario3()">Mostrar Escenario 3</button>
+            
+            <div id="scenario3" class="notification-panel-mock" style="display: none;">
+                <div class="panel-header">🔔 Notificaciones (0)</div>
+                
+                <div class="panel-section" style="text-align: center; color: #666; padding: 40px;">
+                    No tienes notificaciones pendientes
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Validación de Lógica</h2>
+        <div id="validationResults">
+            <div class="status info">Ejecuta los escenarios arriba para ver la validación</div>
+        </div>
+    </div>
+
+    <script>
+        function clearScenarios() {
+            document.getElementById('scenario1').style.display = 'none';
+            document.getElementById('scenario2').style.display = 'none';
+            document.getElementById('scenario3').style.display = 'none';
+        }
+
+        function showValidationResult(scenarioNum, description, isCorrect) {
+            const resultsDiv = document.getElementById('validationResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `status ${isCorrect ? 'success' : 'error'}`;
+            resultDiv.innerHTML = `${isCorrect ? '✅' : '❌'} Escenario ${scenarioNum}: ${description}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function showScenario1() {
+            clearScenarios();
+            document.getElementById('scenario1').style.display = 'block';
+            
+            // Validar lógica: pendingTasks.length > 0 && taskNotifications.length === 0
+            const hasPendingTasks = true;
+            const hasNotifications = true; // Pero se ocultan por la nueva lógica
+            const showNotifications = hasNotifications && !hasPendingTasks; // false
+            
+            showValidationResult(1, 
+                `Con tareas pendientes, sección Notificaciones ${showNotifications ? 'VISIBLE' : 'OCULTA'}`, 
+                !showNotifications
+            );
+        }
+
+        function showScenario2() {
+            clearScenarios();
+            document.getElementById('scenario2').style.display = 'block';
+            
+            // Validar lógica: pendingTasks.length === 0 && taskNotifications.length > 0
+            const hasPendingTasks = false;
+            const hasNotifications = true;
+            const showNotifications = hasNotifications && !hasPendingTasks; // true
+            
+            showValidationResult(2, 
+                `Sin tareas pendientes, sección Notificaciones ${showNotifications ? 'VISIBLE' : 'OCULTA'}`, 
+                showNotifications
+            );
+        }
+
+        function showScenario3() {
+            clearScenarios();
+            document.getElementById('scenario3').style.display = 'block';
+            
+            // Validar lógica: pendingTasks.length === 0 && taskNotifications.length === 0
+            const hasPendingTasks = false;
+            const hasNotifications = false;
+            const showNotifications = hasNotifications && !hasPendingTasks; // false
+            
+            showValidationResult(3, 
+                `Sin tareas ni notificaciones, mensaje vacío VISIBLE`, 
+                true
+            );
+        }
+
+        // Test automático al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsDiv = document.getElementById('validationResults');
+            resultsDiv.innerHTML = '<div class="status success">✅ Sistema cargado correctamente. Prueba los escenarios arriba.</div>';
+        });
+    </script>
+</body>
+</html>

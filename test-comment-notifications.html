@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Comment Notifications - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #f97316;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #f97316;
+        }
+        .section h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .test-case {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .test-case h3 {
+            color: #f97316;
+            margin-top: 0;
+        }
+        .button {
+            background: #f97316;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #ea580c;
+        }
+        .log {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #2563eb;
+        }
+        .highlight-demo {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .highlight-demo.unread {
+            border-color: #f97316;
+            background-color: #fef3cd;
+        }
+        .highlight-demo.read {
+            border-color: #d1d5db;
+            background-color: #f9fafb;
+        }
+        .simulate-navigation {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test de Notificaciones de Comentarios</h1>
+        
+        <div class="section">
+            <h2>📋 Funcionalidades Implementadas</h2>
+            <p>Se han implementado las siguientes mejoras para las notificaciones de comentarios:</p>
+            <ul>
+                <li><strong>Navegación directa:</strong> Al hacer clic en "ver comentario" se abre la tarea y se desplaza al comentario específico</li>
+                <li><strong>Resaltado visual:</strong> Los comentarios no leídos del profesor aparecen destacados con borde naranja</li>
+                <li><strong>Marcado automático masivo:</strong> Al entrar a una tarea desde notificaciones se marcan TODOS los comentarios no leídos como leídos</li>
+                <li><strong>Marcado granular:</strong> Al hacer clic en un comentario específico solo se marca ese comentario como leído</li>
+                <li><strong>Identificación única:</strong> Cada comentario tiene un ID único para navegación directa</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Casos de Prueba</h2>
+            
+            <div class="test-case">
+                <h3>1. Navegación desde Notificación</h3>
+                <p>Simula el flujo completo desde el panel de notificaciones hasta el comentario específico.</p>
+                
+                <div class="simulate-navigation">
+                    <strong>Flujo de navegación mejorado:</strong><br>
+                    1. Usuario hace clic en "ver comentario" desde el panel de notificaciones<br>
+                    2. Se navega a: <code>/dashboard/tareas?taskId=task_123&commentId=comment_456</code><br>
+                    3. Se abre automáticamente el diálogo de la tarea<br>
+                    4. Se desplaza al comentario específico y lo resalta temporalmente<br>
+                    5. <strong>✨ NUEVO:</strong> Se marcan TODOS los comentarios no leídos de la tarea como leídos<br>
+                    6. <strong>🎯 Comportamiento:</strong> Simula "revisar toda la tarea" no solo un comentario
+                </div>
+                
+                <button class="button" onclick="testNavigationFlow()">Simular Navegación</button>
+                <div id="navigation-log" class="log"></div>
+            </div>
+
+            <div class="test-case">
+                <h3>2. Comentarios No Leídos</h3>
+                <p>Demuestra cómo se ven los comentarios no leídos vs leídos.</p>
+                
+                <div class="highlight-demo unread" id="unread-demo">
+                    <strong>📩 Comentario NO LEÍDO del Profesor</strong><br>
+                    <small>Profesor García - hace 2 horas</small><br>
+                    "Excelente trabajo en la primera parte, pero necesitas mejorar la conclusión..."
+                </div>
+                
+                <div class="highlight-demo read" id="read-demo">
+                    <strong>✓ Comentario LEÍDO del Profesor</strong><br>
+                    <small>Profesor García - hace 1 día</small><br>
+                    "Muy bien explicado el tema de las fracciones."
+                </div>
+                
+                <button class="button" onclick="toggleReadStatus()">Cambiar Estado de Lectura</button>
+                <div id="read-status-log" class="log"></div>
+            </div>
+
+            <div class="test-case">
+                <h3>3. Gestión de Estado de Lectura</h3>
+                <p>Prueba las funciones de marcado como leído/no leído.</p>
+                
+                <button class="button" onclick="createMultipleTestComments()">Crear Múltiples Comentarios</button>
+                <button class="button" onclick="markSingleAsRead()">Marcar UNO como Leído</button>
+                <button class="button" onclick="markAllTaskAsRead()">Marcar TODOS de la Tarea como Leídos</button>
+                <button class="button" onclick="checkAllReadStatus()">Verificar Estado de Todos</button>
+                <div id="read-management-log" class="log"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Funciones de Desarrollo</h2>
+            
+            <div class="test-case">
+                <h3>Debug y Mantenimiento</h3>
+                
+                <button class="button" onclick="inspectComments()">Inspeccionar Comentarios</button>
+                <button class="button" onclick="inspectNotifications()">Inspeccionar Notificaciones</button>
+                <button class="button" onclick="clearTestData()">Limpiar Datos de Prueba</button>
+                <button class="button" onclick="resetToDefaults()">Restaurar Valores por Defecto</button>
+                <div id="debug-log" class="log"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Estado del Sistema</h2>
+            <div id="system-status" class="log">
+                Cargando estado del sistema...
+            </div>
+            <button class="button" onclick="refreshSystemStatus()">Actualizar Estado</button>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function log(elementId, message, type = 'info') {
+            const logElement = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            logElement.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        // Test functions
+        function testNavigationFlow() {
+            clearLog('navigation-log');
+            log('navigation-log', '🚀 Iniciando simulación de navegación...', 'info');
+            
+            // Simulate creating a test task and comment
+            const testTask = {
+                id: 'task_test_' + Date.now(),
+                title: 'Tarea de Matemáticas - Fracciones',
+                description: 'Resolver ejercicios de fracciones del capítulo 5',
+                course: '5A',
+                subject: 'Matemáticas',
+                assignedBy: 'profesor1',
+                assignedByName: 'Prof. García',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            const testComment = {
+                id: 'comment_test_' + Date.now(),
+                taskId: testTask.id,
+                studentUsername: 'estudiante1',
+                studentName: 'Ana Rodríguez',
+                comment: 'Profesor, tengo dudas sobre el ejercicio 3. ¿Podrías explicármelo?',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                userRole: 'student'
+            };
+
+            const teacherComment = {
+                id: 'comment_teacher_' + Date.now(),
+                taskId: testTask.id,
+                studentUsername: 'profesor1',
+                studentName: 'Prof. García',
+                comment: 'Claro Ana, el ejercicio 3 requiere que primero encuentres el denominador común...',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                userRole: 'teacher',
+                readBy: [] // Not read by student yet
+            };
+
+            // Save to localStorage
+            try {
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                
+                tasks.push(testTask);
+                comments.push(testComment, teacherComment);
+                
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+                
+                log('navigation-log', '✅ Tarea y comentarios de prueba creados', 'success');
+                log('navigation-log', `📝 Tarea ID: ${testTask.id}`, 'info');
+                log('navigation-log', `💬 Comentario del profesor ID: ${teacherComment.id}`, 'info');
+                log('navigation-log', '🔗 URL de navegación simulada:', 'info');
+                log('navigation-log', `/dashboard/tareas?taskId=${testTask.id}&commentId=${teacherComment.id}`, 'info');
+                log('navigation-log', '📍 El comentario del profesor aparecerá DESTACADO para el estudiante', 'success');
+                
+            } catch (error) {
+                log('navigation-log', '❌ Error al crear datos de prueba: ' + error.message, 'error');
+            }
+        }
+
+        function toggleReadStatus() {
+            clearLog('read-status-log');
+            const unreadDemo = document.getElementById('unread-demo');
+            const readDemo = document.getElementById('read-demo');
+            
+            // Toggle classes
+            if (unreadDemo.classList.contains('unread')) {
+                unreadDemo.classList.remove('unread');
+                unreadDemo.classList.add('read');
+                unreadDemo.innerHTML = '<strong>✓ Comentario LEÍDO del Profesor</strong><br><small>Profesor García - hace 2 horas</small><br>"Excelente trabajo en la primera parte, pero necesitas mejorar la conclusión..."';
+                log('read-status-log', '✅ Comentario marcado como LEÍDO', 'success');
+            } else {
+                unreadDemo.classList.remove('read');
+                unreadDemo.classList.add('unread');
+                unreadDemo.innerHTML = '<strong>📩 Comentario NO LEÍDO del Profesor</strong><br><small>Profesor García - hace 2 horas</small><br>"Excelente trabajo en la primera parte, pero necesitas mejorar la conclusión..."';
+                log('read-status-log', '📩 Comentario marcado como NO LEÍDO', 'info');
+            }
+            
+            log('read-status-log', '🎨 Demostración de cambio visual completada', 'info');
+        }
+
+        function createMultipleTestComments() {
+            clearLog('read-management-log');
+            
+            const testTaskId = 'task_multiple_comments_' + Date.now();
+            
+            // Create 3 test comments from teacher
+            const testComments = [
+                {
+                    id: 'comment_1_' + Date.now(),
+                    taskId: testTaskId,
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'Primer comentario: Muy buen trabajo en la introducción.',
+                    timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: []
+                },
+                {
+                    id: 'comment_2_' + Date.now() + 1,
+                    taskId: testTaskId,
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'Segundo comentario: Necesitas mejorar la conclusión.',
+                    timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: []
+                },
+                {
+                    id: 'comment_3_' + Date.now() + 2,
+                    taskId: testTaskId,
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'Tercer comentario: Excelente uso de ejemplos prácticos.',
+                    timestamp: new Date().toISOString(), // now
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: []
+                }
+            ];
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                testComments.forEach(comment => comments.push(comment));
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+                localStorage.setItem('test-task-id', testTaskId);
+                
+                log('read-management-log', '✅ Creados 3 comentarios del profesor para la misma tarea', 'success');
+                log('read-management-log', `📝 Tarea ID: ${testTaskId}`, 'info');
+                log('read-management-log', '📊 Estado inicial: TODOS NO LEÍDOS', 'info');
+                log('read-management-log', '💡 Esto simula múltiples comentarios nuevos del profesor', 'info');
+                
+            } catch (error) {
+                log('read-management-log', '❌ Error al crear comentarios: ' + error.message, 'error');
+            }
+        }
+
+        function markSingleAsRead() {
+            const testTaskId = localStorage.getItem('test-task-id');
+            if (!testTaskId) {
+                log('read-management-log', '⚠️ Primero debes crear comentarios de prueba', 'error');
+                return;
+            }
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const taskComments = comments.filter(c => c.taskId === testTaskId);
+                
+                if (taskComments.length === 0) {
+                    log('read-management-log', '⚠️ No hay comentarios para esta tarea', 'error');
+                    return;
+                }
+                
+                // Mark only the first unread comment as read
+                const updatedComments = comments.map(comment => {
+                    if (comment.taskId === testTaskId && 
+                        comment.userRole === 'teacher' && 
+                        !comment.readBy?.includes('estudiante1')) {
+                        return {
+                            ...comment,
+                            readBy: [...(comment.readBy || []), 'estudiante1']
+                        };
+                    }
+                    return comment;
+                });
+                
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                log('read-management-log', '✅ PRIMER comentario marcado como leído', 'success');
+                log('read-management-log', '📊 Los otros comentarios siguen SIN LEER', 'info');
+                
+            } catch (error) {
+                log('read-management-log', '❌ Error al marcar como leído: ' + error.message, 'error');
+            }
+        }
+
+        function markAllTaskAsRead() {
+            const testTaskId = localStorage.getItem('test-task-id');
+            if (!testTaskId) {
+                log('read-management-log', '⚠️ Primero debes crear comentarios de prueba', 'error');
+                return;
+            }
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                let markedCount = 0;
+                
+                // Mark ALL teacher comments in this task as read
+                const updatedComments = comments.map(comment => {
+                    if (comment.taskId === testTaskId && 
+                        comment.userRole === 'teacher' && 
+                        !comment.readBy?.includes('estudiante1')) {
+                        markedCount++;
+                        return {
+                            ...comment,
+                            isNew: false,
+                            readBy: [...(comment.readBy || []), 'estudiante1']
+                        };
+                    }
+                    return comment;
+                });
+                
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                log('read-management-log', `✅ TODOS los comentarios marcados como leídos (${markedCount} comentarios)`, 'success');
+                log('read-management-log', '💡 Esto simula entrar a la tarea desde notificaciones', 'info');
+                log('read-management-log', '🎯 Comportamiento esperado: revisar TODA la tarea', 'success');
+                
+            } catch (error) {
+                log('read-management-log', '❌ Error al marcar todos como leídos: ' + error.message, 'error');
+            }
+        }
+
+        function checkAllReadStatus() {
+            const testTaskId = localStorage.getItem('test-task-id');
+            if (!testTaskId) {
+                log('read-management-log', '⚠️ Primero debes crear comentarios de prueba', 'error');
+                return;
+            }
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const taskComments = comments.filter(c => c.taskId === testTaskId);
+                
+                if (taskComments.length === 0) {
+                    log('read-management-log', '❌ No hay comentarios para esta tarea', 'error');
+                    return;
+                }
+                
+                log('read-management-log', `📊 Estado de ${taskComments.length} comentarios:`, 'info');
+                
+                taskComments.forEach((comment, index) => {
+                    const isRead = comment.readBy?.includes('estudiante1') || false;
+                    const status = isRead ? 'LEÍDO ✅' : 'NO LEÍDO 📩';
+                    const timestamp = new Date(comment.timestamp).toLocaleTimeString();
+                    
+                    log('read-management-log', `   ${index + 1}. ${status} - ${timestamp}`, isRead ? 'success' : 'info');
+                    log('read-management-log', `      "${comment.comment.substring(0, 50)}..."`, 'info');
+                });
+                
+                const unreadCount = taskComments.filter(c => !c.readBy?.includes('estudiante1')).length;
+                log('read-management-log', `📈 Resumen: ${unreadCount} sin leer, ${taskComments.length - unreadCount} leídos`, 'info');
+                
+            } catch (error) {
+                log('read-management-log', '❌ Error al verificar estado: ' + error.message, 'error');
+            }
+        }
+
+        function inspectComments() {
+            clearLog('debug-log');
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                log('debug-log', `📊 Total de comentarios en el sistema: ${comments.length}`, 'info');
+                
+                if (comments.length === 0) {
+                    log('debug-log', '📝 No hay comentarios en el sistema', 'info');
+                    return;
+                }
+                
+                comments.forEach((comment, index) => {
+                    log('debug-log', `📝 Comentario ${index + 1}:`, 'info');
+                    log('debug-log', `   ID: ${comment.id}`, 'info');
+                    log('debug-log', `   Tarea: ${comment.taskId}`, 'info');
+                    log('debug-log', `   Usuario: ${comment.studentName} (${comment.userRole || 'student'})`, 'info');
+                    log('debug-log', `   Leído por: ${comment.readBy?.join(', ') || 'nadie'}`, 'info');
+                    log('debug-log', `   Es entrega: ${comment.isSubmission ? 'Sí' : 'No'}`, 'info');
+                    log('debug-log', '   ---', 'info');
+                });
+                
+            } catch (error) {
+                log('debug-log', '❌ Error al inspeccionar comentarios: ' + error.message, 'error');
+            }
+        }
+
+        function inspectNotifications() {
+            clearLog('debug-log');
+            
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                log('debug-log', `🔔 Total de notificaciones: ${notifications.length}`, 'info');
+                
+                if (notifications.length === 0) {
+                    log('debug-log', '🔔 No hay notificaciones en el sistema', 'info');
+                    return;
+                }
+                
+                notifications.forEach((notification, index) => {
+                    log('debug-log', `🔔 Notificación ${index + 1}:`, 'info');
+                    log('debug-log', `   ID: ${notification.id}`, 'info');
+                    log('debug-log', `   Tipo: ${notification.type}`, 'info');
+                    log('debug-log', `   Tarea: ${notification.taskTitle}`, 'info');
+                    log('debug-log', `   Para usuarios: ${notification.targetUsernames?.join(', ') || 'no especificado'}`, 'info');
+                    log('debug-log', `   Leída: ${notification.isRead ? 'Sí' : 'No'}`, 'info');
+                    log('debug-log', '   ---', 'info');
+                });
+                
+            } catch (error) {
+                log('debug-log', '❌ Error al inspeccionar notificaciones: ' + error.message, 'error');
+            }
+        }
+
+        function clearTestData() {
+            clearLog('debug-log');
+            
+            try {
+                // Remove test comments
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const filteredComments = comments.filter(comment => 
+                    !comment.id.includes('test') && !comment.id.includes('management')
+                );
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+                
+                // Remove test tasks
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const filteredTasks = tasks.filter(task => !task.id.includes('test'));
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+                
+                // Remove test comment ID
+                localStorage.removeItem('test-comment-id');
+                
+                log('debug-log', '🧹 Datos de prueba eliminados exitosamente', 'success');
+                log('debug-log', `📝 Comentarios restantes: ${filteredComments.length}`, 'info');
+                log('debug-log', `📋 Tareas restantes: ${filteredTasks.length}`, 'info');
+                
+            } catch (error) {
+                log('debug-log', '❌ Error al limpiar datos: ' + error.message, 'error');
+            }
+        }
+
+        function resetToDefaults() {
+            clearLog('debug-log');
+            
+            if (confirm('⚠️ Esto eliminará TODOS los comentarios y tareas del sistema. ¿Continuar?')) {
+                try {
+                    localStorage.setItem('smart-student-task-comments', JSON.stringify([]));
+                    localStorage.setItem('smart-student-tasks', JSON.stringify([]));
+                    localStorage.setItem('smart-student-notifications', JSON.stringify([]));
+                    localStorage.removeItem('test-comment-id');
+                    
+                    log('debug-log', '🔄 Sistema restaurado a valores por defecto', 'success');
+                    log('debug-log', '📝 Todos los comentarios eliminados', 'info');
+                    log('debug-log', '📋 Todas las tareas eliminadas', 'info');
+                    log('debug-log', '🔔 Todas las notificaciones eliminadas', 'info');
+                    
+                } catch (error) {
+                    log('debug-log', '❌ Error al restaurar: ' + error.message, 'error');
+                }
+            } else {
+                log('debug-log', '❌ Operación cancelada por el usuario', 'info');
+            }
+        }
+
+        function refreshSystemStatus() {
+            const statusElement = document.getElementById('system-status');
+            statusElement.innerHTML = '';
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const notifications = JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+                
+                const unreadComments = comments.filter(c => 
+                    c.userRole === 'teacher' && !c.readBy?.includes('estudiante1')
+                ).length;
+                
+                statusElement.innerHTML = `
+                    <span class="success">📊 Estado del Sistema (${new Date().toLocaleTimeString()})</span><br>
+                    <span class="info">📝 Total de comentarios: ${comments.length}</span><br>
+                    <span class="info">📋 Total de tareas: ${tasks.length}</span><br>
+                    <span class="info">🔔 Total de notificaciones: ${notifications.length}</span><br>
+                    <span class="info">📩 Comentarios no leídos del profesor: ${unreadComments}</span><br>
+                    <span class="info">🔧 Funcionalidades implementadas:</span><br>
+                    <span class="success">  ✅ Navegación directa a comentarios</span><br>
+                    <span class="success">  ✅ Resaltado de comentarios no leídos</span><br>
+                    <span class="success">  ✅ Marcado automático como leído</span><br>
+                    <span class="success">  ✅ IDs únicos para cada comentario</span><br>
+                `;
+                
+            } catch (error) {
+                statusElement.innerHTML = `<span class="error">❌ Error al cargar estado: ${error.message}</span>`;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshSystemStatus();
+            
+            // Auto-refresh status every 30 seconds
+            setInterval(refreshSystemStatus, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Contador de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-size: 11px;
+        }
+        .count-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: #f9fafb;
+        }
+        .duplicate {
+            background: #fef2f2;
+            border-color: #f87171;
+        }
+        .valid {
+            background: #f0fdf4;
+            border-color: #4ade80;
+        }
+        .total-section {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug - Contador de Notificaciones Duplicadas</h1>
+    <p>Analizando por qué Felipe tiene 3 notificaciones cuando debería tener 2</p>
+
+    <div class="container">
+        <h2>🎯 Análisis de Conteo</h2>
+        
+        <div class="section">
+            <h3>1. Simular Usuario Felipe</h3>
+            <button onclick="simulateFelipe()">👨‍🎓 Simular Felipe Estudiante</button>
+            <div id="felipe-status"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Analizar Cada Contador Individual</h3>
+            <button onclick="analyzeIndividualCounters()">📊 Analizar Contadores</button>
+            <div id="individual-analysis"></div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Detectar Duplicaciones</h3>
+            <button onclick="detectDuplicates()">🔍 Detectar Duplicados</button>
+            <div id="duplicates-analysis"></div>
+        </div>
+        
+        <div class="section">
+            <h3>4. Calcular Conteo Correcto</h3>
+            <button onclick="calculateCorrectCount()">✅ Calcular Conteo Correcto</button>
+            <div id="correct-count"></div>
+        </div>
+    </div>
+
+    <script>
+        let felipeUser = {
+            username: 'felipe_estudiante',
+            name: 'Felipe Estudiante',
+            role: 'student',
+            activeCourses: ['10A']
+        };
+
+        function simulateFelipe() {
+            localStorage.setItem('smart-student-user', JSON.stringify(felipeUser));
+            
+            const status = document.getElementById('felipe-status');
+            status.innerHTML = `
+                <div class="success">✅ Felipe estudiante simulado</div>
+                <div class="info">👤 ${felipeUser.name} (${felipeUser.username})</div>
+                <div class="info">🎓 Rol: ${felipeUser.role}</div>
+                <div class="info">🏫 Cursos: ${felipeUser.activeCourses.join(', ')}</div>
+            `;
+        }
+
+        function analyzeIndividualCounters() {
+            const user = felipeUser;
+            const result = document.getElementById('individual-analysis');
+            
+            // 1. Contar tareas pendientes
+            const pendingTasksCount = countPendingTasks(user);
+            
+            // 2. Contar comentarios no leídos
+            const unreadCommentsCount = countUnreadComments(user);
+            
+            // 3. Contar notificaciones de tareas
+            const taskNotificationsCount = countTaskNotifications(user);
+            
+            const totalCount = pendingTasksCount + unreadCommentsCount + taskNotificationsCount;
+            
+            result.innerHTML = `
+                <div class="info">📊 Análisis individual de contadores:</div>
+                <div class="count-item">
+                    <strong>1. Tareas Pendientes:</strong> ${pendingTasksCount}
+                    <br><small>Tareas asignadas que aún no se han entregado</small>
+                </div>
+                <div class="count-item">
+                    <strong>2. Comentarios No Leídos:</strong> ${unreadCommentsCount}
+                    <br><small>Comentarios de otros usuarios que no ha leído</small>
+                </div>
+                <div class="count-item">
+                    <strong>3. Notificaciones de Tareas:</strong> ${taskNotificationsCount}
+                    <br><small>Notificaciones del sistema (calificaciones, nuevas tareas, etc.)</small>
+                </div>
+                <div class="count-item total-section">
+                    <strong>📊 TOTAL ACTUAL:</strong> ${totalCount}
+                    <br><small>Suma de todos los contadores</small>
+                </div>
+            `;
+        }
+
+        function countPendingTasks(user) {
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            
+            if (!storedTasks) return 0;
+            
+            const tasks = JSON.parse(storedTasks);
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+            
+            const now = new Date();
+            const pendingTasks = tasks.filter(task => {
+                const isAssigned = task.course && user.activeCourses?.includes(task.course);
+                const dueDate = new Date(task.dueDate);
+                const isApproaching = dueDate > now;
+                
+                const hasSubmitted = comments.some(comment => 
+                    comment.taskId === task.id && 
+                    comment.studentUsername === user.username && 
+                    comment.isSubmission
+                );
+                
+                return isAssigned && isApproaching && !hasSubmitted;
+            });
+            
+            console.log(`Pending tasks for ${user.username}:`, pendingTasks);
+            return pendingTasks.length;
+        }
+
+        function countUnreadComments(user) {
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            if (!storedComments) return 0;
+            
+            const comments = JSON.parse(storedComments);
+            
+            let unread = comments.filter(comment => 
+                comment.studentUsername !== user.username && // No sus propios comentarios
+                (!comment.readBy?.includes(user.username)) && // No leído por el usuario
+                !comment.isSubmission // Excluir entregas
+            );
+
+            // Eliminar duplicados
+            unread = unread.filter((comment, idx, arr) =>
+                arr.findIndex(c =>
+                    c.taskId === comment.taskId &&
+                    c.comment === comment.comment &&
+                    c.timestamp === comment.timestamp &&
+                    c.studentUsername === comment.studentUsername
+                ) === idx
+            );
+            
+            console.log(`Unread comments for ${user.username}:`, unread);
+            return unread.length;
+        }
+
+        function countTaskNotifications(user) {
+            // Simular la lógica de TaskNotificationManager.getUnreadCountForUser
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const unreadNotifications = notifications.filter(notification => 
+                notification.targetUserRole === user.role &&
+                notification.targetUsernames.includes(user.username) &&
+                !notification.readBy.includes(user.username)
+            );
+            
+            console.log(`Task notifications for ${user.username}:`, unreadNotifications);
+            return unreadNotifications.length;
+        }
+
+        function detectDuplicates() {
+            const user = felipeUser;
+            const result = document.getElementById('duplicates-analysis');
+            
+            // Obtener datos detallados
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const unreadComments = comments.filter(comment => 
+                comment.studentUsername !== user.username &&
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+            
+            const unreadNotifications = notifications.filter(notification => 
+                notification.targetUserRole === user.role &&
+                notification.targetUsernames.includes(user.username) &&
+                !notification.readBy.includes(user.username)
+            );
+            
+            let html = '<div class="info">🔍 Análisis de duplicaciones:</div>';
+            
+            html += '<div class="section"><h4>📋 Comentarios No Leídos:</h4>';
+            unreadComments.forEach((comment, index) => {
+                html += `
+                    <div class="count-item">
+                        <strong>${index + 1}. ${comment.comment}</strong><br>
+                        <small>👤 De: ${comment.studentUsername || comment.author}</small><br>
+                        <small>📝 Tarea: ${comment.taskId}</small><br>
+                        <small>🕐 Timestamp: ${comment.timestamp}</small>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="section"><h4>🔔 Notificaciones del Sistema:</h4>';
+            unreadNotifications.forEach((notification, index) => {
+                html += `
+                    <div class="count-item">
+                        <strong>${index + 1}. ${notification.type}</strong><br>
+                        <small>📝 Tarea: ${notification.taskId}</small><br>
+                        <small>💬 Mensaje: ${notification.message}</small><br>
+                        <small>🕐 Timestamp: ${notification.timestamp}</small>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            // Detectar posibles duplicaciones
+            const possibleDuplicates = [];
+            unreadComments.forEach(comment => {
+                const relatedNotifications = unreadNotifications.filter(n => 
+                    n.taskId === comment.taskId && 
+                    (n.type === 'new_comment' || n.message?.includes(comment.comment?.substring(0, 20)))
+                );
+                if (relatedNotifications.length > 0) {
+                    possibleDuplicates.push({
+                        comment: comment,
+                        notifications: relatedNotifications
+                    });
+                }
+            });
+            
+            if (possibleDuplicates.length > 0) {
+                html += '<div class="section"><h4>⚠️ Posibles Duplicaciones Detectadas:</h4>';
+                possibleDuplicates.forEach((dup, index) => {
+                    html += `
+                        <div class="count-item duplicate">
+                            <strong>Duplicación ${index + 1}:</strong><br>
+                            <strong>Comentario:</strong> "${dup.comment.comment}"<br>
+                            <strong>Notificaciones relacionadas:</strong> ${dup.notifications.length}<br>
+                            <small>Esto puede estar causando conteo duplicado</small>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function calculateCorrectCount() {
+            const user = felipeUser;
+            const result = document.getElementById('correct-count');
+            
+            // Análisis esperado según la captura:
+            // 1. Tarea pendiente de Ciencias Naturales
+            // 2. Comentario del profesor Jorge
+            
+            const expectedCount = 2;
+            const currentCount = countPendingTasks(user) + countUnreadComments(user) + countTaskNotifications(user);
+            
+            result.innerHTML = `
+                <div class="info">✅ Análisis del conteo correcto:</div>
+                <div class="count-item valid">
+                    <strong>📚 Conteo Esperado:</strong> ${expectedCount}<br>
+                    <small>• 1 tarea pendiente (Ciencias Naturales)</small><br>
+                    <small>• 1 comentario del profesor (Jorge - "pronto")</small>
+                </div>
+                <div class="count-item ${currentCount === expectedCount ? 'valid' : 'duplicate'}">
+                    <strong>📊 Conteo Actual:</strong> ${currentCount}<br>
+                    <small>${currentCount === expectedCount ? '✅ CORRECTO' : `❌ INCORRECTO - Diferencia: +${currentCount - expectedCount}`}</small>
+                </div>
+                ${currentCount !== expectedCount ? `
+                    <div class="count-item duplicate">
+                        <strong>🔧 Acción Requerida:</strong><br>
+                        <small>Eliminar ${currentCount - expectedCount} notificación(es) duplicada(s)</small><br>
+                        <small>Posibles causas: Doble conteo entre comentarios y notificaciones del sistema</small>
+                    </div>
+                ` : ''}
+            `;
+        }
+    </script>
+</body>
+</html>

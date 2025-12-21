@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚑 Corrección Inmediata - Jorge Profesor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #c0392b;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .emergency-button {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .emergency-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        .success-button {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+        .warning-button {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+        .info-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .step {
+            background: white;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚑 Corrección Inmediata</h1>
+        
+        <div class="alert alert-danger">
+            <strong>🎯 PROBLEMA DETECTADO:</strong><br>
+            El profesor Jorge está viendo notificaciones de sus propios comentarios.
+            Esto no debería suceder según las reglas de negocio del sistema.
+        </div>
+
+        <div class="info-box">
+            <h3>📋 ¿Qué hace esta corrección?</h3>
+            <div class="step">
+                <strong>1. Diagnóstico:</strong> Identifica notificaciones problemáticas
+            </div>
+            <div class="step">
+                <strong>2. Corrección:</strong> Elimina notificaciones de comentarios propios
+            </div>
+            <div class="step">
+                <strong>3. Verificación:</strong> Confirma que el problema se resolvió
+            </div>
+        </div>
+
+        <button class="emergency-button" onclick="correccionCompleta()">
+            🚑 CORREGIR INMEDIATAMENTE
+        </button>
+
+        <button class="emergency-button warning-button" onclick="soloEvaluacion()">
+            🔍 SOLO EVALUAR (SIN CAMBIOS)
+        </button>
+
+        <button class="emergency-button success-button" onclick="copiarScript()" style="display: none;" id="btnScript">
+            📋 COPIAR SCRIPT PARA CONSOLA
+        </button>
+
+        <div id="resultado" style="display: none;">
+            <h3>📊 Resultado de la Corrección</h3>
+            <div id="contenidoResultado"></div>
+        </div>
+
+        <div id="instrucciones" class="info-box" style="display: none;">
+            <h3>🔧 Instrucciones Alternativas</h3>
+            <p>Si el botón no funciona, puedes ejecutar este código en la consola del navegador:</p>
+            <div class="code-block" id="codigoConsola"></div>
+            <p><strong>Para abrir la consola:</strong></p>
+            <ul>
+                <li>Presiona <kbd>F12</kbd> o <kbd>Ctrl+Shift+I</kbd></li>
+                <li>Ve a la pestaña "Console"</li>
+                <li>Pega el código y presiona Enter</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const CODIGO_CORRECCION = `
+// 🚑 CORRECCIÓN INMEDIATA - Eliminar notificaciones de comentarios propios
+console.log('🚑 INICIANDO CORRECCIÓN INMEDIATA...');
+
+// Obtener notificaciones actuales
+const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+console.log('📋 Notificaciones antes:', notificaciones.length);
+
+// Filtrar eliminando notificaciones problemáticas
+const corregidas = notificaciones.filter(n => {
+    // Eliminar si es teacher_comment Y el fromUsername está en targetUsernames
+    if (n.type === 'teacher_comment' && n.targetUsernames.includes(n.fromUsername)) {
+        console.log('🗑️ Eliminando:', n.id, n.fromUsername, '→', n.targetUsernames);
+        return false;
+    }
+    return true;
+});
+
+console.log('✅ Notificaciones después:', corregidas.length);
+console.log('🔧 Eliminadas:', notificaciones.length - corregidas.length);
+
+// Guardar corrección
+localStorage.setItem('smart-student-task-notifications', JSON.stringify(corregidas));
+
+// Recargar página
+console.log('🔄 Recargando página...');
+setTimeout(() => location.reload(), 1000);
+`;
+
+        function correccionCompleta() {
+            console.log('🚑 Ejecutando corrección completa...');
+            
+            try {
+                // Obtener notificaciones actuales
+                const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                console.log('📋 Notificaciones antes de corrección:', notificaciones.length);
+                
+                // Contar notificaciones problemáticas
+                const problematicas = notificaciones.filter(n => 
+                    n.type === 'teacher_comment' && n.targetUsernames.includes(n.fromUsername)
+                );
+                
+                // Filtrar eliminando notificaciones problemáticas
+                const corregidas = notificaciones.filter(n => {
+                    if (n.type === 'teacher_comment' && n.targetUsernames.includes(n.fromUsername)) {
+                        console.log('🗑️ Eliminando notificación problemática:', {
+                            id: n.id,
+                            fromUsername: n.fromUsername,
+                            targetUsernames: n.targetUsernames,
+                            taskTitle: n.taskTitle
+                        });
+                        return false;
+                    }
+                    return true;
+                });
+                
+                // Guardar corrección
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(corregidas));
+                
+                const eliminadas = notificaciones.length - corregidas.length;
+                
+                let html = '';
+                if (eliminadas > 0) {
+                    html = `
+                        <div class="alert alert-success">
+                            <strong>🎉 ¡CORRECCIÓN EXITOSA!</strong><br>
+                            • Notificaciones eliminadas: <strong>${eliminadas}</strong><br>
+                            • Notificaciones restantes: <strong>${corregidas.length}</strong><br>
+                            • Jorge ya NO debería ver notificaciones de sus propios comentarios
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>🔄 IMPORTANTE:</strong> Recarga la página principal para ver los cambios.
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="alert alert-warning">
+                            <strong>ℹ️ No se encontraron problemas</strong><br>
+                            No se detectaron notificaciones de comentarios propios para eliminar.
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('contenidoResultado').innerHTML = html;
+                document.getElementById('resultado').style.display = 'block';
+                
+                // Mostrar botón de script
+                document.getElementById('btnScript').style.display = 'block';
+                
+                if (eliminadas > 0) {
+                    // Recargar automáticamente después de 3 segundos
+                    setTimeout(() => {
+                        if (confirm('¿Recargar la página principal para aplicar los cambios?')) {
+                            window.location.href = '/dashboard';
+                        }
+                    }, 3000);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error en corrección:', error);
+                document.getElementById('contenidoResultado').innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error en la corrección:</strong><br>
+                        ${error.message}<br><br>
+                        Usa el script manual desde la consola.
+                    </div>
+                `;
+                document.getElementById('resultado').style.display = 'block';
+                document.getElementById('btnScript').style.display = 'block';
+            }
+        }
+        
+        function soloEvaluacion() {
+            console.log('🔍 Ejecutando solo evaluación...');
+            
+            const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const problematicas = notificaciones.filter(n => 
+                n.type === 'teacher_comment' && n.targetUsernames.includes(n.fromUsername)
+            );
+            
+            const jorge = notificaciones.filter(n => 
+                n.targetUsernames.includes('jorge_profesor') && !n.readBy.includes('jorge_profesor')
+            );
+            
+            const jorgeProblematicas = jorge.filter(n => n.fromUsername === 'jorge_profesor');
+            
+            let html = `
+                <div class="alert alert-warning">
+                    <strong>📊 EVALUACIÓN DEL SISTEMA:</strong><br>
+                    • Total de notificaciones: <strong>${notificaciones.length}</strong><br>
+                    • Notificaciones problemáticas: <strong>${problematicas.length}</strong><br>
+                    • Notificaciones para Jorge: <strong>${jorge.length}</strong><br>
+                    • Notificaciones propias de Jorge: <strong>${jorgeProblematicas.length}</strong>
+                </div>
+            `;
+            
+            if (jorgeProblematicas.length > 0) {
+                html += `
+                    <div class="alert alert-danger">
+                        <strong>❌ PROBLEMA CONFIRMADO:</strong><br>
+                        Jorge tiene ${jorgeProblematicas.length} notificación(es) de sus propios comentarios.
+                        Esto está causando que vea más notificaciones de las que debería.
+                    </div>
+                `;
+                
+                jorgeProblematicas.forEach((n, i) => {
+                    html += `
+                        <div class="step">
+                            <strong>Notificación problemática ${i + 1}:</strong><br>
+                            • Tipo: ${n.type}<br>
+                            • Tarea: ${n.taskTitle}<br>
+                            • De: ${n.fromDisplayName} (${n.fromUsername})<br>
+                            • Para: ${n.targetUsernames.join(', ')}<br>
+                            • Fecha: ${new Date(n.timestamp).toLocaleString()}
+                        </div>
+                    `;
+                });
+            } else {
+                html += `
+                    <div class="alert alert-success">
+                        <strong>✅ NO HAY PROBLEMAS:</strong><br>
+                        No se detectaron notificaciones de comentarios propios para Jorge.
+                    </div>
+                `;
+            }
+            
+            document.getElementById('contenidoResultado').innerHTML = html;
+            document.getElementById('resultado').style.display = 'block';
+            document.getElementById('btnScript').style.display = 'block';
+        }
+        
+        function copiarScript() {
+            document.getElementById('codigoConsola').textContent = CODIGO_CORRECCION;
+            document.getElementById('instrucciones').style.display = 'block';
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(CODIGO_CORRECCION).then(() => {
+                alert('📋 Código copiado al portapapeles. Pégalo en la consola del navegador.');
+            }).catch(() => {
+                alert('⚠️ No se pudo copiar automáticamente. Copia manualmente el código que aparece abajo.');
+            });
+        }
+        
+        // Ejecutar evaluación automática al cargar
+        window.onload = function() {
+            console.log('🚑 Herramienta de corrección inmediata cargada');
+            soloEvaluacion();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Tasks</title>
+</head>
+<body>
+    <h1>Debug Tasks</h1>
+    <button id="createTestTask">Create Test Task</button>
+    <div id="output"></div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        document.getElementById('createTestTask').addEventListener('click', () => {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const testTask = {
+                id: 'test_task_123',
+                title: 'Test Task',
+                description: 'This is a test task',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                subject: 'Matemáticas',
+                course: 'course1',
+                assignedById: 'jorge',
+                assignedByName: 'Jorge',
+                assignedTo: 'course',
+                status: 'pending',
+                taskType: 'assignment',
+                timestamp: new Date().toISOString()
+            };
+
+            tasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            log('✅ Test task created');
+            log('Total tasks: ' + tasks.length);
+        });
+
+        // Load and display current tasks
+        const currentTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+        log('Current tasks count: ' + currentTasks.length);
+        
+        currentTasks.forEach((t, i) => {
+            log(`${i + 1}. ${t.title} (status: ${t.status}, assignedById: ${t.assignedById})`);
+        });
+    </script>
+</body>
+</html>

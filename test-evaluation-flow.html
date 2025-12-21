@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Flujo de Evaluación Automatizada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #7c3aed;
+        }
+        .info {
+            background: #e0e7ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .test-section {
+            border-left: 4px solid #8b5cf6;
+            padding-left: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test: Flujo de Evaluación Automatizada</h1>
+    
+    <div class="card">
+        <h2>📋 Descripción del Test</h2>
+        <p>Este test verifica que cuando un estudiante presiona "Realizar Evaluación" en una tarea:</p>
+        <ol>
+            <li>Se muestre una pantalla de carga específica con progreso porcentual</li>
+            <li>Se muestre una transición "¡Evaluación Lista!" con cuenta regresiva</li>
+            <li>Se genere automáticamente la evaluación con los parámetros del profesor</li>
+            <li>Se vaya directamente a las preguntas sin mostrar la interfaz de configuración</li>
+            <li>Los campos estén precargados con Curso, Asignatura y Tema</li>
+        </ol>
+    </div>
+
+    <div class="card test-section">
+        <h3>🎯 Test 1: Evaluación Directa con Progreso y Transición</h3>
+        <p><strong>¡NUEVA FUNCIONALIDAD MEJORADA!</strong> - Experiencia completa con carga, transición y evaluación</p>
+        
+        <div class="info">
+            <strong>Secuencia esperada:</strong><br>
+            1. Pantalla de carga con spinner y porcentaje dinámico<br>
+            2. Transición "¡Evaluación Lista!" con cuenta regresiva de 3 segundos<br>
+            3. Inicio automático de evaluación con 15 preguntas<br>
+            4. Timer de 2 minutos activado automáticamente
+        </div>
+        
+        <div class="info success">
+            <strong>Características visuales:</strong><br>
+            • 🔄 Spinner animado con porcentaje interno<br>
+            • 📊 Barra de progreso gradiente morada<br>
+            • ✅ Pantalla de confirmación verde<br>
+            • ⏰ Cuenta regresiva animada<br>
+            • 🎯 Transición suave entre estados
+        </div>
+        
+        <a href="http://localhost:3000/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=Fotos%C3%ADntesis&autoStart=true&taskId=test-eval-1" 
+           class="button" target="_blank">
+            🚀 Probar Flujo Completo Mejorado
+        </a>
+    </div>
+
+    <div class="card test-section">
+        <h3>🎯 Test 2: URL sin auto-inicio</h3>
+        <p>Verifica que sin el parámetro autoStart, solo se precargen los campos</p>
+        
+        <div class="info">
+            <strong>Parámetros (sin auto-inicio):</strong><br>
+            • Curso: 5to Básico<br>
+            • Asignatura: Matemáticas<br>
+            • Tema: Fracciones<br>
+            • Auto-iniciar: No
+        </div>
+        
+        <a href="http://localhost:3000/dashboard/evaluacion?course=5to%20B%C3%A1sico&book=Matem%C3%A1ticas&topic=Fracciones&taskId=test-eval-2" 
+           class="button" target="_blank">
+           📝 Probar Solo Precarga
+        </a>
+    </div>
+
+    <div class="card test-section">
+        <h3>🎯 Test 3: Acceso normal a evaluación</h3>
+        <p>Verifica que el acceso normal siga funcionando</p>
+        
+        <a href="http://localhost:3000/dashboard/evaluacion" 
+           class="button" target="_blank">
+           📊 Evaluación Normal
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>✅ Checklist de Validación</h3>
+        <p><strong>Test 1 debe mostrar esta secuencia:</strong></p>
+        <ul>
+            <li>☐ Pantalla de carga con spinner morado y porcentaje dinámico</li>
+            <li>☐ Mostrar detalles completos de la evaluación en diseño grid</li>
+            <li>☐ Barra de progreso gradiente que se llena progresivamente</li>
+            <li>☐ Porcentaje grande (ej: 45%) centrado en el spinner</li>
+            <li>☐ Transición a pantalla verde "¡Evaluación Lista!"</li>
+            <li>☐ Cuenta regresiva animada de 3 a 0</li>
+            <li>☐ Inicio automático de evaluación con preguntas</li>
+            <li>☐ Timer de 2 minutos iniciado automáticamente</li>
+            <li>☐ NO mostrar interfaz de configuración en ningún momento</li>
+        </ul>
+        
+        <p><strong>Test 2 debe:</strong></p>
+        <ul>
+            <li>☐ Precargar los campos sin iniciar evaluación automática</li>
+            <li>☐ Mostrar interfaz normal de selección</li>
+            <li>☐ Permitir al usuario hacer clic en "Crear Evaluación" manualmente</li>
+        </ul>
+        
+        <p><strong>Test 3 debe:</strong></p>
+        <ul>
+            <li>☐ Mostrar la página de evaluación normal sin precargas</li>
+        </ul>
+    </div>
+
+    <div class="card success">
+        <h3>🎉 Funcionalidad Completa Implementada</h3>
+        <p><strong>Cambios realizados (Versión Final):</strong></p>
+        <ol>
+            <li><strong>Pantalla de Carga Avanzada:</strong> Spinner con porcentaje interno y barra de progreso gradiente</li>
+            <li><strong>Pantalla de Transición:</strong> "¡Evaluación Lista!" con cuenta regresiva de 3 segundos</li>
+            <li><strong>Evaluación Directa:</strong> Sin interferencia de configuración, directo a preguntas</li>
+            <li><strong>Animaciones Fluidas:</strong> Transiciones suaves entre todos los estados</li>
+            <li><strong>Feedback Visual Rico:</strong> Colores, iconos y mensajes contextuales</li>
+            <li><strong>Experiencia Gamificada:</strong> Elementos de juego como cuenta regresiva y checkmarks</li>
+        </ol>
+        
+        <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 8px; padding: 15px; margin-top: 12px;">
+            <strong>🎯 Flujo Final Optimizado:</strong><br>
+            Clic → Carga (con %) → "¡Lista!" (cuenta regresiva) → Evaluación inmediata
+        </div>
+        
+        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 12px; margin-top: 12px;">
+            <strong>⚡ Tiempos de la Experiencia:</strong><br>
+            • Carga inicial: 1-2 segundos<br>
+            • Generación: 5-10 segundos (con progreso visual)<br>
+            • Transición: 3 segundos (cuenta regresiva)<br>
+            • Evaluación: Disponible inmediatamente
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🔗 Links de Navegación</h3>
+        <p>Para probar el flujo completo:</p>
+        <ul>
+            <li><a href="http://localhost:3000/dashboard/tareas" target="_blank">📋 Ver Tareas</a> - Para ver evaluaciones asignadas</li>
+            <li><a href="http://localhost:3000/dashboard" target="_blank">🏠 Dashboard</a> - Página principal</li>
+        </ul>
+    </div>
+
+</body>
+</html>

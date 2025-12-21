@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Evaluación Estado y Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .status-pending {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test - Corrección de Evaluación Estado y Texto</h1>
+        <p>Esta página simula y prueba las correcciones realizadas en el sistema de evaluaciones.</p>
+
+        <div class="section">
+            <h3>1. Simular Evaluación Completada</h3>
+            <p>Este test simula una evaluación completada y guarda el estado correctamente.</p>
+            <button class="button" onclick="simulateEvaluationCompletion()">Simular Evaluación Completada</button>
+            <div id="completion-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>2. Verificar Estado de Tarea</h3>
+            <p>Verifica que las tareas de evaluación muestren el estado correcto.</p>
+            <button class="button" onclick="checkTaskStatus()">Verificar Estado</button>
+            <div id="status-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>3. Mostrar Texto de Porcentaje</h3>
+            <p>Muestra el formato correcto del texto de porcentaje.</p>
+            <button class="button" onclick="showPercentageText()">Mostrar Texto de Porcentaje</button>
+            <div id="percentage-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>4. Limpiar Datos de Prueba</h3>
+            <p>Limpia todos los datos de prueba del localStorage.</p>
+            <button class="button" onclick="clearTestData()" style="background-color: #dc3545;">Limpiar Datos</button>
+            <div id="clear-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Estado Actual</h3>
+            <div id="current-status"></div>
+        </div>
+    </div>
+
+    <script>
+        // Función para simular la evaluación completada
+        function simulateEvaluationCompletion() {
+            const studentUsername = 'estudiante1';
+            const taskId = 'eval_test_' + Date.now();
+            
+            // Simular datos de evaluación completada
+            const completedEvaluation = {
+                id: taskId,
+                title: 'Evaluación de Prueba - Matemáticas',
+                description: 'Evaluación de números enteros y decimales',
+                subject: 'Matemáticas 6to Grado',
+                course: 'Sexto Grado',
+                assignedBy: 'profesor1',
+                assignedByName: 'Prof. Juan Pérez',
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'completed', // ✅ ESTADO COMPLETADO
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Números enteros y decimales',
+                    questionCount: 10,
+                    timeLimit: 30
+                },
+                // Datos de resultado de la evaluación
+                completedAt: new Date().toISOString(),
+                score: 8,
+                completionPercentage: 80.0
+            };
+
+            // Guardar en localStorage del usuario específico
+            const userTasksKey = `userTasks_${studentUsername}`;
+            const existingTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            // Agregar o actualizar la tarea
+            const existingIndex = existingTasks.findIndex(task => task.id === taskId);
+            if (existingIndex !== -1) {
+                existingTasks[existingIndex] = completedEvaluation;
+            } else {
+                existingTasks.push(completedEvaluation);
+            }
+            
+            localStorage.setItem(userTasksKey, JSON.stringify(existingTasks));
+
+            // Mostrar resultado
+            const resultDiv = document.getElementById('completion-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `
+                <h4>✅ Evaluación Simulada Exitosamente</h4>
+                <p><strong>ID de Tarea:</strong> ${taskId}</p>
+                <p><strong>Estudiante:</strong> ${studentUsername}</p>
+                <p><strong>Estado:</strong> <span class="status-completed">completed</span></p>
+                <p><strong>Puntaje:</strong> 8/10 (80.0% Completado)</p>
+                <p><strong>Almacenado en:</strong> ${userTasksKey}</p>
+            `;
+
+            updateCurrentStatus();
+        }
+
+        // Función para verificar el estado de la tarea
+        function checkTaskStatus() {
+            const studentUsername = 'estudiante1';
+            const userTasksKey = `userTasks_${studentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            const evaluationTasks = userTasks.filter(task => task.taskType === 'evaluation');
+            
+            const resultDiv = document.getElementById('status-result');
+            resultDiv.style.display = 'block';
+            
+            if (evaluationTasks.length === 0) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ No se encontraron evaluaciones</h4>
+                    <p>No hay evaluaciones en localStorage para el estudiante ${studentUsername}</p>
+                `;
+            } else {
+                resultDiv.className = 'result success';
+                let html = `<h4>📋 Evaluaciones Encontradas (${evaluationTasks.length})</h4>`;
+                
+                evaluationTasks.forEach(task => {
+                    const statusClass = task.status === 'completed' ? 'status-completed' : 'status-pending';
+                    const statusText = task.status === 'completed' ? 'Finalizada' : 'Pendiente';
+                    
+                    html += `
+                        <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <p><strong>Título:</strong> ${task.title}</p>
+                            <p><strong>Estado:</strong> <span class="${statusClass}">${statusText}</span></p>
+                            ${task.status === 'completed' ? `
+                                <p><strong>Puntaje:</strong> ${task.score}/${task.evaluationConfig?.questionCount || 'N/A'}</p>
+                                <p><strong>Porcentaje:</strong> ${task.completionPercentage}% Completado</p>
+                                <p><strong>Completado:</strong> ${new Date(task.completedAt).toLocaleString()}</p>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                resultDiv.innerHTML = html;
+            }
+            
+            updateCurrentStatus();
+        }
+
+        // Función para mostrar el texto de porcentaje correcto
+        function showPercentageText() {
+            const completionPercentage = 85.5;
+            
+            const resultDiv = document.getElementById('percentage-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `
+                <h4>📊 Formato de Texto de Porcentaje</h4>
+                <div style="margin: 10px 0;">
+                    <p><strong>❌ Texto Anterior:</strong> "${completionPercentage.toFixed(1)}% de completitud"</p>
+                    <p><strong>✅ Texto Corregido:</strong> "${completionPercentage.toFixed(1)}% Completado"</p>
+                </div>
+                <div style="background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">🏆</span>
+                        <span style="font-size: 18px; font-weight: bold; color: #1976d2;">
+                            ${completionPercentage.toFixed(1)}% Completado
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función para limpiar datos de prueba
+        function clearTestData() {
+            const keysToRemove = [];
+            
+            // Buscar todas las claves relacionadas con pruebas
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('userTasks_') || key.includes('evaluationHistory_'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            // Remover las claves
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            const resultDiv = document.getElementById('clear-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `
+                <h4>🧹 Datos de Prueba Eliminados</h4>
+                <p>Se eliminaron ${keysToRemove.length} claves del localStorage:</p>
+                <ul>
+                    ${keysToRemove.map(key => `<li>${key}</li>`).join('')}
+                </ul>
+            `;
+            
+            updateCurrentStatus();
+        }
+
+        // Función para actualizar el estado actual
+        function updateCurrentStatus() {
+            const statusDiv = document.getElementById('current-status');
+            const studentUsername = 'estudiante1';
+            const userTasksKey = `userTasks_${studentUsername}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            let html = '<h4>📋 Estado Actual del localStorage</h4>';
+            
+            if (userTasks.length === 0) {
+                html += '<p>No hay tareas en localStorage para el estudiante.</p>';
+            } else {
+                html += `<p>Tareas encontradas: ${userTasks.length}</p>`;
+                
+                userTasks.forEach(task => {
+                    const statusClass = task.status === 'completed' ? 'status-completed' : 'status-pending';
+                    const statusText = task.status === 'completed' ? 'Finalizada' : 'Pendiente';
+                    
+                    html += `
+                        <div style="margin-bottom: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+                            <p><strong>${task.title}</strong></p>
+                            <p>Estado: <span class="${statusClass}">${statusText}</span></p>
+                            <p>Tipo: ${task.taskType}</p>
+                            ${task.status === 'completed' && task.completionPercentage ? 
+                                `<p>Progreso: ${task.completionPercentage.toFixed(1)}% Completado</p>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Actualizar estado al cargar la página
+        window.onload = function() {
+            updateCurrentStatus();
+        };
+    </script>
+</body>
+</html>

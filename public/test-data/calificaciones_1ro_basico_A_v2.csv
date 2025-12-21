@@ -1,0 +1,101 @@
+fecha,curso,seccion,nombre,rut,asignatura,tipo,actividad,tema,nota
+2025-03-15,1ro Básico,A,Sofía González González,10000000-8,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,56
+2025-03-15,1ro Básico,A,Matías González Díaz,10000001-6,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,70
+2025-03-15,1ro Básico,A,Valentina González Contreras,10000002-4,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,82
+2025-03-15,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,80
+2025-03-15,1ro Básico,A,Martina González López,10000004-0,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,95
+2025-03-15,1ro Básico,A,Lucas González Torres,10000005-9,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,49
+2025-03-15,1ro Básico,A,Isidora González Espinoza,10000006-7,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,62
+2025-03-15,1ro Básico,A,Agustín González Vega,10000007-5,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,76
+2025-03-15,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,69
+2025-03-15,1ro Básico,A,Tomás González Ramírez,10000009-1,Lenguaje y Comunicación,Prueba,Prueba 1 - Lenguaje,Comprensión lectora,73
+2025-04-10,1ro Básico,A,Sofía González González,10000000-8,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,22
+2025-04-10,1ro Básico,A,Matías González Díaz,10000001-6,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,63
+2025-04-10,1ro Básico,A,Valentina González Contreras,10000002-4,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,94
+2025-04-10,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,64
+2025-04-10,1ro Básico,A,Martina González López,10000004-0,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,93
+2025-04-10,1ro Básico,A,Lucas González Torres,10000005-9,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,33
+2025-04-10,1ro Básico,A,Isidora González Espinoza,10000006-7,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,96
+2025-04-10,1ro Básico,A,Agustín González Vega,10000007-5,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,88
+2025-04-10,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,91
+2025-04-10,1ro Básico,A,Tomás González Ramírez,10000009-1,Matemáticas,Tarea,Tarea 1 - Matemáticas,Números del 1 al 20,65
+2025-04-25,1ro Básico,A,Sofía González González,10000000-8,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,40
+2025-04-25,1ro Básico,A,Matías González Díaz,10000001-6,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,62
+2025-04-25,1ro Básico,A,Valentina González Contreras,10000002-4,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,78
+2025-04-25,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,95
+2025-04-25,1ro Básico,A,Martina González López,10000004-0,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,64
+2025-04-25,1ro Básico,A,Lucas González Torres,10000005-9,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,23
+2025-04-25,1ro Básico,A,Isidora González Espinoza,10000006-7,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,62
+2025-04-25,1ro Básico,A,Agustín González Vega,10000007-5,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,62
+2025-04-25,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,61
+2025-04-25,1ro Básico,A,Tomás González Ramírez,10000009-1,Ciencias Naturales,Evaluación,Evaluación 1 - Ciencias,Los seres vivos,98
+2025-05-15,1ro Básico,A,Sofía González González,10000000-8,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,26
+2025-05-15,1ro Básico,A,Matías González Díaz,10000001-6,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,96
+2025-05-15,1ro Básico,A,Valentina González Contreras,10000002-4,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,71
+2025-05-15,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,68
+2025-05-15,1ro Básico,A,Martina González López,10000004-0,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,84
+2025-05-15,1ro Básico,A,Lucas González Torres,10000005-9,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,58
+2025-05-15,1ro Básico,A,Isidora González Espinoza,10000006-7,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,91
+2025-05-15,1ro Básico,A,Agustín González Vega,10000007-5,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,87
+2025-05-15,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,81
+2025-05-15,1ro Básico,A,Tomás González Ramírez,10000009-1,Historia y Geografía,Prueba,Prueba 2 - Historia,Mi comunidad,68
+2025-06-10,1ro Básico,A,Sofía González González,10000000-8,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,32
+2025-06-10,1ro Básico,A,Matías González Díaz,10000001-6,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,67
+2025-06-10,1ro Básico,A,Valentina González Contreras,10000002-4,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,100
+2025-06-10,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,85
+2025-06-10,1ro Básico,A,Martina González López,10000004-0,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,95
+2025-06-10,1ro Básico,A,Lucas González Torres,10000005-9,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,54
+2025-06-10,1ro Básico,A,Isidora González Espinoza,10000006-7,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,98
+2025-06-10,1ro Básico,A,Agustín González Vega,10000007-5,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,68
+2025-06-10,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,96
+2025-06-10,1ro Básico,A,Tomás González Ramírez,10000009-1,Lenguaje y Comunicación,Tarea,Tarea 2 - Lenguaje,Escritura creativa,84
+2025-07-20,1ro Básico,A,Sofía González González,10000000-8,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,50
+2025-07-20,1ro Básico,A,Matías González Díaz,10000001-6,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,78
+2025-07-20,1ro Básico,A,Valentina González Contreras,10000002-4,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,69
+2025-07-20,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,75
+2025-07-20,1ro Básico,A,Martina González López,10000004-0,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,64
+2025-07-20,1ro Básico,A,Lucas González Torres,10000005-9,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,39
+2025-07-20,1ro Básico,A,Isidora González Espinoza,10000006-7,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,66
+2025-07-20,1ro Básico,A,Agustín González Vega,10000007-5,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,98
+2025-07-20,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,72
+2025-07-20,1ro Básico,A,Tomás González Ramírez,10000009-1,Matemáticas,Prueba,Prueba 3 - Matemáticas,Suma y resta,76
+2025-08-15,1ro Básico,A,Sofía González González,10000000-8,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,58
+2025-08-15,1ro Básico,A,Matías González Díaz,10000001-6,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,63
+2025-08-15,1ro Básico,A,Valentina González Contreras,10000002-4,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,86
+2025-08-15,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,90
+2025-08-15,1ro Básico,A,Martina González López,10000004-0,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,96
+2025-08-15,1ro Básico,A,Lucas González Torres,10000005-9,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,49
+2025-08-15,1ro Básico,A,Isidora González Espinoza,10000006-7,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,92
+2025-08-15,1ro Básico,A,Agustín González Vega,10000007-5,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,76
+2025-08-15,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,71
+2025-08-15,1ro Básico,A,Tomás González Ramírez,10000009-1,Ciencias Naturales,Tarea,Tarea 3 - Ciencias,Las plantas,64
+2025-09-18,1ro Básico,A,Sofía González González,10000000-8,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,34
+2025-09-18,1ro Básico,A,Matías González Díaz,10000001-6,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,70
+2025-09-18,1ro Básico,A,Valentina González Contreras,10000002-4,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,73
+2025-09-18,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,63
+2025-09-18,1ro Básico,A,Martina González López,10000004-0,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,86
+2025-09-18,1ro Básico,A,Lucas González Torres,10000005-9,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,23
+2025-09-18,1ro Básico,A,Isidora González Espinoza,10000006-7,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,66
+2025-09-18,1ro Básico,A,Agustín González Vega,10000007-5,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,88
+2025-09-18,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,85
+2025-09-18,1ro Básico,A,Tomás González Ramírez,10000009-1,Historia y Geografía,Evaluación,Evaluación 2 - Historia,Chile y sus regiones,62
+2025-10-20,1ro Básico,A,Sofía González González,10000000-8,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,57
+2025-10-20,1ro Básico,A,Matías González Díaz,10000001-6,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,68
+2025-10-20,1ro Básico,A,Valentina González Contreras,10000002-4,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,73
+2025-10-20,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,89
+2025-10-20,1ro Básico,A,Martina González López,10000004-0,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,67
+2025-10-20,1ro Básico,A,Lucas González Torres,10000005-9,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,29
+2025-10-20,1ro Básico,A,Isidora González Espinoza,10000006-7,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,81
+2025-10-20,1ro Básico,A,Agustín González Vega,10000007-5,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,66
+2025-10-20,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,90
+2025-10-20,1ro Básico,A,Tomás González Ramírez,10000009-1,Lenguaje y Comunicación,Prueba,Prueba 4 - Lenguaje,Lectura fluida,85
+2025-11-15,1ro Básico,A,Sofía González González,10000000-8,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,41
+2025-11-15,1ro Básico,A,Matías González Díaz,10000001-6,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,78
+2025-11-15,1ro Básico,A,Valentina González Contreras,10000002-4,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,95
+2025-11-15,1ro Básico,A,Benjamín González Sepúlveda,10000003-2,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,83
+2025-11-15,1ro Básico,A,Martina González López,10000004-0,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,61
+2025-11-15,1ro Básico,A,Lucas González Torres,10000005-9,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,53
+2025-11-15,1ro Básico,A,Isidora González Espinoza,10000006-7,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,97
+2025-11-15,1ro Básico,A,Agustín González Vega,10000007-5,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,73
+2025-11-15,1ro Básico,A,Emilia González Gutiérrez,10000008-3,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,84
+2025-11-15,1ro Básico,A,Tomás González Ramírez,10000009-1,Matemáticas,Evaluación,Evaluación 3 - Matemáticas,Problemas matemáticos,63

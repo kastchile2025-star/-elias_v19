@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: Contador de Notificaciones - Profesor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">
+            🔧 Debug: Contador de Notificaciones - Profesor
+        </h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Panel de información -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">📊 Información Actual</h2>
+                <div class="space-y-3">
+                    <button onclick="analizarDatos()" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        📊 Analizar Datos del Sistema
+                    </button>
+                    <button onclick="simularCalculoContadores()" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        🧮 Simular Cálculo de Contadores
+                    </button>
+                    <button onclick="limpiarTodo()" class="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        🗑️ Limpiar Todo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de resultados -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">📋 Resultados</h2>
+                <div id="resultados" class="space-y-3 text-sm">
+                    <div class="text-gray-500">Haz clic en "Analizar Datos" para comenzar...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de logs -->
+        <div class="mt-6 bg-gray-900 text-green-400 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3">🖥️ Logs del Sistema</h3>
+            <div id="logs" class="h-64 overflow-y-auto font-mono text-sm"></div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': 'text-green-400',
+                'warn': 'text-yellow-400',
+                'error': 'text-red-400',
+                'success': 'text-blue-400'
+            };
+            
+            logsDiv.innerHTML += `<div class="${colors[type] || 'text-green-400'}">[${timestamp}] ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        function updateResults(html) {
+            document.getElementById('resultados').innerHTML = html;
+        }
+
+        function analizarDatos() {
+            log('🔍 Iniciando análisis de datos del sistema...');
+            
+            try {
+                // 1. Obtener datos del localStorage
+                const comentarios = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const tareas = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const usuarios = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+
+                log(`📝 Comentarios encontrados: ${comentarios.length}`);
+                log(`📋 Tareas encontradas: ${tareas.length}`);
+                log(`👥 Usuarios encontrados: ${usuarios.length}`);
+                log(`🔔 Notificaciones encontradas: ${notificaciones.length}`);
+
+                // 2. Encontrar profesor Jorge
+                const jorge = usuarios.find(u => u.username === 'jorge' && u.role === 'teacher');
+                if (!jorge) {
+                    log('❌ Profesor Jorge no encontrado', 'error');
+                    return;
+                }
+                log(`👨‍🏫 Profesor Jorge encontrado: ${jorge.displayName}`);
+
+                // 3. Encontrar tareas asignadas por Jorge
+                const tareasJorge = tareas.filter(t => t.assignedBy === 'jorge');
+                log(`📚 Tareas asignadas por Jorge: ${tareasJorge.length}`);
+                
+                tareasJorge.forEach((tarea, index) => {
+                    log(`  ${index + 1}. ${tarea.title} (ID: ${tarea.id})`);
+                });
+
+                // 4. Analizar comentarios por tarea
+                const comentariosPorTarea = {};
+                const entregasPorTarea = {};
+                
+                tareasJorge.forEach(tarea => {
+                    const comentariosTarea = comentarios.filter(c => c.taskId === tarea.id);
+                    const comentariosEstudiantes = comentariosTarea.filter(c => 
+                        !c.isSubmission && 
+                        c.studentUsername !== 'jorge' && 
+                        !c.readBy?.includes('jorge')
+                    );
+                    const entregas = comentariosTarea.filter(c => 
+                        c.isSubmission && 
+                        !c.grade
+                    );
+
+                    comentariosPorTarea[tarea.id] = comentariosEstudiantes;
+                    entregasPorTarea[tarea.id] = entregas;
+
+                    log(`📝 Tarea "${tarea.title}": ${comentariosEstudiantes.length} comentarios no leídos, ${entregas.length} entregas pendientes`);
+                });
+
+                // 5. Calcular totales
+                const totalComentariosNoLeidos = Object.values(comentariosPorTarea).flat().length;
+                const totalEntregasPendientes = Object.values(entregasPorTarea).flat().length;
+                const totalNotificacionesTareas = notificaciones.filter(n => 
+                    n.targetUsernames?.includes('jorge') && 
+                    !n.readBy?.includes('jorge')
+                ).length;
+
+                log(`🔢 TOTALES CALCULADOS:`);
+                log(`  • Comentarios no leídos: ${totalComentariosNoLeidos}`, 'success');
+                log(`  • Entregas pendientes: ${totalEntregasPendientes}`, 'success');
+                log(`  • Notificaciones de tareas: ${totalNotificacionesTareas}`, 'success');
+                log(`  • TOTAL BURBUJA: ${totalEntregasPendientes + totalComentariosNoLeidos + totalNotificacionesTareas}`, 'success');
+
+                // 6. Mostrar resultados en la UI
+                let html = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-400">
+                            <h3 class="font-semibold text-blue-800">📊 Resumen de Contadores</h3>
+                            <div class="mt-2 space-y-2">
+                                <div>🔢 Comentarios no leídos: <span class="font-bold">${totalComentariosNoLeidos}</span></div>
+                                <div>📤 Entregas pendientes: <span class="font-bold">${totalEntregasPendientes}</span></div>
+                                <div>🔔 Notificaciones de tareas: <span class="font-bold">${totalNotificacionesTareas}</span></div>
+                                <div class="pt-2 border-t border-blue-200">
+                                    🎯 <strong>Total para burbuja: ${totalEntregasPendientes + totalComentariosNoLeidos + totalNotificacionesTareas}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded border-l-4 border-green-400">
+                            <h3 class="font-semibold text-green-800">📝 Detalles de Comentarios</h3>
+                            <div class="mt-2 space-y-1 text-sm">
+                `;
+
+                Object.entries(comentariosPorTarea).forEach(([tareaId, comentarios]) => {
+                    const tarea = tareasJorge.find(t => t.id === tareaId);
+                    if (comentarios.length > 0) {
+                        html += `<div>• ${tarea?.title}: ${comentarios.length} comentarios</div>`;
+                    }
+                });
+
+                html += `
+                            </div>
+                        </div>
+                        
+                        <div class="bg-orange-50 p-4 rounded border-l-4 border-orange-400">
+                            <h3 class="font-semibold text-orange-800">📤 Detalles de Entregas</h3>
+                            <div class="mt-2 space-y-1 text-sm">
+                `;
+
+                Object.entries(entregasPorTarea).forEach(([tareaId, entregas]) => {
+                    const tarea = tareasJorge.find(t => t.id === tareaId);
+                    if (entregas.length > 0) {
+                        html += `<div>• ${tarea?.title}: ${entregas.length} entregas pendientes</div>`;
+                    }
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                updateResults(html);
+
+            } catch (error) {
+                log(`❌ Error en análisis: ${error.message}`, 'error');
+                updateResults(`<div class="text-red-500">Error: ${error.message}</div>`);
+            }
+        }
+
+        function simularCalculoContadores() {
+            log('🧮 Simulando cálculo de contadores como en el dashboard...');
+            
+            try {
+                // Simular la lógica exacta del dashboard
+                const user = { username: 'jorge', role: 'teacher' };
+                
+                const storedComments = localStorage.getItem('smart-student-task-comments');
+                const storedTasks = localStorage.getItem('smart-student-tasks');
+                
+                if (storedComments && storedTasks) {
+                    const comments = JSON.parse(storedComments);
+                    const tasks = JSON.parse(storedTasks);
+                    
+                    // Filtrar tareas asignadas por este profesor
+                    const teacherTasks = tasks.filter((task) => task.assignedBy === user.username);
+                    const teacherTaskIds = teacherTasks.map((task) => task.id);
+                    
+                    log(`🎯 Tareas del profesor: ${teacherTasks.length}`);
+                    log(`🎯 IDs de tareas: [${teacherTaskIds.join(', ')}]`);
+                    
+                    // Filtrar entregas sin calificar
+                    let pendingSubmissions = comments.filter((comment) => 
+                        comment.isSubmission === true && 
+                        teacherTaskIds.includes(comment.taskId) &&
+                        comment.studentUsername !== user.username &&
+                        (!comment.grade || comment.grade === null || comment.grade === undefined)
+                    );
+                    
+                    log(`📤 Entregas sin calificar encontradas: ${pendingSubmissions.length}`);
+                    
+                    // Comentarios de estudiantes no leídos
+                    const studentComments = comments.filter((comment) => {
+                        if (comment.isSubmission || 
+                            !teacherTaskIds.includes(comment.taskId) || 
+                            comment.studentUsername === user.username || 
+                            comment.readBy?.includes(user.username)) {
+                            return false;
+                        }
+                        return true;
+                    });
+                    
+                    log(`💬 Comentarios no leídos encontrados: ${studentComments.length}`);
+                    
+                    // Notificaciones de tareas
+                    const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                    const taskNotifications = notifications.filter(n => 
+                        n.targetUsernames?.includes(user.username) && 
+                        !n.readBy?.includes(user.username)
+                    );
+                    
+                    log(`🔔 Notificaciones de tareas: ${taskNotifications.length}`);
+                    
+                    // Calcular total como en el dashboard
+                    const totalCount = pendingSubmissions.length + studentComments.length + taskNotifications.length;
+                    
+                    log(`🎯 CÁLCULO FINAL:`);
+                    log(`  pendingTaskSubmissionsCount: ${pendingSubmissions.length}`, 'success');
+                    log(`  unreadStudentCommentsCount: ${studentComments.length}`, 'success');
+                    log(`  taskNotificationsCount: ${taskNotifications.length}`, 'success');
+                    log(`  TOTAL: ${totalCount}`, 'success');
+                    
+                    updateResults(`
+                        <div class="bg-purple-50 p-4 rounded border-l-4 border-purple-400">
+                            <h3 class="font-semibold text-purple-800">🧮 Simulación Dashboard</h3>
+                            <div class="mt-2 space-y-2">
+                                <div>pendingTaskSubmissionsCount: <span class="font-bold">${pendingSubmissions.length}</span></div>
+                                <div>unreadStudentCommentsCount: <span class="font-bold">${studentComments.length}</span></div>
+                                <div>taskNotificationsCount: <span class="font-bold">${taskNotifications.length}</span></div>
+                                <div class="pt-2 border-t border-purple-200">
+                                    <strong>Total burbuja: ${totalCount}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    
+                } else {
+                    log('❌ No se encontraron datos en localStorage', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Error en simulación: ${error.message}`, 'error');
+            }
+        }
+
+        function limpiarTodo() {
+            log('🗑️ Limpiando localStorage...');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-notifications');
+            log('✅ Datos limpiados', 'success');
+            updateResults('<div class="text-gray-500">Datos limpiados. Recarga la página principal.</div>');
+        }
+
+        // Inicializar
+        log('🚀 Debug de contador de notificaciones iniciado');
+        log('💡 Instrucciones:');
+        log('1. Primero analiza los datos actuales');
+        log('2. Luego simula el cálculo del dashboard');
+        log('3. Compara los resultados con la aplicación');
+    </script>
+</body>
+</html>

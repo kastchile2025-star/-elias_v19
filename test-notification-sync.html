@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Sincronización de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #28a745;
+        }
+        .warning {
+            background: #ffc107;
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+        .ghost-notification {
+            background: #ffe6e6;
+            border-left: 4px solid #ff6b6b;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .valid-notification {
+            background: #e6ffe6;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Prueba de Sincronización de Notificaciones</h1>
+        <p>Esta herramienta permite probar el sistema de sincronización automática de notificaciones.</p>
+        
+        <div class="status" id="status">
+            <strong>Estado:</strong> <span id="statusText">Esperando...</span>
+        </div>
+
+        <div>
+            <button onclick="testSync()">🔄 Probar Sincronización</button>
+            <button onclick="createGhostNotification()">👻 Crear Notificación Fantasma</button>
+            <button onclick="createValidNotification()">✅ Crear Notificación Válida</button>
+            <button onclick="createTask()">📝 Crear Tarea de Prueba</button>
+            <button onclick="deleteTask()">🗑️ Eliminar Tarea de Prueba</button>
+            <button onclick="checkConsistency()">🔍 Verificar Consistencia</button>
+            <button onclick="clearAll()">🧹 Limpiar Todo</button>
+        </div>
+
+        <div class="log" id="log">
+            <strong>Log de actividades:</strong><br>
+        </div>
+
+        <div id="notifications">
+            <h3>Notificaciones Actuales</h3>
+            <div id="notificationsList"></div>
+        </div>
+
+        <div id="tasks">
+            <h3>Tareas Actuales</h3>
+            <div id="tasksList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de prueba
+        const testUser = {
+            username: 'test_student',
+            role: 'student',
+            name: 'Estudiante de Prueba',
+            activeCourses: ['Matemáticas', 'Ciencias']
+        };
+
+        const testTeacher = {
+            username: 'test_teacher',
+            role: 'teacher',
+            name: 'Profesor de Prueba'
+        };
+
+        // Configurar usuario de prueba
+        localStorage.setItem('smart-student-users', JSON.stringify([testUser, testTeacher]));
+
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'warning' ? 'orange' : type === 'success' ? 'green' : 'black';
+            logElement.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function testSync() {
+            log('🔄 Iniciando prueba de sincronización...');
+            updateStatus('Sincronizando...', 'warning');
+            
+            // Simular servicio de sincronización
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let ghostsFound = 0;
+            let validNotifications = [];
+            
+            // Verificar notificaciones fantasma
+            for (const notification of notifications) {
+                const taskExists = tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) {
+                    ghostsFound++;
+                    log(`👻 Notificación fantasma encontrada: ${notification.taskTitle} (TaskId: ${notification.taskId})`, 'warning');
+                } else {
+                    validNotifications.push(notification);
+                }
+            }
+            
+            // Guardar notificaciones válidas
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(validNotifications));
+            
+            log(`✅ Sincronización completada: ${ghostsFound} notificaciones fantasma eliminadas`, 'success');
+            updateStatus(`Sincronización completada (${ghostsFound} fantasmas eliminados)`, 'success');
+            
+            // Actualizar vista
+            refreshDisplay();
+        }
+
+        function createGhostNotification() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const ghostNotification = {
+                id: `ghost_${Date.now()}`,
+                type: 'new_task',
+                taskId: 'task_nonexistent_' + Date.now(),
+                taskTitle: 'Tarea Fantasma',
+                targetUserRole: 'student',
+                targetUsernames: ['test_student'],
+                fromUsername: 'test_teacher',
+                fromDisplayName: 'Profesor de Prueba',
+                course: 'Matemáticas',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: 'assignment'
+            };
+            
+            notifications.push(ghostNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            log(`👻 Notificación fantasma creada: ${ghostNotification.taskTitle}`, 'warning');
+            updateStatus('Notificación fantasma creada', 'warning');
+            
+            refreshDisplay();
+        }
+
+        function createValidNotification() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            if (tasks.length === 0) {
+                log('❌ No hay tareas para crear una notificación válida', 'error');
+                updateStatus('Error: No hay tareas', 'error');
+                return;
+            }
+            
+            const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+            
+            const validNotification = {
+                id: `valid_${Date.now()}`,
+                type: 'new_task',
+                taskId: randomTask.id,
+                taskTitle: randomTask.title,
+                targetUserRole: 'student',
+                targetUsernames: ['test_student'],
+                fromUsername: 'test_teacher',
+                fromDisplayName: 'Profesor de Prueba',
+                course: randomTask.course,
+                subject: randomTask.subject,
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: [],
+                taskType: randomTask.taskType || 'assignment'
+            };
+            
+            notifications.push(validNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            log(`✅ Notificación válida creada: ${validNotification.taskTitle}`, 'success');
+            updateStatus('Notificación válida creada', 'success');
+            
+            refreshDisplay();
+        }
+
+        function createTask() {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            const testTask = {
+                id: `task_${Date.now()}`,
+                title: `Tarea de Prueba ${tasks.length + 1}`,
+                description: 'Esta es una tarea de prueba para verificar la sincronización.',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                subject: 'Matemáticas',
+                course: 'Matemáticas',
+                assignedBy: 'test_teacher',
+                assignedByName: 'Profesor de Prueba',
+                taskType: 'assignment',
+                createdAt: new Date().toISOString()
+            };
+            
+            tasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            log(`📝 Tarea creada: ${testTask.title}`, 'success');
+            updateStatus('Tarea creada', 'success');
+            
+            refreshDisplay();
+        }
+
+        function deleteTask() {
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            if (tasks.length === 0) {
+                log('❌ No hay tareas para eliminar', 'error');
+                updateStatus('Error: No hay tareas', 'error');
+                return;
+            }
+            
+            const deletedTask = tasks.pop();
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            log(`🗑️ Tarea eliminada: ${deletedTask.title}`, 'warning');
+            updateStatus('Tarea eliminada', 'warning');
+            
+            refreshDisplay();
+        }
+
+        function checkConsistency() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let ghostsFound = 0;
+            let validNotifications = 0;
+            
+            for (const notification of notifications) {
+                const taskExists = tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) {
+                    ghostsFound++;
+                } else {
+                    validNotifications++;
+                }
+            }
+            
+            log(`🔍 Verificación de consistencia:`, 'info');
+            log(`   📊 Total notificaciones: ${notifications.length}`, 'info');
+            log(`   ✅ Notificaciones válidas: ${validNotifications}`, 'success');
+            log(`   👻 Notificaciones fantasma: ${ghostsFound}`, 'warning');
+            log(`   📝 Total tareas: ${tasks.length}`, 'info');
+            
+            const healthScore = notifications.length > 0 ? (validNotifications / notifications.length * 100) : 100;
+            log(`   🎯 Puntuación de salud: ${healthScore.toFixed(1)}%`, healthScore >= 90 ? 'success' : healthScore >= 70 ? 'warning' : 'error');
+            
+            updateStatus(`Consistencia verificada (${healthScore.toFixed(1)}%)`, healthScore >= 90 ? 'success' : 'warning');
+            
+            refreshDisplay();
+        }
+
+        function clearAll() {
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-comments');
+            
+            log('🧹 Todos los datos han sido limpiados', 'info');
+            updateStatus('Datos limpiados', 'info');
+            
+            refreshDisplay();
+        }
+
+        function refreshDisplay() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            // Mostrar notificaciones
+            const notificationsList = document.getElementById('notificationsList');
+            notificationsList.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = '<p>No hay notificaciones</p>';
+            } else {
+                for (const notification of notifications) {
+                    const taskExists = tasks.some(task => task.id === notification.taskId);
+                    const className = taskExists ? 'valid-notification' : 'ghost-notification';
+                    const icon = taskExists ? '✅' : '👻';
+                    
+                    notificationsList.innerHTML += `
+                        <div class="${className}">
+                            ${icon} <strong>${notification.taskTitle}</strong><br>
+                            TaskId: ${notification.taskId}<br>
+                            Tipo: ${notification.type}<br>
+                            Curso: ${notification.course}<br>
+                            ${taskExists ? 'Tarea válida' : 'Tarea no existe (fantasma)'}
+                        </div>
+                    `;
+                }
+            }
+            
+            // Mostrar tareas
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<p>No hay tareas</p>';
+            } else {
+                for (const task of tasks) {
+                    tasksList.innerHTML += `
+                        <div style="background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                            📝 <strong>${task.title}</strong><br>
+                            ID: ${task.id}<br>
+                            Curso: ${task.course}<br>
+                            Tipo: ${task.taskType || 'assignment'}
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Cargar datos iniciales
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshDisplay();
+            updateStatus('Listo para pruebas', 'info');
+        });
+
+        // Listener para eventos de sincronización
+        window.addEventListener('notificationSyncCompleted', function(event) {
+            log('🔄 Evento de sincronización recibido', 'info');
+            if (event.detail) {
+                log(`   👻 Fantasmas eliminados: ${event.detail.ghostsRemoved}`, 'warning');
+                log(`   ➕ Notificaciones creadas: ${event.detail.notificationsCreated}`, 'success');
+                log(`   💬 Comentarios eliminados: ${event.detail.commentsRemoved}`, 'warning');
+            }
+            refreshDisplay();
+        });
+    </script>
+</body>
+</html>

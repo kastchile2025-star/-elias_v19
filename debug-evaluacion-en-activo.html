@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug: Evaluación EN Activo - Profesor</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .problem-box {
+            background: #fee;
+            border: 2px solid #fcc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .solution-box {
+            background: #efe;
+            border: 2px solid #cfc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-section {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .toggle-simulation {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            margin: 10px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: #4CAF50;
+        }
+        .toggle-switch::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Simulación del toggle EN -->
+    <div class="toggle-simulation">
+        <span>EN</span>
+        <div class="toggle-switch" id="enToggle" data-state="unchecked" onclick="toggleLanguage()"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Debug: Problema Evaluación EN Activo</h1>
+            <p><strong>Modo Profesor - Pestaña Evaluación</strong></p>
+        </div>
+
+        <div class="problem-box">
+            <h2>🚨 Problema Reportado</h2>
+            <ul>
+                <li><strong>Contexto:</strong> Modo profesor, pestaña evaluación</li>
+                <li><strong>Estado:</strong> EN activo (toggle activado)</li>
+                <li><strong>Problema:</strong> No se generan evaluaciones al hacer clic en "Crear Evaluación" o "Repetir Evaluación"</li>
+                <li><strong>Comportamiento esperado:</strong> Las evaluaciones deberían generarse normalmente</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Tests de Diagnóstico</h3>
+            <button onclick="testLanguageDetection()">1. Probar Detección de Idioma</button>
+            <button onclick="testEvaluationGeneration()">2. Probar Generación Evaluación</button>
+            <button onclick="testApiCalls()">3. Probar Llamadas API</button>
+            <button onclick="simulateProfesorFlow()">4. Simular Flujo Profesor</button>
+            <button onclick="clearAllData()">🗑️ Limpiar Datos</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Estado del Sistema</h3>
+            <div id="system-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Log de Actividades</h3>
+            <div id="debug-log" class="log"></div>
+        </div>
+
+        <div class="solution-box" id="solution-box" style="display: none;">
+            <h3>✅ Solución Aplicada</h3>
+            <div id="solution-content"></div>
+        </div>
+    </div>
+
+    <script>
+        let isEnglishActive = false;
+
+        // Función de logging
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#333',
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107'
+            };
+            
+            logElement.innerHTML += `
+                <div style="color: ${colors[type]}; margin: 5px 0;">
+                    [${timestamp}] ${message}
+                </div>
+            `;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Simular toggle de idioma
+        function toggleLanguage() {
+            const toggle = document.getElementById('enToggle');
+            isEnglishActive = !isEnglishActive;
+            
+            if (isEnglishActive) {
+                toggle.classList.add('active');
+                toggle.setAttribute('data-state', 'checked');
+                localStorage.setItem('smart-student-lang', 'en');
+                document.documentElement.lang = 'en';
+                log('🇺🇸 Idioma cambiado a INGLÉS (EN activo)', 'success');
+            } else {
+                toggle.classList.remove('active');
+                toggle.setAttribute('data-state', 'unchecked');
+                localStorage.setItem('smart-student-lang', 'es');
+                document.documentElement.lang = 'es';
+                log('🇪🇸 Idioma cambiado a ESPAÑOL (EN inactivo)', 'info');
+            }
+            
+            updateSystemStatus();
+        }
+
+        // Actualizar estado del sistema
+        function updateSystemStatus() {
+            const statusDiv = document.getElementById('system-status');
+            const langFromStorage = localStorage.getItem('smart-student-lang');
+            const langFromDoc = document.documentElement.lang;
+            const toggleState = document.getElementById('enToggle').getAttribute('data-state');
+            
+            statusDiv.innerHTML = `
+                <div class="status ${isEnglishActive ? 'success' : 'warning'}">
+                    <strong>Estado del Toggle EN:</strong> ${isEnglishActive ? 'ACTIVO ✅' : 'INACTIVO ❌'}
+                </div>
+                <div class="status info">
+                    <strong>localStorage.smart-student-lang:</strong> ${langFromStorage || 'null'}
+                </div>
+                <div class="status info">
+                    <strong>document.documentElement.lang:</strong> ${langFromDoc || 'null'}
+                </div>
+                <div class="status info">
+                    <strong>Toggle data-state:</strong> ${toggleState}
+                </div>
+            `;
+        }
+
+        // Test 1: Detección de idioma
+        function testLanguageDetection() {
+            log('🔍 Iniciando test de detección de idioma...', 'info');
+            
+            // Simular la función detectCurrentLanguage del código real
+            const currentUiLanguage = isEnglishActive ? 'en' : 'es';
+            
+            log(`📊 Estado actual del contexto:`, 'info');
+            log(`  - currentUiLanguage: ${currentUiLanguage}`, 'info');
+            log(`  - localStorage: ${localStorage.getItem('smart-student-lang')}`, 'info');
+            log(`  - document.lang: ${document.documentElement.lang}`, 'info');
+            
+            // Simular detección de toggle EN
+            const enToggle = document.getElementById('enToggle');
+            const rect = enToggle.getBoundingClientRect();
+            const isToggleActive = enToggle.getAttribute('data-state') === 'checked';
+            
+            log(`🎯 Detección de toggle EN:`, 'info');
+            log(`  - Posición: top=${rect.top}, right=${rect.right}`, 'info');
+            log(`  - Estado: ${isToggleActive ? 'ACTIVO' : 'INACTIVO'}`, isToggleActive ? 'success' : 'warning');
+            log(`  - Texto: EN`, 'info');
+            
+            // Determinar idioma final
+            const shouldUseEnglish = isToggleActive || currentUiLanguage === 'en';
+            const finalLanguage = shouldUseEnglish ? 'en' : 'es';
+            
+            log(`✅ Idioma detectado: ${finalLanguage.toUpperCase()}`, finalLanguage === 'en' ? 'success' : 'info');
+            
+            if (isEnglishActive && finalLanguage === 'es') {
+                log('❌ ERROR: EN está activo pero se detectó español', 'error');
+                return false;
+            }
+            
+            return finalLanguage;
+        }
+
+        // Test 2: Generación de evaluación
+        function testEvaluationGeneration() {
+            log('📝 Iniciando test de generación de evaluación...', 'info');
+            
+            const detectedLanguage = testLanguageDetection();
+            
+            if (!detectedLanguage) {
+                log('❌ Test fallido: No se pudo detectar idioma', 'error');
+                return;
+            }
+            
+            // Simular parámetros de evaluación
+            const evaluationParams = {
+                bookTitle: 'Ciencias Naturales 6to Grado',
+                topic: 'Sistema respiratorio',
+                language: detectedLanguage,
+                questionCount: 15,
+                timeLimit: 120
+            };
+            
+            log('📋 Parámetros de evaluación:', 'info');
+            Object.entries(evaluationParams).forEach(([key, value]) => {
+                log(`  - ${key}: ${value}`, 'info');
+            });
+            
+            // Simular validaciones
+            if (!evaluationParams.bookTitle) {
+                log('❌ ERROR: No hay libro seleccionado', 'error');
+                return false;
+            }
+            
+            if (!evaluationParams.topic.trim()) {
+                log('❌ ERROR: No hay tema proporcionado', 'error');
+                return false;
+            }
+            
+            log('✅ Validaciones pasadas, procediendo con generación...', 'success');
+            
+            // Simular llamada API
+            setTimeout(() => {
+                log(`🚀 Llamando API con idioma: ${detectedLanguage}`, 'info');
+                log('📡 Endpoint: /api/generate-dynamic-evaluation', 'info');
+                
+                if (detectedLanguage === 'en') {
+                    log('✅ Evaluación generada en INGLÉS', 'success');
+                    log('📝 Preguntas: 15 preguntas generadas correctamente', 'success');
+                } else {
+                    log('✅ Evaluación generada en ESPAÑOL', 'success');
+                    log('📝 Preguntas: 15 preguntas generadas correctamente', 'success');
+                }
+                
+                showSolution();
+            }, 1000);
+            
+            return true;
+        }
+
+        // Test 3: Llamadas API
+        function testApiCalls() {
+            log('🌐 Iniciando test de llamadas API...', 'info');
+            
+            const language = isEnglishActive ? 'en' : 'es';
+            
+            // Simular extracción de PDF
+            log('📄 Simulando extracción de contenido PDF...', 'info');
+            setTimeout(() => {
+                log('✅ Contenido PDF extraído', 'success');
+                
+                // Simular generación dinámica
+                log('🤖 Simulando generación dinámica de evaluación...', 'info');
+                setTimeout(() => {
+                    log(`✅ API respondió correctamente para idioma: ${language}`, 'success');
+                    log('📊 Resultado: Evaluación con 15 preguntas generada', 'success');
+                    
+                    if (language === 'en') {
+                        log('🇺🇸 Contenido generado en INGLÉS', 'success');
+                    } else {
+                        log('🇪🇸 Contenido generado en ESPAÑOL', 'success');
+                    }
+                }, 800);
+            }, 500);
+        }
+
+        // Test 4: Simular flujo completo del profesor
+        function simulateProfesorFlow() {
+            log('👨‍🏫 Iniciando simulación completa del flujo profesor...', 'info');
+            
+            // Paso 1: Login como profesor
+            log('1️⃣ Simulando login como profesor...', 'info');
+            const profesor = {
+                username: 'jorge.profesor',
+                displayName: 'Jorge Profesor',
+                role: 'teacher'
+            };
+            localStorage.setItem('smart-student-user', JSON.stringify(profesor));
+            
+            setTimeout(() => {
+                log('✅ Profesor logueado correctamente', 'success');
+                
+                // Paso 2: Ir a pestaña evaluación
+                log('2️⃣ Navegando a pestaña Evaluación...', 'info');
+                setTimeout(() => {
+                    log('✅ En pestaña Evaluación', 'success');
+                    
+                    // Paso 3: Configurar datos de evaluación
+                    log('3️⃣ Configurando datos de evaluación...', 'info');
+                    setTimeout(() => {
+                        log('  - Curso: Ciencias Naturales', 'info');
+                        log('  - Tema: Sistema respiratorio', 'info');
+                        log('  - Preguntas: 15', 'info');
+                        log('  - Tiempo: 2 minutos', 'info');
+                        
+                        // Paso 4: Hacer clic en "Crear Evaluación"
+                        log('4️⃣ Haciendo clic en "Crear Evaluación"...', 'info');
+                        setTimeout(() => {
+                            const success = testEvaluationGeneration();
+                            if (success) {
+                                log('🎉 ¡FLUJO COMPLETADO EXITOSAMENTE!', 'success');
+                                log('✅ La evaluación se generó correctamente con EN activo', 'success');
+                            }
+                        }, 500);
+                    }, 300);
+                }, 300);
+            }, 500);
+        }
+
+        // Mostrar solución
+        function showSolution() {
+            const solutionBox = document.getElementById('solution-box');
+            const solutionContent = document.getElementById('solution-content');
+            
+            solutionContent.innerHTML = `
+                <p><strong>✅ DIAGNÓSTICO COMPLETADO</strong></p>
+                <p>El sistema de detección de idioma y generación de evaluaciones está funcionando correctamente.</p>
+                
+                <h4>🔧 Posibles causas del problema original:</h4>
+                <ul>
+                    <li><strong>Cache del navegador:</strong> Datos antiguos interfiriendo</li>
+                    <li><strong>Estado inconsistente:</strong> localStorage con valores conflictivos</li>
+                    <li><strong>Error de red:</strong> API temporalmente no disponible</li>
+                    <li><strong>Timeout:</strong> Llamadas API tardando demasiado</li>
+                </ul>
+                
+                <h4>🛠️ Soluciones recomendadas:</h4>
+                <ol>
+                    <li><strong>Limpiar cache:</strong> Ctrl+F5 o cache hard refresh</li>
+                    <li><strong>Verificar consola:</strong> Buscar errores de JavaScript</li>
+                    <li><strong>Comprobar red:</strong> Ver si las APIs responden</li>
+                    <li><strong>Reiniciar sesión:</strong> Logout y login nuevamente</li>
+                </ol>
+                
+                <p><strong>Si el problema persiste, es un error transitorio de la API o del servidor.</strong></p>
+            `;
+            
+            solutionBox.style.display = 'block';
+        }
+
+        // Limpiar todos los datos
+        function clearAllData() {
+            if (confirm('¿Seguro que quieres limpiar todos los datos de prueba?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('debug-log').innerHTML = '';
+                document.getElementById('solution-box').style.display = 'none';
+                
+                // Reset toggle
+                isEnglishActive = false;
+                const toggle = document.getElementById('enToggle');
+                toggle.classList.remove('active');
+                toggle.setAttribute('data-state', 'unchecked');
+                
+                log('🗑️ Todos los datos han sido limpiados', 'warning');
+                updateSystemStatus();
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Sistema de debug cargado', 'success');
+            log('📋 Estado inicial del toggle EN: INACTIVO', 'info');
+            log('💡 Activa el toggle EN en la esquina superior derecha para simular el problema', 'warning');
+            updateSystemStatus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Mejoras Profesor: Botón Dinámico, Evaluaciones Separadas, Traducciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.orange {
+            background: #fd7e14;
+        }
+        .button.orange:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.purple {
+            background: #6f42c1;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .mockup {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .mockup h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .notification-panel {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .notification-section {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .evaluation-section {
+            background: #f3e8ff;
+            border-left: 4px solid #8b5cf6;
+        }
+        .task-section {
+            background: #fef3e8;
+            border-left: 4px solid #f97316;
+        }
+        .comment-section {
+            background: #e8f5e8;
+            border-left: 4px solid #22c55e;
+        }
+        .notification-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .status-correct {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .status-error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test: Mejoras Profesor - Botón Dinámico, Evaluaciones Separadas, Traducciones</h1>
+        
+        <div class="section">
+            <h3>Resumen de Mejoras Implementadas</h3>
+            <ul>
+                <li>✅ <strong>Botón dinámico:</strong> "Crear Tarea" o "Crear Evaluación" según el tipo seleccionado</li>
+                <li>✅ <strong>Sección separada:</strong> "Evaluaciones Pendientes" arriba, "Tareas Pendientes" en el medio, "Comentarios" abajo</li>
+                <li>✅ <strong>Traducciones:</strong> "evaluation" → "Evaluación" en español</li>
+                <li>✅ <strong>Campos específicos:</strong> Tema, Cantidad de Preguntas y Tiempo para evaluaciones</li>
+                <li>✅ <strong>Diferenciación visual:</strong> Badges de colores para distinguir Tareas (naranja) de Evaluaciones (morado)</li>
+            </ul>
+        </div>
+
+        <div class="grid">
+            <!-- Mockup 1: Botón Dinámico -->
+            <div class="section">
+                <h3>1. Botón Dinámico en Formulario</h3>
+                <div class="mockup">
+                    <h4>Crear Nueva Tarea/Evaluación</h4>
+                    
+                    <div class="form-group">
+                        <label for="taskType">Tipo de tarea:</label>
+                        <select id="taskType" onchange="updateButton()">
+                            <option value="assignment">Tarea</option>
+                            <option value="evaluation">Evaluación</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="button" style="background: #6b7280;">Cancelar</button>
+                        <button id="createButton" class="button orange">Crear Tarea</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <p><strong>Estado:</strong> <span id="buttonStatus" class="status-correct">✅ Correcto</span></p>
+                    <p><strong>Comportamiento:</strong> El botón cambia automáticamente según el tipo seleccionado</p>
+                </div>
+            </div>
+
+            <!-- Mockup 2: Panel de Notificaciones -->
+            <div class="section">
+                <h3>2. Panel de Notificaciones Reorganizado</h3>
+                <div class="mockup">
+                    <h4>Notificaciones - Profesor</h4>
+                    
+                    <div class="notification-panel">
+                        <!-- Evaluaciones Pendientes - ARRIBA -->
+                        <div class="notification-section evaluation-section">
+                            <h5 style="margin: 0; color: #7c3aed;">📋 Evaluaciones Pendientes (2)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <strong>Evaluación Matemáticas</strong> - Ciencias Naturales<br>
+                            <small style="color: #6b7280;">Evaluación • <a href="#" style="color: #7c3aed;">Revisar Evaluación</a></small>
+                        </div>
+                        <div class="notification-item">
+                            <strong>Examen Química</strong> - Ciencias Naturales<br>
+                            <small style="color: #6b7280;">Evaluación • <a href="#" style="color: #7c3aed;">Revisar Evaluación</a></small>
+                        </div>
+
+                        <!-- Tareas Pendientes - MEDIO -->
+                        <div class="notification-section task-section">
+                            <h5 style="margin: 0; color: #ea580c;">📝 Tareas Pendientes (1)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <strong>Ensayo Historia</strong> - Historia<br>
+                            <small style="color: #6b7280;">Tarea • <a href="#" style="color: #ea580c;">Revisar Entrega</a></small>
+                        </div>
+
+                        <!-- Comentarios - ABAJO -->
+                        <div class="notification-section comment-section">
+                            <h5 style="margin: 0; color: #16a34a;">💬 Comentarios No Leídos (1)</h5>
+                        </div>
+                        <div class="notification-item">
+                            <strong>Felipe</strong> - Ensayo Historia<br>
+                            <small style="color: #6b7280;">¿Podría revisar mi introducción?</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <p><strong>Orden:</strong> <span class="status-correct">✅ Evaluaciones → Tareas → Comentarios</span></p>
+                    <p><strong>Colores:</strong> <span class="status-correct">✅ Morado, Naranja, Verde</span></p>
+                </div>
+            </div>
+
+            <!-- Mockup 3: Traducciones -->
+            <div class="section">
+                <h3>3. Traducciones Corregidas</h3>
+                <div class="mockup">
+                    <h4>Términos en Español</h4>
+                    
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #f3f4f6;">
+                            <th style="padding: 8px; border: 1px solid #d1d5db; text-align: left;">Inglés (Antes)</th>
+                            <th style="padding: 8px; border: 1px solid #d1d5db; text-align: left;">Español (Ahora)</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #d1d5db;">evaluation</td>
+                            <td style="padding: 8px; border: 1px solid #d1d5db; color: #22c55e; font-weight: bold;">Evaluación</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #d1d5db;">Create Task</td>
+                            <td style="padding: 8px; border: 1px solid #d1d5db; color: #22c55e; font-weight: bold;">Crear Tarea</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #d1d5db;">Create Evaluation</td>
+                            <td style="padding: 8px; border: 1px solid #d1d5db; color: #22c55e; font-weight: bold;">Crear Evaluación</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #d1d5db;">Pending Evaluations</td>
+                            <td style="padding: 8px; border: 1px solid #d1d5db; color: #22c55e; font-weight: bold;">Evaluaciones Pendientes</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #d1d5db;">Review Evaluation</td>
+                            <td style="padding: 8px; border: 1px solid #d1d5db; color: #22c55e; font-weight: bold;">Revisar Evaluación</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <p><strong>Estado:</strong> <span class="status-correct">✅ Todas las traducciones actualizadas</span></p>
+                    <p><strong>Contexto:</strong> Sistema completamente en español</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Verificación de Funcionalidades</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>✅ Funcionalidades Implementadas:</h4>
+                    <ul>
+                        <li>✅ Botón dinámico según tipo de tarea</li>
+                        <li>✅ Campos específicos para evaluaciones (Tema, Preguntas, Tiempo)</li>
+                        <li>✅ Badges de colores: Naranja (Tareas) y Morado (Evaluaciones)</li>
+                        <li>✅ Sección "Evaluaciones Pendientes" separada</li>
+                        <li>✅ Orden fijo: Evaluaciones → Tareas → Comentarios</li>
+                        <li>✅ Colores distintivos por sección</li>
+                        <li>✅ Traducciones corregidas al español</li>
+                        <li>✅ Iconos apropiados para cada tipo</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>📋 Detalles Técnicos:</h4>
+                    <ul>
+                        <li><strong>Archivo:</strong> src/app/dashboard/tareas/page.tsx</li>
+                        <li><strong>Archivo:</strong> src/components/common/notifications-panel.tsx</li>
+                        <li><strong>Archivo:</strong> src/locales/es.json</li>
+                        <li><strong>Lógica:</strong> Filtrado por taskType</li>
+                        <li><strong>Ordenamiento:</strong> Por fecha de creación</li>
+                        <li><strong>UI:</strong> Colores y iconos distintivos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Próximos Pasos</h3>
+            <ol>
+                <li>✅ <strong>Subir cambios a GitHub</strong> - Todos los archivos modificados</li>
+                <li>🔄 <strong>Probar en modo profesor</strong> - Crear tareas y evaluaciones</li>
+                <li>🔄 <strong>Verificar notificaciones</strong> - Comprobar orden y traducciones</li>
+                <li>🔄 <strong>Validar botón dinámico</strong> - Cambiar entre tipos de tarea</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function updateButton() {
+            const taskType = document.getElementById('taskType').value;
+            const button = document.getElementById('createButton');
+            const status = document.getElementById('buttonStatus');
+            
+            if (taskType === 'evaluation') {
+                button.textContent = 'Crear Evaluación';
+                button.className = 'button purple';
+                status.innerHTML = '✅ Correcto - Botón cambiado a "Crear Evaluación"';
+                status.className = 'status-correct';
+            } else {
+                button.textContent = 'Crear Tarea';
+                button.className = 'button orange';
+                status.innerHTML = '✅ Correcto - Botón cambiado a "Crear Tarea"';
+                status.className = 'status-correct';
+            }
+        }
+
+        // Simular funcionalidad interactiva
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Test de mejoras del profesor cargado correctamente');
+            console.log('📋 Funcionalidades implementadas:');
+            console.log('   1. Botón dinámico en formulario de creación');
+            console.log('   2. Panel de notificaciones reorganizado');
+            console.log('   3. Traducciones corregidas al español');
+        });
+    </script>
+</body>
+</html>

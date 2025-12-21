@@ -1,0 +1,122 @@
+Nombre,RUT,Curso,Sección,Asignatura,Profesor,Fecha,Tipo,Nota
+Sebastián Vega Cortés,10000970-6,3ro Medio,B,"Historia, Geografía y Ciencias Sociales",Carlos Herrera Núñez,2025-11-26,evaluacion,72
+Lucas Rodríguez Torres,10000500-k,6to Básico,B,Educación Física,Sebastián Silva Morales,2025-11-18,evaluacion,82
+Javiera López Campos,10000568-9,7mo Básico,A,Orientación,Cristóbal Cortés Sandoval,2025-09-06,tarea,72
+Andrés Vega Díaz,10000976-5,3ro Medio,B,Orientación,Cristóbal Cortés Sandoval,2025-07-05,tarea,96
+Agustín Araya Vega,10000727-4,1ro Medio,A,Inglés,Maximiliano Espinoza Molina,2025-10-23,tarea,63
+Vicente Silva Jara,10000342-2,4to Básico,B,Tecnología,Gabriel Vergara Pacheco,2025-06-09,prueba,93
+Ángel Valenzuela Vega,10000892-0,2do Medio,B,Lenguaje y Comunicación,Sofía Martínez Vega,2025-07-17,tarea,85
+Renata Parra López,10001024-0,4to Medio,A,Tecnología,Trinidad Santana Ibarra,2025-12-16,evaluacion,73
+Martina Fuentes López,10000589-1,7mo Básico,B,Matemáticas,Pedro Rodríguez Silva,2025-06-10,prueba,70
+Florencia Hernández Díaz,10000646-4,8vo Básico,A,Educación Física,Francisco Vargas Jiménez,2025-04-12,evaluacion,73
+Josefa Martínez Alarcón,10000374-0,5to Básico,A,Inglés,Maximiliano Espinoza Molina,2025-06-24,tarea,96
+María José Valenzuela Ramírez,10000879-3,2do Medio,B,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-07-31,tarea,87
+Andrés Flores Díaz,10000796-7,1ro Medio,B,Tecnología,Gabriel Vergara Pacheco,2025-03-02,tarea,60
+Maite González González,10000030-k,1ro Básico,A,Ciencias Naturales,Diego Morales Soto,2025-04-23,evaluacion,73
+Felipe Valenzuela Gutiérrez,10000878-5,2do Medio,B,Inglés,Maximiliano Espinoza Molina,2025-04-03,tarea,78
+Joaquín Castillo Espinoza,10000921-8,3ro Medio,A,Orientación,Constanza Riquelme Carvajal,2025-03-03,evaluacion,76
+Mateo Hernández Torres,10000665-0,8vo Básico,A,Inglés,Renata Contreras Vera,2025-04-16,prueba,87
+Constanza Parra Vega,10001012-7,4to Medio,A,Tecnología,Samuel Jara Bustos,2025-04-25,evaluacion,78
+Amanda Soto Cortés,10000235-3,3ro Básico,B,Orientación,Constanza Riquelme Carvajal,2025-09-01,evaluacion,60
+Alberto Silva Figueroa,10000356-2,4to Básico,B,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-10-06,prueba,69
+Benjamín Vega Sepúlveda,10000948-k,3ro Medio,B,Tecnología,Samuel Jara Bustos,2025-06-24,evaluacion,88
+Sebastián Soto Cortés,10000250-7,3ro Básico,B,Tecnología,Gabriel Vergara Pacheco,2025-03-22,evaluacion,94
+Emilia Morales Gutiérrez,10000458-5,6to Básico,A,Música,Vicente Tapia Iglesias,2025-10-06,evaluacion,73
+Diego Castillo Figueroa,10000911-0,3ro Medio,A,Música,Francisca Medina Aros,2025-07-22,tarea,87
+María José Sepúlveda Ramírez,10000429-1,5to Básico,B,Matemáticas,María López García,2025-05-19,tarea,86
+Victoria Rojas Gutiérrez,10000128-4,2do Básico,A,Orientación,Cristóbal Cortés Sandoval,2025-12-16,tarea,82
+Cristóbal Parra Alarcón,10001019-4,4to Medio,A,Ciencias Naturales,Valentina Torres Díaz,2025-04-11,tarea,80
+Nicolás Hernández González,10000645-6,8vo Básico,A,"Historia, Geografía y Ciencias Sociales",Carlos Herrera Núñez,2025-06-13,evaluacion,84
+Daniela Rodríguez Jara,10000537-9,6to Básico,B,Lenguaje y Comunicación,Carmen López Valenzuela,2025-04-23,evaluacion,89
+Santiago Torres Campos,10000688-k,8vo Básico,B,Ciencias Naturales,Diego Morales Soto,2025-10-04,tarea,78
+Fernanda Pérez Figueroa,10000206-k,3ro Básico,A,Artes Visuales,Manuel Romero Cortés,2025-04-24,prueba,91
+Maximiliano Martínez López,10000379-1,5to Básico,A,Educación Física,Francisco Vargas Jiménez,2025-04-27,evaluacion,69
+Tomás Pérez Ramírez,10000189-6,3ro Básico,A,Tecnología,Gabriel Vergara Pacheco,2025-09-26,prueba,82
+Daniela Parra Jara,10001032-1,4to Medio,A,Orientación,Cristóbal Cortés Sandoval,2025-04-27,tarea,78
+Martina Espinoza López,10000814-9,2do Medio,A,Orientación,Cristóbal Cortés Sandoval,2025-11-03,evaluacion,68
+Nicolás Martínez González,10000375-9,5to Básico,A,Música,Vicente Tapia Iglesias,2025-03-21,evaluacion,62
+Emilia Martínez Gutiérrez,10000368-6,5to Básico,A,Orientación,Constanza Riquelme Carvajal,2025-06-23,evaluacion,69
+Lucas Rojas Torres,10000095-4,2do Básico,A,Lenguaje y Comunicación,Juan García Torres,2025-07-07,tarea,91
+Renata Araya López,10000754-1,1ro Medio,A,Inglés,Joaquín Araya Peña,2025-03-25,tarea,66
+Renata Rodríguez López,10000529-8,6to Básico,B,Matemáticas,Pedro Rodríguez Silva,2025-11-15,prueba,72
+Victoria Soto Gutiérrez,10000263-9,3ro Básico,B,Orientación,Andrés Poblete Oyarzún,2025-05-10,evaluacion,65
+Matías Soto Díaz,10000226-4,3ro Básico,B,Educación Física,Antonia Castro Campos,2025-12-04,tarea,92
+María José Díaz Ramírez,10000159-4,2do Básico,B,Artes Visuales,Isidora Flores Paredes,2025-10-22,tarea,81
+Maximiliano Silva López,10000334-1,4to Básico,B,Artes Visuales,Isidora Flores Paredes,2025-11-17,prueba,62
+María José Núñez Ramírez,10001059-3,4to Medio,B,Ciencias Naturales,Valentina Torres Díaz,2025-10-31,evaluacion,85
+Ángel Soto Vega,10000262-0,3ro Básico,B,Artes Visuales,Isidora Flores Paredes,2025-08-06,prueba,71
+Emilia Sepúlveda Gutiérrez,10000413-5,5to Básico,B,Orientación,Cristóbal Cortés Sandoval,2025-03-27,tarea,78
+Javiera Muñoz Campos,10000073-3,1ro Básico,B,Lenguaje y Comunicación,Juan García Torres,2025-09-24,evaluacion,76
+Felipe Morales Gutiérrez,10000473-9,6to Básico,A,Artes Visuales,Isidora Flores Paredes,2025-04-25,tarea,80
+Valentina Vega Contreras,10000947-1,3ro Medio,B,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-06-14,tarea,61
+María José Hernández Ramírez,10000654-5,8vo Básico,A,Tecnología,Gabriel Vergara Pacheco,2025-07-19,evaluacion,93
+Carolina Núñez Cortés,10001075-5,4to Medio,B,Lenguaje y Comunicación,Carmen López Valenzuela,2025-11-25,prueba,65
+Manuel Castillo Sepúlveda,10000933-1,3ro Medio,A,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-11-28,tarea,96
+Josefa Martínez Alarcón,10000374-0,5to Básico,A,Lenguaje y Comunicación,Sofía Martínez Vega,2025-10-29,tarea,85
+Constanza Rodríguez Vega,10000517-4,6to Básico,B,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-08-18,tarea,73
+Tomás Morales Ramírez,10000459-3,6to Básico,A,Artes Visuales,Isidora Flores Paredes,2025-11-11,tarea,65
+Ignacia Fuentes Contreras,10000617-0,7mo Básico,B,Música,Francisca Medina Aros,2025-03-20,evaluacion,69
+Trinidad Sepúlveda Sepúlveda,10000423-2,5to Básico,B,Inglés,Maximiliano Espinoza Molina,2025-08-29,evaluacion,60
+Valentina Hernández Contreras,10000632-4,8vo Básico,A,Tecnología,Trinidad Santana Ibarra,2025-05-03,evaluacion,98
+Sofía Fuentes González,10000585-9,7mo Básico,B,Educación Física,Antonia Castro Campos,2025-04-10,prueba,77
+Victoria López Gutiérrez,10000578-6,7mo Básico,A,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-05-06,evaluacion,100
+Nicolás Soto González,10000240-k,3ro Básico,B,Educación Física,Francisco Vargas Jiménez,2025-04-28,tarea,63
+Constanza Valenzuela Vega,10000877-7,2do Medio,B,Tecnología,Samuel Jara Bustos,2025-03-20,evaluacion,91
+Antonia Muñoz Torres,10000065-2,1ro Básico,B,Orientación,Andrés Poblete Oyarzún,2025-03-31,tarea,74
+Andrés Torres Díaz,10000706-1,8vo Básico,B,Lenguaje y Comunicación,Sofía Martínez Vega,2025-08-07,evaluacion,92
+Ángel Martínez Vega,10000397-k,5to Básico,A,Inglés,Maximiliano Espinoza Molina,2025-07-30,evaluacion,90
+Emilia Rodríguez Gutiérrez,10000503-4,6to Básico,B,Inglés,Maximiliano Espinoza Molina,2025-10-06,evaluacion,78
+Andrés Silva Díaz,10000346-5,4to Básico,B,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-04-07,evaluacion,63
+Alberto Núñez Figueroa,10001076-3,4to Medio,B,Artes Visuales,Manuel Romero Cortés,2025-06-25,tarea,61
+Tomás Muñoz Ramírez,10000054-7,1ro Básico,B,Educación Física,Antonia Castro Campos,2025-03-17,tarea,87
+Carolina Sepúlveda Cortés,10000445-3,5to Básico,B,Artes Visuales,Isidora Flores Paredes,2025-06-18,prueba,74
+Francisca Parra Espinoza,10001026-7,4to Medio,A,Orientación,Constanza Riquelme Carvajal,2025-03-12,evaluacion,84
+Fernanda Morales Figueroa,10000476-3,6to Básico,A,Matemáticas,Ana González Muñoz,2025-04-25,prueba,71
+Benjamín Contreras Sepúlveda,10000273-6,4to Básico,A,Orientación,Constanza Riquelme Carvajal,2025-12-25,prueba,83
+Trinidad Fuentes Sepúlveda,10000603-0,7mo Básico,B,Música,Francisca Medina Aros,2025-12-19,evaluacion,100
+Amanda Muñoz Cortés,10000055-5,1ro Básico,B,Educación Física,Francisco Vargas Jiménez,2025-07-02,prueba,99
+Antonia Rodríguez Torres,10000515-8,6to Básico,B,Inglés,Joaquín Araya Peña,2025-05-14,tarea,76
+Josefa Pérez Alarcón,10000194-2,3ro Básico,A,Tecnología,Trinidad Santana Ibarra,2025-08-29,evaluacion,99
+Gabriel Valenzuela Contreras,10000872-6,2do Medio,B,Lenguaje y Comunicación,Juan García Torres,2025-11-01,prueba,96
+Martina Flores López,10000769-k,1ro Medio,B,Orientación,Cristóbal Cortés Sandoval,2025-12-20,evaluacion,97
+Amanda Araya Cortés,10000730-4,1ro Medio,A,Tecnología,Gabriel Vergara Pacheco,2025-06-17,tarea,79
+Isidora Soto Espinoza,10000231-0,3ro Básico,B,Inglés,Maximiliano Espinoza Molina,2025-10-02,evaluacion,96
+Valentina Núñez Contreras,10001037-2,4to Medio,B,Ciencias Naturales,Catalina Reyes Guzmán,2025-04-04,tarea,79
+Roberto Contreras Campos,10000313-9,4to Básico,A,Educación Física,Francisco Vargas Jiménez,2025-05-18,evaluacion,92
+Javiera Valenzuela Campos,10000883-1,2do Medio,B,Educación Física,Antonia Castro Campos,2025-12-19,evaluacion,84
+Santiago Pérez Campos,10000193-4,3ro Básico,A,Música,Vicente Tapia Iglesias,2025-11-23,tarea,60
+Eduardo Rojas Ramírez,10000129-2,2do Básico,A,Lenguaje y Comunicación,Sofía Martínez Vega,2025-06-16,evaluacion,85
+Sebastián Núñez Cortés,10001060-7,4to Medio,B,Artes Visuales,Isidora Flores Paredes,2025-04-12,evaluacion,81
+Antonia Sepúlveda Torres,10000425-9,5to Básico,B,Música,Vicente Tapia Iglesias,2025-03-09,evaluacion,90
+Ángel Castillo Vega,10000937-4,3ro Medio,A,Matemáticas,Pedro Rodríguez Silva,2025-07-03,tarea,82
+Joaquín Rodríguez Espinoza,10000516-6,6to Básico,B,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-11-17,tarea,67
+Francisca González Espinoza,10000036-9,1ro Básico,A,Ciencias Naturales,Catalina Reyes Guzmán,2025-12-14,tarea,69
+Gabriela Castillo Alarcón,10000944-7,3ro Medio,A,Matemáticas,María López García,2025-10-09,prueba,89
+Mateo Morales Torres,10000485-2,6to Básico,A,Inglés,Renata Contreras Vera,2025-10-11,evaluacion,96
+Francisca López Espinoza,10000576-k,7mo Básico,A,Ciencias Naturales,Diego Morales Soto,2025-08-27,tarea,65
+Catalina Martínez Jara,10000372-4,5to Básico,A,Tecnología,Trinidad Santana Ibarra,2025-09-23,tarea,94
+Fernanda Contreras Figueroa,10000296-5,4to Básico,A,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-05-11,evaluacion,88
+Renata López López,10000574-3,7mo Básico,A,Música,Nicolás Valenzuela Cruz,2025-10-29,evaluacion,77
+Fernanda Rojas Figueroa,10000116-0,2do Básico,A,Tecnología,Trinidad Santana Ibarra,2025-07-29,tarea,74
+Renata Soto López,10000259-0,3ro Básico,B,Educación Física,Francisco Vargas Jiménez,2025-12-28,tarea,97
+Ángel Muñoz Vega,10000082-2,1ro Básico,B,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-05-07,evaluacion,76
+Maximiliano Muñoz López,10000064-4,1ro Básico,B,Lenguaje y Comunicación,Juan García Torres,2025-08-26,evaluacion,86
+Tomás Valenzuela Ramírez,10000864-5,2do Medio,B,Orientación,Andrés Poblete Oyarzún,2025-10-19,evaluacion,75
+Ignacia Díaz Contreras,10000167-5,2do Básico,B,Inglés,Renata Contreras Vera,2025-10-06,tarea,92
+Florencia Pérez Díaz,10000196-9,3ro Básico,A,Tecnología,Gabriel Vergara Pacheco,2025-12-23,evaluacion,66
+Joaquín Pérez Espinoza,10000201-9,3ro Básico,A,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-06-14,tarea,64
+Roberto Silva Campos,10000358-9,4to Básico,B,Educación Física,Francisco Vargas Jiménez,2025-07-16,prueba,69
+Amanda González Cortés,10000010-5,1ro Básico,A,Orientación,Cristóbal Cortés Sandoval,2025-08-28,evaluacion,98
+Mateo Torres Torres,10000710-k,8vo Básico,B,Matemáticas,María López García,2025-12-23,tarea,88
+Fernanda Morales Figueroa,10000476-3,6to Básico,A,Orientación,Andrés Poblete Oyarzún,2025-08-18,tarea,71
+María José Vega Ramírez,10000969-2,3ro Medio,B,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-11-18,prueba,87
+Vicente López Jara,10000567-0,7mo Básico,A,"Historia, Geografía y Ciencias Sociales",Carlos Herrera Núñez,2025-03-09,evaluacion,65
+Diego Sepúlveda Figueroa,10000416-k,5to Básico,B,Ciencias Naturales,Diego Morales Soto,2025-12-22,prueba,99
+Valentina Sepúlveda Contreras,10000407-0,5to Básico,B,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-08-17,tarea,71
+Maximiliano Hernández López,10000649-9,8vo Básico,A,"Historia, Geografía y Ciencias Sociales",Roberto Fernández Castro,2025-12-11,prueba,77
+Mateo Fuentes Torres,10000620-0,7mo Básico,B,Matemáticas,Pedro Rodríguez Silva,2025-05-28,prueba,100
+Andrés Fuentes Díaz,10000616-2,7mo Básico,B,Música,Francisca Medina Aros,2025-06-05,prueba,71
+Maximiliano Vega López,10000964-1,3ro Medio,B,Ciencias Naturales,Valentina Torres Díaz,2025-10-21,tarea,87
+Sebastián Castillo Cortés,10000925-0,3ro Medio,A,Inglés,Renata Contreras Vera,2025-09-27,evaluacion,91
+Daniela Muñoz Jara,10000087-3,1ro Básico,B,"Historia, Geografía y Ciencias Sociales",Carlos Herrera Núñez,2025-08-07,prueba,64
+Javiera Rojas Campos,10000118-7,2do Básico,A,"Historia, Geografía y Ciencias Sociales",Gabriela Sánchez Rojas,2025-03-23,tarea,72

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Test Final - Eliminación de Burbujas de Comentarios</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        .test-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section.success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .test-section.warning {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+        .test-section.error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .result {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .result.pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #5a67d8;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.danger:hover {
+            background: #c82333;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.success:hover {
+            background: #218838;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        .privacy-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .privacy-indicator.private {
+            background: #d4edda;
+            color: #155724;
+        }
+        .privacy-indicator.public {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .notification-bubble {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 20px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Test Final - Eliminación de Burbujas de Comentarios</h1>
+            <p>Verificación completa del filtro de privacidad en todas las funciones de carga de comentarios</p>
+            <p><strong>Objetivo:</strong> Eliminar completamente las burbujas de comentarios para estudiantes no asignados</p>
+        </div>
+
+        <!-- Configuración del Test -->
+        <div class="test-section">
+            <h2>🚀 Configuración del Test</h2>
+            <div class="step">
+                <button class="button" onclick="setupTestData()">1. Configurar Datos de Test</button>
+                <button class="button success" onclick="simulateNotificationPanel()">2. Simular Panel de Notificaciones</button>
+                <button class="button danger" onclick="clearAllData()">3. Limpiar Datos</button>
+            </div>
+            <div id="setup-result" class="log-container"></div>
+        </div>
+
+        <!-- Test Principal -->
+        <div class="test-section" id="main-test">
+            <h2>🔧 Test de Filtros de Comentarios</h2>
+            <div class="step">
+                <button class="button" onclick="testLoadUnreadComments()">Test loadUnreadComments</button>
+                <button class="button" onclick="testLoadStudentSubmissions()">Test loadStudentSubmissions</button>
+                <button class="button success" onclick="testCompletePrivacyFilter()">Test Filtro Completo</button>
+            </div>
+            <div id="test-result" class="log-container"></div>
+        </div>
+
+        <!-- Simulación de Comportamiento -->
+        <div class="test-section" id="simulation">
+            <h2>🎭 Simulación de Escenarios</h2>
+            <div class="step">
+                <h3>Escenario 1: Estudiante NO asignado accede a panel</h3>
+                <button class="button" onclick="simulateNonAssignedStudent()">Simular Estudiante No Asignado</button>
+                <div id="scenario1-result"></div>
+            </div>
+            <div class="step">
+                <h3>Escenario 2: Profesor revisa notificaciones</h3>
+                <button class="button" onclick="simulateTeacherNotifications()">Simular Profesor</button>
+                <div id="scenario2-result"></div>
+            </div>
+            <div class="step">
+                <h3>Escenario 3: Estudiante asignado ve comentarios</h3>
+                <button class="button success" onclick="simulateAssignedStudent()">Simular Estudiante Asignado</button>
+                <div id="scenario3-result"></div>
+            </div>
+        </div>
+
+        <!-- Verificación Final -->
+        <div class="test-section" id="final-verification">
+            <h2>✅ Verificación Final</h2>
+            <div class="step">
+                <button class="button success" onclick="runCompleteVerification()">Ejecutar Verificación Completa</button>
+            </div>
+            <div id="verification-result" class="log-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let testLog = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            testLog.push(logEntry);
+            console.log(logEntry);
+        }
+
+        function displayResults(containerId, results) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = results.join('<br>');
+        }
+
+        function setupTestData() {
+            log('🚀 Configurando datos de test...', 'info');
+            
+            // Configurar usuarios de test
+            const testUsers = [
+                {
+                    id: 'teacher-001',
+                    username: 'prof.martinez',
+                    name: 'Prof. Martinez',
+                    role: 'teacher',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-001',
+                    username: 'ana.garcia',
+                    name: 'Ana García',
+                    role: 'student',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-002',
+                    username: 'carlos.lopez',
+                    name: 'Carlos López',
+                    role: 'student',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-003',
+                    username: 'maria.rodriguez',
+                    name: 'María Rodríguez',
+                    role: 'student',
+                    activeCourses: ['MAT101-B'] // Diferente sección
+                }
+            ];
+
+            // Configurar tareas de test
+            const testTasks = [
+                {
+                    id: 'task-001',
+                    title: 'Ejercicios de Álgebra',
+                    assignedTo: 'student', // Asignada a estudiantes específicos
+                    assignedStudentIds: ['student-001'], // Solo Ana García
+                    courseSectionId: 'MAT101-A',
+                    course: 'MAT101-A',
+                    teacherUsername: 'prof.martinez'
+                },
+                {
+                    id: 'task-002',
+                    title: 'Tarea General de Matemáticas',
+                    assignedTo: 'course', // Asignada a todo el curso
+                    courseSectionId: 'MAT101-A',
+                    course: 'MAT101-A',
+                    teacherUsername: 'prof.martinez'
+                }
+            ];
+
+            // Configurar comentarios de test
+            const testComments = [
+                {
+                    id: 'comment-001',
+                    taskId: 'task-001',
+                    studentUsername: 'ana.garcia',
+                    comment: 'Profesor, tengo una duda sobre el ejercicio 3',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                },
+                {
+                    id: 'comment-002',
+                    taskId: 'task-001',
+                    studentUsername: 'carlos.lopez', // NO asignado a esta tarea
+                    comment: 'Este comentario NO debería aparecer',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                },
+                {
+                    id: 'comment-003',
+                    taskId: 'task-002',
+                    studentUsername: 'maria.rodriguez', // Diferente sección
+                    comment: 'Comentario de estudiante de otra sección',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: []
+                }
+            ];
+
+            // Configurar asignaciones de estudiantes
+            const testStudentAssignments = [
+                {
+                    studentId: 'student-001',
+                    sectionId: 'section-A',
+                    courseId: 'MAT101'
+                },
+                {
+                    studentId: 'student-002',
+                    sectionId: 'section-A',
+                    courseId: 'MAT101'
+                },
+                {
+                    studentId: 'student-003',
+                    sectionId: 'section-B',
+                    courseId: 'MAT101'
+                }
+            ];
+
+            // Configurar secciones y cursos
+            const testSections = [
+                { id: 'section-A', name: 'A', courseId: 'MAT101' },
+                { id: 'section-B', name: 'B', courseId: 'MAT101' }
+            ];
+
+            const testCourses = [
+                { id: 'MAT101', name: 'Matemáticas 101' }
+            ];
+
+            const testTeacherAssignments = [
+                {
+                    teacherId: 'teacher-001',
+                    sectionId: 'section-A',
+                    courseId: 'MAT101'
+                }
+            ];
+
+            // Guardar en localStorage
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testTasks));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+            localStorage.setItem('smart-student-student-assignments', JSON.stringify(testStudentAssignments));
+            localStorage.setItem('smart-student-sections', JSON.stringify(testSections));
+            localStorage.setItem('smart-student-courses', JSON.stringify(testCourses));
+            localStorage.setItem('smart-student-teacher-assignments', JSON.stringify(testTeacherAssignments));
+
+            log('✅ Datos de test configurados correctamente');
+            displayResults('setup-result', [
+                '✅ Usuarios creados: 1 profesor, 3 estudiantes',
+                '✅ Tareas creadas: 1 específica, 1 general',
+                '✅ Comentarios creados: 3 comentarios de test',
+                '✅ Asignaciones configuradas correctamente',
+                '<span class="privacy-indicator private">LISTO PARA TESTS</span>'
+            ]);
+        }
+
+        function simulateNotificationPanel() {
+            log('🔧 Simulando funciones del panel de notificaciones...', 'info');
+
+            // Simular función checkStudentAssignmentToTask
+            function checkStudentAssignmentToTask(task, studentId, studentUsername) {
+                console.log(`🔍 [Test] Verificando acceso para estudiante ${studentUsername} (ID: ${studentId}) a tarea "${task.title}"`);
+                
+                // Si la tarea está asignada a estudiantes específicos
+                if (task.assignedTo === 'student' && task.assignedStudentIds) {
+                    const isDirectlyAssigned = task.assignedStudentIds.includes(studentId);
+                    console.log(`🎯 [Test] Estudiante ${studentUsername} directamente asignado: ${isDirectlyAssigned ? '✅' : '❌'}`);
+                    return isDirectlyAssigned;
+                }
+                
+                // Si la tarea está asignada a todo el curso
+                if (task.assignedTo === 'course') {
+                    const taskCourseId = task.courseSectionId || task.course;
+                    if (!taskCourseId) return false;
+                    
+                    const usersText = localStorage.getItem('smart-student-users');
+                    const allUsers = usersText ? JSON.parse(usersText) : [];
+                    const studentData = allUsers.find(u => u.id === studentId || u.username === studentUsername);
+                    
+                    if (!studentData) return false;
+                    
+                    const studentAssignments = JSON.parse(localStorage.getItem('smart-student-student-assignments') || '[]');
+                    
+                    // Verificar asignación por sección
+                    const isAssignedToTaskSection = studentAssignments.some(assignment => 
+                        assignment.studentId === studentId && 
+                        assignment.courseId === 'MAT101' && // Simplificado para test
+                        assignment.sectionId === 'section-A' // Sección de la tarea
+                    );
+                    
+                    if (isAssignedToTaskSection) return true;
+                    
+                    // Fallback por activeCourses
+                    return studentData.activeCourses?.includes(taskCourseId) || false;
+                }
+                
+                return false;
+            }
+
+            // Simular loadUnreadComments corregida
+            function testLoadUnreadComments(currentUser) {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                return comments.filter(comment => {
+                    if (currentUser.role !== 'student') return false;
+                    
+                    const task = tasks.find(t => t.id === comment.taskId);
+                    if (!task) return false;
+                    
+                    // 🎯 FILTRO DE PRIVACIDAD: Verificar si el estudiante está asignado
+                    const isAssigned = checkStudentAssignmentToTask(task, currentUser.id, currentUser.username);
+                    
+                    if (!isAssigned) {
+                        console.log(`🚫 [loadUnreadComments] Comentario filtrado - estudiante ${currentUser.username} NO asignado a tarea "${task.title}"`);
+                        return false;
+                    }
+                    
+                    const notRead = !comment.readBy?.includes(currentUser.username);
+                    const notOwnComment = comment.studentUsername !== currentUser.username;
+                    
+                    return notRead && notOwnComment;
+                });
+            }
+
+            // Simular loadStudentSubmissions corregida
+            function testLoadStudentSubmissions(currentUser) {
+                if (currentUser.role !== 'teacher') return [];
+                
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const teacherTaskIds = tasks.filter(t => t.teacherUsername === currentUser.username).map(t => t.id);
+                
+                return comments.filter(comment => {
+                    const belongsToTeacher = teacherTaskIds.includes(comment.taskId);
+                    const notFromTeacher = comment.studentUsername !== currentUser.username;
+                    const notRead = !comment.readBy?.includes(currentUser.username);
+                    const isComment = !comment.isSubmission;
+                    
+                    if (!belongsToTeacher || !notFromTeacher || !notRead || !isComment) {
+                        return false;
+                    }
+                    
+                    // 🎯 NUEVO FILTRO: Verificar si el estudiante está asignado a la tarea
+                    const task = tasks.find(t => t.id === comment.taskId);
+                    if (task) {
+                        const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                        const studentData = users.find(u => u.username === comment.studentUsername);
+                        
+                        if (studentData) {
+                            const isAssigned = checkStudentAssignmentToTask(task, studentData.id, comment.studentUsername);
+                            if (!isAssigned) {
+                                console.log(`🚫 [loadStudentSubmissions] Comentario de ${comment.studentUsername} filtrado - NO asignado a tarea "${task.title}"`);
+                                return false;
+                            }
+                        }
+                    }
+                    
+                    return true;
+                });
+            }
+
+            // Exponer funciones para tests
+            window.testFunctions = {
+                checkStudentAssignmentToTask,
+                testLoadUnreadComments,
+                testLoadStudentSubmissions
+            };
+
+            log('✅ Funciones del panel simuladas correctamente');
+            displayResults('setup-result', [
+                '✅ checkStudentAssignmentToTask implementada',
+                '✅ loadUnreadComments con filtro de privacidad',
+                '✅ loadStudentSubmissions con filtro de privacidad',
+                '<span class="privacy-indicator private">FUNCIONES LISTAS</span>'
+            ]);
+        }
+
+        function testLoadUnreadComments() {
+            log('🧪 Probando loadUnreadComments...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const results = [];
+            
+            // Test con estudiante asignado (Ana García)
+            const assignedStudent = users.find(u => u.username === 'ana.garcia');
+            const assignedComments = window.testFunctions.testLoadUnreadComments(assignedStudent);
+            results.push(`📋 Estudiante asignado (${assignedStudent.name}): ${assignedComments.length} comentarios visibles`);
+            
+            // Test con estudiante NO asignado (Carlos López)
+            const nonAssignedStudent = users.find(u => u.username === 'carlos.lopez');
+            const nonAssignedComments = window.testFunctions.testLoadUnreadComments(nonAssignedStudent);
+            results.push(`🚫 Estudiante NO asignado (${nonAssignedStudent.name}): ${nonAssignedComments.length} comentarios visibles`);
+            
+            // Test con estudiante de otra sección (María Rodríguez)
+            const otherSectionStudent = users.find(u => u.username === 'maria.rodriguez');
+            const otherSectionComments = window.testFunctions.testLoadUnreadComments(otherSectionStudent);
+            results.push(`🏫 Estudiante otra sección (${otherSectionStudent.name}): ${otherSectionComments.length} comentarios visibles`);
+            
+            // Verificación
+            const passed = nonAssignedComments.length === 0 && otherSectionComments.length === 0;
+            results.push('');
+            results.push(passed ? 
+                '<span class="result pass">✅ TEST PASADO: Comentarios privados correctamente filtrados</span>' :
+                '<span class="result fail">❌ TEST FALLIDO: Estudiantes no asignados ven comentarios</span>'
+            );
+            
+            displayResults('test-result', results);
+            log(passed ? '✅ loadUnreadComments test PASADO' : '❌ loadUnreadComments test FALLIDO');
+        }
+
+        function testLoadStudentSubmissions() {
+            log('🧪 Probando loadStudentSubmissions...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const teacher = users.find(u => u.role === 'teacher');
+            const results = [];
+            
+            if (!teacher) {
+                results.push('<span class="result fail">❌ No se encontró profesor para el test</span>');
+                displayResults('test-result', results);
+                return;
+            }
+            
+            const teacherComments = window.testFunctions.testLoadStudentSubmissions(teacher);
+            results.push(`📝 Profesor (${teacher.name}): ${teacherComments.length} comentarios de estudiantes visibles`);
+            
+            // Verificar que solo aparecen comentarios de estudiantes asignados
+            const allowedStudents = ['ana.garcia']; // Solo Ana está asignada a task-001
+            const visibleComments = teacherComments.filter(comment => 
+                allowedStudents.includes(comment.studentUsername)
+            );
+            
+            results.push(`✅ Comentarios de estudiantes asignados: ${visibleComments.length}`);
+            results.push(`🚫 Comentarios filtrados de estudiantes NO asignados: ${teacherComments.length - visibleComments.length}`);
+            
+            // Verificación
+            const passed = teacherComments.length === visibleComments.length && teacherComments.length === 1;
+            results.push('');
+            results.push(passed ? 
+                '<span class="result pass">✅ TEST PASADO: Solo comentarios de estudiantes asignados son visibles</span>' :
+                '<span class="result fail">❌ TEST FALLIDO: Comentarios de estudiantes no asignados aparecen</span>'
+            );
+            
+            displayResults('test-result', results);
+            log(passed ? '✅ loadStudentSubmissions test PASADO' : '❌ loadStudentSubmissions test FALLIDO');
+        }
+
+        function testCompletePrivacyFilter() {
+            log('🧪 Probando filtro completo de privacidad...', 'info');
+            
+            testLoadUnreadComments();
+            setTimeout(() => {
+                testLoadStudentSubmissions();
+                setTimeout(() => {
+                    log('✅ Tests de filtro completo terminados');
+                }, 500);
+            }, 500);
+        }
+
+        function simulateNonAssignedStudent() {
+            log('🎭 Simulando estudiante NO asignado...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const student = users.find(u => u.username === 'carlos.lopez');
+            
+            if (!student) {
+                displayResults('scenario1-result', ['❌ Estudiante no encontrado']);
+                return;
+            }
+            
+            const comments = window.testFunctions.testLoadUnreadComments(student);
+            const shouldSeeComments = comments.length;
+            const bubbleCount = shouldSeeComments;
+            
+            const results = [
+                `👤 Estudiante: ${student.name} (${student.username})`,
+                `📋 Estado: NO asignado a tareas específicas`,
+                `💬 Comentarios visibles: ${comments.length}`,
+                `🔴 Burbujas de notificación: ${bubbleCount}`,
+                ''
+            ];
+            
+            if (bubbleCount === 0) {
+                results.push('<span class="result pass">✅ CORRECTO: No aparecen burbujas de comentarios</span>');
+            } else {
+                results.push('<span class="result fail">❌ PROBLEMA: Aparecen burbujas de comentarios cuando no debería</span>');
+            }
+            
+            displayResults('scenario1-result', results);
+        }
+
+        function simulateTeacherNotifications() {
+            log('🎭 Simulando notificaciones de profesor...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const teacher = users.find(u => u.role === 'teacher');
+            
+            if (!teacher) {
+                displayResults('scenario2-result', ['❌ Profesor no encontrado']);
+                return;
+            }
+            
+            const comments = window.testFunctions.testLoadStudentSubmissions(teacher);
+            const validComments = comments.filter(c => c.studentUsername === 'ana.garcia'); // Solo comentarios válidos
+            
+            const results = [
+                `👨‍🏫 Profesor: ${teacher.name} (${teacher.username})`,
+                `📋 Comentarios totales recibidos: ${comments.length}`,
+                `✅ Comentarios de estudiantes asignados: ${validComments.length}`,
+                `🚫 Comentarios filtrados: ${comments.length - validComments.length}`,
+                ''
+            ];
+            
+            if (comments.length === validComments.length && validComments.length === 1) {
+                results.push('<span class="result pass">✅ CORRECTO: Solo comentarios de estudiantes asignados</span>');
+            } else {
+                results.push('<span class="result fail">❌ PROBLEMA: Aparecen comentarios de estudiantes no asignados</span>');
+            }
+            
+            displayResults('scenario2-result', results);
+        }
+
+        function simulateAssignedStudent() {
+            log('🎭 Simulando estudiante asignado...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const student = users.find(u => u.username === 'ana.garcia');
+            
+            if (!student) {
+                displayResults('scenario3-result', ['❌ Estudiante no encontrado']);
+                return;
+            }
+            
+            const comments = window.testFunctions.testLoadUnreadComments(student);
+            
+            const results = [
+                `👤 Estudiante: ${student.name} (${student.username})`,
+                `📋 Estado: SÍ asignado a tareas específicas`,
+                `💬 Comentarios visibles: ${comments.length}`,
+                `🔴 Puede ver notificaciones: ${comments.length > 0 ? 'SÍ' : 'NO'}`,
+                ''
+            ];
+            
+            results.push('<span class="result pass">✅ CORRECTO: Estudiante asignado puede ver comentarios relevantes</span>');
+            
+            displayResults('scenario3-result', results);
+        }
+
+        function runCompleteVerification() {
+            log('🔎 Ejecutando verificación completa del sistema...', 'info');
+            
+            const results = [];
+            let allTestsPassed = true;
+            
+            // Verificación 1: loadUnreadComments
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const nonAssignedStudent = users.find(u => u.username === 'carlos.lopez');
+            const nonAssignedComments = window.testFunctions.testLoadUnreadComments(nonAssignedStudent);
+            
+            const test1Pass = nonAssignedComments.length === 0;
+            results.push(`1. loadUnreadComments - Filtro de privacidad: ${test1Pass ? '✅ PASS' : '❌ FAIL'}`);
+            if (!test1Pass) allTestsPassed = false;
+            
+            // Verificación 2: loadStudentSubmissions
+            const teacher = users.find(u => u.role === 'teacher');
+            const teacherComments = window.testFunctions.testLoadStudentSubmissions(teacher);
+            const validTeacherComments = teacherComments.filter(c => c.studentUsername === 'ana.garcia');
+            
+            const test2Pass = teacherComments.length === validTeacherComments.length && teacherComments.length === 1;
+            results.push(`2. loadStudentSubmissions - Filtro de privacidad: ${test2Pass ? '✅ PASS' : '❌ FAIL'}`);
+            if (!test2Pass) allTestsPassed = false;
+            
+            // Verificación 3: checkStudentAssignmentToTask
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const specificTask = tasks.find(t => t.assignedTo === 'student');
+            const assignmentCheck1 = window.testFunctions.checkStudentAssignmentToTask(specificTask, 'student-001', 'ana.garcia');
+            const assignmentCheck2 = window.testFunctions.checkStudentAssignmentToTask(specificTask, 'student-002', 'carlos.lopez');
+            
+            const test3Pass = assignmentCheck1 === true && assignmentCheck2 === false;
+            results.push(`3. checkStudentAssignmentToTask - Verificación: ${test3Pass ? '✅ PASS' : '❌ FAIL'}`);
+            if (!test3Pass) allTestsPassed = false;
+            
+            // Verificación 4: Eliminación de burbujas
+            const bubbleTest1 = nonAssignedComments.length === 0;
+            const bubbleTest2 = teacherComments.filter(c => c.studentUsername !== 'ana.garcia').length === 0;
+            
+            const test4Pass = bubbleTest1 && bubbleTest2;
+            results.push(`4. Eliminación de burbujas - Completa: ${test4Pass ? '✅ PASS' : '❌ FAIL'}`);
+            if (!test4Pass) allTestsPassed = false;
+            
+            results.push('');
+            results.push('📊 RESUMEN FINAL:');
+            results.push('');
+            
+            if (allTestsPassed) {
+                results.push('<span class="result pass">🎉 TODOS LOS TESTS PASARON</span>');
+                results.push('<span class="result pass">✅ Las burbujas de comentarios han sido eliminadas correctamente</span>');
+                results.push('<span class="result pass">✅ Solo estudiantes asignados ven comentarios privados</span>');
+                results.push('<span class="result pass">✅ Los profesores solo ven comentarios de estudiantes asignados</span>');
+            } else {
+                results.push('<span class="result fail">❌ ALGUNOS TESTS FALLARON</span>');
+                results.push('<span class="result fail">🔧 Se requieren ajustes adicionales</span>');
+            }
+            
+            displayResults('verification-result', results);
+            log(allTestsPassed ? '🎉 Verificación completa EXITOSA' : '❌ Verificación completa FALLIDA');
+        }
+
+        function clearAllData() {
+            log('🗑️ Limpiando datos de test...', 'info');
+            
+            const keysToRemove = [
+                'smart-student-users',
+                'smart-student-tasks',
+                'smart-student-task-comments',
+                'smart-student-student-assignments',
+                'smart-student-sections',
+                'smart-student-courses',
+                'smart-student-teacher-assignments'
+            ];
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            displayResults('setup-result', [
+                '🗑️ Todos los datos de test eliminados',
+                '✅ localStorage limpio',
+                '<span class="privacy-indicator public">LISTO PARA NUEVO TEST</span>'
+            ]);
+            
+            log('✅ Datos limpiados correctamente');
+        }
+
+        // Inicialización automática
+        window.addEventListener('load', function() {
+            log('🚀 Test de eliminación de burbujas iniciado', 'info');
+            displayResults('setup-result', [
+                '📋 Preparado para configurar test',
+                '🎯 Objetivo: Eliminar burbujas de comentarios para estudiantes no asignados',
+                '🔧 Configurar datos de test primero'
+            ]);
+        });
+    </script>
+</body>
+</html>

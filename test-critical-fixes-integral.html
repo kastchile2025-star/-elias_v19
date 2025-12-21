@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Integral - Correcciones Críticas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button.danger {
+            background: #ef4444;
+        }
+        button.danger:hover {
+            background: #dc2626;
+        }
+        button.success {
+            background: #10b981;
+        }
+        button.success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #047857;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #dc2626;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+        .info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+        .test-item {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .test-passed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .test-failed {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        .test-pending {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .step {
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+            margin: 10px 0;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Prueba Integral - Correcciones Críticas</h1>
+    <p>Verificar las 3 correcciones implementadas: filtro de notificaciones, eliminación de tareas y sincronización de resultados.</p>
+
+    <div class="container">
+        <h2>🎯 Configuración Inicial</h2>
+        
+        <div class="section">
+            <h3>1. Configurar Usuarios de Prueba</h3>
+            <button onclick="setupTestUsers()">👥 Crear Usuarios (Profesor + Estudiantes)</button>
+            <div id="userSetup"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Limpiar Sistema</h3>
+            <button class="danger" onclick="cleanAllData()">🗑️ Limpiar Todos los Datos</button>
+            <div id="cleanupStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔍 Prueba 1: Filtro de Notificaciones de Evaluaciones</h2>
+        
+        <div class="section">
+            <div class="step">
+                <h4>Paso 1: Crear Evaluación como Profesor</h4>
+                <button onclick="createTestEvaluation()">📝 Crear Evaluación de Prueba</button>
+                <div id="evaluationCreation"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 2: Verificar Notificación Apareció</h4>
+                <button onclick="verifyNotificationAppears()">🔔 Verificar Notificación</button>
+                <div id="notificationAppears"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 3: Completar Evaluación como Estudiante</h4>
+                <button onclick="completeEvaluationAsStudent()">✅ Completar Evaluación</button>
+                <div id="evaluationCompletion"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 4: Verificar que Notificación Desapareció</h4>
+                <button onclick="verifyNotificationDisappears()">🚫 Verificar Filtro</button>
+                <div id="notificationDisappears"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🗑️ Prueba 2: Eliminación Completa de Tareas</h2>
+        
+        <div class="section">
+            <div class="step">
+                <h4>Paso 1: Crear Tarea como Profesor</h4>
+                <button onclick="createTaskForDeletion()">📝 Crear Tarea</button>
+                <div id="taskCreation"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 2: Verificar Tarea Visible para Estudiantes</h4>
+                <button onclick="verifyTaskVisibleToStudents()">👁️ Verificar Visibilidad</button>
+                <div id="taskVisibility"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 3: Eliminar Tarea como Profesor</h4>
+                <button class="danger" onclick="deleteTaskAsTeacher()">🗑️ Eliminar Tarea</button>
+                <div id="taskDeletion"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 4: Verificar Tarea Eliminada de Todos los Usuarios</h4>
+                <button onclick="verifyTaskDeletedFromAllUsers()">🔍 Verificar Eliminación Completa</button>
+                <div id="completeDeletion"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Prueba 3: Sincronización de Resultados de Evaluaciones</h2>
+        
+        <div class="section">
+            <div class="step">
+                <h4>Paso 1: Crear Evaluación para Resultados</h4>
+                <button onclick="createEvaluationForResults()">📝 Crear Evaluación</button>
+                <div id="resultsEvaluationCreation"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 2: Completar como Múltiples Estudiantes</h4>
+                <button onclick="completeAsMultipleStudents()">👥 Completar Evaluaciones</button>
+                <div id="multipleCompletions"></div>
+            </div>
+            
+            <div class="step">
+                <h4>Paso 3: Verificar Resultados Visibles para Profesor</h4>
+                <button onclick="verifyResultsVisibleToTeacher()">👨‍🏫 Verificar Resultados</button>
+                <div id="teacherResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Resumen de Pruebas</h2>
+        <div class="results-grid" id="testSummary">
+            <!-- Los resultados aparecerán aquí -->
+        </div>
+    </div>
+
+    <script>
+        let testData = {
+            teacherUsername: 'profesor_test',
+            studentUsernames: ['felipe', 'maria', 'luis'],
+            evaluationId: null,
+            taskId: null,
+            resultsEvaluationId: null,
+            testResults: {
+                notificationFilter: null,
+                taskDeletion: null,
+                resultsSynchronization: null
+            }
+        };
+
+        // Simulación del TaskNotificationManager
+        const TaskNotificationManager = {
+            getNotifications() {
+                try {
+                    return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            saveNotifications(notifications) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            },
+
+            isEvaluationCompletedByStudent(taskId, studentUsername) {
+                try {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    
+                    const task = userTasks.find(t => t.id === taskId);
+                    return task && task.status === 'completed';
+                } catch (error) {
+                    console.error('Error checking evaluation completion:', error);
+                    return false;
+                }
+            },
+
+            getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => {
+                    // Filtros básicos
+                    const basicFilters = notification.targetUserRole === userRole &&
+                        notification.targetUsernames.includes(username) &&
+                        !notification.readBy.includes(username) &&
+                        notification.fromUsername !== username;
+
+                    if (!basicFilters) return false;
+
+                    // Para estudiantes: filtrar evaluaciones completadas
+                    if (userRole === 'student' && notification.type === 'new_task') {
+                        if (notification.taskType === 'evaluation') {
+                            const isCompleted = this.isEvaluationCompletedByStudent(notification.taskId, username);
+                            if (isCompleted) {
+                                console.log(`[getUnreadNotificationsForUser] Filtering out completed evaluation: ${notification.taskTitle} for student: ${username}`);
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                });
+            },
+
+            removeEvaluationNotificationOnCompletion(taskId, studentUsername) {
+                const notifications = this.getNotifications();
+                const filteredNotifications = notifications.filter(notification => {
+                    if (notification.type === 'new_task' && 
+                        notification.taskId === taskId && 
+                        notification.targetUsernames.includes(studentUsername)) {
+                        
+                        if (notification.targetUsernames.length > 1) {
+                            notification.targetUsernames = notification.targetUsernames.filter(
+                                username => username !== studentUsername
+                            );
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+
+                this.saveNotifications(filteredNotifications);
+                console.log(`[removeEvaluationNotificationOnCompletion] Removed notification for ${studentUsername} on task ${taskId}`);
+            }
+        };
+
+        function addResult(containerId, content, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function updateTestSummary() {
+            const container = document.getElementById('testSummary');
+            const results = testData.testResults;
+            
+            container.innerHTML = `
+                <div class="test-item ${results.notificationFilter === true ? 'test-passed' : results.notificationFilter === false ? 'test-failed' : 'test-pending'}">
+                    <h4>🔔 Filtro de Notificaciones</h4>
+                    <p>Estado: ${results.notificationFilter === true ? '✅ PASÓ' : results.notificationFilter === false ? '❌ FALLÓ' : '⏳ PENDIENTE'}</p>
+                </div>
+                <div class="test-item ${results.taskDeletion === true ? 'test-passed' : results.taskDeletion === false ? 'test-failed' : 'test-pending'}">
+                    <h4>🗑️ Eliminación de Tareas</h4>
+                    <p>Estado: ${results.taskDeletion === true ? '✅ PASÓ' : results.taskDeletion === false ? '❌ FALLÓ' : '⏳ PENDIENTE'}</p>
+                </div>
+                <div class="test-item ${results.resultsSynchronization === true ? 'test-passed' : results.resultsSynchronization === false ? 'test-failed' : 'test-pending'}">
+                    <h4>📊 Sincronización de Resultados</h4>
+                    <p>Estado: ${results.resultsSynchronization === true ? '✅ PASÓ' : results.resultsSynchronization === false ? '❌ FALLÓ' : '⏳ PENDIENTE'}</p>
+                </div>
+            `;
+        }
+
+        // Configuración inicial
+        function setupTestUsers() {
+            const container = document.getElementById('userSetup');
+            container.innerHTML = '';
+
+            try {
+                // Crear objeto de usuarios
+                const users = {
+                    [testData.teacherUsername]: {
+                        displayName: 'Profesor de Prueba',
+                        email: 'profesor@test.com',
+                        role: 'teacher',
+                        activeCourses: ['10A', '11B'],
+                        status: 'active'
+                    }
+                };
+
+                // Agregar estudiantes
+                testData.studentUsernames.forEach((username, index) => {
+                    users[username] = {
+                        displayName: `Estudiante ${username.charAt(0).toUpperCase() + username.slice(1)}`,
+                        email: `${username}@test.com`,
+                        role: 'student',
+                        activeCourses: ['10A'],
+                        status: 'active'
+                    };
+                });
+
+                localStorage.setItem('smart-student-users', JSON.stringify(users));
+
+                // Configurar usuario actual como profesor
+                localStorage.setItem('smart-student-current-user', JSON.stringify({
+                    username: testData.teacherUsername,
+                    role: 'teacher',
+                    displayName: 'Profesor de Prueba'
+                }));
+
+                addResult('userSetup', `✅ Usuarios creados: 1 profesor + ${testData.studentUsernames.length} estudiantes`, 'success');
+                addResult('userSetup', `👤 Usuario actual: ${testData.teacherUsername} (profesor)`, 'info');
+
+            } catch (error) {
+                addResult('userSetup', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function cleanAllData() {
+            const container = document.getElementById('cleanupStatus');
+            container.innerHTML = '';
+
+            try {
+                // Limpiar todas las claves relacionadas
+                const keysToRemove = [
+                    'smart-student-tasks',
+                    'smart-student-task-comments',
+                    'smart-student-task-notifications'
+                ];
+
+                // Limpiar tareas individuales de usuarios
+                testData.studentUsernames.forEach(username => {
+                    keysToRemove.push(`userTasks_${username}`);
+                    keysToRemove.push(`evaluationHistory_${username}`);
+                });
+
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+
+                // Reinicializar arrays vacíos
+                localStorage.setItem('smart-student-tasks', '[]');
+                localStorage.setItem('smart-student-task-comments', '[]');
+                localStorage.setItem('smart-student-task-notifications', '[]');
+
+                // Reinicializar test data
+                testData.evaluationId = null;
+                testData.taskId = null;
+                testData.resultsEvaluationId = null;
+                testData.testResults = {
+                    notificationFilter: null,
+                    taskDeletion: null,
+                    resultsSynchronization: null
+                };
+
+                addResult('cleanupStatus', '✅ Sistema limpiado completamente', 'success');
+                updateTestSummary();
+
+            } catch (error) {
+                addResult('cleanupStatus', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Prueba 1: Filtro de notificaciones
+        function createTestEvaluation() {
+            const container = document.getElementById('evaluationCreation');
+            container.innerHTML = '';
+
+            try {
+                testData.evaluationId = `eval_test_${Date.now()}`;
+                
+                // Crear evaluación
+                const evaluation = {
+                    id: testData.evaluationId,
+                    title: 'Evaluación de Prueba - Filtro de Notificaciones',
+                    description: 'Evaluación para probar el filtro de notificaciones',
+                    subject: 'Matemáticas',
+                    taskType: 'evaluation',
+                    assignedTo: 'course',
+                    course: '10A',
+                    dueDate: new Date(Date.now() + 86400000).toISOString(),
+                    createdBy: testData.teacherUsername,
+                    assignedBy: testData.teacherUsername,
+                    createdAt: new Date().toISOString(),
+                    evaluationConfig: {
+                        topic: 'Álgebra',
+                        questionCount: 5,
+                        timeLimit: 10
+                    }
+                };
+
+                // Guardar en tareas globales
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                tasks.push(evaluation);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+                // Crear notificación para estudiantes
+                const notifications = TaskNotificationManager.getNotifications();
+                const newNotification = {
+                    id: `notif_${testData.evaluationId}_${Date.now()}`,
+                    type: 'new_task',
+                    taskType: 'evaluation',
+                    taskId: testData.evaluationId,
+                    taskTitle: evaluation.title,
+                    targetUserRole: 'student',
+                    targetUsernames: testData.studentUsernames,
+                    fromUsername: testData.teacherUsername,
+                    fromDisplayName: 'Profesor de Prueba',
+                    course: '10A',
+                    subject: 'Matemáticas',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: []
+                };
+
+                notifications.push(newNotification);
+                TaskNotificationManager.saveNotifications(notifications);
+
+                // Agregar a tareas de usuarios estudiantes
+                testData.studentUsernames.forEach(studentUsername => {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    userTasks.push({
+                        ...evaluation,
+                        status: 'pending'
+                    });
+                    localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+                });
+
+                addResult('evaluationCreation', `✅ Evaluación creada: ${evaluation.title}`, 'success');
+                addResult('evaluationCreation', `🆔 ID: ${testData.evaluationId}`, 'info');
+                addResult('evaluationCreation', `🔔 Notificación enviada a ${testData.studentUsernames.length} estudiantes`, 'info');
+
+            } catch (error) {
+                addResult('evaluationCreation', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyNotificationAppears() {
+            const container = document.getElementById('notificationAppears');
+            container.innerHTML = '';
+
+            if (!testData.evaluationId) {
+                addResult('notificationAppears', '❌ Primero crea una evaluación', 'error');
+                return;
+            }
+
+            try {
+                // Verificar para cada estudiante
+                let allStudentsHaveNotification = true;
+                
+                testData.studentUsernames.forEach(studentUsername => {
+                    const notifications = TaskNotificationManager.getUnreadNotificationsForUser(studentUsername, 'student');
+                    const evaluationNotifications = notifications.filter(n => 
+                        n.taskId === testData.evaluationId && n.type === 'new_task' && n.taskType === 'evaluation'
+                    );
+
+                    if (evaluationNotifications.length === 0) {
+                        allStudentsHaveNotification = false;
+                        addResult('notificationAppears', `❌ ${studentUsername}: No tiene notificación de evaluación`, 'error');
+                    } else {
+                        addResult('notificationAppears', `✅ ${studentUsername}: Notificación presente`, 'success');
+                    }
+                });
+
+                if (allStudentsHaveNotification) {
+                    addResult('notificationAppears', '🎉 Todos los estudiantes tienen la notificación', 'success');
+                }
+
+            } catch (error) {
+                addResult('notificationAppears', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function completeEvaluationAsStudent() {
+            const container = document.getElementById('evaluationCompletion');
+            container.innerHTML = '';
+
+            if (!testData.evaluationId) {
+                addResult('evaluationCompletion', '❌ Primero crea una evaluación', 'error');
+                return;
+            }
+
+            try {
+                const studentUsername = testData.studentUsernames[0]; // Felipe
+
+                // Marcar como completada en tareas del usuario
+                const userTasksKey = `userTasks_${studentUsername}`;
+                const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                const taskIndex = userTasks.findIndex(t => t.id === testData.evaluationId);
+
+                if (taskIndex !== -1) {
+                    userTasks[taskIndex].status = 'completed';
+                    userTasks[taskIndex].completedAt = new Date().toISOString();
+                    userTasks[taskIndex].score = 4;
+                    userTasks[taskIndex].completionPercentage = 80;
+                    localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+
+                    // Simular la eliminación de notificación
+                    TaskNotificationManager.removeEvaluationNotificationOnCompletion(testData.evaluationId, studentUsername);
+
+                    addResult('evaluationCompletion', `✅ ${studentUsername} completó la evaluación`, 'success');
+                    addResult('evaluationCompletion', `📊 Resultado: 4/5 (80%)`, 'info');
+
+                } else {
+                    addResult('evaluationCompletion', `❌ No se encontró la evaluación para ${studentUsername}`, 'error');
+                }
+
+            } catch (error) {
+                addResult('evaluationCompletion', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyNotificationDisappears() {
+            const container = document.getElementById('notificationDisappears');
+            container.innerHTML = '';
+
+            if (!testData.evaluationId) {
+                addResult('notificationDisappears', '❌ Primero crea y completa una evaluación', 'error');
+                return;
+            }
+
+            try {
+                const studentUsername = testData.studentUsernames[0]; // Felipe
+                const notifications = TaskNotificationManager.getUnreadNotificationsForUser(studentUsername, 'student');
+                const evaluationNotifications = notifications.filter(n => 
+                    n.taskId === testData.evaluationId && n.type === 'new_task' && n.taskType === 'evaluation'
+                );
+
+                if (evaluationNotifications.length === 0) {
+                    addResult('notificationDisappears', `✅ ${studentUsername}: Notificación correctamente filtrada`, 'success');
+                    testData.testResults.notificationFilter = true;
+                } else {
+                    addResult('notificationDisappears', `❌ ${studentUsername}: Notificación AÚN VISIBLE (filtro no funciona)`, 'error');
+                    testData.testResults.notificationFilter = false;
+                    
+                    // Debug adicional
+                    const isCompleted = TaskNotificationManager.isEvaluationCompletedByStudent(testData.evaluationId, studentUsername);
+                    addResult('notificationDisappears', `🔍 Debug: Evaluación completada = ${isCompleted}`, 'info');
+                }
+
+                updateTestSummary();
+
+            } catch (error) {
+                addResult('notificationDisappears', `❌ Error: ${error.message}`, 'error');
+                testData.testResults.notificationFilter = false;
+                updateTestSummary();
+            }
+        }
+
+        // Prueba 2: Eliminación de tareas
+        function createTaskForDeletion() {
+            const container = document.getElementById('taskCreation');
+            container.innerHTML = '';
+
+            try {
+                testData.taskId = `task_deletion_${Date.now()}`;
+                
+                const task = {
+                    id: testData.taskId,
+                    title: 'Tarea para Eliminación - Prueba',
+                    description: 'Tarea que será eliminada para probar la eliminación completa',
+                    subject: 'Historia',
+                    taskType: 'assignment',
+                    assignedTo: 'course',
+                    course: '10A',
+                    dueDate: new Date(Date.now() + 86400000).toISOString(),
+                    createdBy: testData.teacherUsername,
+                    assignedBy: testData.teacherUsername,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Guardar en tareas globales
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                tasks.push(task);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+                // Agregar a tareas de usuarios estudiantes
+                testData.studentUsernames.forEach(studentUsername => {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    userTasks.push({
+                        ...task,
+                        status: 'pending'
+                    });
+                    localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+                });
+
+                addResult('taskCreation', `✅ Tarea creada: ${task.title}`, 'success');
+                addResult('taskCreation', `🆔 ID: ${testData.taskId}`, 'info');
+
+            } catch (error) {
+                addResult('taskCreation', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyTaskVisibleToStudents() {
+            const container = document.getElementById('taskVisibility');
+            container.innerHTML = '';
+
+            if (!testData.taskId) {
+                addResult('taskVisibility', '❌ Primero crea una tarea', 'error');
+                return;
+            }
+
+            try {
+                let allStudentsHaveTask = true;
+                
+                testData.studentUsernames.forEach(studentUsername => {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    const hasTask = userTasks.some(t => t.id === testData.taskId);
+
+                    if (!hasTask) {
+                        allStudentsHaveTask = false;
+                        addResult('taskVisibility', `❌ ${studentUsername}: No tiene la tarea`, 'error');
+                    } else {
+                        addResult('taskVisibility', `✅ ${studentUsername}: Tarea presente`, 'success');
+                    }
+                });
+
+                if (allStudentsHaveTask) {
+                    addResult('taskVisibility', '🎉 Todos los estudiantes tienen la tarea', 'success');
+                }
+
+            } catch (error) {
+                addResult('taskVisibility', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function deleteTaskAsTeacher() {
+            const container = document.getElementById('taskDeletion');
+            container.innerHTML = '';
+
+            if (!testData.taskId) {
+                addResult('taskDeletion', '❌ Primero crea una tarea', 'error');
+                return;
+            }
+
+            try {
+                // Simular la función confirmDeleteTask mejorada
+                
+                // 1. Eliminar de tareas globales
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const updatedTasks = tasks.filter(task => task.id !== testData.taskId);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(updatedTasks));
+
+                // 2. Eliminar de tareas individuales de cada usuario
+                const allUsers = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                let totalUsersUpdated = 0;
+                
+                Object.keys(allUsers).forEach(username => {
+                    const userTasksKey = `userTasks_${username}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    const filteredUserTasks = userTasks.filter(task => task.id !== testData.taskId);
+                    
+                    if (filteredUserTasks.length !== userTasks.length) {
+                        localStorage.setItem(userTasksKey, JSON.stringify(filteredUserTasks));
+                        totalUsersUpdated++;
+                    }
+                });
+
+                // 3. Eliminar notificaciones relacionadas
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const filteredNotifications = notifications.filter(n => n.taskId !== testData.taskId);
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+
+                addResult('taskDeletion', `✅ Tarea eliminada de tareas globales`, 'success');
+                addResult('taskDeletion', `✅ Actualizado ${totalUsersUpdated} usuarios`, 'success');
+                addResult('taskDeletion', `✅ Notificaciones relacionadas eliminadas`, 'success');
+
+            } catch (error) {
+                addResult('taskDeletion', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyTaskDeletedFromAllUsers() {
+            const container = document.getElementById('completeDeletion');
+            container.innerHTML = '';
+
+            if (!testData.taskId) {
+                addResult('completeDeletion', '❌ Primero crea y elimina una tarea', 'error');
+                return;
+            }
+
+            try {
+                let taskCompletelyDeleted = true;
+
+                // Verificar tareas globales
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const globalTaskExists = tasks.some(t => t.id === testData.taskId);
+                if (globalTaskExists) {
+                    taskCompletelyDeleted = false;
+                    addResult('completeDeletion', '❌ Tarea AÚN EXISTE en tareas globales', 'error');
+                } else {
+                    addResult('completeDeletion', '✅ Tarea eliminada de tareas globales', 'success');
+                }
+
+                // Verificar usuarios individuales
+                testData.studentUsernames.forEach(studentUsername => {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    const userHasTask = userTasks.some(t => t.id === testData.taskId);
+
+                    if (userHasTask) {
+                        taskCompletelyDeleted = false;
+                        addResult('completeDeletion', `❌ ${studentUsername}: Tarea AÚN EXISTE`, 'error');
+                    } else {
+                        addResult('completeDeletion', `✅ ${studentUsername}: Tarea eliminada`, 'success');
+                    }
+                });
+
+                // Verificar notificaciones
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const notificationExists = notifications.some(n => n.taskId === testData.taskId);
+                if (notificationExists) {
+                    taskCompletelyDeleted = false;
+                    addResult('completeDeletion', '❌ Notificaciones AÚN EXISTEN', 'error');
+                } else {
+                    addResult('completeDeletion', '✅ Notificaciones eliminadas', 'success');
+                }
+
+                testData.testResults.taskDeletion = taskCompletelyDeleted;
+                updateTestSummary();
+
+            } catch (error) {
+                addResult('completeDeletion', `❌ Error: ${error.message}`, 'error');
+                testData.testResults.taskDeletion = false;
+                updateTestSummary();
+            }
+        }
+
+        // Prueba 3: Sincronización de resultados
+        function createEvaluationForResults() {
+            const container = document.getElementById('resultsEvaluationCreation');
+            container.innerHTML = '';
+
+            try {
+                testData.resultsEvaluationId = `eval_results_${Date.now()}`;
+                
+                const evaluation = {
+                    id: testData.resultsEvaluationId,
+                    title: 'Evaluación de Resultados - Prueba',
+                    description: 'Evaluación para probar la sincronización de resultados',
+                    subject: 'Ciencias',
+                    taskType: 'evaluation',
+                    assignedTo: 'course',
+                    course: '10A',
+                    dueDate: new Date(Date.now() + 86400000).toISOString(),
+                    createdBy: testData.teacherUsername,
+                    assignedBy: testData.teacherUsername,
+                    createdAt: new Date().toISOString(),
+                    evaluationConfig: {
+                        topic: 'Biología',
+                        questionCount: 10,
+                        timeLimit: 15
+                    },
+                    evaluationResults: {} // Inicializar para almacenar resultados
+                };
+
+                // Guardar en tareas globales
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                tasks.push(evaluation);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+                addResult('resultsEvaluationCreation', `✅ Evaluación creada: ${evaluation.title}`, 'success');
+                addResult('resultsEvaluationCreation', `🆔 ID: ${testData.resultsEvaluationId}`, 'info');
+
+            } catch (error) {
+                addResult('resultsEvaluationCreation', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function completeAsMultipleStudents() {
+            const container = document.getElementById('multipleCompletions');
+            container.innerHTML = '';
+
+            if (!testData.resultsEvaluationId) {
+                addResult('multipleCompletions', '❌ Primero crea una evaluación para resultados', 'error');
+                return;
+            }
+
+            try {
+                const scores = [8, 6, 9]; // Puntajes para felipe, maria, luis
+                
+                testData.studentUsernames.forEach((studentUsername, index) => {
+                    const score = scores[index];
+                    const totalQuestions = 10;
+                    const completionPercentage = (score / totalQuestions) * 100;
+                    const completedAt = new Date().toISOString();
+
+                    // Simular syncEvaluationResultsToGlobalTask
+                    const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                    const taskIndex = tasks.findIndex(task => task.id === testData.resultsEvaluationId);
+                    
+                    if (taskIndex !== -1) {
+                        if (!tasks[taskIndex].evaluationResults) {
+                            tasks[taskIndex].evaluationResults = {};
+                        }
+                        
+                        tasks[taskIndex].evaluationResults[studentUsername] = {
+                            score: score,
+                            totalQuestions: totalQuestions,
+                            completionPercentage: completionPercentage,
+                            completedAt: completedAt,
+                            attempt: 1
+                        };
+                        
+                        localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+                    }
+
+                    addResult('multipleCompletions', 
+                        `✅ ${studentUsername}: ${score}/${totalQuestions} (${completionPercentage.toFixed(1)}%)`, 
+                        'success');
+                });
+
+            } catch (error) {
+                addResult('multipleCompletions', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function verifyResultsVisibleToTeacher() {
+            const container = document.getElementById('teacherResults');
+            container.innerHTML = '';
+
+            if (!testData.resultsEvaluationId) {
+                addResult('teacherResults', '❌ Primero crea y completa evaluaciones', 'error');
+                return;
+            }
+
+            try {
+                // Simular getAllEvaluationResults
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const evaluation = tasks.find(task => task.id === testData.resultsEvaluationId);
+
+                if (!evaluation) {
+                    addResult('teacherResults', '❌ Evaluación no encontrada', 'error');
+                    testData.testResults.resultsSynchronization = false;
+                    updateTestSummary();
+                    return;
+                }
+
+                const hasResults = evaluation.evaluationResults && Object.keys(evaluation.evaluationResults).length > 0;
+
+                if (hasResults) {
+                    addResult('teacherResults', '✅ Evaluación tiene resultados sincronizados', 'success');
+                    
+                    Object.entries(evaluation.evaluationResults).forEach(([studentUsername, result]) => {
+                        addResult('teacherResults', 
+                            `📊 ${studentUsername}: ${result.score}/${result.totalQuestions} (${result.completionPercentage.toFixed(1)}%)`, 
+                            'info');
+                    });
+
+                    testData.testResults.resultsSynchronization = true;
+                } else {
+                    addResult('teacherResults', '❌ No se encontraron resultados sincronizados', 'error');
+                    testData.testResults.resultsSynchronization = false;
+                }
+
+                updateTestSummary();
+
+            } catch (error) {
+                addResult('teacherResults', `❌ Error: ${error.message}`, 'error');
+                testData.testResults.resultsSynchronization = false;
+                updateTestSummary();
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTestSummary();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Mapas Mentales Educativos - Generación SVG Limpia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .demo-section {
+            margin-bottom: 50px;
+        }
+
+        .demo-section h2 {
+            color: #2563eb;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .controls {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .control-group select,
+        .control-group input {
+            padding: 12px 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .control-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-container {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .result-container h3 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .map-display {
+            background: white;
+            border: 3px solid #d1d5db;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 100%;
+            overflow-x: auto;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-display svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #6b7280;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e5e7eb;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .example-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .example-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .example-card h4 {
+            color: #2563eb;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .example-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #2563eb;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .info-box ul {
+            color: #1e3a8a;
+            padding-left: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .comparison-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .comparison-card.horizontal {
+            border-color: #10b981;
+        }
+
+        .comparison-card.vertical {
+            border-color: #dc2626;
+        }
+
+        .comparison-card h4 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .comparison-card.horizontal h4 {
+            color: #10b981;
+        }
+
+        .comparison-card.vertical h4 {
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Mapas Mentales Educativos</h1>
+            <p>Generación SVG limpia sin IA - Texto claro y legible</p>
+        </div>
+
+        <div class="content">
+            <!-- Sección de información -->
+            <div class="info-box">
+                <h3>✨ Características del Sistema</h3>
+                <ul>
+                    <li><strong>Generación 100% SVG:</strong> Sin dependencia de IA para la imagen</li>
+                    <li><strong>Texto Ultra-Legible:</strong> Fuentes claras y bien contrastadas</li>
+                    <li><strong>Diseño Profesional:</strong> Nodos estructurados y conexiones limpias</li>
+                    <li><strong>Contenido Educativo:</strong> Temas específicos con información relevante</li>
+                    <li><strong>Dos Orientaciones:</strong> Horizontal (rectangular) y radial (circular)</li>
+                </ul>
+            </div>
+
+            <!-- Sección de control -->
+            <div class="demo-section">
+                <h2>🎯 Generador de Mapas Mentales</h2>
+                
+                <div class="controls">
+                    <div class="control-grid">
+                        <div class="control-group">
+                            <label for="theme">Tema Educativo:</label>
+                            <select id="theme">
+                                <option value="sistema respiratorio">Sistema Respiratorio</option>
+                                <option value="fotosíntesis">Fotosíntesis</option>
+                                <option value="célula">La Célula</option>
+                                <option value="plantas">Las Plantas</option>
+                                <option value="agua">El Agua</option>
+                                <option value="ecosistema">Ecosistema</option>
+                                <option value="respiración">Respiración</option>
+                                <option value="aparato respiratorio">Aparato Respiratorio</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="language">Idioma:</label>
+                            <select id="language">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="horizontal">
+                                <span>Diseño Horizontal</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="generate-btn" onclick="generateMindMap()">
+                        🚀 Generar Mapa Mental
+                    </button>
+                </div>
+
+                <div class="result-container">
+                    <h3>Resultado del Mapa Mental</h3>
+                    <div class="map-display" id="mapDisplay">
+                        <div style="color: #9ca3af; font-size: 1.1rem;">
+                            Selecciona un tema y presiona "Generar Mapa Mental"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ejemplos predefinidos -->
+            <div class="demo-section">
+                <h2>📚 Ejemplos Rápidos</h2>
+                <div class="examples-grid">
+                    <div class="example-card" onclick="loadExample('sistema respiratorio', 'es', false)">
+                        <h4>🫁 Sistema Respiratorio</h4>
+                        <p>Órganos, procesos y funciones del sistema respiratorio</p>
+                    </div>
+                    
+                    <div class="example-card" onclick="loadExample('fotosíntesis', 'es', true)">
+                        <h4>🌱 Fotosíntesis</h4>
+                        <p>Proceso, reactivos y productos de la fotosíntesis</p>
+                    </div>
+                    
+                    <div class="example-card" onclick="loadExample('célula', 'es', false)">
+                        <h4>🔬 La Célula</h4>
+                        <p>Tipos celulares, organelos y funciones</p>
+                    </div>
+                    
+                    <div class="example-card" onclick="loadExample('ecosistema', 'es', true)">
+                        <h4>🌍 Ecosistema</h4>
+                        <p>Componentes vivos, no vivos e interacciones</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparación de orientaciones -->
+            <div class="demo-section">
+                <h2>📐 Comparación de Orientaciones</h2>
+                <div class="comparison-section">
+                    <div class="comparison-card horizontal">
+                        <h4>🔄 Diseño Horizontal</h4>
+                        <p>Ideal para temas con muchas ramas principales. Los nodos se distribuyen de izquierda a derecha, con el tema central en el lado izquierdo y las ramas extendiéndose horizontalmente.</p>
+                        <div id="horizontalExample" style="margin-top: 15px; min-height: 200px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;"></div>
+                    </div>
+                    
+                    <div class="comparison-card vertical">
+                        <h4>🎯 Diseño Radial</h4>
+                        <p>Perfecto para temas con estructura circular. El tema central está en el centro y las ramas se distribuyen radialmente alrededor de él.</p>
+                        <div id="verticalExample" style="margin-top: 15px; min-height: 200px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de la función generateMockSvg del archivo TypeScript
+        function generateMockSvg(structure, isHorizontal = false) {
+            const width = isHorizontal ? 1400 : 900;
+            const height = isHorizontal ? 900 : 800;
+            const centerX = isHorizontal ? 200 : width / 2;
+            const centerY = height / 2;
+            
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 ${width} ${height}" style="background: #fafafa;">
+                <defs>
+                    <filter id="cleanShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.15)"/>
+                    </filter>
+                    <style>
+                        .node-text { 
+                            font-family: 'Segoe UI', 'Arial', sans-serif; 
+                            text-anchor: middle; 
+                            dominant-baseline: middle; 
+                            font-weight: 600;
+                            letter-spacing: 0.5px;
+                        }
+                        .central-text { fill: #ffffff; font-size: 18px; font-weight: 700; }
+                        .branch-text { fill: #ffffff; font-size: 14px; font-weight: 600; }
+                        .sub-text { fill: #ffffff; font-size: 12px; font-weight: 500; }
+                        .connection-line { 
+                            stroke: #8b9dc3; 
+                            stroke-width: 3; 
+                            stroke-linecap: round;
+                            opacity: 0.7;
+                        }
+                    </style>
+                </defs>`;
+
+            if (isHorizontal) {
+                // DISEÑO HORIZONTAL
+                const centralWidth = 180;
+                const centralHeight = 80;
+                const centralX = centerX;
+                const centralY = centerY;
+                
+                // Fondo blanco para el nodo central
+                svg += `<rect x="${centralX - centralWidth/2 - 2}" y="${centralY - centralHeight/2 - 2}" 
+                    width="${centralWidth + 4}" height="${centralHeight + 4}" rx="15" 
+                    fill="#ffffff" stroke="#e1e8ed" stroke-width="2"/>`;
+                
+                // Nodo central principal
+                svg += `<rect x="${centralX - centralWidth/2}" y="${centralY - centralHeight/2}" 
+                    width="${centralWidth}" height="${centralHeight}" rx="12" 
+                    fill="#2563eb" stroke="#1e40af" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                
+                // Texto central
+                const centralLines = cleanTextWrap(structure.centralThemeLabel, 16);
+                const lineHeight = 20;
+                const startY = centralY - ((centralLines.length - 1) * lineHeight / 2);
+                
+                centralLines.forEach((line, idx) => {
+                    svg += `<text x="${centralX}" y="${startY + (idx * lineHeight)}" class="node-text central-text">${line}</text>`;
+                });
+                
+                // Ramas principales
+                const branches = structure.mainBranches;
+                const availableHeight = height - 180;
+                const branchSpacing = availableHeight / (branches.length + 1);
+                
+                branches.forEach((branch, branchIdx) => {
+                    const branchY = 90 + (branchIdx + 1) * branchSpacing;
+                    const branchX = centralX + 300;
+                    
+                    // Línea de conexión
+                    svg += `<line x1="${centralX + centralWidth/2}" y1="${centralY}" 
+                        x2="${branchX - 85}" y2="${branchY}" class="connection-line"/>`;
+                    
+                    // Fondo blanco para nodo rama
+                    const branchWidth = 150;
+                    const branchHeight = 60;
+                    svg += `<rect x="${branchX - branchWidth/2 - 2}" y="${branchY - branchHeight/2 - 2}" 
+                        width="${branchWidth + 4}" height="${branchHeight + 4}" rx="12" 
+                        fill="#ffffff" stroke="#e1e8ed" stroke-width="2"/>`;
+                    
+                    // Nodo rama principal
+                    svg += `<rect x="${branchX - branchWidth/2}" y="${branchY - branchHeight/2}" 
+                        width="${branchWidth}" height="${branchHeight}" rx="10" 
+                        fill="#059669" stroke="#047857" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                    
+                    // Texto de rama
+                    const branchLines = cleanTextWrap(branch.label, 18);
+                    const branchStartY = branchY - ((branchLines.length - 1) * 16 / 2);
+                    
+                    branchLines.forEach((line, lineIdx) => {
+                        svg += `<text x="${branchX}" y="${branchStartY + (lineIdx * 16)}" class="node-text branch-text">${line}</text>`;
+                    });
+                    
+                    // Subnodos
+                    if (branch.children && branch.children.length > 0) {
+                        const subStartX = branchX + 180;
+                        const subSpacing = Math.min(140, (width - subStartX - 100) / branch.children.length);
+                        
+                        branch.children.forEach((child, childIdx) => {
+                            const subX = subStartX + (childIdx * subSpacing);
+                            const subY = branchY;
+                            const subRadius = 38;
+                            
+                            // Línea de conexión
+                            svg += `<line x1="${branchX + branchWidth/2}" y1="${branchY}" 
+                                x2="${subX - subRadius}" y2="${subY}" class="connection-line"/>`;
+                            
+                            // Fondo blanco para subnodo
+                            svg += `<circle cx="${subX}" cy="${subY}" r="${subRadius + 2}" 
+                                fill="#ffffff" stroke="#e1e8ed" stroke-width="2"/>`;
+                            
+                            // Subnodo principal
+                            svg += `<circle cx="${subX}" cy="${subY}" r="${subRadius}" 
+                                fill="#dc2626" stroke="#b91c1c" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                            
+                            // Texto del subnodo
+                            const subLines = cleanTextWrap(child.label, 10);
+                            const subStartY = subY - ((subLines.length - 1) * 11 / 2);
+                            
+                            subLines.forEach((line, lineIdx) => {
+                                svg += `<text x="${subX}" y="${subStartY + (lineIdx * 11)}" class="node-text sub-text">${line}</text>`;
+                            });
+                        });
+                    }
+                });
+                
+            } else {
+                // DISEÑO RADIAL
+                const centralRadius = 70;
+                
+                // Fondo blanco para nodo central
+                svg += `<circle cx="${centerX}" cy="${centerY}" r="${centralRadius + 3}" 
+                    fill="#ffffff" stroke="#e1e8ed" stroke-width="3"/>`;
+                
+                // Nodo central principal
+                svg += `<circle cx="${centerX}" cy="${centerY}" r="${centralRadius}" 
+                    fill="#2563eb" stroke="#1e40af" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                
+                // Texto central
+                const centralLines = cleanTextWrap(structure.centralThemeLabel, 14);
+                const centralStartY = centerY - ((centralLines.length - 1) * 16 / 2);
+                
+                centralLines.forEach((line, idx) => {
+                    svg += `<text x="${centerX}" y="${centralStartY + (idx * 16)}" class="node-text central-text">${line}</text>`;
+                });
+                
+                // Ramas radiales
+                const branches = structure.mainBranches;
+                const angleStep = (2 * Math.PI) / branches.length;
+                const branchDistance = 180;
+                
+                branches.forEach((branch, idx) => {
+                    const angle = idx * angleStep - Math.PI / 2;
+                    const branchX = centerX + Math.cos(angle) * branchDistance;
+                    const branchY = centerY + Math.sin(angle) * branchDistance;
+                    
+                    // Línea de conexión
+                    svg += `<line x1="${centerX + Math.cos(angle) * (centralRadius + 3)}" 
+                        y1="${centerY + Math.sin(angle) * (centralRadius + 3)}" 
+                        x2="${branchX - Math.cos(angle) * 65}" 
+                        y2="${branchY - Math.sin(angle) * 25}" class="connection-line"/>`;
+                    
+                    // Fondo blanco para nodo rama
+                    const branchWidth = 120;
+                    const branchHeight = 45;
+                    svg += `<rect x="${branchX - branchWidth/2 - 2}" y="${branchY - branchHeight/2 - 2}" 
+                        width="${branchWidth + 4}" height="${branchHeight + 4}" rx="12" 
+                        fill="#ffffff" stroke="#e1e8ed" stroke-width="2"/>`;
+                    
+                    // Nodo rama
+                    svg += `<rect x="${branchX - branchWidth/2}" y="${branchY - branchHeight/2}" 
+                        width="${branchWidth}" height="${branchHeight}" rx="10" 
+                        fill="#059669" stroke="#047857" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                    
+                    // Texto de rama
+                    const branchLines = cleanTextWrap(branch.label, 14);
+                    const branchStartY = branchY - ((branchLines.length - 1) * 13 / 2);
+                    
+                    branchLines.forEach((line, lineIdx) => {
+                        svg += `<text x="${branchX}" y="${branchStartY + (lineIdx * 13)}" class="node-text branch-text">${line}</text>`;
+                    });
+                    
+                    // Subnodos radiales
+                    if (branch.children && branch.children.length > 0) {
+                        const subDistance = 100;
+                        const subAngleSpread = Math.PI / 6;
+                        
+                        branch.children.forEach((child, childIdx) => {
+                            const subAngleOffset = (childIdx - (branch.children.length - 1) / 2) * 
+                                (subAngleSpread / Math.max(1, branch.children.length - 1));
+                            const subAngle = angle + subAngleOffset;
+                            const subX = branchX + Math.cos(subAngle) * subDistance;
+                            const subY = branchY + Math.sin(subAngle) * subDistance;
+                            const subRadius = 30;
+                            
+                            // Línea de conexión
+                            svg += `<line x1="${branchX + Math.cos(subAngle) * (branchWidth/2)}" 
+                                y1="${branchY + Math.sin(subAngle) * (branchHeight/2)}" 
+                                x2="${subX - Math.cos(subAngle) * (subRadius + 2)}" 
+                                y2="${subY - Math.sin(subAngle) * (subRadius + 2)}" class="connection-line"/>`;
+                            
+                            // Fondo blanco para subnodo
+                            svg += `<circle cx="${subX}" cy="${subY}" r="${subRadius + 2}" 
+                                fill="#ffffff" stroke="#e1e8ed" stroke-width="2"/>`;
+                            
+                            // Subnodo principal
+                            svg += `<circle cx="${subX}" cy="${subY}" r="${subRadius}" 
+                                fill="#dc2626" stroke="#b91c1c" stroke-width="3" filter="url(#cleanShadow)"/>`;
+                            
+                            // Texto del subnodo
+                            const subLines = cleanTextWrap(child.label, 8);
+                            const subStartY = subY - ((subLines.length - 1) * 9 / 2);
+                            
+                            subLines.forEach((line, lineIdx) => {
+                                svg += `<text x="${subX}" y="${subStartY + (lineIdx * 9)}" class="node-text sub-text">${line}</text>`;
+                            });
+                        });
+                    }
+                });
+            }
+            
+            svg += '</svg>';
+            return svg;
+        }
+
+        // Función de envoltura de texto
+        function cleanTextWrap(text, maxChars) {
+            if (!text || text.length <= maxChars) return [text || ''];
+            
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (const word of words) {
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                
+                if (testLine.length <= maxChars) {
+                    currentLine = testLine;
+                } else {
+                    if (currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        lines.push(word.substring(0, maxChars));
+                        currentLine = word.length > maxChars ? word.substring(maxChars) : '';
+                    }
+                }
+            }
+            
+            if (currentLine) lines.push(currentLine);
+            return lines.slice(0, 2);
+        }
+
+        // Estructura de datos para temas educativos
+        function generateMockMindMapStructure(centralTheme, language) {
+            const topicMappings = {
+                'sistema respiratorio': {
+                    centralLabel: language === 'es' ? 'SISTEMA RESPIRATORIO' : 'RESPIRATORY SYSTEM',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Órganos Principales' : 'Main Organs',
+                            children: language === 'es' ? ['Pulmones', 'Tráquea', 'Bronquios'] : ['Lungs', 'Trachea', 'Bronchi']
+                        },
+                        {
+                            label: language === 'es' ? 'Proceso de Respiración' : 'Breathing Process',
+                            children: language === 'es' ? ['Inspiración', 'Espiración', 'Intercambio de Gases'] : ['Inspiration', 'Expiration', 'Gas Exchange']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Oxigenación', 'Eliminación CO2', 'Regulación pH'] : ['Oxygenation', 'CO2 Removal', 'pH Regulation']
+                        },
+                        {
+                            label: language === 'es' ? 'Enfermedades Comunes' : 'Common Diseases',
+                            children: language === 'es' ? ['Asma', 'Neumonía', 'Bronquitis'] : ['Asthma', 'Pneumonia', 'Bronchitis']
+                        }
+                    ]
+                },
+                'fotosíntesis': {
+                    centralLabel: language === 'es' ? 'FOTOSÍNTESIS' : 'PHOTOSYNTHESIS',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Reactivos' : 'Reactants',
+                            children: language === 'es' ? ['Dióxido de Carbono', 'Agua', 'Luz Solar'] : ['Carbon Dioxide', 'Water', 'Sunlight']
+                        },
+                        {
+                            label: language === 'es' ? 'Productos' : 'Products',
+                            children: language === 'es' ? ['Glucosa', 'Oxígeno'] : ['Glucose', 'Oxygen']
+                        },
+                        {
+                            label: language === 'es' ? 'Fases' : 'Phases',
+                            children: language === 'es' ? ['Fase Luminosa', 'Fase Oscura', 'Ciclo de Calvin'] : ['Light Phase', 'Dark Phase', 'Calvin Cycle']
+                        },
+                        {
+                            label: language === 'es' ? 'Ubicación' : 'Location',
+                            children: language === 'es' ? ['Cloroplastos', 'Hojas', 'Células Vegetales'] : ['Chloroplasts', 'Leaves', 'Plant Cells']
+                        }
+                    ]
+                },
+                'célula': {
+                    centralLabel: language === 'es' ? 'LA CÉLULA' : 'THE CELL',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Tipos Celulares' : 'Cell Types',
+                            children: language === 'es' ? ['Célula Procariota', 'Célula Eucariota'] : ['Prokaryotic Cell', 'Eukaryotic Cell']
+                        },
+                        {
+                            label: language === 'es' ? 'Organelos' : 'Organelles',
+                            children: language === 'es' ? ['Núcleo', 'Mitocondrias', 'Ribosomas'] : ['Nucleus', 'Mitochondria', 'Ribosomes']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Reproducción', 'Metabolismo', 'Homeostasis'] : ['Reproduction', 'Metabolism', 'Homeostasis']
+                        }
+                    ]
+                },
+                'plantas': {
+                    centralLabel: language === 'es' ? 'LAS PLANTAS' : 'PLANTS',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Tipos de Plantas' : 'Plant Types',
+                            children: language === 'es' ? ['Angiospermas', 'Gimnospermas', 'Helechos'] : ['Angiosperms', 'Gymnosperms', 'Ferns']
+                        },
+                        {
+                            label: language === 'es' ? 'Partes de la Planta' : 'Plant Parts',
+                            children: language === 'es' ? ['Raíz', 'Tallo', 'Hojas'] : ['Root', 'Stem', 'Leaves']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Fotosíntesis', 'Respiración', 'Reproducción'] : ['Photosynthesis', 'Respiration', 'Reproduction']
+                        }
+                    ]
+                },
+                'agua': {
+                    centralLabel: language === 'es' ? 'EL AGUA' : 'WATER',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Estados del Agua' : 'Water States',
+                            children: language === 'es' ? ['Líquido', 'Sólido', 'Gaseoso'] : ['Liquid', 'Solid', 'Gas']
+                        },
+                        {
+                            label: language === 'es' ? 'Ciclo del Agua' : 'Water Cycle',
+                            children: language === 'es' ? ['Evaporación', 'Condensación', 'Precipitación'] : ['Evaporation', 'Condensation', 'Precipitation']
+                        },
+                        {
+                            label: language === 'es' ? 'Importancia' : 'Importance',
+                            children: language === 'es' ? ['Vida', 'Ecosistemas', 'Agricultura'] : ['Life', 'Ecosystems', 'Agriculture']
+                        }
+                    ]
+                },
+                'ecosistema': {
+                    centralLabel: language === 'es' ? 'ECOSISTEMA' : 'ECOSYSTEM',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Componentes Vivos' : 'Living Components',
+                            children: language === 'es' ? ['Productores', 'Consumidores', 'Descomponedores'] : ['Producers', 'Consumers', 'Decomposers']
+                        },
+                        {
+                            label: language === 'es' ? 'Componentes No Vivos' : 'Non-Living Components',
+                            children: language === 'es' ? ['Agua', 'Suelo', 'Clima'] : ['Water', 'Soil', 'Climate']
+                        },
+                        {
+                            label: language === 'es' ? 'Interacciones' : 'Interactions',
+                            children: language === 'es' ? ['Cadenas Alimentarias', 'Simbiosis', 'Competencia'] : ['Food Chains', 'Symbiosis', 'Competition']
+                        }
+                    ]
+                },
+                'respiración': {
+                    centralLabel: language === 'es' ? 'RESPIRACIÓN' : 'RESPIRATION',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Tipos de Respiración' : 'Types of Respiration',
+                            children: language === 'es' ? ['Respiración Pulmonar', 'Respiración Celular', 'Respiración Externa'] : ['Pulmonary Respiration', 'Cellular Respiration', 'External Respiration']
+                        },
+                        {
+                            label: language === 'es' ? 'Mecánica Respiratoria' : 'Respiratory Mechanics',
+                            children: language === 'es' ? ['Inspiración', 'Espiración', 'Ventilación'] : ['Inspiration', 'Expiration', 'Ventilation']
+                        },
+                        {
+                            label: language === 'es' ? 'Transporte de Gases' : 'Gas Transport',
+                            children: language === 'es' ? ['Hemoglobina', 'Difusión', 'Perfusión'] : ['Hemoglobin', 'Diffusion', 'Perfusion']
+                        }
+                    ]
+                },
+                'aparato respiratorio': {
+                    centralLabel: language === 'es' ? 'APARATO RESPIRATORIO' : 'RESPIRATORY SYSTEM',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Órganos Principales' : 'Main Organs',
+                            children: language === 'es' ? ['Pulmones', 'Tráquea', 'Bronquios'] : ['Lungs', 'Trachea', 'Bronchi']
+                        },
+                        {
+                            label: language === 'es' ? 'Proceso de Respiración' : 'Breathing Process',
+                            children: language === 'es' ? ['Inspiración', 'Espiración', 'Intercambio de Gases'] : ['Inspiration', 'Expiration', 'Gas Exchange']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Oxigenación', 'Eliminación CO2', 'Regulación pH'] : ['Oxygenation', 'CO2 Removal', 'pH Regulation']
+                        },
+                        {
+                            label: language === 'es' ? 'Enfermedades Comunes' : 'Common Diseases',
+                            children: language === 'es' ? ['Asma', 'Neumonía', 'Bronquitis'] : ['Asthma', 'Pneumonia', 'Bronchitis']
+                        }
+                    ]
+                }
+            };
+
+            let structure = topicMappings[centralTheme.toLowerCase()];
+            
+            if (!structure) {
+                // Fallback genérico
+                structure = {
+                    centralLabel: centralTheme.toUpperCase(),
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Concepto Principal' : 'Main Concept',
+                            children: language === 'es' ? ['Definición', 'Características'] : ['Definition', 'Characteristics']
+                        },
+                        {
+                            label: language === 'es' ? 'Componentes' : 'Components',
+                            children: language === 'es' ? ['Elemento 1', 'Elemento 2'] : ['Element 1', 'Element 2']
+                        },
+                        {
+                            label: language === 'es' ? 'Aplicaciones' : 'Applications',
+                            children: language === 'es' ? ['Uso Práctico', 'Importancia'] : ['Practical Use', 'Importance']
+                        }
+                    ]
+                };
+            }
+            
+            return {
+                centralThemeLabel: structure.centralLabel,
+                mainBranches: structure.branches.map(branch => ({
+                    label: branch.label,
+                    children: branch.children.map(child => ({ label: child }))
+                }))
+            };
+        }
+
+        // Función principal para generar mapa mental
+        function generateMindMap() {
+            const theme = document.getElementById('theme').value;
+            const language = document.getElementById('language').value;
+            const isHorizontal = document.getElementById('horizontal').checked;
+            
+            const mapDisplay = document.getElementById('mapDisplay');
+            const generateBtn = document.querySelector('.generate-btn');
+            
+            // Mostrar loading
+            mapDisplay.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Generando mapa mental ultra-limpio...</span>
+                </div>
+            `;
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ Generando...';
+            
+            // Simular tiempo de procesamiento
+            setTimeout(() => {
+                try {
+                    // Generar estructura
+                    const structure = generateMockMindMapStructure(theme, language);
+                    
+                    // Generar SVG
+                    const svg = generateMockSvg(structure, isHorizontal);
+                    
+                    // Mostrar resultado
+                    mapDisplay.innerHTML = svg;
+                    
+                    console.log('✅ Mapa mental generado exitosamente');
+                    console.log('📊 Estructura:', structure);
+                    
+                } catch (error) {
+                    console.error('❌ Error al generar mapa mental:', error);
+                    mapDisplay.innerHTML = `
+                        <div style="color: #dc2626; text-align: center;">
+                            <h4>Error al generar el mapa mental</h4>
+                            <p>Por favor, inténtalo de nuevo</p>
+                        </div>
+                    `;
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = '🚀 Generar Mapa Mental';
+                }
+            }, 1500);
+        }
+
+        // Función para cargar ejemplos
+        function loadExample(theme, language, horizontal) {
+            document.getElementById('theme').value = theme;
+            document.getElementById('language').value = language;
+            document.getElementById('horizontal').checked = horizontal;
+            generateMindMap();
+        }
+
+        // Generar ejemplos de comparación al cargar la página
+        window.addEventListener('load', function() {
+            // Ejemplo horizontal
+            setTimeout(() => {
+                const horizontalStructure = generateMockMindMapStructure('fotosíntesis', 'es');
+                const horizontalSvg = generateMockSvg(horizontalStructure, true);
+                document.getElementById('horizontalExample').innerHTML = horizontalSvg;
+            }, 500);
+            
+            // Ejemplo radial  
+            setTimeout(() => {
+                const verticalStructure = generateMockMindMapStructure('célula', 'es');
+                const verticalSvg = generateMockSvg(verticalStructure, false);
+                document.getElementById('verticalExample').innerHTML = verticalSvg;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Fix Burbuja Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .step {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .step-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .counter {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #dc3545;
+            display: inline-block;
+            background: #ffe6e6;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .success-counter {
+            color: #28a745;
+            background: #e6ffe6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Prueba - Fix Burbuja de Notificaciones</h1>
+    <p>Esta prueba verifica que las notificaciones de "nueva tarea" mantengan la burbuja roja hasta que el estudiante entregue la tarea.</p>
+
+    <div class="step">
+        <h2 class="step-title">1. Verificar Estado Inicial</h2>
+        <p>Primero, verifiquemos el estado actual de las notificaciones:</p>
+        <button class="button" onclick="checkInitialState()">🔍 Verificar Estado</button>
+        <div id="initial-state"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">2. Crear Tarea de Prueba (Solo para Profesores)</h2>
+        <p>Crear una nueva tarea para generar una notificación:</p>
+        <button class="button" onclick="createTestTask()">➕ Crear Tarea</button>
+        <div id="task-creation-result"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">3. Simular Acción de "Marcar Todas Como Leídas"</h2>
+        <p>Esta acción NO debería marcar como leída la notificación de nueva tarea:</p>
+        <button class="button" onclick="simulateMarkAllAsRead()">✅ Marcar Todas Como Leídas</button>
+        <div id="mark-all-result"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">4. Verificar que la Burbuja Persiste</h2>
+        <p>Después de marcar todas como leídas, la notificación de nueva tarea debería persistir:</p>
+        <button class="button" onclick="checkAfterMarkAll()">🔍 Verificar Persistencia</button>
+        <div id="persistence-check"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">5. Simular Entrega de Tarea</h2>
+        <p>Solo la entrega de la tarea debería marcar la notificación como leída:</p>
+        <button class="button success" onclick="simulateTaskSubmission()">📤 Entregar Tarea</button>
+        <div id="submission-result"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">6. Verificar que la Burbuja Desaparece</h2>
+        <p>Después de entregar la tarea, la notificación debería marcarse como leída:</p>
+        <button class="button" onclick="checkAfterSubmission()">🔍 Verificar Desaparición</button>
+        <div id="final-check"></div>
+    </div>
+
+    <div class="step">
+        <h2 class="step-title">Acciones de Limpieza</h2>
+        <button class="button danger" onclick="cleanupTest()">🗑️ Limpiar Datos de Prueba</button>
+    </div>
+
+    <script>
+        let testTaskId = null;
+
+        // Simulación del TaskNotificationManager
+        class TaskNotificationManager {
+            static getNotifications() {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            }
+
+            static saveNotifications(notifications) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            }
+
+            static getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => 
+                    notification.targetUserRole === userRole &&
+                    notification.targetUsernames.includes(username) &&
+                    !notification.readBy.includes(username)
+                );
+            }
+
+            static getUnreadCountForUser(username, userRole) {
+                return this.getUnreadNotificationsForUser(username, userRole).length;
+            }
+
+            static markNewTaskNotificationAsReadOnSubmission(taskId, studentUsername) {
+                const notifications = this.getNotifications();
+                const newTaskNotification = notifications.find(n => 
+                    n.type === 'new_task' && 
+                    n.taskId === taskId && 
+                    n.targetUsernames.includes(studentUsername)
+                );
+                
+                if (newTaskNotification && !newTaskNotification.readBy.includes(studentUsername)) {
+                    newTaskNotification.readBy.push(studentUsername);
+                    newTaskNotification.read = newTaskNotification.readBy.length >= newTaskNotification.targetUsernames.length;
+                    this.saveNotifications(notifications);
+                }
+            }
+        }
+
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+        }
+
+        function checkInitialState() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('initial-state').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            const unreadCount = TaskNotificationManager.getUnreadCountForUser(user.username, user.role);
+            const unreadNotifications = TaskNotificationManager.getUnreadNotificationsForUser(user.username, user.role);
+            const newTaskNotifications = unreadNotifications.filter(n => n.type === 'new_task');
+
+            document.getElementById('initial-state').innerHTML = `
+                <div class="result">
+                    <strong>Usuario:</strong> ${user.username} (${user.role})<br>
+                    <strong>Total notificaciones no leídas:</strong> <span class="counter">${unreadCount}</span><br>
+                    <strong>Notificaciones de nueva tarea:</strong> <span class="counter">${newTaskNotifications.length}</span>
+                </div>
+            `;
+        }
+
+        function createTestTask() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('task-creation-result').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            if (user.role !== 'teacher') {
+                document.getElementById('task-creation-result').innerHTML = '<div class="result">❌ Solo los profesores pueden crear tareas</div>';
+                return;
+            }
+
+            // Crear tarea
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            testTaskId = `test_bubble_${Date.now()}`;
+            
+            const newTask = {
+                id: testTaskId,
+                title: 'Prueba Burbuja Notificaciones',
+                description: 'Tarea de prueba para verificar el comportamiento de la burbuja de notificaciones',
+                subject: 'Ciencias Naturales',
+                course: 'Sexto A',
+                assignedTo: 'course',
+                assignedBy: user.username,
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+            // Crear notificación
+            const notifications = TaskNotificationManager.getNotifications();
+            const newNotification = {
+                id: `new_task_${testTaskId}_${Date.now()}`,
+                type: 'new_task',
+                taskId: testTaskId,
+                taskTitle: newTask.title,
+                targetUserRole: 'student',
+                targetUsernames: ['felipe'], // Asumiendo que Felipe es el estudiante
+                fromUsername: user.username,
+                fromDisplayName: user.displayName || user.username,
+                course: newTask.course,
+                subject: newTask.subject,
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+
+            notifications.push(newNotification);
+            TaskNotificationManager.saveNotifications(notifications);
+
+            document.getElementById('task-creation-result').innerHTML = `
+                <div class="result">
+                    ✅ Tarea creada con ID: ${testTaskId}<br>
+                    ✅ Notificación de nueva tarea generada
+                </div>
+            `;
+        }
+
+        function simulateMarkAllAsRead() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('mark-all-result').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            // Simular la lógica del panel de notificaciones (con el fix aplicado)
+            const notifications = TaskNotificationManager.getNotifications();
+            let marked = 0;
+            let skippedNewTask = 0;
+
+            const updatedNotifications = notifications.map(notification => {
+                if (
+                    notification.targetUsernames.includes(user.username) &&
+                    !notification.readBy.includes(user.username)
+                ) {
+                    if (notification.type !== 'new_task') {
+                        // Marcar como leída solo si NO es new_task
+                        marked++;
+                        return {
+                            ...notification,
+                            readBy: [...notification.readBy, user.username],
+                            read: notification.readBy.length + 1 >= notification.targetUsernames.length
+                        };
+                    } else {
+                        // Saltar notificaciones new_task
+                        skippedNewTask++;
+                    }
+                }
+                return notification;
+            });
+
+            TaskNotificationManager.saveNotifications(updatedNotifications);
+
+            document.getElementById('mark-all-result').innerHTML = `
+                <div class="result">
+                    ✅ Notificaciones marcadas como leídas: ${marked}<br>
+                    🔒 Notificaciones de nueva tarea omitidas: ${skippedNewTask}
+                </div>
+            `;
+        }
+
+        function checkAfterMarkAll() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('persistence-check').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            const unreadCount = TaskNotificationManager.getUnreadCountForUser(user.username, user.role);
+            const unreadNotifications = TaskNotificationManager.getUnreadNotificationsForUser(user.username, user.role);
+            const newTaskNotifications = unreadNotifications.filter(n => n.type === 'new_task');
+
+            const success = newTaskNotifications.length > 0;
+
+            document.getElementById('persistence-check').innerHTML = `
+                <div class="result">
+                    <strong>Total notificaciones no leídas:</strong> <span class="counter ${success ? '' : 'success-counter'}">${unreadCount}</span><br>
+                    <strong>Notificaciones de nueva tarea:</strong> <span class="counter ${success ? '' : 'success-counter'}">${newTaskNotifications.length}</span><br>
+                    ${success ? '✅ ¡CORRECTO! La notificación persiste' : '❌ ERROR: La notificación desapareció'}
+                </div>
+            `;
+        }
+
+        function simulateTaskSubmission() {
+            const user = getCurrentUser();
+            if (!user.username || !testTaskId) {
+                document.getElementById('submission-result').innerHTML = '<div class="result">❌ No hay usuario logueado o tarea de prueba</div>';
+                return;
+            }
+
+            // Simular entrega de tarea
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const submissionComment = {
+                id: `submission_${testTaskId}_${Date.now()}`,
+                taskId: testTaskId,
+                studentUsername: user.username,
+                studentName: user.displayName || user.username,
+                comment: 'Entrega de tarea de prueba',
+                timestamp: new Date().toISOString(),
+                isSubmission: true,
+                files: []
+            };
+
+            comments.push(submissionComment);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+
+            // Marcar la notificación de nueva tarea como leída
+            TaskNotificationManager.markNewTaskNotificationAsReadOnSubmission(testTaskId, user.username);
+
+            document.getElementById('submission-result').innerHTML = `
+                <div class="result">
+                    ✅ Tarea entregada<br>
+                    ✅ Notificación de nueva tarea marcada como leída
+                </div>
+            `;
+        }
+
+        function checkAfterSubmission() {
+            const user = getCurrentUser();
+            if (!user.username) {
+                document.getElementById('final-check').innerHTML = '<div class="result">❌ No hay usuario logueado</div>';
+                return;
+            }
+
+            const unreadCount = TaskNotificationManager.getUnreadCountForUser(user.username, user.role);
+            const unreadNotifications = TaskNotificationManager.getUnreadNotificationsForUser(user.username, user.role);
+            const newTaskNotifications = unreadNotifications.filter(n => n.type === 'new_task');
+
+            const success = newTaskNotifications.length === 0;
+
+            document.getElementById('final-check').innerHTML = `
+                <div class="result">
+                    <strong>Total notificaciones no leídas:</strong> <span class="counter ${success ? 'success-counter' : ''}">${unreadCount}</span><br>
+                    <strong>Notificaciones de nueva tarea:</strong> <span class="counter ${success ? 'success-counter' : ''}">${newTaskNotifications.length}</span><br>
+                    ${success ? '✅ ¡CORRECTO! La notificación desapareció después de entregar' : '❌ ERROR: La notificación sigue visible'}
+                </div>
+            `;
+        }
+
+        function cleanupTest() {
+            if (testTaskId) {
+                // Remover tarea de prueba
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const filteredTasks = tasks.filter(task => task.id !== testTaskId);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+
+                // Remover notificaciones de prueba
+                const notifications = TaskNotificationManager.getNotifications();
+                const filteredNotifications = notifications.filter(n => n.taskId !== testTaskId);
+                TaskNotificationManager.saveNotifications(filteredNotifications);
+
+                // Remover comentarios de prueba
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const filteredComments = comments.filter(c => c.taskId !== testTaskId);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+
+                alert('Datos de prueba limpiados');
+                testTaskId = null;
+            } else {
+                alert('No hay datos de prueba para limpiar');
+            }
+        }
+
+        // Auto-verificar estado inicial al cargar
+        window.onload = () => {
+            checkInitialState();
+        };
+    </script>
+</body>
+</html>

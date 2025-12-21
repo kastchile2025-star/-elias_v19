@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrección - Color Badge Entregas por Calificar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f1c0c7;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .before-after {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .before {
+            background: #f8d7da;
+            border: 1px solid #f1c0c7;
+        }
+        .after {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .notification-item {
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .student-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid;
+            text-align: center;
+        }
+        .badge.old {
+            background: transparent;
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+        .badge.orange {
+            background: rgba(255, 154, 0, 0.1);
+            border-color: #fdba74;
+            color: #c2410c;
+        }
+        .task-info {
+            font-size: 13px;
+            color: #a0aec0;
+            margin: 5px 0;
+        }
+        .date-info {
+            font-size: 11px;
+            color: #718096;
+        }
+        .review-link {
+            color: #3182ce;
+            font-size: 11px;
+            text-decoration: none;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        .review-link:hover {
+            text-decoration: underline;
+        }
+        .icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .icon-circle.orange {
+            background: rgba(255, 154, 0, 0.2);
+            color: #c2410c;
+        }
+        .code-diff {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .highlight-orange {
+            background: rgba(255, 154, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Corrección - Color Badge "Entregas por Calificar"</h1>
+        <p>El badge de la asignatura en "Entregas por Calificar" ahora usa el mismo color naranja que "Tareas Pendientes".</p>
+        
+        <div class="info section">
+            <h3>🎯 Problema Identificado</h3>
+            <p><strong>Inconsistencia de colores:</strong> El badge de "Ciencias Naturales" en la sección "Entregas por Calificar" no tenía el color naranja como en "Tareas Pendientes".</p>
+        </div>
+        
+        <div class="before-after">
+            <div class="before">
+                <h4>❌ ANTES (Inconsistente)</h4>
+                <div class="notification-item">
+                    <div style="background: #4a5568; padding: 8px 16px; margin-bottom: 15px;">
+                        <h3 style="margin: 0; font-size: 14px; font-weight: 600;">Entregas por Calificar</h3>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <div class="icon-circle orange">📋</div>
+                        <div style="flex: 1;">
+                            <div class="notification-header">
+                                <span class="student-name">Sofia Estudiante</span>
+                                <span class="badge old">Ciencias Naturales</span>
+                            </div>
+                            <div class="task-info">Entrega de Tarea: erwe (4to Básico)</div>
+                            <div class="date-info">30/06/25, 17:53</div>
+                            <a href="#" class="review-link">Revisar Entrega</a>
+                        </div>
+                    </div>
+                </div>
+                <p><strong>Problema:</strong> Badge gris sin color específico</p>
+            </div>
+            
+            <div class="after">
+                <h4>✅ DESPUÉS (Consistente)</h4>
+                <div class="notification-item">
+                    <div style="background: #4a5568; padding: 8px 16px; margin-bottom: 15px;">
+                        <h3 style="margin: 0; font-size: 14px; font-weight: 600;">Entregas por Calificar</h3>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <div class="icon-circle orange">📋</div>
+                        <div style="flex: 1;">
+                            <div class="notification-header">
+                                <span class="student-name">Sofia Estudiante</span>
+                                <span class="badge orange">Ciencias Naturales</span>
+                            </div>
+                            <div class="task-info">Entrega de Tarea: erwe (4to Básico)</div>
+                            <div class="date-info">30/06/25, 17:53</div>
+                            <a href="#" class="review-link">Revisar Entrega</a>
+                        </div>
+                    </div>
+                </div>
+                <p><strong>Solución:</strong> Badge naranja igual que "Tareas Pendientes"</p>
+            </div>
+        </div>
+        
+        <div class="section success">
+            <h3>🔧 Corrección Implementada</h3>
+            <p><strong>Archivo modificado:</strong> <code>src/components/common/notifications-panel.tsx</code></p>
+            
+            <div class="code-diff">
+<strong>ANTES:</strong>
+className="text-xs flex flex-col items-center justify-center text-center leading-tight"
+
+<strong>DESPUÉS:</strong>
+className="text-xs <span class="highlight-orange">border-orange-200 dark:border-orange-600 text-orange-700 dark:text-orange-300</span> flex flex-col items-center justify-center text-center leading-tight"
+            </div>
+            
+            <h4>📋 Detalles del Cambio:</h4>
+            <ul>
+                <li>✅ <strong>Borde:</strong> <code>border-orange-200 dark:border-orange-600</code></li>
+                <li>✅ <strong>Texto:</strong> <code>text-orange-700 dark:text-orange-300</code></li>
+                <li>✅ <strong>Consistencia:</strong> Mismo estilo que "Tareas Pendientes"</li>
+                <li>✅ <strong>Dark mode:</strong> Soporte completo para tema oscuro</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>🎨 Comparación de Colores</h3>
+            <div style="display: flex; gap: 20px; margin: 15px 0;">
+                <div style="text-align: center;">
+                    <div class="badge orange" style="display: block; margin-bottom: 8px;">Tareas Pendientes</div>
+                    <small>Color naranja original</small>
+                </div>
+                <div style="text-align: center;">
+                    <div class="badge orange" style="display: block; margin-bottom: 8px;">Entregas por Calificar</div>
+                    <small>Ahora usa el mismo color</small>
+                </div>
+            </div>
+            
+            <p><strong>✅ Resultado:</strong> Ambas secciones relacionadas con tareas ahora tienen el mismo esquema de colores naranja, manteniendo la consistencia visual en el panel de notificaciones.</p>
+        </div>
+        
+        <div class="section info">
+            <h3>📊 Esquema de Colores del Panel</h3>
+            <div style="display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="width: 60px; height: 60px; background: rgba(147, 51, 234, 0.2); border: 2px solid #a855f7; border-radius: 8px; margin-bottom: 5px;"></div>
+                    <small>Evaluaciones Pendientes<br>(Morado oscuro)</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 60px; height: 60px; background: rgba(196, 181, 253, 0.3); border: 2px solid #c4b5fd; border-radius: 8px; margin-bottom: 5px;"></div>
+                    <small>Evaluaciones Completadas<br>(Morado claro)</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 60px; height: 60px; background: rgba(255, 154, 0, 0.2); border: 2px solid #fdba74; border-radius: 8px; margin-bottom: 5px;"></div>
+                    <small>Tareas Pendientes<br>(Naranja)</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 60px; height: 60px; background: rgba(255, 154, 0, 0.2); border: 2px solid #fdba74; border-radius: 8px; margin-bottom: 5px;"></div>
+                    <small>Entregas por Calificar<br>(Naranja) ✅</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section success">
+            <h3>🎉 Resultado Final</h3>
+            <p><strong>✅ Corrección completada:</strong> El badge de "Ciencias Naturales" en "Entregas por Calificar" ahora usa el mismo color naranja que las "Tareas Pendientes", manteniendo la consistencia visual en todo el panel de notificaciones del profesor.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: Notificaciones y Resultados del Profesor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">
+            🔧 Debug: Notificaciones y Resultados del Profesor
+        </h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Panel de configuración -->
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">🔧 Configuración</h2>
+                    <div class="space-y-3">
+                        <button onclick="setupTestData()" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            1. Configurar Datos de Prueba
+                        </button>
+                        <button onclick="simulateStudentCompleteEvaluation()" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                            2. Simular: Estudiante completa evaluación
+                        </button>
+                        <button onclick="checkProfessorView()" class="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                            3. Verificar Vista del Profesor
+                        </button>
+                        <button onclick="clearAll()" class="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            Limpiar Todo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Estado de notificaciones -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">🔔 Estado de Notificaciones</h2>
+                    <div id="notifications-status" class="bg-gray-50 p-4 rounded text-sm font-mono whitespace-pre-wrap min-h-32"></div>
+                </div>
+            </div>
+
+            <!-- Panel de resultados -->
+            <div class="space-y-6">
+                <!-- Resultados de evaluación -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">📊 Resultados de Evaluación</h2>
+                    <div id="evaluation-results" class="bg-gray-50 p-4 rounded text-sm font-mono whitespace-pre-wrap min-h-32"></div>
+                </div>
+
+                <!-- Log de eventos -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">📝 Log de Eventos</h2>
+                    <div id="event-log" class="bg-gray-900 text-green-400 p-4 rounded text-sm font-mono whitespace-pre-wrap h-64 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('event-log');
+            const colorClass = type === 'success' ? 'text-green-400' : 
+                              type === 'error' ? 'text-red-400' : 
+                              type === 'warning' ? 'text-yellow-400' : 'text-blue-400';
+            
+            logElement.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Sistema de notificaciones simplificado
+        class TaskNotificationManager {
+            static getNotifications() {
+                return JSON.parse(localStorage.getItem('smart-student-notifications') || '[]');
+            }
+
+            static saveNotifications(notifications) {
+                localStorage.setItem('smart-student-notifications', JSON.stringify(notifications));
+            }
+
+            static createEvaluationCompletedNotification(taskId, taskTitle, course, subject, studentUsername, studentDisplayName, teacherUsername, evaluationResults) {
+                const notifications = this.getNotifications();
+                
+                const newNotification = {
+                    id: `eval_completed_${taskId}_${studentUsername}_${Date.now()}`,
+                    type: 'task_completed',
+                    taskId,
+                    taskTitle,
+                    targetUserRole: 'teacher',
+                    targetUsernames: [teacherUsername],
+                    fromUsername: studentUsername,
+                    fromDisplayName: studentDisplayName,
+                    course,
+                    subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                };
+
+                notifications.push(newNotification);
+                this.saveNotifications(notifications);
+                
+                log(`✅ Notificación creada para profesor: ID=${newNotification.id}`, 'success');
+                return newNotification;
+            }
+
+            static getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => {
+                    return notification.targetUserRole === userRole &&
+                           notification.targetUsernames.includes(username) &&
+                           !notification.readBy.includes(username) &&
+                           notification.fromUsername !== username;
+                });
+            }
+        }
+
+        function setupTestData() {
+            log('🔧 Configurando datos de prueba...');
+            
+            // Crear usuarios
+            const users = {
+                'jorge': {
+                    username: 'jorge',
+                    firstName: 'Jorge',
+                    lastName: 'Profesor',
+                    email: 'jorge@profesor.com',
+                    role: 'teacher',
+                    displayName: 'Jorge Profesor',
+                    activeCourses: ['4to Básico'],
+                    subjects: ['Ciencias Naturales']
+                },
+                'felipe': {
+                    username: 'felipe',
+                    firstName: 'Felipe',
+                    lastName: 'Estudiante',
+                    email: 'felipe@estudiante.com',
+                    role: 'student',
+                    displayName: 'Felipe Estudiante',
+                    activeCourses: ['4to Básico']
+                }
+            };
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+
+            // Crear tarea de evaluación
+            const evaluationTask = {
+                id: 'eval_test_001',
+                title: 'Evaluación de Ciencias Naturales',
+                description: 'Evaluación sobre el sistema solar',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'jorge',
+                assignedByName: 'Jorge Profesor',
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Sistema Solar',
+                    questionCount: 10,
+                    timeLimit: 30
+                },
+                evaluationResults: {}
+            };
+
+            localStorage.setItem('smart-student-tasks', JSON.stringify([evaluationTask]));
+            localStorage.setItem('userTasks_felipe', JSON.stringify([evaluationTask]));
+            localStorage.removeItem('smart-student-notifications');
+
+            log('✅ Datos de prueba configurados', 'success');
+            updateStatus();
+        }
+
+        function simulateStudentCompleteEvaluation() {
+            log('🎯 Simulando estudiante completando evaluación...');
+            
+            const taskId = 'eval_test_001';
+            const studentUsername = 'felipe';
+            const score = 8;
+            const totalQuestions = 10;
+            const completionPercentage = 80;
+
+            // 1. Actualizar tarea global con resultados
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const taskIndex = globalTasks.findIndex(task => task.id === taskId);
+            
+            if (taskIndex !== -1) {
+                if (!globalTasks[taskIndex].evaluationResults) {
+                    globalTasks[taskIndex].evaluationResults = {};
+                }
+                
+                globalTasks[taskIndex].evaluationResults[studentUsername] = {
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    completionPercentage: completionPercentage,
+                    completedAt: new Date().toISOString(),
+                    attempt: 1
+                };
+                
+                localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+                log(`📊 Resultados guardados: ${score}/${totalQuestions} (${completionPercentage}%)`, 'success');
+            }
+
+            // 2. Crear notificación para el profesor
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            const student = users[studentUsername];
+
+            if (student) {
+                TaskNotificationManager.createEvaluationCompletedNotification(
+                    taskId,
+                    'Evaluación de Ciencias Naturales',
+                    '4to Básico',
+                    'Ciencias Naturales',
+                    studentUsername,
+                    student.displayName,
+                    'jorge',
+                    {
+                        score: score,
+                        totalQuestions: totalQuestions,
+                        completionPercentage: completionPercentage,
+                        completedAt: new Date().toISOString()
+                    }
+                );
+            }
+
+            log('✅ Simulación completada', 'success');
+            updateStatus();
+        }
+
+        function checkProfessorView() {
+            log('👨‍🏫 Verificando vista del profesor...');
+            updateStatus();
+        }
+
+        function updateStatus() {
+            // Actualizar notificaciones
+            const notifications = TaskNotificationManager.getUnreadNotificationsForUser('jorge', 'teacher');
+            const notificationsEl = document.getElementById('notifications-status');
+            
+            if (notifications.length === 0) {
+                notificationsEl.textContent = '❌ Sin notificaciones para el profesor';
+            } else {
+                let output = `✅ ${notifications.length} notificación(es) para Jorge:\n\n`;
+                notifications.forEach(notif => {
+                    output += `🔔 ${notif.type} - ${notif.taskTitle}\n`;
+                    output += `👨‍🎓 De: ${notif.fromDisplayName} (${notif.fromUsername})\n`;
+                    output += `📅 Fecha: ${new Date(notif.timestamp).toLocaleString()}\n`;
+                    output += `🆔 ID: ${notif.id}\n\n`;
+                });
+                notificationsEl.textContent = output;
+            }
+
+            // Actualizar resultados de evaluación
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = globalTasks.find(task => task.id === 'eval_test_001');
+            const resultsEl = document.getElementById('evaluation-results');
+            
+            if (!evaluationTask) {
+                resultsEl.textContent = '❌ No se encontró la tarea de evaluación';
+            } else if (!evaluationTask.evaluationResults || Object.keys(evaluationTask.evaluationResults).length === 0) {
+                resultsEl.textContent = '❌ Sin resultados de evaluación registrados';
+            } else {
+                let output = `📊 Resultados de evaluación:\n\n`;
+                Object.entries(evaluationTask.evaluationResults).forEach(([studentUsername, results]) => {
+                    const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                    const student = users[studentUsername];
+                    const studentName = student ? student.displayName : studentUsername;
+                    
+                    output += `👨‍🎓 ${studentName}\n`;
+                    output += `📊 Puntaje: ${results.score}/${results.totalQuestions} (${results.completionPercentage}%)\n`;
+                    output += `⏰ Completado: ${new Date(results.completedAt).toLocaleString()}\n\n`;
+                });
+                resultsEl.textContent = output;
+            }
+        }
+
+        function clearAll() {
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-notifications');
+            localStorage.removeItem('userTasks_felipe');
+            
+            document.getElementById('notifications-status').textContent = '';
+            document.getElementById('evaluation-results').textContent = '';
+            
+            log('🧹 Todos los datos limpiados', 'warning');
+        }
+
+        // Inicializar
+        log('🚀 Debug interface loaded');
+        updateStatus();
+    </script>
+</body>
+</html>

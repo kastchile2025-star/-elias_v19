@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campana de Notificaciones Profesor Final</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .notification-bell {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+        }
+        .notification-bell svg {
+            width: 24px;
+            height: 24px;
+            color: #555;
+        }
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .notification-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 320px;
+            max-height: 500px;
+            overflow-y: auto;
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .panel-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .mark-all {
+            font-size: 12px;
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .mark-all:hover {
+            background: #fff3e9;
+            color: #ea580c;
+        }
+        .section-header {
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-count {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+        
+        /* Estilos para las secciones coloreadas */
+        .section-evaluations-pending {
+            background: #f3e8ff;
+            border-left: 4px solid #8b5cf6;
+            color: #6d28d9;
+        }
+        .section-evaluations-completed {
+            background: #f5f3ff;
+            border-left: 4px solid #a78bfa;
+            color: #7c3aed;
+        }
+        .section-tasks-pending {
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            color: #ea580c;
+        }
+        .section-tasks-review {
+            background: #ffedd5;
+            border-left: 4px solid #fb923c;
+            color: #f97316;
+        }
+        .section-comments {
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+            color: #059669;
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .notification-item:hover {
+            background: #fafafa;
+        }
+        .notification-flex {
+            display: flex;
+            gap: 10px;
+        }
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        /* Colores para iconos */
+        .icon-purple-dark {
+            background: #f3e8ff;
+            color: #6d28d9;
+        }
+        .icon-purple-light {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+        .icon-orange-dark {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+        .icon-orange-light {
+            background: #ffedd5;
+            color: #f97316;
+        }
+        .icon-green {
+            background: #ecfdf5;
+            color: #059669;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0;
+            color: #333;
+        }
+        .notification-subject {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f5f5f5;
+            border: 1px solid #e5e5e5;
+        }
+        .subject-purple {
+            background: #f3e8ff;
+            border-color: #e9d5ff;
+            color: #6d28d9;
+        }
+        .subject-orange {
+            background: #fff7ed;
+            border-color: #ffedd5;
+            color: #ea580c;
+        }
+        .subject-green {
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #059669;
+        }
+        
+        .notification-desc {
+            font-size: 13px;
+            color: #666;
+            margin: 5px 0;
+        }
+        .notification-meta {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .notification-action {
+            display: inline-block;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        .action-purple {
+            color: #7c3aed;
+        }
+        .action-purple:hover {
+            color: #6d28d9;
+            text-decoration: underline;
+        }
+        .action-orange {
+            color: #f97316;
+        }
+        .action-orange:hover {
+            color: #ea580c;
+            text-decoration: underline;
+        }
+        .action-green {
+            color: #10b981;
+        }
+        .action-green:hover {
+            color: #059669;
+            text-decoration: underline;
+        }
+        
+        .empty-state {
+            padding: 30px 15px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .demo-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #0369a1;
+        }
+        
+        .screenshot {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+                color: #e0e0e0;
+            }
+            .container {
+                background: #262626;
+            }
+            header {
+                border-bottom-color: #333;
+            }
+            h1, h2 {
+                color: #e0e0e0;
+            }
+            .notification-bell {
+                background: #333;
+            }
+            .notification-bell svg {
+                color: #e0e0e0;
+            }
+            .notification-panel {
+                background: #262626;
+            }
+            .panel-header {
+                border-bottom-color: #333;
+            }
+            .notification-item {
+                border-bottom-color: #333;
+            }
+            .notification-item:hover {
+                background: #2a2a2a;
+            }
+            .notification-title {
+                color: #e0e0e0;
+            }
+            .notification-subject {
+                background: #333;
+                border-color: #444;
+            }
+            .mark-all:hover {
+                background: #422006;
+                color: #fb923c;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Campana de Notificaciones - Profesor</h1>
+            <p>Implementación final con organización por tipo y colores</p>
+        </header>
+        
+        <div style="text-align:center">
+            <div class="notification-bell">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-count">12</span>
+            </div>
+            
+            <div class="notification-panel">
+                <div class="panel-header">
+                    <h3>Notificaciones</h3>
+                    <button class="mark-all">Marcar todo como leído</button>
+                </div>
+                
+                <!-- 1. Evaluaciones Pendientes -->
+                <div class="section-header section-evaluations-pending">
+                    <span>Evaluaciones Pendientes</span>
+                    <span class="section-count">3</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-flex">
+                        <div class="notification-icon icon-purple-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <path d="M12 11h4"></path>
+                                <path d="M12 16h4"></path>
+                                <path d="M8 11h.01"></path>
+                                <path d="M8 16h.01"></path>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h4 class="notification-title">Prueba de Literatura</h4>
+                                <span class="notification-subject subject-purple">Lenguaje</span>
+                            </div>
+                            <p class="notification-desc">Análisis de obras clásicas</p>
+                            <div class="notification-meta">Curso: 3°A</div>
+                            <a href="#" class="notification-action action-purple">Revisar Evaluación</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2. Evaluaciones Completadas -->
+                <div class="section-header section-evaluations-completed">
+                    <span>Evaluaciones Completadas</span>
+                    <span class="section-count">2</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-flex">
+                        <div class="notification-icon icon-purple-light">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h4 class="notification-title">Carlos Rodríguez</h4>
+                                <span class="notification-subject subject-purple">Matemáticas</span>
+                            </div>
+                            <p class="notification-desc">Completó: Evaluación de Geometría</p>
+                            <div class="notification-meta">02/07/2025 16:30</div>
+                            <a href="#" class="notification-action action-purple">Ver Resultados</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3. Tareas Pendientes -->
+                <div class="section-header section-tasks-pending">
+                    <span>Tareas Pendientes</span>
+                    <span class="section-count">2</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-flex">
+                        <div class="notification-icon icon-orange-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h4 class="notification-title">Ensayo Historia</h4>
+                                <span class="notification-subject subject-orange">Historia</span>
+                            </div>
+                            <p class="notification-desc">Ensayo sobre revolución industrial</p>
+                            <div class="notification-meta">Curso: 4°B</div>
+                            <a href="#" class="notification-action action-orange">Revisar Tarea</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 4. Tareas por Revisar -->
+                <div class="section-header section-tasks-review">
+                    <span>Tareas por Revisar</span>
+                    <span class="section-count">3</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-flex">
+                        <div class="notification-icon icon-orange-light">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h4 class="notification-title">Felipe González</h4>
+                                <span class="notification-subject subject-orange">Historia</span>
+                            </div>
+                            <p class="notification-desc">Entregó: Ensayo Historia</p>
+                            <div class="notification-meta">01/07/2025 23:45</div>
+                            <a href="#" class="notification-action action-orange">Revisar Entrega</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 5. Comentarios No Leídos -->
+                <div class="section-header section-comments">
+                    <span>Comentarios No Leídos</span>
+                    <span class="section-count">2</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-flex">
+                        <div class="notification-icon icon-green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h4 class="notification-title">Felipe González</h4>
+                                <span class="notification-subject subject-green">Historia</span>
+                            </div>
+                            <p class="notification-desc">¿Podría revisar mi introducción?</p>
+                            <div class="notification-meta">En: Ensayo Historia</div>
+                            <a href="#" class="notification-action action-green">Ver Comentario</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-note">
+            <p><strong>Nota:</strong> Esta representación visual muestra la versión final de la campana de notificaciones para profesores, con las siguientes mejoras:</p>
+            <ul>
+                <li>Organización de notificaciones por tipo y prioridad</li>
+                <li>Código de colores para identificar rápidamente el tipo (morado para evaluaciones, naranja para tareas, verde para comentarios)</li>
+                <li>Contadores por sección para ver rápidamente la cantidad de elementos pendientes</li>
+                <li>Diseño adaptativo (responsive) y compatible con modo oscuro</li>
+                <li>Botones de acción directa para cada notificación</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

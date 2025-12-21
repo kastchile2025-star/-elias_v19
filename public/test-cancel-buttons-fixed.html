@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Botones Cancel Corregidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgb(209 213 219);
+            background-color: white;
+            color: rgb(55 65 81);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-cancel:hover {
+            background-color: rgb(249 250 251);
+            border-color: rgb(156 163 175);
+        }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            background-color: rgb(234 88 12);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: rgb(194 65 12);
+        }
+        
+        .btn-destructive {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            background-color: rgb(220 38 38);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-destructive:hover {
+            background-color: rgb(185 28 28);
+        }
+        
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            .btn-cancel {
+                background-color: rgb(31 41 55);
+                color: rgb(209 213 219);
+                border-color: rgb(75 85 99);
+            }
+            
+            .btn-cancel:hover {
+                background-color: rgb(55 65 81);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
+            Test Botones Cancel - Colores Neutros
+        </h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- ANTES - Cancel con problema -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-red-600">❌ ANTES (Cancel se pone verde)</h2>
+                
+                <div class="border rounded-lg p-4 mb-4">
+                    <h3 class="font-medium mb-3">Diálogo Editar Tarea</h3>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <!-- Simulación del botón problemático -->
+                        <button class="px-4 py-2 border border-gray-300 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button class="btn-primary">
+                            Update Task
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-sm text-red-600">
+                    Problema: El botón Cancel cambia a verde, confundiendo al usuario
+                </div>
+            </div>
+            
+            <!-- DESPUÉS - Cancel corregido -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-green-600">✅ DESPUÉS (Cancel neutro)</h2>
+                
+                <div class="border rounded-lg p-4 mb-4">
+                    <h3 class="font-medium mb-3">Diálogo Editar Tarea</h3>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <!-- Botón Cancel corregido -->
+                        <button class="btn-cancel">
+                            Cancel
+                        </button>
+                        <button class="btn-primary">
+                            Update Task
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-sm text-green-600">
+                    Solución: Cancel mantiene colores neutros (blanco/gris)
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Todos los Diálogos Corregidos</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Crear Tarea -->
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-sm">Crear Tarea</h3>
+                    <div class="space-y-2">
+                        <button class="btn-cancel w-full text-sm">Cancel</button>
+                        <button class="btn-primary w-full text-sm">Create Task</button>
+                    </div>
+                </div>
+                
+                <!-- Editar Tarea -->
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-sm">Editar Tarea</h3>
+                    <div class="space-y-2">
+                        <button class="btn-cancel w-full text-sm">Cancel</button>
+                        <button class="btn-primary w-full text-sm">Update Task</button>
+                    </div>
+                </div>
+                
+                <!-- Eliminar Tarea -->
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-sm">Eliminar Tarea</h3>
+                    <div class="space-y-2">
+                        <button class="btn-cancel w-full text-sm">Cancel</button>
+                        <button class="btn-destructive w-full text-sm">Delete Task</button>
+                    </div>
+                </div>
+                
+                <!-- Calificar -->
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-medium mb-3 text-sm">Calificar</h3>
+                    <div class="space-y-2">
+                        <button class="btn-cancel w-full text-sm">Cancel</button>
+                        <button class="btn-primary w-full text-sm">Save Grade</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Ejemplo Completo - Diálogo Editar Tarea</h2>
+            
+            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg border shadow-lg max-w-md mx-auto">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-4">Edit Task</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Modify the task details</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Title</label>
+                                <input type="text" value="eval" class="w-full p-2 border border-gray-300 rounded text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Task Type</label>
+                                <select class="w-full p-2 border border-gray-300 rounded text-sm">
+                                    <option>Evaluation</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <button class="btn-cancel" onclick="alert('Cancel clickeado - mantiene colores neutros')">
+                                Cancel
+                            </button>
+                            <button class="btn-primary" onclick="alert('Update Task clickeado')">
+                                Update Task
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-300 mb-2">
+                ⚪ Especificaciones del Botón Cancel Corregido
+            </h3>
+            <ul class="text-sm text-gray-700 dark:text-gray-400 space-y-1">
+                <li>• <strong>Color base</strong>: Blanco (`bg-white`) con texto gris (`text-gray-700`)</li>
+                <li>• <strong>Borde</strong>: Gris claro (`border-gray-300`) para definición</li>
+                <li>• <strong>Hover sutil</strong>: Gris muy claro (`hover:bg-gray-50`) sin cambios dramáticos</li>
+                <li>• <strong>Sin colores llamativos</strong>: No verde, azul, o naranja</li>
+                <li>• <strong>Tema oscuro</strong>: Gris oscuro (`dark:bg-gray-800`) con texto claro</li>
+                <li>• <strong>Consistente</strong>: Mismo estilo en todos los diálogos</li>
+            </ul>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-600 dark:text-gray-400">
+                Los botones Cancel ahora mantienen colores neutros y no confunden al usuario
+            </p>
+        </div>
+    </div>
+</body>
+</html>

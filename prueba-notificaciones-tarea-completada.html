@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba: Notificaciones Tarea Completada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .notification {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #f39c12;
+        }
+        .notification.completed {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            border-left-color: #28a745;
+        }
+        .notification.removed {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            border-left-color: #dc3545;
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.removed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Prueba: Notificaciones "Tarea Completada"</h1>
+        <p><strong>Objetivo:</strong> Verificar que las notificaciones de "Tarea Completada" desaparezcan cuando el profesor califica las entregas de los estudiantes.</p>
+    </div>
+
+    <div class="container">
+        <h2>📋 Simulación del Flujo</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Estudiante Felipe entrega la tarea</h3>
+            <button class="button" onclick="studentSubmit('felipe')">Felipe Entrega Tarea</button>
+            <div class="status" id="felipe-status">Pendiente</div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Estudiante María entrega la tarea</h3>
+            <button class="button" onclick="studentSubmit('maria')">María Entrega Tarea</button>
+            <div class="status" id="maria-status">Pendiente</div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Se genera notificación "Tarea Completada"</h3>
+            <button class="button success" onclick="generateTaskCompleted()">Generar Notificación Completada</button>
+            <div class="notification" id="task-completed-notification" style="display: none;">
+                📋 <strong>Tarea Completada:</strong> tarea2 - Todos los estudiantes han entregado
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 4: Profesor califica entrega de Felipe</h3>
+            <button class="button danger" onclick="gradeSubmission('felipe')">Calificar Entrega de Felipe</button>
+            <div class="status" id="felipe-grade-status">Sin calificar</div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 5: Profesor califica entrega de María</h3>
+            <button class="button danger" onclick="gradeSubmission('maria')">Calificar Entrega de María</button>
+            <div class="status" id="maria-grade-status">Sin calificar</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔔 Estado de Notificaciones</h2>
+        <div id="notifications-panel">
+            <p>Sin notificaciones</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Log de Acciones</h2>
+        <div class="log" id="action-log"></div>
+        <button class="button" onclick="clearLog()">Limpiar Log</button>
+    </div>
+
+    <script>
+        let studentSubmissions = {
+            felipe: false,
+            maria: false
+        };
+
+        let studentGrades = {
+            felipe: false,
+            maria: false
+        };
+
+        let taskCompletedNotification = false;
+
+        function log(message) {
+            const logElement = document.getElementById('action-log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateNotificationsPanel() {
+            const panel = document.getElementById('notifications-panel');
+            
+            if (taskCompletedNotification) {
+                panel.innerHTML = `
+                    <div class="notification completed">
+                        📋 <strong>Tarea Completada:</strong> tarea2 - Todos los estudiantes han entregado
+                        <br><small>Pendiente de calificación por el profesor</small>
+                    </div>
+                `;
+            } else {
+                panel.innerHTML = '<p>Sin notificaciones</p>';
+            }
+        }
+
+        function studentSubmit(studentName) {
+            studentSubmissions[studentName] = true;
+            document.getElementById(`${studentName}-status`).textContent = 'Entregado';
+            document.getElementById(`${studentName}-status`).className = 'status completed';
+            
+            log(`✅ ${studentName} ha entregado la tarea`);
+            
+            // Verificar si todos los estudiantes han entregado
+            const allSubmitted = Object.values(studentSubmissions).every(submitted => submitted);
+            if (allSubmitted && !taskCompletedNotification) {
+                log('🎯 Todos los estudiantes han entregado - Listo para generar notificación');
+                document.querySelector('button[onclick="generateTaskCompleted()"]').style.background = '#28a745';
+            }
+        }
+
+        function generateTaskCompleted() {
+            const allSubmitted = Object.values(studentSubmissions).every(submitted => submitted);
+            
+            if (!allSubmitted) {
+                alert('⚠️ No todos los estudiantes han entregado aún');
+                return;
+            }
+
+            taskCompletedNotification = true;
+            document.getElementById('task-completed-notification').style.display = 'block';
+            
+            log('📋 NOTIFICACIÓN GENERADA: "Tarea Completada" - Todos los estudiantes han entregado');
+            log('🔔 La notificación aparece en la campana del profesor');
+            
+            updateNotificationsPanel();
+        }
+
+        function gradeSubmission(studentName) {
+            if (!studentSubmissions[studentName]) {
+                alert(`⚠️ ${studentName} no ha entregado la tarea aún`);
+                return;
+            }
+
+            studentGrades[studentName] = true;
+            document.getElementById(`${studentName}-grade-status`).textContent = 'Calificado';
+            document.getElementById(`${studentName}-grade-status`).className = 'status completed';
+            
+            log(`🎯 Profesor califica la entrega de ${studentName}`);
+            
+            // ✅ LÓGICA CORREGIDA: Eliminar notificación task_completed cuando se califica la primera entrega
+            if (taskCompletedNotification) {
+                taskCompletedNotification = false;
+                document.getElementById('task-completed-notification').className = 'notification removed';
+                document.getElementById('task-completed-notification').innerHTML = '📋 <strong>Tarea Completada:</strong> tarea2 - <em>NOTIFICACIÓN ELIMINADA</em>';
+                
+                log('🗑️ NOTIFICACIÓN ELIMINADA: "Tarea Completada" removida automáticamente');
+                log('✅ CORRECCIÓN APLICADA: Las notificaciones desaparecen al calificar');
+            log('🎯 EVENTOS DISPARADOS: taskNotificationsUpdated + notificationsUpdated');
+            log('📊 RESULTADO: Panel actualizado + Contador actualizado');
+                
+                updateNotificationsPanel();
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('action-log').textContent = '';
+        }
+
+        // Inicializar
+        log('🚀 Simulador de notificaciones iniciado');
+        log('📋 Tarea: tarea2 - Ciencias Naturales');
+        log('👥 Estudiantes: Felipe, María');
+        log('');
+        log('📝 FLUJO A PROBAR:');
+        log('1. Estudiantes entregan → Se crea notificación "Tarea Completada"');
+        log('2. Profesor califica primera entrega → Notificación desaparece');
+        log('3. Profesor califica resto → Sin notificaciones adicionales');
+        log('');
+        log('▶️ Comenzar presionando los botones en orden...');
+    </script>
+</body>
+</html>

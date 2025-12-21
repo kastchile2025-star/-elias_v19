@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 CORRECCIÓN INMEDIATA: Notificaciones Propias del Profesor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .urgent {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .button.urgent {
+            background: #dc3545;
+            font-size: 18px;
+            padding: 20px 30px;
+        }
+        .button.urgent:hover {
+            background: #c82333;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.success:hover {
+            background: #218838;
+        }
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        .counter {
+            font-size: 2em;
+            font-weight: bold;
+            color: #dc3545;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .step {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .result {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 CORRECCIÓN INMEDIATA</h1>
+            <h2>Notificaciones Propias del Profesor Jorge</h2>
+            <p>Herramienta de emergencia para eliminar notificaciones duplicadas</p>
+        </div>
+
+        <div class="urgent">
+            <h2>⚠️ PROBLEMA DETECTADO</h2>
+            <p><strong>El profesor Jorge está viendo notificaciones de sus propios comentarios</strong></p>
+            <p>Esto está causando que aparezcan 2 notificaciones cuando debería ser solo 1 (la tarea pendiente).</p>
+        </div>
+
+        <div class="section">
+            <h3>📊 Estado Actual del Sistema</h3>
+            <div id="currentProblem"></div>
+            <button class="button" onclick="analyzeCurrentProblem()">🔍 Analizar Problema</button>
+        </div>
+
+        <div class="section error" id="problemDetails" style="display: none;">
+            <h3>🚨 Detalles del Problema</h3>
+            <div id="problemInfo"></div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 CORRECCIÓN INMEDIATA</h3>
+            <p>Esta corrección eliminará inmediatamente todas las notificaciones donde el profesor es emisor y receptor:</p>
+            
+            <div class="step">
+                <strong>Paso 1:</strong> Identificar notificaciones problemáticas
+            </div>
+            <div class="step">
+                <strong>Paso 2:</strong> Eliminar notificaciones de comentarios propios
+            </div>
+            <div class="step">
+                <strong>Paso 3:</strong> Verificar que solo quede 1 notificación (tarea pendiente)
+            </div>
+            
+            <button class="button urgent" onclick="performEmergencyFix()">
+                🚑 CORREGIR INMEDIATAMENTE
+            </button>
+        </div>
+
+        <div class="section" id="repairResults" style="display: none;">
+            <h3>📋 Resultados de la Corrección</h3>
+            <div id="repairDetails"></div>
+        </div>
+
+        <div class="section">
+            <h3>✅ Verificación Final</h3>
+            <div id="finalVerification"></div>
+            <button class="button success" onclick="verifyFinalState()">🔍 Verificar Resultado</button>
+        </div>
+
+        <div class="section warning">
+            <h3>📝 Instrucciones Post-Corrección</h3>
+            <ol>
+                <li><strong>Recarga la página principal</strong> del dashboard</li>
+                <li><strong>Verifica que solo aparezca 1 notificación</strong> (la tarea pendiente)</li>
+                <li><strong>Si el problema persiste</strong>, contacta al desarrollador</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Clase para manejar las notificaciones
+        class EmergencyNotificationFixer {
+            static STORAGE_KEY = 'smart-student-task-notifications';
+            
+            static getNotifications() {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            }
+            
+            static saveNotifications(notifications) {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(notifications));
+                console.log('[Emergency Fix] Notificaciones guardadas:', notifications.length);
+            }
+            
+            static findProblematicNotifications(username = 'jorge_profesor') {
+                const notifications = this.getNotifications();
+                return notifications.filter(n => 
+                    n.fromUsername === username && 
+                    n.targetUsernames.includes(username)
+                );
+            }
+            
+            static removeOwnCommentNotifications(username = 'jorge_profesor') {
+                const notifications = this.getNotifications();
+                const before = notifications.length;
+                
+                const cleaned = notifications.filter(n => {
+                    // Eliminar notificaciones donde el usuario es emisor Y receptor
+                    const isOwnNotification = n.fromUsername === username && 
+                                            n.targetUsernames.includes(username);
+                    
+                    if (isOwnNotification) {
+                        console.log('[Emergency Fix] Eliminando notificación propia:', {
+                            id: n.id,
+                            type: n.type,
+                            taskTitle: n.taskTitle,
+                            from: n.fromUsername,
+                            to: n.targetUsernames
+                        });
+                    }
+                    
+                    return !isOwnNotification;
+                });
+                
+                const removed = before - cleaned.length;
+                
+                if (removed > 0) {
+                    this.saveNotifications(cleaned);
+                }
+                
+                return { removed, remaining: cleaned.length, before };
+            }
+            
+            static getUnreadCountForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                const unread = notifications.filter(n => 
+                    n.targetUserRole === userRole &&
+                    n.targetUsernames.includes(username) &&
+                    !n.readBy.includes(username) &&
+                    n.fromUsername !== username // Filtro principal
+                );
+                
+                if (userRole === 'teacher') {
+                    return unread.filter(n => n.type !== 'task_submission').length;
+                }
+                
+                return unread.length;
+            }
+        }
+
+        function analyzeCurrentProblem() {
+            const professorUsername = 'jorge_profesor';
+            const problematic = EmergencyNotificationFixer.findProblematicNotifications(professorUsername);
+            const totalNotifications = EmergencyNotificationFixer.getNotifications().length;
+            const currentCount = EmergencyNotificationFixer.getUnreadCountForUser(professorUsername, 'teacher');
+            
+            let html = `
+                <div class="result">
+                    <h4>📊 Análisis del Sistema</h4>
+                    <p><strong>Total de notificaciones en el sistema:</strong> ${totalNotifications}</p>
+                    <p><strong>Notificaciones problemáticas encontradas:</strong> ${problematic.length}</p>
+                    <p><strong>Contador actual para el profesor:</strong> ${currentCount}</p>
+                </div>
+            `;
+            
+            if (problematic.length > 0) {
+                html += `
+                    <div class="counter">
+                        🚨 ${problematic.length} NOTIFICACIÓN(ES) PROBLEMÁTICA(S)
+                    </div>
+                `;
+                
+                document.getElementById('problemDetails').style.display = 'block';
+                document.getElementById('problemInfo').innerHTML = `
+                    <h4>🔍 Notificaciones Problemáticas Detectadas:</h4>
+                    <pre>${JSON.stringify(problematic, null, 2)}</pre>
+                    <p><strong>¿Por qué son problemáticas?</strong></p>
+                    <ul>
+                        <li>El profesor (${professorUsername}) aparece como emisor (fromUsername)</li>
+                        <li>El mismo profesor aparece en la lista de receptores (targetUsernames)</li>
+                        <li>Esto hace que vea notificaciones de sus propios comentarios</li>
+                    </ul>
+                `;
+            } else {
+                html += `
+                    <div class="result success">
+                        ✅ No se detectaron notificaciones problemáticas
+                    </div>
+                `;
+                document.getElementById('problemDetails').style.display = 'none';
+            }
+            
+            document.getElementById('currentProblem').innerHTML = html;
+        }
+
+        function performEmergencyFix() {
+            console.log('🚑 Iniciando corrección de emergencia...');
+            
+            const professorUsername = 'jorge_profesor';
+            const beforeFix = EmergencyNotificationFixer.findProblematicNotifications(professorUsername);
+            
+            if (beforeFix.length === 0) {
+                document.getElementById('repairResults').style.display = 'block';
+                document.getElementById('repairDetails').innerHTML = `
+                    <div class="result success">
+                        ✅ No hay notificaciones problemáticas que corregir
+                    </div>
+                `;
+                return;
+            }
+            
+            // Realizar la corrección
+            const result = EmergencyNotificationFixer.removeOwnCommentNotifications(professorUsername);
+            
+            // Verificar después de la corrección
+            const afterFix = EmergencyNotificationFixer.findProblematicNotifications(professorUsername);
+            const newCount = EmergencyNotificationFixer.getUnreadCountForUser(professorUsername, 'teacher');
+            
+            let html = `
+                <div class="result">
+                    <h4>🔧 Corrección Completada</h4>
+                    <p><strong>Notificaciones eliminadas:</strong> ${result.removed}</p>
+                    <p><strong>Notificaciones problemáticas antes:</strong> ${beforeFix.length}</p>
+                    <p><strong>Notificaciones problemáticas después:</strong> ${afterFix.length}</p>
+                    <p><strong>Nuevo contador para el profesor:</strong> ${newCount}</p>
+                    <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+            `;
+            
+            if (afterFix.length === 0 && newCount === 1) {
+                html += `
+                    <div class="result success">
+                        🎉 ¡CORRECCIÓN EXITOSA!
+                        <br>El profesor ahora tiene exactamente 1 notificación como debería ser.
+                    </div>
+                `;
+            } else if (afterFix.length === 0 && newCount !== 1) {
+                html += `
+                    <div class="result warning">
+                        ⚠️ Problema parcialmente resuelto
+                        <br>No hay notificaciones propias, pero el contador es ${newCount} en lugar de 1.
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="result error">
+                        ❌ El problema persiste
+                        <br>Aún hay ${afterFix.length} notificaciones problemáticas.
+                    </div>
+                `;
+            }
+            
+            document.getElementById('repairResults').style.display = 'block';
+            document.getElementById('repairDetails').innerHTML = html;
+        }
+
+        function verifyFinalState() {
+            const professorUsername = 'jorge_profesor';
+            const notifications = EmergencyNotificationFixer.getNotifications();
+            const problematic = EmergencyNotificationFixer.findProblematicNotifications(professorUsername);
+            const count = EmergencyNotificationFixer.getUnreadCountForUser(professorUsername, 'teacher');
+            
+            // Obtener notificaciones que el profesor debería ver
+            const validNotifications = notifications.filter(n => 
+                n.targetUserRole === 'teacher' &&
+                n.targetUsernames.includes(professorUsername) &&
+                !n.readBy.includes(professorUsername) &&
+                n.fromUsername !== professorUsername &&
+                n.type !== 'task_submission'
+            );
+            
+            let html = `
+                <div class="result">
+                    <h4>🔍 Verificación Final</h4>
+                    <p><strong>Total de notificaciones en sistema:</strong> ${notifications.length}</p>
+                    <p><strong>Notificaciones problemáticas:</strong> ${problematic.length}</p>
+                    <p><strong>Contador para el profesor:</strong> ${count}</p>
+                    <p><strong>Notificaciones válidas para el profesor:</strong> ${validNotifications.length}</p>
+                </div>
+            `;
+            
+            if (count === 1 && problematic.length === 0) {
+                html += `
+                    <div class="result success">
+                        🎉 ¡PERFECTO! El sistema está funcionando correctamente.
+                        <br>El profesor Jorge ahora ve exactamente 1 notificación.
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="result error">
+                        ❌ Problema detectado:
+                        <br>Contador: ${count} (debería ser 1)
+                        <br>Problemáticas: ${problematic.length} (debería ser 0)
+                    </div>
+                `;
+            }
+            
+            if (validNotifications.length > 0) {
+                html += `
+                    <h4>📋 Notificaciones Válidas:</h4>
+                    <pre>${JSON.stringify(validNotifications.map(n => ({
+                        type: n.type,
+                        taskTitle: n.taskTitle,
+                        fromUsername: n.fromUsername,
+                        timestamp: n.timestamp
+                    })), null, 2)}</pre>
+                `;
+            }
+            
+            document.getElementById('finalVerification').innerHTML = html;
+        }
+
+        // Ejecutar análisis automático al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            analyzeCurrentProblem();
+        });
+    </script>
+</body>
+</html>

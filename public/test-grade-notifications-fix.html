@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 Test Notificaciones de Calificaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                🔔 Corrección: Notificaciones de Calificaciones
+            </h1>
+            <button 
+                onclick="document.documentElement.classList.toggle('dark')"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+                🌓 Cambiar Tema
+            </button>
+        </div>
+
+        <!-- Problema Identificado -->
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-6 rounded-lg mb-6">
+            <h2 class="text-red-800 dark:text-red-400 font-semibold text-lg mb-4">
+                🚨 Problema Identificado
+            </h2>
+            
+            <div class="text-red-700 dark:text-red-300 space-y-2">
+                <p><strong>Síntoma:</strong> Felipe recibió una calificación pero no aparece en:</p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>❌ Campana de notificaciones (icono de campana)</li>
+                    <li>❌ Burbuja de la tarjeta de tareas (página inicio)</li>
+                </ul>
+                <p><strong>Causa:</strong> Las notificaciones de calificaciones no se estaban sumando en los contadores del dashboard</p>
+            </div>
+        </div>
+
+        <!-- Análisis del Código -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🔍 Análisis del Código
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+                    <h3 class="text-yellow-800 dark:text-yellow-400 font-medium mb-2">✅ Sistema de Notificaciones (Funcionando)</h3>
+                    <div class="text-yellow-700 dark:text-yellow-300 text-sm space-y-1">
+                        <p>• TaskNotificationManager.createGradeNotification() ✓</p>
+                        <p>• Notificaciones se guardan correctamente ✓</p>
+                        <p>• Panel de notificaciones las muestra ✓</p>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                    <h3 class="text-red-800 dark:text-red-400 font-medium mb-2">❌ Contadores del Dashboard (Error)</h3>
+                    <div class="text-red-700 dark:text-red-300 text-sm space-y-1">
+                        <p>• Campana: Solo contaba pendingTasksCount + unreadCommentsCount</p>
+                        <p>• Burbuja tarjeta: Solo contaba pendingTasksCount</p>
+                        <p>• <strong>Faltaba:</strong> taskNotificationsCount (donde están las calificaciones)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Código Anterior vs Corregido -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-red-600 dark:text-red-400 font-semibold mb-3">❌ ANTES (Problema)</h3>
+                <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                    <pre class="text-gray-800 dark:text-gray-200"><code>// Campana de notificaciones
+const totalCount = user.role === 'student'
+  ? pendingTasksCount + unreadCommentsCount
+  : ...
+
+// Burbuja de tarjeta de tareas  
+user?.role === 'student' && pendingTasksCount > 0</code></pre>
+                </div>
+                <p class="text-red-600 dark:text-red-400 text-sm mt-2">
+                    <strong>Resultado:</strong> Las calificaciones no se mostraban en los contadores
+                </p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-green-600 dark:text-green-400 font-semibold mb-3">✅ DESPUÉS (Corregido)</h3>
+                <div class="bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                    <pre class="text-gray-800 dark:text-gray-200"><code>// Campana de notificaciones
+const totalCount = user.role === 'student'
+  ? pendingTasksCount + unreadCommentsCount + taskNotificationsCount
+  : ...
+
+// Burbuja de tarjeta de tareas
+const totalTaskCount = user?.role === 'student' 
+  ? pendingTasksCount + unreadCommentsCount + taskNotificationsCount
+  : ...</code></pre>
+                </div>
+                <p class="text-green-600 dark:text-green-400 text-sm mt-2">
+                    <strong>Resultado:</strong> Las calificaciones ahora se incluyen en ambos contadores
+                </p>
+            </div>
+        </div>
+
+        <!-- Simulación de Estados -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                🧪 Simulación de Estados
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 class="text-blue-800 dark:text-blue-400 font-medium mb-2">Tareas Pendientes</h4>
+                    <div class="text-blue-700 dark:text-blue-300 text-sm">
+                        <p>pendingTasksCount: <span class="font-bold">2</span></p>
+                        <p class="text-xs">• Tarea de Matemáticas (sin entregar)</p>
+                        <p class="text-xs">• Evaluación Historia (sin calificar)</p>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                    <h4 class="text-purple-800 dark:text-purple-400 font-medium mb-2">Comentarios</h4>
+                    <div class="text-purple-700 dark:text-purple-300 text-sm">
+                        <p>unreadCommentsCount: <span class="font-bold">1</span></p>
+                        <p class="text-xs">• Comentario del profesor en Ciencias</p>
+                    </div>
+                </div>
+                
+                <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                    <h4 class="text-orange-800 dark:text-orange-400 font-medium mb-2">Calificaciones</h4>
+                    <div class="text-orange-700 dark:text-orange-300 text-sm">
+                        <p>taskNotificationsCount: <span class="font-bold">1</span></p>
+                        <p class="text-xs">• Calificación 100% en tarea de Lenguaje</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <h4 class="text-green-800 dark:text-green-400 font-medium mb-2">Total Calculado</h4>
+                <div class="flex items-center gap-4">
+                    <span class="text-green-700 dark:text-green-300">Campana:</span>
+                    <div class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">4</div>
+                    <span class="text-green-700 dark:text-green-300">(2 + 1 + 1)</span>
+                </div>
+                <div class="flex items-center gap-4 mt-2">
+                    <span class="text-green-700 dark:text-green-300">Burbuja Tareas:</span>
+                    <div class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">4</div>
+                    <span class="text-green-700 dark:text-green-300">(2 + 1 + 1)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verificación de Funcionalidad -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+                ✅ Funcionalidad de Calificaciones
+            </h2>
+            
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">✓</span>
+                    <span class="text-gray-700 dark:text-gray-300">Profesor califica una tarea</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">✓</span>
+                    <span class="text-gray-700 dark:text-gray-300">Se crea notificación tipo 'grade_received'</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">✓</span>
+                    <span class="text-gray-700 dark:text-gray-300">TaskNotificationManager.createGradeNotification()</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">✓</span>
+                    <span class="text-gray-700 dark:text-gray-300">Notificación aparece en panel de notificaciones</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs">!</span>
+                    <span class="text-gray-700 dark:text-gray-300"><strong>AHORA:</strong> También se cuenta en campana y burbuja</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Cambios -->
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-6 rounded-lg">
+            <h2 class="text-green-800 dark:text-green-400 font-semibold text-lg mb-4">
+                🎉 Cambios Implementados
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">🔔 Campana de Notificaciones:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Incluye taskNotificationsCount</li>
+                        <li>• Muestra calificaciones recibidas</li>
+                        <li>• Actualiza log de debug</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-green-700 dark:text-green-300 font-medium mb-2">📋 Burbuja Tarjeta de Tareas:</h3>
+                    <ul class="text-green-600 dark:text-green-400 text-sm space-y-1">
+                        <li>• Cálculo unificado por rol</li>
+                        <li>• Incluye todas las notificaciones</li>
+                        <li>• Tooltips descriptivos</li>
+                        <li>• Traducciones agregadas</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-green-100 dark:bg-green-800/30 rounded-lg">
+                <p class="text-green-800 dark:text-green-300 text-sm">
+                    <strong>Resultado:</strong> Ahora cuando Felipe reciba una calificación, verá la notificación tanto en la campana como en la burbuja de la tarjeta de tareas en la página de inicio.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simular actualización de contadores
+        function updateCounters() {
+            const pendingTasks = 2;
+            const unreadComments = 1;
+            const taskNotifications = 1;
+            const total = pendingTasks + unreadComments + taskNotifications;
+            
+            console.log(`[Simulation] Total count for Felipe (student): ${total} (pending tasks: ${pendingTasks}, comments: ${unreadComments}, task notifications: ${taskNotifications})`);
+        }
+        
+        // Ejecutar simulación al cargar
+        updateCounters();
+    </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Completo - Notificaciones Pendientes</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button { 
+            background: #007bff; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin: 8px 5px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .button:hover { 
+            background: #0056b3; 
+            transform: translateY(-1px);
+        }
+        .button.success { background: #28a745; }
+        .button.success:hover { background: #218838; }
+        .button.warning { background: #ffc107; color: #212529; }
+        .button.warning:hover { background: #e0a800; }
+        .button.danger { background: #dc3545; }
+        .button.danger:hover { background: #c82333; }
+        
+        .result { 
+            margin: 10px 0; 
+            padding: 12px 16px; 
+            background: #f8f9fa; 
+            border-radius: 6px; 
+            border-left: 4px solid #007bff;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; color: #155724; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; color: #856404; }
+        .error { border-left-color: #dc3545; background: #f8d7da; color: #721c24; }
+        
+        .links {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        .links a {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 10px 16px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .links a:hover { 
+            background: #5a6268; 
+            transform: translateY(-1px);
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        #results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            background: #ffffff;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+        .status-info { background: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Completo: Sistema de Notificaciones Pendientes</h1>
+        
+        <p>Este test completo verificará todo el flujo de notificaciones pendientes de calificación:</p>
+        <ul>
+            <li>✅ Crear tarea de evaluación</li>
+            <li>✅ Generar notificación pendiente para profesor</li>
+            <li>✅ Simular entregas de estudiantes</li>
+            <li>✅ Verificar que aparezca la burbuja en el dashboard</li>
+            <li>✅ Simular calificación y verificar que desaparezca la burbuja</li>
+        </ul>
+        
+        <div class="test-section">
+            <h3>🚀 Controles del Test</h3>
+            <button class="button" onclick="runCompleteTest()">▶️ Ejecutar Test Completo</button>
+            <button class="button warning" onclick="clearResults()">🗑️ Limpiar Resultados</button>
+            <button class="button danger" onclick="clearAllData()">⚠️ Limpiar Todos los Datos</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Simulación de Calificación</h3>
+            <p>Una vez ejecutado el test principal, usa estos botones para simular calificaciones:</p>
+            <button class="button success" onclick="gradeFirstStudent()" id="gradeBtn1" disabled>📝 Calificar Estudiante 1</button>
+            <button class="button success" onclick="gradeSecondStudent()" id="gradeBtn2" disabled>📝 Calificar Estudiante 2</button>
+            <button class="button" onclick="checkNotificationStatus()">🔍 Verificar Estado Notificaciones</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Resultados del Test</h3>
+            <div id="results"></div>
+        </div>
+        
+        <div class="links">
+            <h3>🔗 Enlaces de Navegación</h3>
+            <a href="/">🏠 Dashboard Principal</a>
+            <a href="/login">🔐 Página de Login</a>
+            <a href="/dashboard/tareas">📋 Gestión de Tareas</a>
+            <a href="debug-notifications.html">🔧 Debug Notificaciones</a>
+            <a href="debug-pending-notifications.html">🔍 Debug Pendientes</a>
+        </div>
+    </div>
+    
+    <script>
+        let testData = null;
+        
+        function addResult(message, type = 'result') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            
+            // Agregar indicador visual
+            let indicator = '';
+            if (type === 'success') indicator = '<span class="status-indicator status-success"></span>';
+            else if (type === 'warning') indicator = '<span class="status-indicator status-warning"></span>';
+            else if (type === 'error') indicator = '<span class="status-indicator status-error"></span>';
+            else indicator = '<span class="status-indicator status-info"></span>';
+            
+            div.innerHTML = indicator + message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        function clearAllData() {
+            if (confirm('⚠️ ¿Estás seguro de que quieres eliminar TODOS los datos de prueba? Esta acción no se puede deshacer.')) {
+                localStorage.removeItem('smart-student-tasks');
+                localStorage.removeItem('smart-student-task-notifications');
+                localStorage.removeItem('smart-student-task-comments');
+                addResult('🗑️ Todos los datos de prueba eliminados', 'warning');
+                testData = null;
+                document.getElementById('gradeBtn1').disabled = true;
+                document.getElementById('gradeBtn2').disabled = true;
+            }
+        }
+        
+        function runCompleteTest() {
+            clearResults();
+            addResult('🚀 Iniciando test completo del sistema de notificaciones...', 'result');
+            
+            try {
+                // Ejecutar el script de test
+                const script = document.createElement('script');
+                script.src = 'test-complete-notification-flow.js';
+                script.onload = () => {
+                    // Test ejecutado, habilitar botones
+                    if (window.testResult) {
+                        testData = window.testResult;
+                        document.getElementById('gradeBtn1').disabled = false;
+                        document.getElementById('gradeBtn2').disabled = false;
+                        addResult(`✅ Test completado. Ve al dashboard e inicia sesión como: ${testData.teacher}`, 'success');
+                        addResult(`📋 Burbuja debería mostrar: ${testData.expectedCount} notificaciones`, 'success');
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                addResult(`❌ Error ejecutando test: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+        
+        function gradeFirstStudent() {
+            if (testData && window.simulateGrading) {
+                addResult(`📝 Calificando a ${testData.students[0]}...`, 'result');
+                window.simulateGrading(testData.taskId, testData.students[0]);
+                addResult(`✅ ${testData.students[0]} calificado`, 'success');
+                document.getElementById('gradeBtn1').disabled = true;
+            }
+        }
+        
+        function gradeSecondStudent() {
+            if (testData && window.simulateGrading) {
+                addResult(`📝 Calificando a ${testData.students[1]}...`, 'result');
+                window.simulateGrading(testData.taskId, testData.students[1]);
+                addResult(`✅ ${testData.students[1]} calificado`, 'success');
+                addResult(`🎉 Todos los estudiantes calificados - la burbuja debería desaparecer`, 'success');
+                document.getElementById('gradeBtn2').disabled = true;
+            }
+        }
+        
+        function checkNotificationStatus() {
+            if (!testData) {
+                addResult('❌ Ejecuta el test principal primero', 'error');
+                return;
+            }
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            const pendingNotifications = notifications.filter(n => 
+                n.type === 'pending_grading' && 
+                n.taskId === testData.taskId
+            );
+            
+            const pendingSubmissions = comments.filter(c => 
+                c.taskId === testData.taskId && 
+                c.isSubmission === true &&
+                (!c.grade || c.grade === null || c.grade === undefined)
+            );
+            
+            const totalPending = pendingNotifications.length + pendingSubmissions.length;
+            
+            addResult(`🔍 Estado actual:`, 'result');
+            addResult(`   • Notificaciones pendientes: ${pendingNotifications.length}`, 'result');
+            addResult(`   • Entregas sin calificar: ${pendingSubmissions.length}`, 'result');
+            addResult(`   • Total para burbuja: ${totalPending}`, totalPending > 0 ? 'warning' : 'success');
+            
+            if (totalPending === 0) {
+                addResult(`🎉 ¡Perfecto! No hay notificaciones pendientes - la burbuja no debería aparecer`, 'success');
+            }
+        }
+        
+        // Override console.log para mostrar en la UI
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            
+            let type = 'result';
+            if (message.includes('❌')) type = 'error';
+            else if (message.includes('✅')) type = 'success';
+            else if (message.includes('⚠️')) type = 'warning';
+            else if (message.includes('🎯') || message.includes('📊')) type = 'warning';
+            
+            addResult(message, type);
+        };
+    </script>
+</body>
+</html>

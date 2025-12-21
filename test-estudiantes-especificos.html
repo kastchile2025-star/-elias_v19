@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación Estudiantes Específicos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #005a84; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificación: Estudiantes Específicos en Tareas</h1>
+        
+        <div id="status"></div>
+        
+        <div>
+            <button onclick="ejecutarDiagnostico()">🔍 Diagnosticar Problema</button>
+            <button onclick="crearDatosPrueba()">🚀 Crear Datos de Prueba</button>
+            <button onclick="verificarLocalStorage()">📊 Verificar Datos</button>
+            <button onclick="irATareas()">📝 Ir a Crear Tarea</button>
+        </div>
+        
+        <div id="resultados" class="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultados = document.getElementById('resultados');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            resultados.innerHTML += `<div class="${className}">${message}</div>`;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('resultados').innerHTML = '';
+        }
+
+        function verificarLocalStorage() {
+            clearLog();
+            log('📊 VERIFICANDO DATOS EN LOCALSTORAGE...', 'info');
+            
+            try {
+                const auth = JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+                const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
+                const teacherAssignments = JSON.parse(localStorage.getItem('smart-student-teacher-assignments') || '[]');
+                
+                log(`✅ Usuario actual: ${auth.user?.displayName || 'No logueado'} (${auth.user?.role || 'N/A'})`, 'success');
+                log(`📊 Total usuarios: ${users.length}`, 'info');
+                log(`📊 Total cursos: ${courses.length}`, 'info');
+                log(`📊 Total secciones: ${sections.length}`, 'info');
+                log(`📊 Total asignaciones: ${teacherAssignments.length}`, 'info');
+                
+                if (auth.user?.role === 'teacher') {
+                    const estudiantesAsignados = users.filter(u => 
+                        u.role === 'student' && (
+                            u.assignedTeacher === auth.user.username ||
+                            (u.assignedTeachers && Object.values(u.assignedTeachers).includes(auth.user.username))
+                        )
+                    );
+                    log(`👥 Estudiantes asignados al profesor: ${estudiantesAsignados.length}`, estudiantesAsignados.length > 0 ? 'success' : 'warning');
+                    estudiantesAsignados.forEach(s => {
+                        log(`   • ${s.displayName} - Curso: ${s.activeCourses?.[0] || 'Sin curso'}`, 'info');
+                    });
+                } else {
+                    log('⚠️ No estás logueado como profesor', 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Error verificando datos: ${error.message}`, 'error');
+            }
+        }
+
+        function ejecutarDiagnostico() {
+            clearLog();
+            log('🔍 EJECUTANDO DIAGNÓSTICO...', 'info');
+            
+            try {
+                const auth = JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+                const teacherAssignments = JSON.parse(localStorage.getItem('smart-student-teacher-assignments') || '[]');
+                
+                const currentUser = auth.user;
+                
+                if (!currentUser || currentUser.role !== 'teacher') {
+                    log('❌ Error: Necesitas estar logueado como profesor', 'error');
+                    log('💡 Acción: Ve a http://localhost:9002 y haz login como profesor', 'warning');
+                    return;
+                }
+                
+                log(`✅ Profesor logueado: ${currentUser.displayName}`, 'success');
+                
+                // Verificar estudiantes asignados
+                const estudiantesAsignados = users.filter(u => 
+                    u.role === 'student' && (
+                        u.assignedTeacher === currentUser.username ||
+                        (u.assignedTeachers && Object.values(u.assignedTeachers).includes(currentUser.username))
+                    )
+                );
+                
+                log(`🎓 Estudiantes asignados: ${estudiantesAsignados.length}`, estudiantesAsignados.length > 0 ? 'success' : 'error');
+                
+                if (estudiantesAsignados.length === 0) {
+                    log('❌ PROBLEMA ENCONTRADO: No hay estudiantes asignados al profesor', 'error');
+                    log('💡 SOLUCIÓN: Hacer clic en "Crear Datos de Prueba"', 'warning');
+                    return;
+                }
+                
+                // Verificar cursos disponibles
+                const cursosDelProfesor = [...new Set(estudiantesAsignados.flatMap(s => s.activeCourses || []))];
+                log(`📚 Cursos con estudiantes: ${cursosDelProfesor.join(', ')}`, 'success');
+                
+                // Verificar por cada curso
+                cursosDelProfesor.forEach(curso => {
+                    const estudiantesEnCurso = estudiantesAsignados.filter(s => s.activeCourses?.includes(curso));
+                    log(`   📖 ${curso}: ${estudiantesEnCurso.length} estudiantes`, 'info');
+                    estudiantesEnCurso.forEach(s => {
+                        log(`     • ${s.displayName}`, 'info');
+                    });
+                });
+                
+                log('✅ DIAGNÓSTICO COMPLETADO: La funcionalidad debería estar operativa', 'success');
+                log('💡 Si aún no ves estudiantes, prueba recargar la página de tareas', 'warning');
+                
+            } catch (error) {
+                log(`❌ Error en diagnóstico: ${error.message}`, 'error');
+            }
+        }
+
+        function crearDatosPrueba() {
+            clearLog();
+            log('🚀 CREANDO DATOS DE PRUEBA...', 'info');
+            
+            try {
+                const auth = JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+                const currentUser = auth.user;
+                
+                if (!currentUser || currentUser.role !== 'teacher') {
+                    log('❌ Error: Necesitas estar logueado como profesor', 'error');
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                
+                // Crear estudiantes de prueba
+                const estudiantesPrueba = [
+                    { username: 'ana.test', name: 'Ana Test' },
+                    { username: 'luis.test', name: 'Luis Test' },
+                    { username: 'sofia.test', name: 'Sofia Test' },
+                    { username: 'maria.test', name: 'Maria Test' }
+                ];
+                
+                let creados = 0;
+                let actualizados = 0;
+                
+                estudiantesPrueba.forEach(({ username, name }) => {
+                    const existingStudent = users.find(u => u.username === username);
+                    
+                    const studentData = {
+                        id: existingStudent?.id || `student-${username}`,
+                        username: username,
+                        displayName: name,
+                        role: 'student',
+                        activeCourses: ['4to Básico'],
+                        assignedTeacher: currentUser.username,
+                        assignedTeachers: {
+                            'Matemáticas': currentUser.username,
+                            'Lenguaje y Comunicación': currentUser.username,
+                            'Ciencias Naturales': currentUser.username,
+                            'Historia, Geografía y Ciencias Sociales': currentUser.username
+                        }
+                    };
+                    
+                    if (existingStudent) {
+                        Object.assign(existingStudent, studentData);
+                        actualizados++;
+                        log(`✅ Actualizado: ${name}`, 'success');
+                    } else {
+                        users.push(studentData);
+                        creados++;
+                        log(`✅ Creado: ${name}`, 'success');
+                    }
+                });
+                
+                // Crear curso básico si no existe
+                let courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+                if (!courses.find(c => c.id === '4to Básico')) {
+                    courses.push({ id: '4to Básico', name: '4to Básico' });
+                    localStorage.setItem('smart-student-courses', JSON.stringify(courses));
+                    log('✅ Creado curso: 4to Básico', 'success');
+                }
+                
+                // Guardar usuarios
+                localStorage.setItem('smart-student-users', JSON.stringify(users));
+                
+                log(`🎉 PROCESO COMPLETADO:`, 'success');
+                log(`   • Estudiantes creados: ${creados}`, 'success');
+                log(`   • Estudiantes actualizados: ${actualizados}`, 'success');
+                log(`   • Todos asignados al profesor: ${currentUser.displayName}`, 'success');
+                log('💡 Ahora ve a Crear Tarea y selecciona "Estudiantes específicos"', 'warning');
+                
+            } catch (error) {
+                log(`❌ Error creando datos: ${error.message}`, 'error');
+            }
+        }
+
+        function irATareas() {
+            window.open('http://localhost:9002/dashboard/tareas', '_blank');
+        }
+
+        // Ejecutar verificación inicial
+        window.onload = function() {
+            verificarLocalStorage();
+        };
+    </script>
+</body>
+</html>

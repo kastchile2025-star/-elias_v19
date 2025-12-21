@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Fix - Multiple Unread Comments</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #f97316;
+            text-align: center;
+        }
+        .button {
+            background: #f97316;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+        .button:hover {
+            background: #ea580c;
+        }
+        .log {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick Fix - Comentarios Múltiples</h1>
+        <p>Esta herramienta corrige el problema específico de comentarios múltiples no leídos.</p>
+        
+        <button class="button" onclick="createExactScenario()">
+            1. 📝 Crear Escenario Exacto (como en la imagen)
+        </button>
+        
+        <button class="button" onclick="verifyHighlighting()">
+            2. 🔍 Verificar Resaltado de Comentarios
+        </button>
+        
+        <button class="button" onclick="testMarkAllAsRead()">
+            3. ✅ Probar Marcar Todos como Leídos
+        </button>
+        
+        <button class="button" onclick="openTasksPage()">
+            4. 🔗 Abrir Página de Tareas (Nueva Pestaña)
+        </button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            logElement.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function createExactScenario() {
+            log('🚀 Creando escenario exacto como en la imagen...', 'info');
+            
+            try {
+                // Clear existing data
+                localStorage.setItem('smart-student-task-comments', JSON.stringify([]));
+                localStorage.setItem('smart-student-tasks', JSON.stringify([]));
+                
+                // Create the exact task from the image
+                const cienciasTask = {
+                    id: 'task_ciencias_naturales',
+                    title: 'Ciencias Naturales',
+                    description: '4to Básico - Laboratorio',
+                    course: '4A',
+                    subject: 'Ciencias Naturales',
+                    assignedBy: 'profesor1',
+                    assignedByName: 'Prof. García',
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date('2025-06-26T13:40:00Z').toISOString(),
+                    status: 'pending',
+                    taskType: 'assignment'
+                };
+                
+                // Create Felipe's comment (student comment - should be highlighted as unread)
+                const felipeComment = {
+                    id: 'comment_felipe_1',
+                    taskId: 'task_ciencias_naturales',
+                    studentUsername: 'felipe_estudiante',
+                    studentName: 'Felipe Estudiante',
+                    comment: 'hola a todos',
+                    timestamp: new Date('2025-06-26T09:46:00Z').toISOString(),
+                    isSubmission: false,
+                    userRole: 'student',
+                    readBy: ['felipe_estudiante'], // Felipe has read his own comment
+                    isNew: false
+                };
+                
+                // Create Sofia's comment (student comment)
+                const sofiaComment = {
+                    id: 'comment_sofia_1',
+                    taskId: 'task_ciencias_naturales',
+                    studentUsername: 'sofia_estudiante',
+                    studentName: 'Sofia Estudiante',
+                    comment: 'hola felipe',
+                    timestamp: new Date('2025-06-26T10:14:00Z').toISOString(),
+                    isSubmission: false,
+                    userRole: 'student',
+                    readBy: ['sofia_estudiante'], // Sofia has read her own comment
+                    isNew: false
+                };
+                
+                // Create MULTIPLE teacher comments that should be highlighted
+                const teacherComment1 = {
+                    id: 'comment_teacher_1',
+                    taskId: 'task_ciencias_naturales',
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'Muy bien Felipe y Sofia. Ahora necesito que se enfoquen en el experimento del laboratorio.',
+                    timestamp: new Date('2025-06-26T11:00:00Z').toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NOT read by any student yet
+                    isNew: true
+                };
+                
+                const teacherComment2 = {
+                    id: 'comment_teacher_2',
+                    taskId: 'task_ciencias_naturales',
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'Recuerden seguir las instrucciones de seguridad que discutimos en clase.',
+                    timestamp: new Date('2025-06-26T11:15:00Z').toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NOT read by any student yet
+                    isNew: true
+                };
+                
+                const teacherComment3 = {
+                    id: 'comment_teacher_3',
+                    taskId: 'task_ciencias_naturales',
+                    studentUsername: 'profesor1',
+                    studentName: 'Prof. García',
+                    comment: 'La fecha límite para entregar el informe es el viernes. ¡No lo olviden!',
+                    timestamp: new Date('2025-06-26T12:00:00Z').toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NOT read by any student yet
+                    isNew: true
+                };
+                
+                // Save all data
+                const tasks = [cienciasTask];
+                const comments = [felipeComment, sofiaComment, teacherComment1, teacherComment2, teacherComment3];
+                
+                localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+                
+                log('✅ Escenario creado exitosamente!', 'success');
+                log('📋 Tarea: ' + cienciasTask.title, 'info');
+                log('💬 2 comentarios de estudiantes (leídos)', 'info');
+                log('👨‍🏫 3 comentarios del profesor (NO LEÍDOS)', 'success');
+                log('🎯 Los 3 comentarios del profesor deberían aparecer destacados', 'success');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        function verifyHighlighting() {
+            log('🔍 Verificando lógica de resaltado...', 'info');
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const currentUser = 'felipe_estudiante'; // Simulating Felipe as current user
+                
+                log(`👤 Usuario actual simulado: ${currentUser}`, 'info');
+                log('', 'info');
+                
+                comments.forEach(comment => {
+                    const isTeacherComment = comment.userRole === 'teacher';
+                    const isUnreadByUser = isTeacherComment && !comment.readBy?.includes(currentUser);
+                    
+                    const status = isUnreadByUser ? '📩 DEBERÍA ESTAR DESTACADO' : '✅ Normal';
+                    const color = isUnreadByUser ? 'success' : 'info';
+                    
+                    log(`💬 ${comment.studentName}: "${comment.comment.substring(0, 40)}..."`, 'info');
+                    log(`   Rol: ${comment.userRole}, Leído por: [${comment.readBy?.join(', ') || 'nadie'}]`, 'info');
+                    log(`   Estado: ${status}`, color);
+                    log('', 'info');
+                });
+                
+                const unreadTeacherComments = comments.filter(c => 
+                    c.userRole === 'teacher' && !c.readBy?.includes(currentUser)
+                ).length;
+                
+                log(`📊 RESUMEN: ${unreadTeacherComments} comentarios del profesor NO LEÍDOS`, 'success');
+                log('🎯 Estos deberían aparecer con borde naranja en la aplicación', 'success');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        function testMarkAllAsRead() {
+            log('✅ Simulando marcar todos como leídos...', 'info');
+            
+            try {
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                const currentUser = 'felipe_estudiante';
+                const taskId = 'task_ciencias_naturales';
+                
+                let markedCount = 0;
+                const updatedComments = comments.map(comment => {
+                    if (comment.taskId === taskId && 
+                        comment.userRole === 'teacher' && 
+                        !comment.readBy?.includes(currentUser)) {
+                        markedCount++;
+                        log(`📩 Marcando como leído: "${comment.comment.substring(0, 40)}..."`, 'info');
+                        return {
+                            ...comment,
+                            readBy: [...(comment.readBy || []), currentUser],
+                            isNew: false
+                        };
+                    }
+                    return comment;
+                });
+                
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                
+                log(`✅ ${markedCount} comentarios marcados como leídos`, 'success');
+                log('🎯 Ahora NINGÚN comentario debería estar destacado', 'success');
+                log('🔄 Ejecuta "Verificar Resaltado" para confirmar', 'info');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        function openTasksPage() {
+            const url = window.location.origin + '/dashboard/tareas?taskId=task_ciencias_naturales';
+            window.open(url, '_blank');
+            log('🔗 Abriendo página de tareas en nueva pestaña...', 'info');
+            log('🎯 Deberías ver los comentarios destacados en naranja', 'success');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Quick Fix Tool iniciada', 'info');
+            log('📱 Sigue los pasos en orden para probar la funcionalidad', 'info');
+        });
+    </script>
+</body>
+</html>

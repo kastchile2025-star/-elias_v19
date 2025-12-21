@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Burbuja de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .debug-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .counter {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .notification-item {
+            background: #e7f3ff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+        .task-item {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #ffc107;
+        }
+        .unread {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.danger:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Debug - Burbuja de Notificaciones</h1>
+    
+    <div class="debug-section">
+        <h2 class="debug-title">Estado de Usuario Actual</h2>
+        <div id="user-info">Cargando...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Contadores de Notificaciones</h2>
+        <div id="notification-counters">Cargando...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Notificaciones de Tareas No Leídas</h2>
+        <div id="task-notifications">Cargando...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Tareas Pendientes</h2>
+        <div id="pending-tasks">Cargando...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Comentarios No Leídos</h2>
+        <div id="unread-comments">Cargando...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Acciones de Debug</h2>
+        <button class="button" onclick="reloadData()">🔄 Recargar Datos</button>
+        <button class="button danger" onclick="clearTaskNotifications()">🗑️ Limpiar Notificaciones de Tareas</button>
+        <button class="button" onclick="createTestTask()">➕ Crear Tarea de Prueba</button>
+    </div>
+
+    <script>
+        // Simulación del TaskNotificationManager
+        class TaskNotificationManager {
+            static getNotifications() {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            }
+
+            static getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => 
+                    notification.targetUserRole === userRole &&
+                    notification.targetUsernames.includes(username) &&
+                    !notification.readBy.includes(username)
+                );
+            }
+
+            static getUnreadCountForUser(username, userRole) {
+                return this.getUnreadNotificationsForUser(username, userRole).length;
+            }
+        }
+
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('smart-student-auth') || '{}');
+        }
+
+        function loadUserInfo() {
+            const user = getCurrentUser();
+            const userInfoDiv = document.getElementById('user-info');
+            
+            if (!user.username) {
+                userInfoDiv.innerHTML = '<div class="debug-item">❌ No hay usuario logueado</div>';
+                return null;
+            }
+            
+            userInfoDiv.innerHTML = `
+                <div class="debug-item">
+                    <strong>Usuario:</strong> ${user.username}<br>
+                    <strong>Nombre:</strong> ${user.displayName || 'No definido'}<br>
+                    <strong>Rol:</strong> ${user.role}<br>
+                    <strong>Curso:</strong> ${user.course || 'No definido'}
+                </div>
+            `;
+            
+            return user;
+        }
+
+        function loadNotificationCounters() {
+            const user = getCurrentUser();
+            if (!user.username) return;
+
+            const taskNotificationsCount = TaskNotificationManager.getUnreadCountForUser(user.username, user.role);
+            
+            // Cargar tareas pendientes
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+            
+            let pendingTasksCount = 0;
+            if (user.role === 'student') {
+                // Para estudiantes: contar tareas asignadas que aún no han sido completadas/entregadas
+                const studentTasks = tasks.filter(task => {
+                    if (task.assignedTo === 'course' && task.course === user.course) {
+                        return true;
+                    }
+                    if (task.assignedTo === 'specific' && task.assignedStudents?.includes(user.username)) {
+                        return true;
+                    }
+                    return false;
+                });
+                
+                // Contar tareas que no tienen entrega o están pendientes de calificación
+                const pendingTasks = studentTasks.filter(task => {
+                    const submissions = comments.filter(comment => 
+                        comment.taskId === task.id && 
+                        comment.studentUsername === user.username && 
+                        comment.isSubmission
+                    );
+                    
+                    // Si no hay entregas, la tarea está pendiente
+                    if (submissions.length === 0) return true;
+                    
+                    // Si hay entregas pero no están calificadas, también está pendiente
+                    const latestSubmission = submissions[submissions.length - 1];
+                    return !latestSubmission.grade;
+                });
+                
+                pendingTasksCount = pendingTasks.length;
+            }
+
+            // Cargar comentarios no leídos
+            let unreadCommentsCount = 0;
+            if (user.role === 'student') {
+                const unreadComments = comments.filter(comment => 
+                    comment.studentUsername !== user.username && 
+                    (!comment.readBy?.includes(user.username)) &&
+                    !comment.isSubmission
+                );
+                unreadCommentsCount = unreadComments.length;
+            }
+
+            const totalCount = pendingTasksCount + unreadCommentsCount + taskNotificationsCount;
+
+            const countersDiv = document.getElementById('notification-counters');
+            countersDiv.innerHTML = `
+                <div class="debug-item">
+                    <div class="counter">Total: ${totalCount}</div>
+                    <br>
+                    <strong>Desglose:</strong><br>
+                    • Notificaciones de tareas no leídas: <span class="counter">${taskNotificationsCount}</span><br>
+                    • Tareas pendientes: <span class="counter">${pendingTasksCount}</span><br>
+                    • Comentarios no leídos: <span class="counter">${unreadCommentsCount}</span>
+                </div>
+            `;
+        }
+
+        function loadTaskNotifications() {
+            const user = getCurrentUser();
+            if (!user.username) return;
+
+            const unreadNotifications = TaskNotificationManager.getUnreadNotificationsForUser(user.username, user.role);
+            const notificationsDiv = document.getElementById('task-notifications');
+            
+            if (unreadNotifications.length === 0) {
+                notificationsDiv.innerHTML = '<div class="debug-item">✅ No hay notificaciones de tareas no leídas</div>';
+                return;
+            }
+
+            let html = '<div class="debug-item">';
+            html += `<strong>Total: ${unreadNotifications.length}</strong><br><br>`;
+            
+            unreadNotifications.forEach(notification => {
+                html += `
+                    <div class="notification-item ${!notification.readBy.includes(user.username) ? 'unread' : ''}">
+                        <strong>Tipo:</strong> ${notification.type}<br>
+                        <strong>Tarea:</strong> ${notification.taskTitle}<br>
+                        <strong>De:</strong> ${notification.fromDisplayName}<br>
+                        <strong>Fecha:</strong> ${new Date(notification.timestamp).toLocaleString()}<br>
+                        <strong>Leída:</strong> ${notification.readBy.includes(user.username) ? 'Sí' : 'No'}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            notificationsDiv.innerHTML = html;
+        }
+
+        function loadPendingTasks() {
+            const user = getCurrentUser();
+            if (!user.username || user.role !== 'student') {
+                document.getElementById('pending-tasks').innerHTML = '<div class="debug-item">No aplica para este rol</div>';
+                return;
+            }
+
+            const storedTasks = localStorage.getItem('smart-student-tasks');
+            const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+            
+            // Para estudiantes: tareas asignadas que aún no han sido completadas/entregadas
+            const studentTasks = tasks.filter(task => {
+                if (task.assignedTo === 'course' && task.course === user.course) {
+                    return true;
+                }
+                if (task.assignedTo === 'specific' && task.assignedStudents?.includes(user.username)) {
+                    return true;
+                }
+                return false;
+            });
+            
+            // Contar tareas que no tienen entrega o están pendientes de calificación
+            const pendingTasks = studentTasks.filter(task => {
+                const submissions = comments.filter(comment => 
+                    comment.taskId === task.id && 
+                    comment.studentUsername === user.username && 
+                    comment.isSubmission
+                );
+                
+                // Si no hay entregas, la tarea está pendiente
+                if (submissions.length === 0) return true;
+                
+                // Si hay entregas pero no están calificadas, también está pendiente
+                const latestSubmission = submissions[submissions.length - 1];
+                return !latestSubmission.grade;
+            });
+
+            const tasksDiv = document.getElementById('pending-tasks');
+            
+            if (pendingTasks.length === 0) {
+                tasksDiv.innerHTML = '<div class="debug-item">✅ No hay tareas pendientes</div>';
+                return;
+            }
+
+            let html = '<div class="debug-item">';
+            html += `<strong>Total: ${pendingTasks.length}</strong><br><br>`;
+            
+            pendingTasks.forEach(task => {
+                const submissions = comments.filter(comment => 
+                    comment.taskId === task.id && 
+                    comment.studentUsername === user.username && 
+                    comment.isSubmission
+                );
+                
+                const hasSubmission = submissions.length > 0;
+                const latestSubmission = submissions[submissions.length - 1];
+                const hasGrade = latestSubmission?.grade;
+                
+                html += `
+                    <div class="task-item">
+                        <strong>Título:</strong> ${task.title}<br>
+                        <strong>Materia:</strong> ${task.subject}<br>
+                        <strong>Fecha límite:</strong> ${new Date(task.dueDate).toLocaleString()}<br>
+                        <strong>Estado:</strong> ${hasSubmission ? (hasGrade ? 'Calificada' : 'Entregada, sin calificar') : 'Sin entregar'}<br>
+                        <strong>Calificación:</strong> ${hasGrade || 'Sin calificar'}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            tasksDiv.innerHTML = html;
+        }
+
+        function loadUnreadComments() {
+            const user = getCurrentUser();
+            if (!user.username) return;
+
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            const comments = storedComments ? JSON.parse(storedComments) : [];
+            
+            let unreadComments = [];
+            if (user.role === 'student') {
+                unreadComments = comments.filter(comment => 
+                    comment.studentUsername !== user.username && 
+                    (!comment.readBy?.includes(user.username)) &&
+                    !comment.isSubmission
+                );
+            }
+
+            const commentsDiv = document.getElementById('unread-comments');
+            
+            if (unreadComments.length === 0) {
+                commentsDiv.innerHTML = '<div class="debug-item">✅ No hay comentarios no leídos</div>';
+                return;
+            }
+
+            let html = '<div class="debug-item">';
+            html += `<strong>Total: ${unreadComments.length}</strong><br><br>`;
+            
+            unreadComments.forEach(comment => {
+                html += `
+                    <div class="notification-item unread">
+                        <strong>Tarea ID:</strong> ${comment.taskId}<br>
+                        <strong>De:</strong> ${comment.studentName}<br>
+                        <strong>Comentario:</strong> ${comment.comment.substring(0, 100)}...<br>
+                        <strong>Fecha:</strong> ${new Date(comment.timestamp).toLocaleString()}<br>
+                        <strong>Es entrega:</strong> ${comment.isSubmission ? 'Sí' : 'No'}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            commentsDiv.innerHTML = html;
+        }
+
+        function reloadData() {
+            loadUserInfo();
+            loadNotificationCounters();
+            loadTaskNotifications();
+            loadPendingTasks();
+            loadUnreadComments();
+        }
+
+        function clearTaskNotifications() {
+            if (confirm('¿Estás seguro de que quieres limpiar todas las notificaciones de tareas?')) {
+                localStorage.setItem('smart-student-task-notifications', '[]');
+                reloadData();
+            }
+        }
+
+        function createTestTask() {
+            const user = getCurrentUser();
+            if (!user.username || user.role !== 'teacher') {
+                alert('Solo los profesores pueden crear tareas de prueba');
+                return;
+            }
+
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const newTask = {
+                id: `test_${Date.now()}`,
+                title: 'Tarea de Prueba - Burbuja',
+                description: 'Esta es una tarea de prueba para verificar las notificaciones',
+                subject: 'Ciencias Naturales',
+                course: 'Sexto A',
+                assignedTo: 'course',
+                assignedBy: user.username,
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+
+            // Crear notificación
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const newNotification = {
+                id: `new_task_${newTask.id}_${Date.now()}`,
+                type: 'new_task',
+                taskId: newTask.id,
+                taskTitle: newTask.title,
+                targetUserRole: 'student',
+                targetUsernames: ['felipe'], // Asumiendo que Felipe es el estudiante
+                fromUsername: user.username,
+                fromDisplayName: user.displayName || user.username,
+                course: newTask.course,
+                subject: newTask.subject,
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+
+            notifications.push(newNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+
+            alert('Tarea de prueba creada con notificación');
+            reloadData();
+        }
+
+        // Cargar datos iniciales
+        window.onload = reloadData;
+    </script>
+</body>
+</html>

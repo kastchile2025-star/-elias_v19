@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba - Panel de Notificaciones con Scroll Mejorado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para scrollbars */
+        .scrollbar-custom {
+            scrollbar-width: thin;
+            scrollbar-color: rgb(203 213 225) transparent;
+        }
+
+        .scrollbar-custom:hover {
+            scrollbar-color: rgb(148 163 184) transparent;
+        }
+
+        /* Para navegadores webkit (Chrome, Safari, Edge) */
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: rgb(203 213 225);
+            border-radius: 4px;
+            border: 1px solid transparent;
+            background-clip: content-box;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+            background: rgb(148 163 184);
+            background-clip: content-box;
+        }
+
+        /* Dark mode */
+        .dark .scrollbar-custom {
+            scrollbar-color: rgb(71 85 105) transparent;
+        }
+
+        .dark .scrollbar-custom:hover {
+            scrollbar-color: rgb(100 116 139) transparent;
+        }
+
+        .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: rgb(71 85 105);
+        }
+
+        .dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+            background: rgb(100 116 139);
+        }
+
+        /* Scrollbar más visible para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .scrollbar-custom::-webkit-scrollbar {
+                width: 12px;
+            }
+            
+            .scrollbar-custom::-webkit-scrollbar-thumb {
+                background: rgb(148 163 184);
+            }
+            
+            .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+                background: rgb(100 116 139);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">🔧 Prueba: Panel de Notificaciones con Scroll Mejorado</h1>
+        
+        <!-- Toggle Dark Mode -->
+        <div class="mb-6">
+            <button onclick="toggleDarkMode()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Alternar Modo Oscuro
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Panel Normal (Antes) -->
+            <div class="bg-white rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-semibold mb-4">❌ Panel Normal (400px max)</h2>
+                <div class="relative">
+                    <div class="w-80 border rounded-lg bg-white shadow-lg">
+                        <div class="p-4 border-b">
+                            <h3 class="font-semibold">Notificaciones</h3>
+                        </div>
+                        
+                        <!-- ScrollArea con altura limitada -->
+                        <div class="max-h-[400px] overflow-y-auto">
+                            <div class="divide-y">
+                                <!-- Generar muchas notificaciones para probar scroll -->
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-blue-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-blue-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Nueva Tarea Asignada</p>
+                                            <p class="text-sm text-gray-600">Matemáticas: Ejercicios de Álgebra</p>
+                                            <p class="text-xs text-gray-500">Hace 2 horas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-green-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-green-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Calificación Recibida</p>
+                                            <p class="text-sm text-gray-600">Historia: Ensayo sobre la Revolución - 85%</p>
+                                            <p class="text-xs text-gray-500">Hace 4 horas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-orange-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-orange-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Comentario del Profesor</p>
+                                            <p class="text-sm text-gray-600">Biología: "Excelente trabajo en el laboratorio"</p>
+                                            <p class="text-xs text-gray-500">Hace 6 horas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-red-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-red-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Tarea Próxima a Vencer</p>
+                                            <p class="text-sm text-gray-600">Física: Problemas de Mecánica</p>
+                                            <p class="text-xs text-gray-500">Vence mañana</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-purple-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-purple-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Evaluación Programada</p>
+                                            <p class="text-sm text-gray-600">Química: Examen de Tabla Periódica</p>
+                                            <p class="text-xs text-gray-500">En 2 días</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-indigo-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-indigo-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Nuevo Comentario</p>
+                                            <p class="text-sm text-gray-600">Literatura: Discusión sobre el Quijote</p>
+                                            <p class="text-xs text-gray-500">Hace 1 día</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-pink-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-pink-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Recordatorio</p>
+                                            <p class="text-sm text-gray-600">Geografía: Entrega de proyecto</p>
+                                            <p class="text-xs text-gray-500">Hace 2 días</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-start gap-2">
+                                        <div class="bg-teal-100 p-2 rounded-full">
+                                            <div class="h-4 w-4 bg-teal-600 rounded"></div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Material Nuevo</p>
+                                            <p class="text-sm text-gray-600">Inglés: Recursos para Speaking</p>
+                                            <p class="text-xs text-gray-500">Hace 3 días</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Mejorado (Después) -->
+            <div class="bg-white rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-semibold mb-4">✅ Panel Mejorado (80vh + scroll personalizado)</h2>
+                <div class="relative">
+                    <div class="w-80 border rounded-lg bg-white shadow-lg max-h-[80vh] flex flex-col">
+                        <div class="p-4 border-b flex-shrink-0">
+                            <h3 class="font-semibold">Notificaciones</h3>
+                        </div>
+                        
+                        <!-- ScrollArea mejorado -->
+                        <div class="flex-1 min-h-0 scrollbar-custom overflow-y-auto" style="max-height: calc(80vh - 80px);">
+                            <div class="p-1">
+                                <div class="divide-y">
+                                    <!-- Generar muchas notificaciones para probar scroll -->
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-blue-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-blue-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Nueva Tarea Asignada</p>
+                                                <p class="text-sm text-gray-600">Matemáticas: Ejercicios de Álgebra</p>
+                                                <p class="text-xs text-gray-500">Hace 2 horas</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-green-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-green-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Calificación Recibida</p>
+                                                <p class="text-sm text-gray-600">Historia: Ensayo sobre la Revolución - 85%</p>
+                                                <p class="text-xs text-gray-500">Hace 4 horas</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-orange-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-orange-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Comentario del Profesor</p>
+                                                <p class="text-sm text-gray-600">Biología: "Excelente trabajo en el laboratorio"</p>
+                                                <p class="text-xs text-gray-500">Hace 6 horas</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-red-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-red-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Tarea Próxima a Vencer</p>
+                                                <p class="text-sm text-gray-600">Física: Problemas de Mecánica</p>
+                                                <p class="text-xs text-gray-500">Vence mañana</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-purple-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-purple-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Evaluación Programada</p>
+                                                <p class="text-sm text-gray-600">Química: Examen de Tabla Periódica</p>
+                                                <p class="text-xs text-gray-500">En 2 días</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-indigo-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-indigo-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Nuevo Comentario</p>
+                                                <p class="text-sm text-gray-600">Literatura: Discusión sobre el Quijote</p>
+                                                <p class="text-xs text-gray-500">Hace 1 día</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-pink-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-pink-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Recordatorio</p>
+                                                <p class="text-sm text-gray-600">Geografía: Entrega de proyecto</p>
+                                                <p class="text-xs text-gray-500">Hace 2 días</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-teal-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-teal-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Material Nuevo</p>
+                                                <p class="text-sm text-gray-600">Inglés: Recursos para Speaking</p>
+                                                <p class="text-xs text-gray-500">Hace 3 días</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-cyan-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-cyan-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Proyecto Colaborativo</p>
+                                                <p class="text-sm text-gray-600">Arte: Mural del colegio</p>
+                                                <p class="text-xs text-gray-500">Hace 4 días</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-amber-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-amber-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Nota Informativa</p>
+                                                <p class="text-sm text-gray-600">Educación Física: Cambio de horario</p>
+                                                <p class="text-xs text-gray-500">Hace 5 días</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-emerald-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-emerald-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Logro Desbloqueado</p>
+                                                <p class="text-sm text-gray-600">¡Has completado 10 tareas consecutivas!</p>
+                                                <p class="text-xs text-gray-500">Hace 1 semana</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <div class="flex items-start gap-2">
+                                            <div class="bg-violet-100 p-2 rounded-full">
+                                                <div class="h-4 w-4 bg-violet-600 rounded"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm">Evento del Colegio</p>
+                                                <p class="text-sm text-gray-600">Feria de Ciencias - Inscripciones abiertas</p>
+                                                <p class="text-xs text-gray-500">Hace 1 semana</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparación de características -->
+        <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-lg font-semibold mb-4">📊 Comparación de Mejoras</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-red-600 mb-3">❌ Panel Anterior</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Altura máxima fija de 400px</li>
+                        <li>• Scrollbar estándar del navegador</li>
+                        <li>• Difícil de ver todas las notificaciones</li>
+                        <li>• No responsive en altura</li>
+                        <li>• Scroll poco visible</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-green-600 mb-3">✅ Panel Mejorado</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Altura adaptable hasta 80% del viewport</li>
+                        <li>• Scrollbar personalizada y visible</li>
+                        <li>• Más espacio para ver notificaciones</li>
+                        <li>• Responsive y adaptativo</li>
+                        <li>• Mejor experiencia de usuario</li>
+                        <li>• Soporte para modo oscuro</li>
+                        <li>• Scrollbar más ancha en móviles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">💡 Instrucciones de Prueba</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Intenta hacer scroll en ambos paneles para comparar</li>
+                            <li>Observa la visibilidad de la barra de scroll</li>
+                            <li>Prueba el botón de modo oscuro para ver los estilos</li>
+                            <li>Redimensiona la ventana para probar responsividad</li>
+                            <li>El panel mejorado debe mostrar más contenido visible</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+            
+            // Actualizar colores de fondo de las cards en dark mode
+            const cards = document.querySelectorAll('.bg-white');
+            cards.forEach(card => {
+                if (document.documentElement.classList.contains('dark')) {
+                    card.classList.remove('bg-white');
+                    card.classList.add('bg-gray-800');
+                } else {
+                    card.classList.remove('bg-gray-800');
+                    card.classList.add('bg-white');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Verificación Final - Sistema de Notificaciones</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #6c757d;
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+        }
+        .button { 
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 8px 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        }
+        .button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.4);
+        }
+        .button.success { 
+            background: linear-gradient(45deg, #28a745, #218838);
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+        }
+        .button.success:hover { 
+            box-shadow: 0 8px 25px rgba(40,167,69,0.4);
+        }
+        .button.warning { 
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #212529;
+            box-shadow: 0 4px 15px rgba(255,193,7,0.3);
+        }
+        .button.warning:hover { 
+            box-shadow: 0 8px 25px rgba(255,193,7,0.4);
+        }
+        .button.danger { 
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            box-shadow: 0 4px 15px rgba(220,53,69,0.3);
+        }
+        .button.danger:hover { 
+            box-shadow: 0 8px 25px rgba(220,53,69,0.4);
+        }
+        
+        .result { 
+            margin: 8px 0; 
+            padding: 12px 16px; 
+            background: #f8f9fa; 
+            border-radius: 8px; 
+            border-left: 4px solid #007bff;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            transition: all 0.2s;
+        }
+        .result:hover {
+            background: #e9ecef;
+        }
+        .success { 
+            border-left-color: #28a745; 
+            background: #d4edda; 
+            color: #155724; 
+        }
+        .warning { 
+            border-left-color: #ffc107; 
+            background: #fff3cd; 
+            color: #856404; 
+        }
+        .error { 
+            border-left-color: #dc3545; 
+            background: #f8d7da; 
+            color: #721c24; 
+        }
+        
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .control-section h3 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .links {
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .links h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .links a {
+            display: inline-block;
+            margin: 8px 12px;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(108,117,125,0.3);
+        }
+        .links a:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108,117,125,0.4);
+        }
+        
+        #results {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            background: #ffffff;
+            margin-top: 20px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+        .status-info { background: #17a2b8; }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Verificación Final del Sistema</h1>
+            <p>Diagnóstico completo de las notificaciones pendientes de calificación</p>
+        </div>
+        
+        <div class="summary-card" id="summary-card" style="display: none;">
+            <h3>📊 Resumen del Sistema</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-pending">-</div>
+                    <div class="stat-label">Notificaciones Pendientes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-ungraded">-</div>
+                    <div class="stat-label">Entregas Sin Calificar</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-teachers">-</div>
+                    <div class="stat-label">Profesores Activos</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="control-section">
+                <h3>🔍 Diagnóstico</h3>
+                <button class="button" onclick="runSystemCheck()">▶️ Verificar Sistema Completo</button>
+                <button class="button warning" onclick="clearResults()">🗑️ Limpiar Resultados</button>
+            </div>
+            
+            <div class="control-section">
+                <h3>🧪 Datos de Prueba</h3>
+                <button class="button success" onclick="createTestData()">➕ Crear Datos Mínimos</button>
+                <button class="button danger" onclick="clearAllData()">⚠️ Limpiar Todo</button>
+            </div>
+            
+            <div class="control-section">
+                <h3>⚙️ Debug Avanzado</h3>
+                <button class="button" onclick="showDetailedDebug()">🔧 Debug Detallado</button>
+                <button class="button" onclick="testNotificationFlow()">🧪 Test Flujo Completo</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+        
+        <div class="links">
+            <h3>🔗 Navegación del Sistema</h3>
+            <a href="/">🏠 Dashboard Principal</a>
+            <a href="/login">🔐 Página de Login</a>
+            <a href="/dashboard/tareas">📋 Gestión de Tareas</a>
+            <a href="debug-notifications.html">🔧 Debug Notificaciones</a>
+            <a href="test-complete-notification-flow.html">🧪 Test Completo</a>
+        </div>
+    </div>
+    
+    <script>
+        let systemData = null;
+        
+        function addResult(message, type = 'result') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            
+            // Agregar indicador visual
+            let indicator = '';
+            if (type === 'success') indicator = '<span class="status-indicator status-success"></span>';
+            else if (type === 'warning') indicator = '<span class="status-indicator status-warning"></span>';
+            else if (type === 'error') indicator = '<span class="status-indicator status-error"></span>';
+            else indicator = '<span class="status-indicator status-info"></span>';
+            
+            div.innerHTML = indicator + message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary-card').style.display = 'none';
+        }
+        
+        function updateSummary(data) {
+            if (data) {
+                document.getElementById('stat-pending').textContent = data.totalPendingNotifications;
+                document.getElementById('stat-ungraded').textContent = data.totalUngradedSubmissions;
+                document.getElementById('stat-teachers').textContent = data.teachers;
+                document.getElementById('summary-card').style.display = 'block';
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('⚠️ ¿Estás seguro de que quieres eliminar TODOS los datos del sistema? Esta acción no se puede deshacer.')) {
+                localStorage.removeItem('smart-student-tasks');
+                localStorage.removeItem('smart-student-task-notifications');
+                localStorage.removeItem('smart-student-task-comments');
+                addResult('🗑️ Todos los datos del sistema eliminados', 'warning');
+                systemData = null;
+                updateSummary(null);
+            }
+        }
+        
+        function runSystemCheck() {
+            clearResults();
+            addResult('🚀 Iniciando verificación completa del sistema...', 'result');
+            
+            try {
+                // Cargar y ejecutar el script de verificación
+                const script = document.createElement('script');
+                script.src = 'final-system-check.js';
+                script.onload = () => {
+                    if (window.finalSystemCheck) {
+                        systemData = window.finalSystemCheck();
+                        updateSummary(systemData);
+                        addResult('✅ Verificación completada', 'success');
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                addResult(`❌ Error en verificación: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+        
+        function createTestData() {
+            if (window.createMinimalTestData) {
+                addResult('🧪 Creando datos de prueba mínimos...', 'result');
+                const teacher = window.createMinimalTestData();
+                addResult(`✅ Datos creados. Inicia sesión como: ${teacher}`, 'success');
+                
+                // Re-ejecutar verificación
+                setTimeout(() => {
+                    if (window.finalSystemCheck) {
+                        systemData = window.finalSystemCheck();
+                        updateSummary(systemData);
+                    }
+                }, 500);
+            } else {
+                addResult('❌ Ejecuta primero la verificación del sistema', 'error');
+            }
+        }
+        
+        function showDetailedDebug() {
+            addResult('🔧 Mostrando debug detallado...', 'result');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            addResult(`📊 Estadísticas detalladas:`, 'result');
+            addResult(`   • Usuarios totales: ${Object.keys(users).length}`, 'result');
+            addResult(`   • Tareas totales: ${tasks.length}`, 'result');
+            addResult(`   • Notificaciones totales: ${notifications.length}`, 'result');
+            addResult(`   • Comentarios totales: ${comments.length}`, 'result');
+            
+            const pendingNotifications = notifications.filter(n => n.type === 'pending_grading');
+            const ungradedSubmissions = comments.filter(c => 
+                c.isSubmission === true && 
+                (!c.grade || c.grade === null || c.grade === undefined)
+            );
+            
+            addResult(`🔔 Notificaciones pendientes: ${pendingNotifications.length}`, 
+                pendingNotifications.length > 0 ? 'warning' : 'success');
+            addResult(`📝 Entregas sin calificar: ${ungradedSubmissions.length}`, 
+                ungradedSubmissions.length > 0 ? 'warning' : 'success');
+        }
+        
+        function testNotificationFlow() {
+            addResult('🧪 Iniciando test del flujo completo...', 'result');
+            window.open('test-complete-notification-flow.html', '_blank');
+        }
+        
+        // Override console.log para mostrar en la UI
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            
+            let type = 'result';
+            if (message.includes('❌')) type = 'error';
+            else if (message.includes('✅')) type = 'success';
+            else if (message.includes('⚠️') || message.includes('🔴')) type = 'warning';
+            else if (message.includes('📊') || message.includes('🎯')) type = 'warning';
+            
+            addResult(message, type);
+        };
+        
+        // Auto-ejecutar verificación al cargar
+        window.addEventListener('load', () => {
+            setTimeout(runSystemCheck, 1000);
+        });
+    </script>
+</body>
+</html>

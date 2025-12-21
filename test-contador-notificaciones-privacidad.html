@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Test Contador Notificaciones - Filtro Privacidad</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        .test-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .result {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .result.pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #5a67d8;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.success:hover {
+            background: #218838;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        .notification-bubble {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+        .test-scenario {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .scenario-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Test Contador Notificaciones - Filtro Privacidad</h1>
+            <p>Verificación específica de que el contador de burbujas respeta el filtro de asignación de estudiantes</p>
+            <p><strong>Problema:</strong> Burbujas aparecen a estudiantes no asignados pero sin contenido</p>
+        </div>
+
+        <!-- Configuración del Test -->
+        <div class="test-section">
+            <h2>🚀 Configuración del Test</h2>
+            <button class="button" onclick="setupTestData()">1. Configurar Datos</button>
+            <button class="button" onclick="simulateTaskNotificationManager()">2. Simular TaskNotificationManager</button>
+            <button class="button success" onclick="runCounterTests()">3. Ejecutar Tests de Contador</button>
+            <div id="setup-result" class="log-container"></div>
+        </div>
+
+        <!-- Test de Contadores -->
+        <div class="test-section">
+            <h2>🔢 Tests de Contadores de Notificaciones</h2>
+            
+            <div class="test-scenario">
+                <div class="scenario-title">📊 Escenario 1: Estudiante Asignado (Ana García)</div>
+                <div>Debería ver: <span class="notification-bubble">1</span> notificación</div>
+                <div id="scenario1-counter-result"></div>
+            </div>
+            
+            <div class="test-scenario">
+                <div class="scenario-title">🚫 Escenario 2: Estudiante NO Asignado (Carlos López)</div>
+                <div>Debería ver: <span class="notification-bubble">0</span> notificaciones</div>
+                <div id="scenario2-counter-result"></div>
+            </div>
+            
+            <div class="test-scenario">
+                <div class="scenario-title">🏫 Escenario 3: Estudiante de Otra Sección (María Rodríguez)</div>
+                <div>Debería ver: <span class="notification-bubble">0</span> notificaciones</div>
+                <div id="scenario3-counter-result"></div>
+            </div>
+            
+            <div id="counter-test-result" class="log-container"></div>
+        </div>
+
+        <!-- Verificación Final -->
+        <div class="test-section">
+            <h2>✅ Verificación Final</h2>
+            <div class="test-scenario">
+                <div class="scenario-title">🎯 Estado Final del Sistema</div>
+                <p>El objetivo es que NO aparezcan burbujas de notificación a estudiantes no asignados</p>
+                <button class="button success" onclick="runFinalVerification()">Ejecutar Verificación Completa</button>
+            </div>
+            <div id="final-result" class="log-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let testLog = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            testLog.push(logEntry);
+            console.log(logEntry);
+        }
+
+        function displayResults(containerId, results) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = results.join('<br>');
+        }
+
+        function setupTestData() {
+            log('🚀 Configurando datos específicos para test de contador...', 'info');
+            
+            // Configurar usuarios de test
+            const testUsers = [
+                {
+                    id: 'teacher-001',
+                    username: 'prof.martinez',
+                    name: 'Prof. Martinez',
+                    role: 'teacher',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-001',
+                    username: 'ana.garcia',
+                    name: 'Ana García',
+                    role: 'student',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-002',
+                    username: 'carlos.lopez',
+                    name: 'Carlos López',
+                    role: 'student',
+                    activeCourses: ['MAT101-A']
+                },
+                {
+                    id: 'student-003',
+                    username: 'maria.rodriguez',
+                    name: 'María Rodríguez',
+                    role: 'student',
+                    activeCourses: ['MAT101-B'] // Diferente sección
+                }
+            ];
+
+            // Configurar tareas de test
+            const testTasks = [
+                {
+                    id: 'task-specific-001',
+                    title: 'Tarea Solo para Ana',
+                    assignedTo: 'student', // Asignada a estudiantes específicos
+                    assignedStudentIds: ['student-001'], // Solo Ana García
+                    courseSectionId: 'MAT101-A',
+                    course: 'MAT101-A',
+                    teacherUsername: 'prof.martinez'
+                }
+            ];
+
+            // Configurar notificaciones de tarea específica
+            const testNotifications = [
+                {
+                    id: 'notif-001',
+                    type: 'new_task',
+                    taskId: 'task-specific-001',
+                    taskTitle: 'Tarea Solo para Ana',
+                    fromUsername: 'prof.martinez',
+                    fromDisplayName: 'Prof. Martinez',
+                    targetUsernames: ['ana.garcia', 'carlos.lopez', 'maria.rodriguez'], // ⚠️ PROBLEMA: Se envía a todos
+                    targetUserRole: 'student',
+                    message: 'Nueva tarea asignada',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: []
+                }
+            ];
+
+            // Configurar asignaciones de estudiantes
+            const testStudentAssignments = [
+                {
+                    studentId: 'student-001',
+                    sectionId: 'section-A',
+                    courseId: 'MAT101'
+                },
+                {
+                    studentId: 'student-002',
+                    sectionId: 'section-A',
+                    courseId: 'MAT101'
+                },
+                {
+                    studentId: 'student-003',
+                    sectionId: 'section-B',
+                    courseId: 'MAT101'
+                }
+            ];
+
+            // Configurar secciones y cursos
+            const testSections = [
+                { id: 'section-A', name: 'A', courseId: 'MAT101' },
+                { id: 'section-B', name: 'B', courseId: 'MAT101' }
+            ];
+
+            const testCourses = [
+                { id: 'MAT101', name: 'Matemáticas 101' }
+            ];
+
+            // Guardar en localStorage
+            localStorage.setItem('smart-student-users', JSON.stringify(testUsers));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testTasks));
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(testNotifications));
+            localStorage.setItem('smart-student-student-assignments', JSON.stringify(testStudentAssignments));
+            localStorage.setItem('smart-student-sections', JSON.stringify(testSections));
+            localStorage.setItem('smart-student-courses', JSON.stringify(testCourses));
+
+            log('✅ Datos de test configurados correctamente');
+            displayResults('setup-result', [
+                '✅ Usuarios: 1 profesor, 3 estudiantes',
+                '✅ Tarea específica para Ana García únicamente',
+                '✅ Notificación enviada INCORRECTAMENTE a todos los estudiantes',
+                '✅ Asignaciones configuradas por secciones',
+                '<span style="color: red; font-weight: bold;">⚠️ PROBLEMA SIMULADO: Notificación llega a estudiantes no asignados</span>'
+            ]);
+        }
+
+        function simulateTaskNotificationManager() {
+            log('🔧 Simulando TaskNotificationManager con filtro de privacidad...', 'info');
+
+            // Simular checkStudentAssignmentToTask
+            function checkStudentAssignmentToTask(taskId, studentId, studentUsername) {
+                console.log(`🔍 [checkStudentAssignmentToTask] Verificando acceso para ${studentUsername} (${studentId}) a tarea ${taskId}`);
+                
+                const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                const task = tasks.find(t => t.id === taskId);
+                
+                if (!task) {
+                    console.log(`❌ Tarea no encontrada: ${taskId}`);
+                    return false;
+                }
+                
+                console.log(`📋 Tarea "${task.title}" asignada a: ${task.assignedTo}`);
+                
+                // Si la tarea está asignada a estudiantes específicos
+                if (task.assignedTo === 'student' && task.assignedStudentIds) {
+                    const isDirectlyAssigned = task.assignedStudentIds.includes(studentId);
+                    console.log(`🎯 Estudiante ${studentUsername} directamente asignado: ${isDirectlyAssigned ? '✅' : '❌'}`);
+                    return isDirectlyAssigned;
+                }
+                
+                // Si la tarea está asignada a todo el curso
+                if (task.assignedTo === 'course') {
+                    const taskCourseId = task.courseSectionId || task.course;
+                    const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+                    const studentData = users.find(u => u.id === studentId || u.username === studentUsername);
+                    
+                    if (!studentData) return false;
+                    
+                    const studentAssignments = JSON.parse(localStorage.getItem('smart-student-student-assignments') || '[]');
+                    const isInActiveCourses = studentData.activeCourses?.includes(taskCourseId) || false;
+                    
+                    return isInActiveCourses;
+                }
+                
+                return false;
+            }
+
+            // Simular getUnreadNotificationsForUser CON filtro de privacidad
+            function getUnreadNotificationsForUser(username, userRole, userId) {
+                console.log(`📡 [getUnreadNotificationsForUser] Cargando notificaciones para ${username} (${userRole})`);
+                
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                return notifications.filter(notification => {
+                    console.log(`🔍 Verificando notificación: ${notification.type} para tarea ${notification.taskTitle}`);
+                    
+                    // Verificar si es el usuario objetivo
+                    const isTargetUser = notification.targetUsernames.includes(username) || 
+                                        (userId && notification.targetUsernames.includes(userId));
+                    
+                    // Verificar rol y estado de lectura
+                    const basicFilters = notification.targetUserRole === userRole &&
+                                        isTargetUser &&
+                                        !notification.readBy.includes(username);
+                    
+                    if (!basicFilters) {
+                        console.log(`❌ Filtros básicos fallaron para ${username}`);
+                        return false;
+                    }
+                    
+                    // 🎯 FILTRO DE PRIVACIDAD: Verificar asignación a tarea
+                    if (userRole === 'student' && notification.taskId) {
+                        const isAssignedToTask = checkStudentAssignmentToTask(notification.taskId, userId || '', username);
+                        if (!isAssignedToTask) {
+                            console.log(`🚫 Estudiante ${username} NO asignado a tarea - Filtrando notificación`);
+                            return false;
+                        }
+                        console.log(`✅ Estudiante ${username} SÍ asignado a tarea - Permitiendo notificación`);
+                    }
+                    
+                    return true;
+                });
+            }
+
+            // Simular getUnreadCountForUser
+            function getUnreadCountForUser(username, userRole, userId) {
+                const unreadNotifications = getUnreadNotificationsForUser(username, userRole, userId);
+                
+                if (userRole === 'student') {
+                    return unreadNotifications.filter(n => n.type !== 'teacher_comment').length;
+                }
+                
+                return unreadNotifications.length;
+            }
+
+            // Exponer funciones para tests
+            window.TaskNotificationManagerTest = {
+                checkStudentAssignmentToTask,
+                getUnreadNotificationsForUser,
+                getUnreadCountForUser
+            };
+
+            log('✅ TaskNotificationManager simulado con filtro de privacidad');
+            displayResults('setup-result', [
+                '✅ checkStudentAssignmentToTask implementada',
+                '✅ getUnreadNotificationsForUser con filtro de privacidad',
+                '✅ getUnreadCountForUser corregida',
+                '<span style="color: green; font-weight: bold;">🎯 SOLUCIÓN APLICADA: Filtro de privacidad en contador</span>'
+            ]);
+        }
+
+        function runCounterTests() {
+            log('🧪 Ejecutando tests de contadores...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const results = [];
+            
+            // Test 1: Estudiante asignado (Ana García)
+            const assignedStudent = users.find(u => u.username === 'ana.garcia');
+            const assignedCount = window.TaskNotificationManagerTest.getUnreadCountForUser(
+                assignedStudent.username, 
+                'student', 
+                assignedStudent.id
+            );
+            
+            const test1Pass = assignedCount === 1;
+            results.push(`📊 Test 1 - Estudiante Asignado (${assignedStudent.name}):`);
+            results.push(`   Contador esperado: 1, Contador actual: ${assignedCount}`);
+            results.push(`   ${test1Pass ? '✅ PASÓ' : '❌ FALLÓ'}`);
+            results.push('');
+            
+            displayResults('scenario1-counter-result', [
+                `Contador actual: <span class="notification-bubble">${assignedCount}</span>`,
+                test1Pass ? 
+                    '<span class="result pass">✅ CORRECTO: Estudiante asignado ve 1 notificación</span>' :
+                    '<span class="result fail">❌ ERROR: Contador incorrecto</span>'
+            ]);
+            
+            // Test 2: Estudiante NO asignado (Carlos López)
+            const nonAssignedStudent = users.find(u => u.username === 'carlos.lopez');
+            const nonAssignedCount = window.TaskNotificationManagerTest.getUnreadCountForUser(
+                nonAssignedStudent.username, 
+                'student', 
+                nonAssignedStudent.id
+            );
+            
+            const test2Pass = nonAssignedCount === 0;
+            results.push(`🚫 Test 2 - Estudiante NO Asignado (${nonAssignedStudent.name}):`);
+            results.push(`   Contador esperado: 0, Contador actual: ${nonAssignedCount}`);
+            results.push(`   ${test2Pass ? '✅ PASÓ' : '❌ FALLÓ'}`);
+            results.push('');
+            
+            displayResults('scenario2-counter-result', [
+                `Contador actual: <span class="notification-bubble">${nonAssignedCount}</span>`,
+                test2Pass ? 
+                    '<span class="result pass">✅ CORRECTO: Estudiante NO asignado ve 0 notificaciones</span>' :
+                    '<span class="result fail">❌ ERROR: Aparecen burbujas cuando no debería</span>'
+            ]);
+            
+            // Test 3: Estudiante de otra sección (María Rodríguez)
+            const otherSectionStudent = users.find(u => u.username === 'maria.rodriguez');
+            const otherSectionCount = window.TaskNotificationManagerTest.getUnreadCountForUser(
+                otherSectionStudent.username, 
+                'student', 
+                otherSectionStudent.id
+            );
+            
+            const test3Pass = otherSectionCount === 0;
+            results.push(`🏫 Test 3 - Estudiante Otra Sección (${otherSectionStudent.name}):`);
+            results.push(`   Contador esperado: 0, Contador actual: ${otherSectionCount}`);
+            results.push(`   ${test3Pass ? '✅ PASÓ' : '❌ FALLÓ'}`);
+            results.push('');
+            
+            displayResults('scenario3-counter-result', [
+                `Contador actual: <span class="notification-bubble">${otherSectionCount}</span>`,
+                test3Pass ? 
+                    '<span class="result pass">✅ CORRECTO: Estudiante otra sección ve 0 notificaciones</span>' :
+                    '<span class="result fail">❌ ERROR: Aparecen burbujas de otra sección</span>'
+            ]);
+            
+            // Resumen general
+            const allTestsPassed = test1Pass && test2Pass && test3Pass;
+            results.push('📊 RESUMEN DE TESTS:');
+            results.push(`   Test 1 (Estudiante Asignado): ${test1Pass ? '✅' : '❌'}`);
+            results.push(`   Test 2 (Estudiante NO Asignado): ${test2Pass ? '✅' : '❌'}`);
+            results.push(`   Test 3 (Estudiante Otra Sección): ${test3Pass ? '✅' : '❌'}`);
+            results.push('');
+            
+            if (allTestsPassed) {
+                results.push('<span style="color: green; font-weight: bold;">🎉 TODOS LOS TESTS PASARON</span>');
+                results.push('<span style="color: green;">✅ Las burbujas de notificación respetan el filtro de privacidad</span>');
+            } else {
+                results.push('<span style="color: red; font-weight: bold;">❌ ALGUNOS TESTS FALLARON</span>');
+                results.push('<span style="color: red;">🔧 Es necesario revisar el filtro de privacidad en el contador</span>');
+            }
+            
+            displayResults('counter-test-result', results);
+            log(allTestsPassed ? '🎉 Tests de contador EXITOSOS' : '❌ Tests de contador FALLIDOS');
+        }
+
+        function runFinalVerification() {
+            log('🔎 Ejecutando verificación final del sistema...', 'info');
+            
+            const results = [];
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            // Verificar cada estudiante
+            users.filter(u => u.role === 'student').forEach(student => {
+                const count = window.TaskNotificationManagerTest.getUnreadCountForUser(
+                    student.username, 
+                    'student', 
+                    student.id
+                );
+                
+                const isAssigned = student.username === 'ana.garcia'; // Solo Ana está asignada
+                const expectedCount = isAssigned ? 1 : 0;
+                const isCorrect = count === expectedCount;
+                
+                results.push(`👤 ${student.name} (${student.username}):`);
+                results.push(`   Asignado: ${isAssigned ? 'SÍ' : 'NO'}`);
+                results.push(`   Contador esperado: ${expectedCount}, Actual: ${count}`);
+                results.push(`   Estado: ${isCorrect ? '✅ CORRECTO' : '❌ INCORRECTO'}`);
+                results.push('');
+            });
+            
+            // Verificación general
+            const allCorrect = users.filter(u => u.role === 'student').every(student => {
+                const count = window.TaskNotificationManagerTest.getUnreadCountForUser(
+                    student.username, 
+                    'student', 
+                    student.id
+                );
+                const isAssigned = student.username === 'ana.garcia';
+                const expectedCount = isAssigned ? 1 : 0;
+                return count === expectedCount;
+            });
+            
+            results.push('🎯 VERIFICACIÓN FINAL:');
+            results.push('');
+            
+            if (allCorrect) {
+                results.push('<span style="color: green; font-weight: bold; font-size: 18px;">🎉 SOLUCIÓN EXITOSA</span>');
+                results.push('<span style="color: green;">✅ Las burbujas de notificación solo aparecen a estudiantes asignados</span>');
+                results.push('<span style="color: green;">✅ Los estudiantes no asignados no ven burbujas</span>');
+                results.push('<span style="color: green;">✅ El filtro de privacidad funciona correctamente en el contador</span>');
+            } else {
+                results.push('<span style="color: red; font-weight: bold; font-size: 18px;">❌ PROBLEMA PERSISTE</span>');
+                results.push('<span style="color: red;">🚫 Las burbujas siguen apareciendo a estudiantes no asignados</span>');
+                results.push('<span style="color: red;">🔧 Se requieren ajustes adicionales en el filtro</span>');
+            }
+            
+            displayResults('final-result', results);
+            log(allCorrect ? '🎉 Verificación final EXITOSA' : '❌ Verificación final FALLIDA');
+        }
+
+        // Inicialización automática
+        window.addEventListener('load', function() {
+            log('🚀 Test de contador de notificaciones iniciado', 'info');
+            displayResults('setup-result', [
+                '📋 Test específico para el problema de burbujas',
+                '🎯 Objetivo: Eliminar burbujas de contador para estudiantes no asignados',
+                '🔧 Configurar datos de test primero'
+            ]);
+        });
+    </script>
+</body>
+</html>

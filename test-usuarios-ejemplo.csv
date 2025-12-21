@@ -1,0 +1,10 @@
+role,name,rut,email,username,password,course,section,subjects
+student,Ana María González,12345678-9,ana.gonzalez@test.com,ana.gonzalez,1234,1ro Básico,A,
+student,Carlos Pérez López,23456789-0,carlos.perez@test.com,carlos.perez,1234,1ro Básico,A,
+student,María José Silva,34567890-1,maria.silva@test.com,maria.silva,1234,1ro Básico,B,
+student,Juan Pablo Rojas,45678901-2,juan.rojas@test.com,juan.rojas,1234,2do Básico,A,
+student,Sofía Martínez,56789012-3,sofia.martinez@test.com,sofia.martinez,1234,2do Básico,B,
+teacher,Roberto Fernández,11111111-1,roberto.fernandez@test.com,roberto.fernandez,1234,,,MAT
+teacher,Patricia Ramírez,22222222-2,patricia.ramirez@test.com,patricia.ramirez,1234,,,"LEN, HIST"
+teacher,Diego Valenzuela,33333333-3,diego.valenzuela@test.com,diego.valenzuela,1234,,,CIEN
+admin,Administrador Test,99999999-9,admin.test@test.com,admin.test,1234,,,

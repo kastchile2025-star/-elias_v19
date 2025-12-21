@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Perfil Profesor - Información Académica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">
+            🎓 Test: Perfil Profesor - Información Académica
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Panel de control -->
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">🎮 Controles de Prueba</h2>
+                    <div class="space-y-3">
+                        <button onclick="crearProfesorConAsignaciones()" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            1. Crear Profesor con Asignaciones
+                        </button>
+                        <button onclick="loginComoProfesor()" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                            2. Login como Profesor
+                        </button>
+                        <button onclick="verificarPerfil()" class="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                            3. Verificar Perfil
+                        </button>
+                        <button onclick="limpiarDatos()" class="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            Limpiar Datos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Log de resultados -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">📋 Log</h2>
+                    <div id="log" class="text-sm space-y-1 max-h-64 overflow-y-auto bg-gray-50 p-3 rounded border">
+                        <div class="text-gray-600">Listo para empezar...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del estado -->
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">📊 Estado Actual</h2>
+                    <div id="status" class="space-y-3">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Vista previa de badges -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">🏷️ Vista Previa de Badges</h2>
+                    <div id="preview" class="space-y-3">
+                        <div class="text-gray-600 text-sm">Los badges aparecerán aquí después de crear el profesor</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-orange-600'
+            };
+            
+            logDiv.innerHTML += `<div class="${colors[type]}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function actualizarEstado() {
+            const statusDiv = document.getElementById('status');
+            const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || 'null');
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const assignments = JSON.parse(localStorage.getItem('smart-student-teacher-assignments') || '[]');
+            const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+            const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
+
+            statusDiv.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full ${currentUser ? 'bg-green-500' : 'bg-red-500'}"></div>
+                    <span>Usuario actual: ${currentUser ? currentUser.displayName + ' (' + currentUser.role + ')' : 'No logueado'}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span>Usuarios: ${users.length}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <span>Asignaciones: ${assignments.length}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <span>Cursos: ${courses.length}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                    <span>Secciones: ${sections.length}</span>
+                </div>
+            `;
+        }
+
+        function crearProfesorConAsignaciones() {
+            log('🔧 Creando profesor con asignaciones completas...', 'info');
+
+            // 1. Crear cursos de prueba
+            const cursos = [
+                { id: 'curso-4to-basico', name: '4to Básico', level: 'básica', description: 'Cuarto año básico' },
+                { id: 'curso-5to-basico', name: '5to Básico', level: 'básica', description: 'Quinto año básico' }
+            ];
+            localStorage.setItem('smart-student-courses', JSON.stringify(cursos));
+            log('✅ Cursos creados: ' + cursos.map(c => c.name).join(', '), 'success');
+
+            // 2. Crear secciones de prueba
+            const secciones = [
+                { id: 'seccion-4to-a', name: 'A', courseId: 'curso-4to-basico', maxStudents: 30 },
+                { id: 'seccion-4to-b', name: 'B', courseId: 'curso-4to-basico', maxStudents: 30 },
+                { id: 'seccion-5to-a', name: 'A', courseId: 'curso-5to-basico', maxStudents: 25 }
+            ];
+            localStorage.setItem('smart-student-sections', JSON.stringify(secciones));
+            log('✅ Secciones creadas: ' + secciones.map(s => `${s.name} (${cursos.find(c => c.id === s.courseId)?.name})`).join(', '), 'success');
+
+            // 3. Crear profesor de prueba
+            const profesor = {
+                id: 'teacher-test-prof',
+                username: 'profesor_test',
+                password: '1234',
+                role: 'teacher',
+                displayName: 'Profesor Académico Test',
+                firstName: 'Profesor',
+                lastName: 'Académico Test',
+                email: 'profesor.test@escuela.com',
+                isActive: true,
+                uniqueCode: 'TCH-TEST001',
+                selectedSubjects: ['Matemáticas', 'Ciencias Naturales', 'Historia, Geografía y Ciencias Sociales']
+            };
+
+            // 4. Crear asignaciones del profesor
+            const asignaciones = [
+                {
+                    id: 'assign-1',
+                    teacherId: 'teacher-test-prof',
+                    courseId: 'curso-4to-basico',
+                    sectionId: 'seccion-4to-a',
+                    subjects: ['Matemáticas', 'Ciencias Naturales']
+                },
+                {
+                    id: 'assign-2',
+                    teacherId: 'teacher-test-prof',
+                    courseId: 'curso-4to-basico',
+                    sectionId: 'seccion-4to-b',
+                    subjects: ['Matemáticas']
+                },
+                {
+                    id: 'assign-3',
+                    teacherId: 'teacher-test-prof',
+                    courseId: 'curso-5to-basico',
+                    sectionId: 'seccion-5to-a',
+                    subjects: ['Historia, Geografía y Ciencias Sociales']
+                }
+            ];
+
+            // 5. Guardar todo en localStorage
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const existingIndex = users.findIndex(u => u.username === profesor.username);
+            if (existingIndex >= 0) {
+                users[existingIndex] = profesor;
+            } else {
+                users.push(profesor);
+            }
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+
+            localStorage.setItem('smart-student-teacher-assignments', JSON.stringify(asignaciones));
+
+            log('✅ Profesor creado: ' + profesor.displayName, 'success');
+            log('✅ Asignaciones creadas:', 'success');
+            asignaciones.forEach(a => {
+                const curso = cursos.find(c => c.id === a.courseId);
+                const seccion = secciones.find(s => s.id === a.sectionId);
+                log(`   • ${curso?.name} - ${seccion?.name}: ${a.subjects.join(', ')}`, 'info');
+            });
+
+            mostrarPreviewBadges(asignaciones, cursos, secciones);
+            actualizarEstado();
+        }
+
+        function mostrarPreviewBadges(asignaciones, cursos, secciones) {
+            const previewDiv = document.getElementById('preview');
+            
+            const subjectColors = {
+                'Matemáticas': { bg: '#dbeafe', text: '#1e40af', abbr: 'MAT' },
+                'Ciencias Naturales': { bg: '#dcfce7', text: '#166534', abbr: 'CNT' },
+                'Historia, Geografía y Ciencias Sociales': { bg: '#fef3c7', text: '#92400e', abbr: 'HIS' },
+                'Lenguaje y Comunicación': { bg: '#fee2e2', text: '#991b1b', abbr: 'LEN' }
+            };
+
+            let html = '<div class="space-y-3">';
+            
+            asignaciones.forEach(a => {
+                const curso = cursos.find(c => c.id === a.courseId);
+                const seccion = secciones.find(s => s.id === a.sectionId);
+                
+                html += `
+                    <div class="p-3 bg-gray-50 rounded-lg border">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                ${curso?.name} - ${seccion?.name}
+                            </span>
+                `;
+                
+                a.subjects.forEach(subject => {
+                    const colors = subjectColors[subject] || { bg: '#f3f4f6', text: '#374151', abbr: 'UNK' };
+                    html += `
+                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold border-0" 
+                              style="background-color: ${colors.bg}; color: ${colors.text};" 
+                              title="${subject}">
+                            ${colors.abbr}
+                        </span>
+                    `;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            html += '</div>';
+            previewDiv.innerHTML = html;
+        }
+
+        function loginComoProfesor() {
+            log('🔑 Haciendo login como profesor...', 'info');
+            
+            const profesor = {
+                username: 'profesor_test',
+                role: 'teacher',
+                displayName: 'Profesor Académico Test',
+                id: 'teacher-test-prof'
+            };
+            
+            localStorage.setItem('smart-student-user', JSON.stringify(profesor));
+            log('✅ Login exitoso como: ' + profesor.displayName, 'success');
+            
+            actualizarEstado();
+        }
+
+        function verificarPerfil() {
+            log('🔍 Verificando datos del perfil...', 'info');
+            
+            const currentUser = JSON.parse(localStorage.getItem('smart-student-user') || 'null');
+            if (!currentUser || currentUser.role !== 'teacher') {
+                log('❌ No hay profesor logueado', 'error');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const teacherData = users.find(u => u.username === currentUser.username);
+            if (!teacherData) {
+                log('❌ No se encontraron datos del profesor', 'error');
+                return;
+            }
+
+            const assignments = JSON.parse(localStorage.getItem('smart-student-teacher-assignments') || '[]');
+            const teacherAssignments = assignments.filter(a => a.teacherId === teacherData.id);
+
+            log('✅ Datos del profesor verificados:', 'success');
+            log(`   • Nombre: ${teacherData.displayName}`, 'info');
+            log(`   • Asignaturas capacitadas: ${teacherData.selectedSubjects?.join(', ') || 'Ninguna'}`, 'info');
+            log(`   • Asignaciones activas: ${teacherAssignments.length}`, 'info');
+
+            if (teacherAssignments.length > 0) {
+                log('✅ El profesor debería ver en su perfil:', 'success');
+                teacherAssignments.forEach(a => {
+                    const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+                    const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
+                    const curso = courses.find(c => c.id === a.courseId);
+                    const seccion = sections.find(s => s.id === a.sectionId);
+                    log(`   • ${curso?.name} - ${seccion?.name}: ${a.subjects.join(', ')}`, 'info');
+                });
+            }
+
+            log('💡 Ahora ve a http://localhost:9002/dashboard/perfil para verificar', 'warning');
+        }
+
+        function limpiarDatos() {
+            log('🗑️ Limpiando datos de prueba...', 'warning');
+            
+            localStorage.removeItem('smart-student-user');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-teacher-assignments');
+            localStorage.removeItem('smart-student-courses');
+            localStorage.removeItem('smart-student-sections');
+            
+            document.getElementById('preview').innerHTML = '<div class="text-gray-600 text-sm">Los badges aparecerán aquí después de crear el profesor</div>';
+            
+            log('✅ Datos limpiados', 'success');
+            actualizarEstado();
+        }
+
+        // Actualizar estado inicial
+        actualizarEstado();
+
+        // Refrescar estado cada 2 segundos
+        setInterval(actualizarEstado, 2000);
+
+        log('🚀 Sistema listo. Sigue los pasos 1 → 2 → 3 para probar', 'info');
+    </script>
+</body>
+</html>

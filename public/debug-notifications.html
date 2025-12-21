@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depuración: Panel de Notificaciones</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        .console-output {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 500px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .info {
+            background: #003300;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .success {
+            color: #44ff44;
+        }
+        .warning {
+            color: #ffaa00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Depuración del Panel de Notificaciones</h1>
+            <p>Herramienta para diagnosticar por qué no aparece "¡Todo al día!" en el panel del estudiante</p>
+        </div>
+
+        <div class="info">
+            <h3>📋 Instrucciones:</h3>
+            <ol>
+                <li>Asegúrate de estar en la aplicación Smart Student con el usuario <strong>felipe</strong></li>
+                <li>Completa todas las evaluaciones pendientes</li>
+                <li>Usa los botones abajo para depurar el estado del panel</li>
+                <li>Observa la salida en la consola y en el área de abajo</li>
+            </ol>
+        </div>
+
+        <div class="buttons">
+            <button onclick="runFullDebug()">🚀 Depuración Completa</button>
+            <button onclick="debugPendingTasks()">📋 Solo Tareas Pendientes</button>
+            <button onclick="debugNotifications()">🔔 Solo Notificaciones</button>
+            <button onclick="triggerEvaluationCompleted()">🎯 Simular Evaluación Completada</button>
+            <button onclick="forceUpdate()">🔄 Forzar Actualización</button>
+            <button onclick="clearOutput()">🧹 Limpiar Salida</button>
+        </div>
+
+        <div class="console-output" id="output">
+            <div class="success">✅ Consola de depuración lista. Usa los botones de arriba para comenzar.</div>
+        </div>
+    </div>
+
+    <script>
+        // Capturar console.log y mostrarlo en la página
+        const output = document.getElementById('output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToOutput(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = typeof message === 'object' ? JSON.stringify(message, null, 2) : message;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToOutput(args.join(' '), 'success');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToOutput(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToOutput(args.join(' '), 'warning');
+        };
+
+        // Cargar el script de depuración
+        const script = document.createElement('script');
+        script.src = '/debug-student-empty-state.js';
+        script.onload = function() {
+            addToOutput('✅ Script de depuración cargado correctamente', 'success');
+        };
+        script.onerror = function() {
+            addToOutput('❌ Error al cargar el script de depuración', 'error');
+        };
+        document.head.appendChild(script);
+
+        // Funciones de los botones
+        function runFullDebug() {
+            addToOutput('🚀 Iniciando depuración completa...', 'log');
+            if (typeof window.runCompleteDebug === 'function') {
+                window.runCompleteDebug();
+            } else {
+                addToOutput('❌ Función runCompleteDebug no disponible', 'error');
+            }
+        }
+
+        function debugPendingTasks() {
+            addToOutput('📋 Analizando solo tareas pendientes...', 'log');
+            if (typeof window.debugStudentEmptyState === 'function') {
+                window.debugStudentEmptyState();
+            } else {
+                addToOutput('❌ Función debugStudentEmptyState no disponible', 'error');
+            }
+        }
+
+        function debugNotifications() {
+            addToOutput('🔔 Analizando solo notificaciones...', 'log');
+            // Implementar análisis específico de notificaciones
+            if (window.TaskNotificationManager) {
+                const notifications = window.TaskNotificationManager.getUnreadNotificationsForUser(
+                    'felipe', 'student', 'id-1753155697194-albsgnmuy'
+                );
+                addToOutput(`📊 Notificaciones encontradas: ${notifications.length}`, 'log');
+                notifications.forEach((notif, index) => {
+                    addToOutput(`  ${index + 1}. ${notif.type} - ${notif.taskTitle || notif.taskId}`, 'log');
+                });
+            } else {
+                addToOutput('❌ TaskNotificationManager no disponible', 'error');
+            }
+        }
+
+        function triggerEvaluationCompleted() {
+            addToOutput('🎯 Disparando evento evaluationCompleted...', 'log');
+            window.dispatchEvent(new CustomEvent('evaluationCompleted', {
+                detail: { 
+                    taskId: 'test-evaluation',
+                    studentUsername: 'felipe',
+                    percentage: 100,
+                    completedAt: new Date().toISOString()
+                }
+            }));
+            addToOutput('✅ Evento disparado', 'success');
+        }
+
+        function forceUpdate() {
+            addToOutput('🔄 Forzando actualización del panel...', 'log');
+            if (typeof window.forceUpdateNotificationsPanel === 'function') {
+                window.forceUpdateNotificationsPanel();
+            } else {
+                // Disparar eventos manualmente
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+                window.dispatchEvent(new CustomEvent('commentsUpdated'));
+                window.dispatchEvent(new CustomEvent('evaluationCompleted'));
+                addToOutput('✅ Eventos de actualización disparados', 'success');
+            }
+        }
+
+        function clearOutput() {
+            output.innerHTML = '<div class="success">🧹 Salida limpiada. Lista para nueva depuración.</div>';
+        }
+
+        // Mostrar información del localStorage
+        function showLocalStorageInfo() {
+            addToOutput('📊 Información del localStorage:', 'log');
+            const keys = ['smart-student-tasks', 'smart-student-task-comments', 'smart-student-evaluation-results', 'smart-student-task-notifications'];
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    addToOutput(`  ${key}: ${Array.isArray(parsed) ? parsed.length : 'objeto'} elementos`, 'log');
+                } else {
+                    addToOutput(`  ${key}: no encontrado`, 'warning');
+                }
+            });
+        }
+
+        // Ejecutar información inicial después de cargar
+        setTimeout(() => {
+            showLocalStorageInfo();
+        }, 2000);
+    </script>
+</body>
+</html>

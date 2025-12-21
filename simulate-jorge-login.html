@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simular Login Jorge</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        button { padding: 15px 30px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .success { background: #28a745; }
+        .info { background: #17a2b8; }
+        .result { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Simular Login como Jorge</h1>
+        <p>Esta página simula el login del profesor Jorge para probar el perfil</p>
+        
+        <button onclick="setJorgeAsCurrentUser()">👤 Login como Jorge</button>
+        <button onclick="clearUser()">🚪 Logout</button>
+        <button onclick="checkCurrentUser()">🔍 Ver Usuario Actual</button>
+        <button onclick="openProfile()" class="success">📋 Ir al Perfil</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function setJorgeAsCurrentUser() {
+            const jorgeUser = {
+                username: 'jorge',
+                name: 'Jorge González',
+                role: 'teacher',
+                email: 'jorge@escuela.cl',
+                activeCourseNames: ['4to Básico', '5to Básico'],
+                activeCourses: ['4to Básico', '5to Básico']
+            };
+
+            // Guardar en localStorage
+            localStorage.setItem('smart-student-current-user', JSON.stringify(jorgeUser));
+            localStorage.setItem('smart-student-auth-token', 'fake-token-jorge');
+            
+            showResult('✅ Usuario Jorge configurado como actual');
+            showResult(JSON.stringify(jorgeUser, null, 2));
+        }
+
+        function clearUser() {
+            localStorage.removeItem('smart-student-current-user');
+            localStorage.removeItem('smart-student-auth-token');
+            showResult('🚪 Usuario deslogueado');
+        }
+
+        function checkCurrentUser() {
+            const currentUser = localStorage.getItem('smart-student-current-user');
+            const token = localStorage.getItem('smart-student-auth-token');
+            
+            if (currentUser) {
+                showResult('👤 Usuario actual encontrado:');
+                showResult(currentUser);
+                showResult('🔑 Token: ' + (token || 'No hay token'));
+            } else {
+                showResult('❌ No hay usuario logueado');
+            }
+        }
+
+        function openProfile() {
+            window.open('/dashboard/perfil', '_blank');
+        }
+
+        function showResult(content) {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `<pre>${content}</pre>`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        // Check user on load
+        window.onload = () => {
+            checkCurrentUser();
+        };
+    </script>
+</body>
+</html>

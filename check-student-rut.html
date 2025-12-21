@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificar RUT de Estudiantes</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+        pre { background: #2a2a2a; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        h2 { color: #4ade80; }
+        .missing-rut { color: #f87171; }
+        .has-rut { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Verificar RUT de Estudiantes en LocalStorage</h1>
+    
+    <h2>1. Estudiantes del año 2025</h2>
+    <pre id="students2025"></pre>
+    
+    <h2>2. Ejemplo de estudiantes 1ro Medio A</h2>
+    <pre id="primeroMedioA"></pre>
+    
+    <h2>3. Estadísticas</h2>
+    <pre id="stats"></pre>
+    
+    <script>
+        // Cargar estudiantes del año 2025
+        function getStudentsForYear(year) {
+            const key = `smart-student-students_${year}`;
+            const raw = localStorage.getItem(key);
+            if (!raw) return [];
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) return parsed;
+                if (parsed && parsed.fmt === 'students-compact-v1' && Array.isArray(parsed.fields) && Array.isArray(parsed.rows)) {
+                    const idx = {};
+                    parsed.fields.forEach((f, i) => { idx[f] = i; });
+                    return parsed.rows.map(r => ({
+                        id: r[idx.id],
+                        username: r[idx.username],
+                        rut: r[idx.rut],
+                        name: r[idx.name],
+                        displayName: r[idx.displayName],
+                        email: r[idx.email],
+                        courseId: r[idx.courseId],
+                        sectionId: r[idx.sectionId],
+                        role: r[idx.role] || 'student',
+                    }));
+                }
+                return parsed || [];
+            } catch {
+                return [];
+            }
+        }
+        
+        const students = getStudentsForYear(2025);
+        
+        // Mostrar muestra
+        document.getElementById('students2025').textContent = 
+            `Total estudiantes 2025: ${students.length}\n\n` +
+            `Primeros 5 estudiantes:\n` +
+            JSON.stringify(students.slice(0, 5), null, 2);
+        
+        // Buscar 1ro Medio A
+        // Primero necesitamos las secciones
+        const sectionsRaw = localStorage.getItem('smart-student-sections_2025');
+        const sections = sectionsRaw ? JSON.parse(sectionsRaw) : [];
+        const section1roMedioA = sections.find(s => s.name === 'A' && (s.courseName || '').includes('1ro Medio'));
+        
+        let primeroMedioStudents = [];
+        if (section1roMedioA) {
+            primeroMedioStudents = students.filter(s => s.sectionId === section1roMedioA.id);
+        } else {
+            // Buscar por nombre de curso en el estudiante
+            primeroMedioStudents = students.filter(s => {
+                const courseName = s.courseName || '';
+                const sectionName = s.sectionName || '';
+                return courseName.includes('1ro Medio') && sectionName === 'A';
+            });
+        }
+        
+        document.getElementById('primeroMedioA').textContent = 
+            `Sección 1ro Medio A: ${section1roMedioA ? JSON.stringify(section1roMedioA, null, 2) : 'No encontrada'}\n\n` +
+            `Estudiantes en 1ro Medio A: ${primeroMedioStudents.length}\n\n` +
+            `Primeros 10 estudiantes con sus campos:\n` +
+            JSON.stringify(primeroMedioStudents.slice(0, 10).map(s => ({
+                id: s.id,
+                name: s.name || s.displayName,
+                username: s.username,
+                rut: s.rut || '❌ SIN RUT',
+                email: s.email,
+                sectionId: s.sectionId
+            })), null, 2);
+        
+        // Estadísticas
+        const withRut = students.filter(s => s.rut && s.rut.trim() !== '');
+        const withoutRut = students.filter(s => !s.rut || s.rut.trim() === '');
+        
+        document.getElementById('stats').innerHTML = 
+            `<span class="has-rut">Con RUT: ${withRut.length}</span>\n` +
+            `<span class="missing-rut">Sin RUT: ${withoutRut.length}</span>\n\n` +
+            `Ejemplos sin RUT:\n` +
+            JSON.stringify(withoutRut.slice(0, 5).map(s => ({
+                id: s.id,
+                name: s.name || s.displayName,
+                username: s.username,
+                rut: s.rut
+            })), null, 2);
+        
+        // También revisar smart-student-users
+        const usersRaw = localStorage.getItem('smart-student-users');
+        const users = usersRaw ? JSON.parse(usersRaw) : [];
+        console.log('smart-student-users:', users.length, 'usuarios');
+        console.log('Ejemplo:', users[0]);
+    </script>
+</body>
+</html>

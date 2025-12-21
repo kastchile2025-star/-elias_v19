@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrección - Enlace Revisar Entrega Color Naranja</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .demo-notification {
+            background: #1f2937;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .demo-header {
+            font-size: 14px;
+            font-weight: 500;
+            color: #f97316;
+            border-left: 4px solid #f97316;
+            padding-left: 12px;
+            margin-bottom: 12px;
+        }
+        .demo-content {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+        .demo-icon {
+            background: #fed7aa;
+            color: #c2410c;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .demo-text {
+            flex: 1;
+        }
+        .demo-badge {
+            background: #fed7aa;
+            color: #c2410c;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            float: right;
+        }
+        .demo-link {
+            font-size: 12px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        .demo-link.before {
+            color: #3b82f6; /* text-primary azul */
+        }
+        .demo-link.after {
+            color: #ea580c; /* text-orange-600 */
+        }
+        .demo-link:hover {
+            text-decoration: underline;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .before {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+        }
+        .after {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Corrección - Enlace "Revisar Entrega" Color Naranja</h1>
+        
+        <div class="info section">
+            <h3>🎯 Problema Identificado</h3>
+            <p>El enlace "Revisar Entrega" en la sección "Entregas por Calificar" tenía color azul (text-primary) en lugar del color naranja que corresponde al tema de la sección.</p>
+        </div>
+        
+        <div class="section">
+            <h3>📋 Comparación Antes/Después</h3>
+            
+            <div class="comparison">
+                <div class="before">
+                    <h4>❌ ANTES (Incorrecto)</h4>
+                    <div class="demo-notification">
+                        <div class="demo-header">🟠 Entregas por Calificar (1)</div>
+                        <div class="demo-content">
+                            <div class="demo-icon">SE</div>
+                            <div class="demo-text">
+                                <strong>Sofía Estudiante</strong>
+                                <div class="demo-badge">Ciencias Naturales</div>
+                                <p style="font-size: 12px; color: #9ca3af; margin: 4px 0;">
+                                    Entrega de Tarea: erwe (4to Básico) (Ciencias Naturales)
+                                </p>
+                                <p style="font-size: 10px; color: #9ca3af;">30/06/25, 17:53</p>
+                                <a href="#" class="demo-link before">Revisar Entrega</a>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Problema:</strong> Color azul no coincide con el tema naranja de la sección</p>
+                </div>
+                
+                <div class="after">
+                    <h4>✅ DESPUÉS (Correcto)</h4>
+                    <div class="demo-notification">
+                        <div class="demo-header">🟠 Entregas por Calificar (1)</div>
+                        <div class="demo-content">
+                            <div class="demo-icon">SE</div>
+                            <div class="demo-text">
+                                <strong>Sofía Estudiante</strong>
+                                <div class="demo-badge">Ciencias Naturales</div>
+                                <p style="font-size: 12px; color: #9ca3af; margin: 4px 0;">
+                                    Entrega de Tarea: erwe (4to Básico) (Ciencias Naturales)
+                                </p>
+                                <p style="font-size: 10px; color: #9ca3af;">30/06/25, 17:53</p>
+                                <a href="#" class="demo-link after">Revisar Entrega</a>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Solución:</strong> Color naranja consistente con el tema de la sección</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🔧 Cambio Implementado</h3>
+            <p><strong>Archivo modificado:</strong> <code>src/components/common/notifications-panel.tsx</code></p>
+            
+            <h4>Antes:</h4>
+            <pre><code>className="inline-block mt-2 text-xs text-primary hover:underline"</code></pre>
+            
+            <h4>Después:</h4>
+            <pre><code>className="inline-block mt-2 text-xs text-orange-600 dark:text-orange-400 hover:underline"</code></pre>
+            
+            <p><strong>Ubicación:</strong> Línea ~1102 - Sección "Entregas por Calificar"</p>
+        </div>
+        
+        <div class="section">
+            <h3>🎨 Consistencia de Colores</h3>
+            <p>Ahora todas las secciones relacionadas con tareas usan el color naranja consistentemente:</p>
+            <ul>
+                <li>✅ <strong>Tareas Pendientes:</strong> Encabezado, badge y enlace en naranja</li>
+                <li>✅ <strong>Entregas por Calificar:</strong> Encabezado, badge y enlace en naranja</li>
+                <li>✅ <strong>Evaluaciones Pendientes:</strong> Morado (como corresponde)</li>
+                <li>✅ <strong>Evaluaciones Completadas:</strong> Morado claro (como corresponde)</li>
+            </ul>
+        </div>
+        
+        <div class="success section">
+            <h3>✅ Corrección Completada</h3>
+            <p><strong>Estado:</strong> El enlace "Revisar Entrega" ahora usa color naranja (text-orange-600) consistente con el tema de la sección "Entregas por Calificar".</p>
+            <p><strong>Beneficio:</strong> Mejor coherencia visual y experiencia de usuario más intuitiva.</p>
+        </div>
+    </div>
+</body>
+</html>

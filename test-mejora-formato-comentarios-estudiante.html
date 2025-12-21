@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Formato Mejorado de Comentarios No Leídos - Estudiante</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .before {
+            background: #ffeaa7;
+            border-color: #f39c12;
+        }
+        .after {
+            background: #d4edda;
+            border-color: #27ae60;
+        }
+        .notification-item {
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            gap: 12px;
+        }
+        .notification-icon {
+            background: #3182ce;
+            padding: 8px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+        .badge {
+            background: #3182ce;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .comment-text {
+            color: #a0aec0;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .task-title {
+            color: #e2e8f0;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .task-info {
+            color: #a0aec0;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        .timestamp {
+            color: #a0aec0;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+        .view-link {
+            color: #63b3ed;
+            font-size: 12px;
+            text-decoration: none;
+        }
+        .view-link:hover {
+            text-decoration: underline;
+        }
+        .highlight {
+            background: #ffd700;
+            color: #333;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+        }
+        .new-feature {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Formato Mejorado de Comentarios No Leídos - Estudiante</h1>
+        <p>Demostración de las mejoras implementadas en el panel de notificaciones del módulo estudiante.</p>
+        
+        <div class="section success">
+            <h2>🎯 Mejoras Implementadas</h2>
+            <ul>
+                <li>✅ <strong>Tipo de tarea</strong>: [Tarea: nombre tarea (curso)]</li>
+                <li>✅ <strong>Fecha y hora</strong>: [DD/MM/YY, HH:MM]</li>
+                <li>✅ <strong>Mejor organización</strong>: Información estructurada y clara</li>
+                <li>✅ <strong>Mayor contexto</strong>: Los estudiantes ven inmediatamente de qué tarea proviene el comentario</li>
+            </ul>
+        </div>
+
+        <div class="section info">
+            <h2>📋 Comparación Antes vs Después</h2>
+            
+            <div class="comparison">
+                <div class="before">
+                    <h3>❌ ANTES (Formato Original)</h3>
+                    <div class="notification-item">
+                        <div class="notification-icon">💬</div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="user-name">felipe</div>
+                                <div class="badge">CNT</div>
+                            </div>
+                            <div class="comment-text">hola felipe</div>
+                            <div class="task-title">dggf</div>
+                            <a href="#" class="view-link">Ver Comentario</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="after">
+                    <h3>✅ DESPUÉS (Formato Mejorado)</h3>
+                    <div class="notification-item">
+                        <div class="notification-icon">💬</div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="user-name">felipe</div>
+                                <div class="badge">CNT</div>
+                            </div>
+                            <div class="comment-text">hola felipe</div>
+                            <div class="task-title">dggf</div>
+                            <div class="task-info highlight">[Tarea: tarea ciencias (4to Básico)]</div>
+                            <div class="timestamp highlight">[12/07/25, 16:23]</div>
+                            <a href="#" class="view-link">Ver Comentario</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Implementación Técnica</h2>
+            
+            <div class="new-feature">
+                <h3>📝 Cambios en el Código</h3>
+                <p><strong>Archivo modificado:</strong> <code>src/components/common/notifications-panel.tsx</code></p>
+                <p><strong>Sección:</strong> Comentarios No Leídos para Estudiantes (líneas 1373-1402)</p>
+            </div>
+
+            <div class="code-block">
+<strong>Código agregado:</strong>
+
+{/* Tipo de tarea con formato [Tarea: nombre tarea (curso)] */}
+&lt;p className="text-xs text-muted-foreground mb-1"&gt;
+  [Tarea: {comment.task?.title || 'Sin título'} ({comment.task?.course || 'Sin curso'})]
+&lt;/p&gt;
+
+{/* Fecha y hora con formato [DD/MM/YY, HH:MM] */}
+&lt;p className="text-xs text-muted-foreground mb-2"&gt;
+  [{formatDate(comment.timestamp)}]
+&lt;/p&gt;
+            </div>
+        </div>
+
+        <div class="section info">
+            <h2>📱 Ejemplo de Uso Práctico</h2>
+            
+            <h3>Escenario: Estudiante revisa comentarios no leídos</h3>
+            <p>Ahora el estudiante puede ver inmediatamente:</p>
+            <ul>
+                <li><strong>Quién comentó:</strong> felipe</li>
+                <li><strong>Qué comentó:</strong> "hola felipe"</li>
+                <li><strong>En qué tarea:</strong> [Tarea: tarea ciencias (4to Básico)]</li>
+                <li><strong>Cuándo:</strong> [12/07/25, 16:23]</li>
+                <li><strong>Materia:</strong> Badge CNT (Ciencias Naturales)</li>
+            </ul>
+            
+            <div class="notification-item" style="margin-top: 15px;">
+                <div class="notification-icon">💬</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div class="user-name">felipe</div>
+                        <div class="badge">CNT</div>
+                    </div>
+                    <div class="comment-text">hola felipe</div>
+                    <div class="task-title">dggf</div>
+                    <div class="task-info">[Tarea: tarea ciencias (4to Básico)]</div>
+                    <div class="timestamp">[12/07/25, 16:23]</div>
+                    <a href="#" class="view-link">Ver Comentario</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Beneficios de la Mejora</h2>
+            <ul>
+                <li><strong>🎯 Mayor contexto:</strong> Los estudiantes ven inmediatamente de qué tarea proviene el comentario</li>
+                <li><strong>⏰ Información temporal:</strong> La fecha y hora ayuda a entender la cronología</li>
+                <li><strong>📚 Mejor organización:</strong> Información estructurada y clara</li>
+                <li><strong>✨ Experiencia mejorada:</strong> Decisiones más informadas sobre qué comentarios revisar</li>
+                <li><strong>📱 Consistencia:</strong> Formato uniforme en todo el panel de notificaciones</li>
+            </ul>
+        </div>
+
+        <div class="section warning">
+            <h2>🔄 Estado de Implementación</h2>
+            <ul>
+                <li>✅ <strong>Cambios aplicados</strong>: Código modificado en notifications-panel.tsx</li>
+                <li>✅ <strong>Formato de tipo de tarea</strong>: Implementado [Tarea: nombre (curso)]</li>
+                <li>✅ <strong>Formato de fecha</strong>: Implementado [DD/MM/YY, HH:MM]</li>
+                <li>✅ <strong>Documentación</strong>: Creada y detallada</li>
+                <li>⏳ <strong>Pruebas</strong>: Pendientes de realizar</li>
+                <li>⏳ <strong>Commit</strong>: Pendiente de subir a repositorio</li>
+            </ul>
+        </div>
+
+        <div class="section success">
+            <h2>🎉 Resultado Final</h2>
+            <p>Los estudiantes ahora tienen una experiencia más rica y informativa al revisar sus comentarios no leídos, con información clara sobre:</p>
+            <ul>
+                <li>De qué tarea específica proviene cada comentario</li>
+                <li>En qué curso se encuentra la tarea</li>
+                <li>Cuándo se hizo el comentario</li>
+                <li>Quién lo hizo y en qué materia</li>
+            </ul>
+            <p><strong>¡La funcionalidad está lista para ser probada y usada!</strong></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Indicador IA - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            margin: 10px 0;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .dot.active { background: #22c55e; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3); }
+        .dot.inactive { background: #ef4444; animation: none; }
+        .dot.checking { background: #eab308; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+        .warning {
+            background: rgba(239, 68, 68, 0.2);
+            border-left-color: #ef4444;
+        }
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border-left-color: #22c55e;
+        }
+        .button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Configuración del Indicador IA</h1>
+            <p>SMART STUDENT - Sistema de Inteligencia Artificial</p>
+        </div>
+
+        <div class="instructions">
+            <h2>📋 Estado Actual del Sistema</h2>
+            <div id="aiStatusTest">
+                <div class="status-indicator">
+                    <div class="dot checking" id="statusDot"></div>
+                    <span id="statusText">Verificando estado de la IA...</span>
+                </div>
+                <button class="button" onclick="checkAIStatus()">🔄 Verificar Estado</button>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🔧 Pasos para Configurar la IA</h3>
+            
+            <div class="step">
+                <h4>1. Obtener API Key de Google AI Studio</h4>
+                <p>• Ve a <a href="https://makersuite.google.com/app/apikey" target="_blank" style="color: #60a5fa;">Google AI Studio</a></p>
+                <p>• Crea un nuevo proyecto o selecciona uno existente</p>
+                <p>• Genera una nueva API Key</p>
+                <p>• Copia la clave (comienza con "AIza...")</p>
+            </div>
+
+            <div class="step">
+                <h4>2. Configurar Variables de Entorno</h4>
+                <p>Edita el archivo <code>.env.local</code> en la raíz del proyecto:</p>
+                <div class="code">
+GOOGLE_API_KEY=AIza...tu_clave_real_aqui
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+GENKIT_ENV=dev
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>3. Reiniciar el Servidor</h4>
+                <p>Después de configurar la API key:</p>
+                <div class="code">
+# Detener el servidor (Ctrl+C)
+# Reiniciar con:
+npm run dev
+                </div>
+            </div>
+        </div>
+
+        <div class="step success">
+            <h3>✅ Funcionalidades de IA Disponibles</h3>
+            <ul>
+                <li>🧠 Generación de resúmenes inteligentes</li>
+                <li>🗺️ Creación automática de mapas mentales</li>
+                <li>❓ Generación de cuestionarios personalizados</li>
+                <li>📊 Contenido de evaluaciones adaptativo</li>
+                <li>💬 Asistencia en comentarios y retroalimentación</li>
+            </ul>
+        </div>
+
+        <div class="results" id="results">
+            <h3>📊 Resultados de la Verificación</h3>
+            <p>Haz clic en "Verificar Estado" para obtener información detallada del sistema IA.</p>
+        </div>
+    </div>
+
+    <script>
+        let checkInterval;
+
+        async function checkAIStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const results = document.getElementById('results');
+            
+            // Update UI to checking state
+            statusDot.className = 'dot checking';
+            statusText.textContent = 'Verificando estado de la IA...';
+            
+            try {
+                const response = await fetch('/api/ai-status');
+                const data = await response.json();
+                
+                // Update status indicator
+                if (data.isActive) {
+                    statusDot.className = 'dot active';
+                    statusText.textContent = '✅ IA Activa y Funcionando';
+                } else {
+                    statusDot.className = 'dot inactive';
+                    statusText.textContent = '❌ IA Inactiva';
+                }
+                
+                // Update results
+                results.innerHTML = `
+                    <h3>📊 Resultados de la Verificación</h3>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <p><strong>Estado:</strong> ${data.isActive ? '🟢 Activo' : '🔴 Inactivo'}</p>
+                        <p><strong>Razón:</strong> ${data.reason}</p>
+                        ${data.model ? `<p><strong>Modelo:</strong> ${data.model}</p>` : ''}
+                        ${data.keyLength ? `<p><strong>Longitud de API Key:</strong> ${data.keyLength} caracteres</p>` : ''}
+                        <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        ${data.features ? `
+                            <p><strong>Funcionalidades disponibles:</strong></p>
+                            <ul>
+                                ${data.features.map(f => `<li>${f}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                        ${data.instructions ? `<p><strong>Instrucciones:</strong> ${data.instructions}</p>` : ''}
+                        ${data.error ? `<p style="color: #ef4444;"><strong>Error:</strong> ${data.error}</p>` : ''}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                statusDot.className = 'dot inactive';
+                statusText.textContent = '❌ Error de Conexión';
+                results.innerHTML = `
+                    <h3>📊 Resultados de la Verificación</h3>
+                    <div style="background: rgba(239,68,68,0.2); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <p><strong>Error:</strong> No se pudo conectar con el servidor</p>
+                        <p><strong>Detalles:</strong> ${error.message}</p>
+                        <p><strong>Sugerencia:</strong> Verifica que el servidor esté ejecutándose</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-check every 30 seconds
+        function startAutoCheck() {
+            checkAIStatus(); // Check immediately
+            checkInterval = setInterval(checkAIStatus, 30000);
+        }
+
+        function stopAutoCheck() {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+        }
+
+        // Start auto-checking when page loads
+        document.addEventListener('DOMContentLoaded', startAutoCheck);
+        
+        // Stop auto-checking when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoCheck();
+            } else {
+                startAutoCheck();
+            }
+        });
+    </script>
+</body>
+</html>

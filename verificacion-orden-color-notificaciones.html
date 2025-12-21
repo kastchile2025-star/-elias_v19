@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación - Orden y Color de Notificaciones</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f1c0c7;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .notification-panel {
+            background: #2d3748;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .notification-section {
+            margin: 15px 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .notification-header {
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            border-left: 4px solid;
+        }
+        .notification-item {
+            padding: 16px;
+            border-bottom: 1px solid #4a5568;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .student-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .task-description {
+            color: #a0aec0;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        .timestamp {
+            color: #718096;
+            font-size: 12px;
+        }
+        .link {
+            color: #9f7aea;
+            font-size: 12px;
+            text-decoration: none;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid;
+            margin-left: 10px;
+        }
+        /* Evaluaciones Pendientes - Morado más oscuro */
+        .pending-eval .notification-header {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: #a855f7;
+            color: #d8b4fe;
+        }
+        .pending-eval .icon {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a855f7;
+            padding: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .pending-eval .badge {
+            border-color: rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+        }
+        .pending-eval .link {
+            color: #a855f7;
+        }
+        /* Evaluaciones Completadas - Morado más claro */
+        .completed-eval .notification-header {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: #c084fc;
+            color: #ddd6fe;
+        }
+        .completed-eval .icon {
+            background: rgba(139, 92, 246, 0.1);
+            color: #c084fc;
+            padding: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .completed-eval .badge {
+            border-color: rgba(139, 92, 246, 0.2);
+            color: #d8b4fe;
+        }
+        .completed-eval .link {
+            color: #c084fc;
+        }
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison > div {
+            flex: 1;
+        }
+        .before, .after {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #f56565;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Verificación - Orden y Color de Notificaciones</h1>
+        <p>Validar que las notificaciones de evaluaciones tengan el orden y colores correctos.</p>
+        
+        <div class="info section">
+            <h3>🎯 Cambios Implementados</h3>
+            <ol>
+                <li><strong>Orden corregido:</strong> Evaluaciones Pendientes aparecen PRIMERO, Evaluaciones Completadas SEGUNDO</li>
+                <li><strong>Color diferenciado:</strong> Evaluaciones Completadas tienen un morado más claro que las Pendientes</li>
+            </ol>
+        </div>
+
+        <div class="comparison">
+            <div class="before">
+                <h4>❌ ANTES (Problemático)</h4>
+                <ul>
+                    <li>🟢 Evaluaciones Completadas (verde) - Primero</li>
+                    <li>🟣 Evaluaciones Pendientes (morado) - Segundo</li>
+                    <li>❌ Orden incorrecto</li>
+                    <li>❌ Color no diferenciado entre tipos</li>
+                </ul>
+            </div>
+            <div class="after">
+                <h4>✅ DESPUÉS (Corregido)</h4>
+                <ul>
+                    <li>🟣 Evaluaciones Pendientes (morado oscuro) - Primero</li>
+                    <li>🟣 Evaluaciones Completadas (morado claro) - Segundo</li>
+                    <li>✅ Orden correcto</li>
+                    <li>✅ Colores diferenciados dentro del mismo esquema</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section success">
+            <h3>📱 Simulación del Panel Corregido</h3>
+            
+            <div class="notification-panel">
+                <h3 style="margin-top: 0; color: #e2e8f0;">📔 Notificaciones</h3>
+                
+                <!-- Evaluaciones Pendientes - PRIMERO - Morado más oscuro -->
+                <div class="notification-section pending-eval">
+                    <div class="notification-header">
+                        📚 Evaluaciones Pendientes (1)
+                    </div>
+                    <div class="notification-item">
+                        <span class="icon">📋</span>
+                        <div style="display: inline-block; vertical-align: top; width: calc(100% - 40px);">
+                            <div class="student-name">
+                                dsasd (4to Básico)
+                                <span class="badge">Ciencias Naturales</span>
+                            </div>
+                            <div class="task-description">Evaluación</div>
+                            <a href="#" class="link">Revisar Evaluación</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evaluaciones Completadas - SEGUNDO - Morado más claro -->
+                <div class="notification-section completed-eval">
+                    <div class="notification-header">
+                        ✅ Evaluaciones Completadas (1)
+                    </div>
+                    <div class="notification-item">
+                        <span class="icon">✓</span>
+                        <div style="display: inline-block; vertical-align: top; width: calc(100% - 40px);">
+                            <div class="student-name">
+                                dsasd (4to Básico)
+                                <span class="badge">Ciencias Naturales</span>
+                            </div>
+                            <div class="task-description">Completó la evaluación: dsasd</div>
+                            <div class="timestamp">30/06/25, 16:29</div>
+                            <a href="#" class="link">Ver Resultados</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section info">
+            <h3>🔧 Detalles Técnicos de los Cambios</h3>
+            
+            <h4>1. Orden de Secciones:</h4>
+            <ul>
+                <li><strong>Antes:</strong> Evaluaciones Completadas → Evaluaciones Pendientes</li>
+                <li><strong>Después:</strong> Evaluaciones Pendientes → Evaluaciones Completadas</li>
+            </ul>
+
+            <h4>2. Esquema de Colores:</h4>
+            <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <th style="text-align: left; padding: 8px; background: #f8f9fa;">Sección</th>
+                    <th style="text-align: left; padding: 8px; background: #f8f9fa;">Color Anterior</th>
+                    <th style="text-align: left; padding: 8px; background: #f8f9fa;">Color Nuevo</th>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 8px;">Evaluaciones Pendientes</td>
+                    <td style="padding: 8px;">🟣 purple-50 (Morado estándar)</td>
+                    <td style="padding: 8px;">🟣 purple-50 (Morado oscuro)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Evaluaciones Completadas</td>
+                    <td style="padding: 8px;">🟢 green-50 (Verde)</td>
+                    <td style="padding: 8px;">🟣 purple-25 (Morado claro)</td>
+                </tr>
+            </table>
+
+            <h4>3. Cambios en CSS:</h4>
+            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                <strong>Evaluaciones Pendientes (sin cambios):</strong><br>
+                bg-purple-50 dark:bg-purple-900/20<br>
+                border-purple-400 dark:border-purple-500<br><br>
+                
+                <strong>Evaluaciones Completadas (cambiado):</strong><br>
+                <span style="color: #dc3545;">- bg-green-50 dark:bg-green-900/20</span><br>
+                <span style="color: #28a745;">+ bg-purple-25 dark:bg-purple-900/10</span><br>
+                <span style="color: #dc3545;">- border-green-400 dark:border-green-500</span><br>
+                <span style="color: #28a745;">+ border-purple-300 dark:border-purple-400</span>
+            </div>
+        </div>
+
+        <div class="section success">
+            <h3>✅ Resultado Final</h3>
+            <p><strong>Orden de notificaciones corregido:</strong></p>
+            <ol>
+                <li>🟣 <strong>Evaluaciones Pendientes</strong> (morado oscuro) - Aparecen primero</li>
+                <li>🟣 <strong>Evaluaciones Completadas</strong> (morado claro) - Aparecen segundo</li>
+                <li>🟠 Tareas Pendientes</li>
+                <li>📝 Entregas Pendientes</li>
+                <li>💬 Comentarios No Leídos</li>
+            </ol>
+            
+            <p><strong>Esquema de colores coherente:</strong> Ambos tipos de evaluaciones usan morado, pero con diferentes intensidades para distinguirlas claramente.</p>
+        </div>
+    </div>
+</body>
+</html>

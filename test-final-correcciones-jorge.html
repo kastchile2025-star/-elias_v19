@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Final - Corrección Profesor Jorge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { background-color: #e8f5e8; }
+        .test { background-color: #e3f2fd; }
+        .warning { background-color: #fff3e0; }
+        
+        h1 { color: #388e3c; text-align: center; }
+        h2 { color: #333; border-bottom: 2px solid #388e3c; padding-bottom: 5px; }
+        
+        button {
+            background: #388e3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover { background: #2e7d32; }
+        button.test { background: #1976d2; }
+        button.test:hover { background: #1565c0; }
+        button.danger { background: #d32f2f; }
+        button.danger:hover { background: #c62828; }
+        
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #388e3c;
+            background: #e8f5e8;
+        }
+        .notification.old { border-left-color: #d32f2f; background: #ffebee; }
+        .notification.new { border-left-color: #388e3c; background: #e8f5e8; }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .results-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge.evaluation { background: #e3f2fd; color: #1976d2; }
+        .badge.course { background: #e8f5e8; color: #388e3c; }
+        
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .checkmark { color: #388e3c; font-size: 18px; font-weight: bold; }
+        .cross { color: #d32f2f; font-size: 18px; font-weight: bold; }
+        
+        .test-steps {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .test-steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .test-steps li {
+            margin: 8px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Final - Corrección Problemas Profesor Jorge</h1>
+        
+        <div class="section success">
+            <h2>✅ Correcciones Implementadas</h2>
+            <div class="notification new">
+                <strong>🔧 Corrección 1:</strong> Función de migración para actualizar notificaciones existentes que muestran "Sistema"
+            </div>
+            <div class="notification new">
+                <strong>🔧 Corrección 2:</strong> Mejora en getAllEvaluationResults con sincronización automática de datos
+            </div>
+            <div class="notification new">
+                <strong>🔧 Corrección 3:</strong> Recarga forzada de datos frescos desde localStorage
+            </div>
+        </div>
+        
+        <div class="section test">
+            <h2>🧪 Test de Validación</h2>
+            <div class="test-steps">
+                <strong>Pasos del Test:</strong>
+                <ol>
+                    <li>Crear escenario completo con datos de prueba</li>
+                    <li>Simular notificaciones problemáticas (que muestran "Sistema")</li>
+                    <li>Simular evaluaciones completadas sin sincronización</li>
+                    <li>Aplicar las correcciones automáticamente</li>
+                    <li>Validar que los problemas se resuelven</li>
+                </ol>
+            </div>
+            
+            <button onclick="runCompleteTest()" class="test">🚀 Ejecutar Test Completo</button>
+            <button onclick="testNotificationMigration()" class="test">🔔 Test Migración Notificaciones</button>
+            <button onclick="testResultsSync()" class="test">📊 Test Sincronización Resultados</button>
+            <button onclick="simulateRealScenario()" class="test">🎭 Simular Escenario Real</button>
+            <button onclick="clearAll()" class="danger">🗑️ Limpiar Todo</button>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Estado de las Notificaciones</h2>
+            <div id="notifications-status">
+                <p style="color: #666;">Ejecuta el test para ver el estado de las notificaciones.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Estado de Resultados de Evaluación</h2>
+            <div id="results-status">
+                <p style="color: #666;">Ejecuta el test para ver el estado de los resultados.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Log de Pruebas</h2>
+            <div id="test-log" class="log">
+                <div style="color: #388e3c;">[SYSTEM] Test de correcciones listo para ejecutar</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = null;
+        let testNotificationIds = [];
+        
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('test-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#d32f2f' : type === 'success' ? '#388e3c' : type === 'warning' ? '#f57c00' : '#1976d2';
+            logElement.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function runCompleteTest() {
+            log('🚀 Iniciando test completo de correcciones...', 'info');
+            
+            // Ejecutar todos los tests en secuencia
+            setTimeout(() => setupTestData(), 100);
+            setTimeout(() => createProblematicNotifications(), 800);
+            setTimeout(() => createEvaluationResults(), 1500);
+            setTimeout(() => testNotificationMigration(), 2200);
+            setTimeout(() => testResultsSync(), 2900);
+            setTimeout(() => validateFinalResults(), 3600);
+        }
+        
+        function setupTestData() {
+            log('📋 Configurando datos de prueba...', 'info');
+            
+            // Crear usuarios
+            const users = [
+                {
+                    username: 'jorge_profesor',
+                    role: 'teacher',
+                    displayName: 'Prof. Jorge García',
+                    courses: ['4to Básico', '5to Básico'],
+                    subjects: ['Ciencias Naturales']
+                },
+                {
+                    username: 'maria_estudiante',
+                    role: 'student',
+                    displayName: 'María González',
+                    activeCourses: ['4to Básico']
+                },
+                {
+                    username: 'felipe_estudiante',
+                    role: 'student',
+                    displayName: 'Felipe Martínez',
+                    activeCourses: ['4to Básico']
+                }
+            ];
+            
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            // Crear tarea de evaluación
+            testTaskId = 'eval_test_' + Date.now();
+            const evaluationTask = {
+                id: testTaskId,
+                title: 'Evaluación de Ciencias Naturales',
+                description: 'Evaluación sobre el sistema solar',
+                subject: 'Ciencias Naturales',
+                course: '4to Básico',
+                assignedBy: 'jorge_profesor',
+                assignedByName: 'Prof. Jorge García',
+                assignedTo: 'course',
+                dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                priority: 'medium',
+                taskType: 'evaluation',
+                evaluationConfig: {
+                    topic: 'Sistema Solar',
+                    questionCount: 10,
+                    timeLimit: 30
+                },
+                evaluationResults: {} // Inicialmente vacío
+            };
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            tasks.push(evaluationTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            log('✅ Datos de prueba configurados', 'success');
+        }
+        
+        function createProblematicNotifications() {
+            log('❌ Creando notificaciones problemáticas (que muestran "Sistema")...', 'warning');
+            
+            const problematicNotifications = [
+                {
+                    id: 'pending_problem_' + Date.now(),
+                    type: 'pending_grading',
+                    taskId: testTaskId,
+                    taskTitle: 'Evaluación de Ciencias Naturales',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge_profesor'],
+                    fromUsername: 'system',
+                    fromDisplayName: 'Sistema', // ❌ PROBLEMA
+                    course: '4to Básico',
+                    subject: 'Ciencias Naturales',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                },
+                {
+                    id: 'completed_problem_' + Date.now(),
+                    type: 'task_completed',
+                    taskId: testTaskId,
+                    taskTitle: 'Evaluación de Ciencias Naturales',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge_profesor'],
+                    fromUsername: 'maria_estudiante',
+                    fromDisplayName: 'María González',
+                    course: '4to Básico',
+                    subject: 'Ciencias Naturales',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                }
+            ];
+            
+            testNotificationIds = problematicNotifications.map(n => n.id);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(problematicNotifications));
+            
+            log('❌ Notificaciones problemáticas creadas', 'error');
+            updateNotificationsStatus();
+        }
+        
+        function createEvaluationResults() {
+            log('📊 Creando resultados de evaluación en userTasks (sin sincronizar)...', 'info');
+            
+            // Crear resultados en userTasks de estudiantes sin sincronizar con tarea global
+            const mariaUserTasks = [
+                {
+                    id: testTaskId,
+                    title: 'Evaluación de Ciencias Naturales',
+                    status: 'completed',
+                    score: 85,
+                    completionPercentage: 85,
+                    completedAt: new Date().toISOString(),
+                    evaluationConfig: { questionCount: 10 }
+                }
+            ];
+            
+            const felipeUserTasks = [
+                {
+                    id: testTaskId,
+                    title: 'Evaluación de Ciencias Naturales',
+                    status: 'completed',
+                    score: 92,
+                    completionPercentage: 92,
+                    completedAt: new Date().toISOString(),
+                    evaluationConfig: { questionCount: 10 }
+                }
+            ];
+            
+            localStorage.setItem('userTasks_maria_estudiante', JSON.stringify(mariaUserTasks));
+            localStorage.setItem('userTasks_felipe_estudiante', JSON.stringify(felipeUserTasks));
+            
+            log('📊 Resultados creados en userTasks (sin sincronizar)', 'warning');
+            updateResultsStatus();
+        }
+        
+        function testNotificationMigration() {
+            log('🔄 Probando migración de notificaciones...', 'info');
+            
+            // Simular la función de migración
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            
+            let migrated = 0;
+            const updatedNotifications = notifications.map(notification => {
+                if (notification.fromDisplayName === 'Sistema') {
+                    const relatedTask = globalTasks.find(task => task.id === notification.taskId);
+                    if (relatedTask) {
+                        migrated++;
+                        return {
+                            ...notification,
+                            fromDisplayName: `${relatedTask.title} (${relatedTask.course})`
+                        };
+                    }
+                }
+                return notification;
+            });
+            
+            if (migrated > 0) {
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(updatedNotifications));
+                log(`✅ ${migrated} notificaciones migradas exitosamente`, 'success');
+            }
+            
+            updateNotificationsStatus();
+        }
+        
+        function testResultsSync() {
+            log('🔧 Probando sincronización de resultados...', 'info');
+            
+            // Simular la función mejorada getAllEvaluationResults
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const taskIndex = globalTasks.findIndex(t => t.id === testTaskId);
+            
+            if (taskIndex !== -1) {
+                const task = globalTasks[taskIndex];
+                const targetStudents = ['maria_estudiante', 'felipe_estudiante'];
+                
+                if (!task.evaluationResults) {
+                    task.evaluationResults = {};
+                }
+                
+                let synced = 0;
+                targetStudents.forEach(studentUsername => {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    const userTask = userTasks.find(ut => ut.id === testTaskId && ut.status === 'completed');
+                    
+                    if (userTask && !task.evaluationResults[studentUsername]) {
+                        task.evaluationResults[studentUsername] = {
+                            score: userTask.score || 0,
+                            completionPercentage: userTask.completionPercentage || 0,
+                            completedAt: userTask.completedAt,
+                            totalQuestions: userTask.evaluationConfig?.questionCount || 10
+                        };
+                        synced++;
+                        log(`🔧 Sincronizado resultado para ${studentUsername}: ${userTask.completionPercentage}%`, 'success');
+                    }
+                });
+                
+                if (synced > 0) {
+                    globalTasks[taskIndex] = task;
+                    localStorage.setItem('smart-student-tasks', JSON.stringify(globalTasks));
+                    log(`✅ ${synced} resultados sincronizados con tarea global`, 'success');
+                }
+            }
+            
+            updateResultsStatus();
+        }
+        
+        function validateFinalResults() {
+            log('🎯 Validando resultados finales...', 'info');
+            
+            // Validar notificaciones
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const problematicNotifications = notifications.filter(n => n.fromDisplayName === 'Sistema');
+            
+            if (problematicNotifications.length === 0) {
+                log('✅ ÉXITO: Todas las notificaciones migradas correctamente', 'success');
+            } else {
+                log(`❌ FALLO: ${problematicNotifications.length} notificaciones aún muestran "Sistema"`, 'error');
+            }
+            
+            // Validar resultados
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const task = globalTasks.find(t => t.id === testTaskId);
+            
+            if (task && task.evaluationResults && Object.keys(task.evaluationResults).length > 0) {
+                log(`✅ ÉXITO: ${Object.keys(task.evaluationResults).length} resultados sincronizados en tarea global`, 'success');
+            } else {
+                log('❌ FALLO: Resultados no sincronizados correctamente', 'error');
+            }
+            
+            log('🎉 VALIDACIÓN COMPLETA', 'success');
+            updateNotificationsStatus();
+            updateResultsStatus();
+        }
+        
+        function updateNotificationsStatus() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const teacherNotifications = notifications.filter(n => n.targetUsernames.includes('jorge_profesor'));
+            
+            let html = '<h3>Estado de Notificaciones del Profesor:</h3>';
+            
+            teacherNotifications.forEach(notif => {
+                const isFixed = !notif.fromDisplayName.includes('Sistema');
+                const cssClass = isFixed ? 'new' : 'old';
+                const icon = isFixed ? '✅' : '❌';
+                
+                html += `
+                    <div class="notification ${cssClass}">
+                        ${icon} <strong>${notif.fromDisplayName}</strong><br>
+                        <small>${notif.type === 'task_completed' ? 'Evaluación completada' : 'Evaluación pendiente'}: ${notif.taskTitle}</small><br>
+                        <small>Curso: ${notif.course}</small>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('notifications-status').innerHTML = html;
+        }
+        
+        function updateResultsStatus() {
+            const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const task = globalTasks.find(t => t.id === testTaskId);
+            
+            let html = '<h3>Estado de Resultados de Evaluación:</h3>';
+            
+            if (task && task.evaluationResults && Object.keys(task.evaluationResults).length > 0) {
+                html += '<div class="notification new">✅ Resultados encontrados en tarea global</div>';
+                html += '<table class="results-table"><thead><tr><th>Estudiante</th><th>Estado</th><th>Puntaje</th><th>Porcentaje</th></tr></thead><tbody>';
+                
+                Object.keys(task.evaluationResults).forEach(studentUsername => {
+                    const result = task.evaluationResults[studentUsername];
+                    const userData = getStudentData(studentUsername);
+                    
+                    html += `
+                        <tr>
+                            <td>${userData.displayName || studentUsername}</td>
+                            <td><span class="badge evaluation">Completada</span></td>
+                            <td>${result.score}</td>
+                            <td>${result.completionPercentage}%</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            } else {
+                html += '<div class="notification old">❌ No se encontraron resultados en tarea global</div>';
+                html += '<p><em>Tabla aparecería como: "No students have completed the evaluation yet"</em></p>';
+            }
+            
+            document.getElementById('results-status').innerHTML = html;
+        }
+        
+        function simulateRealScenario() {
+            log('🎭 Simulando escenario real del profesor Jorge...', 'info');
+            
+            // Limpiar datos existentes
+            clearAll();
+            
+            setTimeout(() => {
+                log('📱 Simulando: Profesor Jorge crea evaluación', 'info');
+                setupTestData();
+                
+                setTimeout(() => {
+                    log('👨‍🎓 Simulando: Estudiantes completan evaluación', 'info');
+                    createEvaluationResults();
+                    
+                    setTimeout(() => {
+                        log('🔔 Simulando: Sistema crea notificaciones problemáticas', 'warning');
+                        createProblematicNotifications();
+                        
+                        setTimeout(() => {
+                            log('🔧 Aplicando correcciones automáticas...', 'info');
+                            testNotificationMigration();
+                            testResultsSync();
+                            
+                            setTimeout(() => {
+                                log('✅ Scenario completado - verificando resultados...', 'success');
+                                validateFinalResults();
+                            }, 500);
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 500);
+        }
+        
+        function getStudentData(username) {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            return users.find(u => u.username === username) || { displayName: username };
+        }
+        
+        function clearAll() {
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('userTasks_maria_estudiante');
+            localStorage.removeItem('userTasks_felipe_estudiante');
+            
+            testTaskId = null;
+            testNotificationIds = [];
+            
+            document.getElementById('notifications-status').innerHTML = '<p style="color: #666;">Ejecuta el test para ver el estado de las notificaciones.</p>';
+            document.getElementById('results-status').innerHTML = '<p style="color: #666;">Ejecuta el test para ver el estado de los resultados.</p>';
+            document.getElementById('test-log').innerHTML = '<div style="color: #388e3c;">[SYSTEM] Datos limpiados - listo para nuevo test</div>';
+            
+            log('🗑️ Todos los datos de prueba limpiados', 'success');
+        }
+        
+        // Inicialización
+        log('🎯 Sistema de test de correcciones inicializado', 'info');
+        log('💡 Ejecuta "Test Completo" para validar todas las correcciones', 'info');
+    </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 Test - Campana de Notificaciones Vacía - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            color: #333;
+        }
+        
+        .header {
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .notification-empty {
+            padding: 32px 24px;
+            text-center;
+        }
+        
+        .celebration-circle {
+            margin: 0 auto 24px;
+            width: 96px;
+            height: 96px;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+        }
+        
+        .celebration-inner {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 12px;
+        }
+        
+        .subtitle {
+            color: #4b5563;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .description {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .icons-container {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .icon-wrapper {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-purple { background: #faf5ff; }
+        .icon-orange { background: #fff7ed; }
+        .icon-blue { background: #eff6ff; }
+        
+        .check-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .icon-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .motivational-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .motivational-text {
+            font-size: 14px;
+            color: #166534;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .demo-note {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .demo-note h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        
+        .demo-note p {
+            margin: 5px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-note">
+        <h1>🔔 Campana de Notificaciones - Modo Estudiante</h1>
+        <p>Vista previa del nuevo diseño cuando no hay notificaciones pendientes</p>
+        <p>✨ Incluye íconos con checks y mensaje motivacional</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2>Notificaciones</h2>
+        </div>
+        
+        <div class="notification-empty">
+            <!-- Círculo celebratorio -->
+            <div class="celebration-circle">
+                <div class="celebration-inner">
+                    <span style="font-size: 32px;" class="bounce">🎉</span>
+                </div>
+            </div>
+            
+            <!-- Mensaje principal -->
+            <div>
+                <h3 class="title">¡Todo al día!</h3>
+                <p class="subtitle">No tienes notificaciones pendientes.</p>
+                <p class="description">Disfruta de este momento de tranquilidad académica ✨</p>
+            </div>
+            
+            <!-- Iconos con checks -->
+            <div class="icons-container">
+                <!-- Evaluaciones -->
+                <div class="icon-item">
+                    <div class="icon-wrapper icon-purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2">
+                            <path d="M9 11H15M9 15H15M9 7H15M6 3H18C19.1046 3 20 3.89543 20 5V19C19.1046 21 18 21 18 21H6C4.89543 21 4 20.1046 4 19V5C4 3.89543 4.89543 3 6 3Z"/>
+                        </svg>
+                        <div class="check-badge">✓</div>
+                    </div>
+                    <span class="icon-label">Evaluaciones</span>
+                </div>
+                
+                <!-- Tareas -->
+                <div class="icon-item">
+                    <div class="icon-wrapper icon-orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        <div class="check-badge">✓</div>
+                    </div>
+                    <span class="icon-label">Tareas</span>
+                </div>
+                
+                <!-- Comentarios -->
+                <div class="icon-item">
+                    <div class="icon-wrapper icon-blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/>
+                        </svg>
+                        <div class="check-badge">✓</div>
+                    </div>
+                    <span class="icon-label">Comentarios</span>
+                </div>
+            </div>
+            
+            <!-- Mensaje motivacional -->
+            <div class="motivational-box">
+                <p class="motivational-text">¡Sigue así! Tu dedicación académica es admirable.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simular la animación de aparición
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            container.style.transition = 'all 0.5s ease-out';
+            
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 200);
+            
+            // Animación de los checks
+            const checks = document.querySelectorAll('.check-badge');
+            checks.forEach((check, index) => {
+                check.style.opacity = '0';
+                check.style.transform = 'scale(0)';
+                check.style.transition = 'all 0.3s ease-out';
+                
+                setTimeout(() => {
+                    check.style.opacity = '1';
+                    check.style.transform = 'scale(1)';
+                }, 800 + (index * 200));
+            });
+        });
+    </script>
+</body>
+</html>

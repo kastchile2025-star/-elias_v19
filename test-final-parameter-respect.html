@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Final - Parámetros del Profesor Respetados</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 6px; border-left: 4px solid #007bff; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .critical { border-left-color: #dc3545; background: #f8d7da; border: 2px solid #dc3545; }
+        .fixed { border-left-color: #28a745; background: #d4edda; border: 2px solid #28a745; }
+        .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .before, .after { padding: 15px; border-radius: 6px; }
+        .before { background: #ffe6e6; border: 1px solid #ff9999; }
+        .after { background: #e6ffe6; border: 1px solid #99ff99; }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        button { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        .highlight { background: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        .code-block { background: #f8f9fa; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 12px; margin: 10px 0; border: 1px solid #e9ecef; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Prueba Final - Parámetros del Profesor Respetados</h1>
+        
+        <div class="test-section critical">
+            <h2>🚨 PROBLEMA PRINCIPAL SOLUCIONADO</h2>
+            <p><strong>Issue:</strong> La evaluación mostraba 2 preguntas en la pantalla de carga, pero generaba 15 preguntas en la práctica.</p>
+            <p><strong>Causa Root:</strong> La función <code>handleRepeatEvaluation</code> no pasaba los parámetros dinámicos.</p>
+            <p><strong>Impacto:</strong> Los parámetros del profesor (questionCount, timeLimit) eran ignorados durante la generación.</p>
+        </div>
+
+        <div class="test-section fixed">
+            <h2>✅ CORRECCIONES APLICADAS</h2>
+            
+            <h3>1. API Call Dinámico:</h3>
+            <div class="before-after">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <div class="code-block">
+body: JSON.stringify({
+  bookTitle: selectedBook,
+  topic: currentTopicForDisplay,
+  language: currentUiLanguage,
+  pdfContent: pdfContent
+})
+                    </div>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <div class="code-block">
+body: JSON.stringify({
+  bookTitle: selectedBook,
+  topic: currentTopicForDisplay,
+  language: currentUiLanguage,
+  pdfContent: pdfContent,
+  <span class="highlight">questionCount: questionCountToUse,
+  timeLimit: timeLimitToUse</span>
+})
+                    </div>
+                </div>
+            </div>
+
+            <h3>2. Validación de Respuesta:</h3>
+            <div class="before-after">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <div class="code-block">
+if (result && result.questions && 
+    result.questions.length === <span class="highlight">15</span>) {
+  // ...
+  setTimeLeft(<span class="highlight">INITIAL_TIME_LIMIT</span>);
+                    </div>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <div class="code-block">
+if (result && result.questions && 
+    result.questions.length === <span class="highlight">questionCountToUse</span>) {
+  // ...
+  setTimeLeft(<span class="highlight">timeLimitToUse</span>);
+                    </div>
+                </div>
+            </div>
+
+            <h3>3. Fallback Generation:</h3>
+            <div class="before-after">
+                <div class="before">
+                    <h4>❌ ANTES</h4>
+                    <div class="code-block">
+const result = await generateEvaluationContent({
+  bookTitle: selectedBook,
+  topic: currentTopicForDisplay,
+  language: currentUiLanguage,
+});
+                    </div>
+                </div>
+                <div class="after">
+                    <h4>✅ DESPUÉS</h4>
+                    <div class="code-block">
+const result = await generateEvaluationContent({
+  bookTitle: selectedBook,
+  topic: currentTopicForDisplay,
+  language: currentUiLanguage,
+  <span class="highlight">questionCount: questionCountToUse,
+  timeLimit: timeLimitToUse,</span>
+});
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Flujo Completo Corregido</h2>
+            
+            <h3>Paso 1: Profesor Configura</h3>
+            <ul>
+                <li>✅ Profesor especifica: <strong>2 preguntas, 1 minuto</strong></li>
+                <li>✅ Parámetros se guardan en evaluationConfig</li>
+            </ul>
+
+            <h3>Paso 2: URL Generation</h3>
+            <ul>
+                <li>✅ URL incluye: <code>questionCount=2&timeLimit=1</code></li>
+                <li>✅ Botón "Realizar Evaluación" pasa todos los parámetros</li>
+            </ul>
+
+            <h3>Paso 3: Pantalla de Carga</h3>
+            <ul>
+                <li>✅ Lee parámetros dinámicos de la URL</li>
+                <li>✅ Muestra: "Preguntas: 2", "Tiempo: 1 minuto"</li>
+            </ul>
+
+            <h3>Paso 4: Generación de Evaluación</h3>
+            <ul>
+                <li>✅ handleCreateEvaluation usa questionCountToUse</li>
+                <li>✅ handleRepeatEvaluation usa questionCountToUse</li>
+                <li>✅ API calls incluyen parámetros dinámicos</li>
+                <li>✅ Fallbacks respetan los parámetros</li>
+            </ul>
+
+            <h3>Paso 5: Evaluación Activa</h3>
+            <ul>
+                <li>✅ Genera exactamente 2 preguntas</li>
+                <li>✅ Timer configurado para 1 minuto</li>
+                <li>✅ Validación usa questionCountToUse</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Escenarios de Prueba</h2>
+            
+            <h3>Escenario 1: 2 preguntas, 1 minuto</h3>
+            <button onclick="testScenario(2, 1, 'sistema respiratorio')">
+                🧪 Test: 2Q, 1min - Sistema Respiratorio
+            </button>
+            
+            <h3>Escenario 2: 5 preguntas, 10 minutos</h3>
+            <button onclick="testScenario(5, 10, 'fracciones')">
+                🧪 Test: 5Q, 10min - Fracciones
+            </button>
+            
+            <h3>Escenario 3: 8 preguntas, 30 minutos</h3>
+            <button onclick="testScenario(8, 30, 'civilizaciones antiguas')">
+                🧪 Test: 8Q, 30min - Civilizaciones
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Checklist de Validación</h2>
+            <h3>Para cada escenario de prueba, verificar:</h3>
+            <ol>
+                <li>✅ <strong>Pantalla de carga:</strong> Muestra el número correcto de preguntas</li>
+                <li>✅ <strong>Pantalla de carga:</strong> Muestra el tiempo correcto</li>
+                <li>✅ <strong>Evaluación generada:</strong> Tiene exactamente el número de preguntas especificado</li>
+                <li>✅ <strong>Timer:</strong> Está configurado para el tiempo correcto</li>
+                <li>✅ <strong>Validación:</strong> No hay errores de "question count mismatch"</li>
+                <li>✅ <strong>Repetir evaluación:</strong> Mantiene los mismos parámetros</li>
+                <li>✅ <strong>Botones:</strong> Solo "Cerrar" para evaluaciones de tareas</li>
+            </ol>
+        </div>
+
+        <div class="test-section success">
+            <h2>🎉 IMPLEMENTACIÓN COMPLETADA</h2>
+            <p><strong>Status:</strong> Los parámetros del profesor ahora se respetan en TODO el flujo de evaluación</p>
+            <ul>
+                <li>✅ Pantalla de carga muestra valores dinámicos</li>
+                <li>✅ Generación inicial usa parámetros del profesor</li>
+                <li>✅ Función "repetir" mantiene los parámetros originales</li>
+                <li>✅ Todas las APIs reciben los parámetros correctos</li>
+                <li>✅ Todos los fallbacks respetan los parámetros</li>
+                <li>✅ Timer usa el tiempo especificado por el profesor</li>
+                <li>✅ UI contextual para evaluaciones de tareas</li>
+            </ul>
+            
+            <div class="warning">
+                <h3>📝 Notas Importantes:</h3>
+                <ul>
+                    <li>Los parámetros se leen de la URL en cada función</li>
+                    <li>Se mantiene compatibilidad con evaluaciones manuales (default: 15 preguntas, 120 minutos)</li>
+                    <li>El sistema detecta automáticamente si es una evaluación de tarea vs manual</li>
+                    <li>Todos los paths de código (success, error, fallback) respetan los parámetros</li>
+                </ul>
+            </div>
+        </div>
+
+        <script>
+            function testScenario(questions, time, topic) {
+                const encodedTopic = encodeURIComponent(topic);
+                const url = `/dashboard/evaluacion?course=4to%20Básico&book=Ciencias%20Naturales&topic=${encodedTopic}&autoStart=true&taskId=test${questions}&questionCount=${questions}&timeLimit=${time}`;
+                
+                console.log(`🧪 Testing scenario: ${questions} questions, ${time} minutes`);
+                console.log(`📚 Topic: ${topic}`);
+                console.log(`🔗 URL: ${url}`);
+                
+                window.open(url, '_blank');
+            }
+            
+            console.log('✅ Final implementation complete');
+            console.log('🎯 Teacher parameters are now respected throughout the entire evaluation flow');
+            console.log('🔧 Both creation and repeat functions use dynamic parameters');
+            console.log('📊 All API calls include questionCount and timeLimit');
+        </script>
+    </div>
+</body>
+</html>

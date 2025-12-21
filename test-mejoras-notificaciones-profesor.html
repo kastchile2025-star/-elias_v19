@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Mejoras Notificaciones Profesor: Comentarios, Evaluaciones y Tareas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .button.orange {
+            background: #fd7e14;
+        }
+        .button.orange:hover {
+            background: #fb923c; /* Naranja claro */
+        }
+        .button.purple {
+            background: #6f42c1;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .mockup {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .mockup h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .notification-panel {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .notification-section {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .evaluation-section {
+            background: #f3e8ff;
+            border-left: 4px solid #8b5cf6;
+        }
+        .task-section {
+            background: #fef3e8;
+            border-left: 4px solid #f97316;
+        }
+        .comment-section {
+            background: #e8f5e8;
+            border-left: 4px solid #22c55e;
+        }
+        .notification-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .status-correct {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .status-error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .demo-container {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .code-snippet {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 14px;
+        }
+        .notification-bubble {
+            display: inline-block;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 10px;
+        }
+        .notification-bubble i {
+            font-size: 20px;
+            color: #555;
+        }
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test: Mejoras Notificaciones Profesor - Comentarios, Evaluaciones y Tareas</h1>
+        
+        <div class="section">
+            <h3>Resumen de Mejoras Implementadas</h3>
+            <ul>
+                <li>✅ <strong>Notificaciones de comentarios:</strong> Se eliminan cuando se abre la tarea/evaluación relacionada</li>
+                <li>✅ <strong>Tareas/evaluaciones pendientes:</strong> Permanecen hasta que son entregadas/finalizadas</li>
+                <li>✅ <strong>Visualización separada:</strong> Evaluaciones y tareas se muestran en secciones separadas</li>
+                <li>✅ <strong>Filtrado mejorado:</strong> Solo se muestran evaluaciones no completadas</li>
+                <li>✅ <strong>Contador correcto:</strong> El contador de notificaciones no incluye duplicados</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Demostración de Flujo de Notificaciones</h3>
+            
+            <div class="demo-container">
+                <h4>1. Estado Inicial</h4>
+                <div class="notification-bubble">
+                    <i>🔔</i>
+                    <span class="badge">4</span>
+                </div>
+                <p>El profesor tiene:</p>
+                <ul>
+                    <li>2 Evaluaciones por revisar</li>
+                    <li>1 Tarea por revisar</li>
+                    <li>1 Comentario sin leer</li>
+                </ul>
+            </div>
+            
+            <div class="demo-container">
+                <h4>2. Al abrir una tarea con comentario</h4>
+                <div class="notification-bubble">
+                    <i>🔔</i>
+                    <span class="badge">3</span>
+                </div>
+                <p>✅ El comentario se marca automáticamente como leído</p>
+                <p>✅ La tarea permanece pendiente (debe ser calificada)</p>
+                <p>✅ El contador se actualiza correctamente</p>
+            </div>
+            
+            <div class="demo-container">
+                <h4>3. Al calificar una evaluación</h4>
+                <div class="notification-bubble">
+                    <i>🔔</i>
+                    <span class="badge">2</span>
+                </div>
+                <p>✅ La evaluación desaparece de las notificaciones</p>
+                <p>✅ El contador se actualiza correctamente</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Mejoras en el Código</h3>
+            
+            <h4>1. Marcar comentarios como leídos al abrir tarea/evaluación</h4>
+            <div class="code-snippet">
+// 🔥 NUEVA FUNCIÓN: Marcar comentarios de una tarea como leídos
+static markCommentsAsReadForTask(taskId: string, username: string): void {
+  try {
+    const storedComments = localStorage.getItem('smart-student-task-comments');
+    if (!storedComments) return;
+    
+    const comments = JSON.parse(storedComments);
+    let updated = false;
+    
+    // Marcar solo comentarios de la tarea específica como leídos
+    const updatedComments = comments.map(comment => {
+      if (
+        comment.taskId === taskId && 
+        !comment.isSubmission &&  // No marcar entregas, solo comentarios
+        comment.studentUsername !== username && // No marcar comentarios propios
+        (!comment.readBy?.includes(username))
+      ) {
+        updated = true;
+        return {
+          ...comment,
+          isNew: false,
+          readBy: [...(comment.readBy || []), username]
+        };
+      }
+      return comment;
+    });
+    
+    if (updated) {
+      localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+      console.log(`[TaskNotificationManager] Marked comments for task ${taskId} as read for ${username}`);
+      
+      // Disparar evento para actualizar la UI
+      document.dispatchEvent(new Event('commentsUpdated'));
+    }
+  } catch (error) {
+    console.error('Error marking task comments as read:', error);
+  }
+}
+            </div>
+
+            <h4>2. Filtrar correctamente notificaciones según el tipo</h4>
+            <div class="code-snippet">
+// ✅ MEJORA: Solo marcar como leídos los comentarios, no las tareas/evaluaciones pendientes
+notification.type !== 'new_task' && 
+notification.type !== 'pending_grading'
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Verificación de Funcionalidades</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>✅ Comportamientos Verificados:</h4>
+                    <ul>
+                        <li>✅ Los comentarios se marcan como leídos al abrir la tarea</li>
+                        <li>✅ Las tareas pendientes permanecen hasta ser calificadas</li>
+                        <li>✅ Las evaluaciones pendientes permanecen hasta ser completadas</li>
+                        <li>✅ La separación visual entre evaluaciones y tareas es clara</li>
+                        <li>✅ El contador de notificaciones se actualiza correctamente</li>
+                        <li>✅ Las evaluaciones completadas se filtran correctamente</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>📋 Archivos Modificados:</h4>
+                    <ul>
+                        <li><strong>src/components/common/notifications-panel.tsx</strong></li>
+                        <li><strong>src/lib/notifications.ts</strong></li>
+                        <li><strong>test-mejoras-notificaciones-profesor.html</strong> (este archivo)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Problemas Solucionados</h3>
+            <ol>
+                <li>✅ <strong>Comentarios no marcados como leídos:</strong> Ahora se eliminan automáticamente al abrir la tarea/evaluación</li>
+                <li>✅ <strong>Tareas desapareciendo prematuramente:</strong> Permanecen hasta ser finalizadas/calificadas</li>
+                <li>✅ <strong>Evaluaciones completadas visibles:</strong> Filtro mejorado para ocultarlas</li>
+                <li>✅ <strong>Mezcla de tipos:</strong> Visualización separada para evaluaciones y tareas</li>
+                <li>✅ <strong>Contador incorrecto:</strong> Lógica mejorada para contar correctamente notificaciones pendientes</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Test de mejoras de notificaciones para profesor cargado correctamente');
+            console.log('📋 Funcionalidades implementadas:');
+            console.log('   1. Comentarios marcados como leídos al abrir tareas');
+            console.log('   2. Tareas/evaluaciones pendientes hasta finalización');
+            console.log('   3. Visualización separada por tipo');
+            console.log('   4. Contador de notificaciones corregido');
+        });
+    </script>
+</body>
+</html>

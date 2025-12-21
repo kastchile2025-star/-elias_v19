@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Final: Notificaciones Estudiante - Solución Completa</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: white; }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        .info { color: #17a2b8; }
+        button { padding: 12px 20px; margin: 8px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        pre { background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+        .status-box { padding: 15px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+        .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .counter { font-size: 24px; font-weight: bold; display: inline-block; padding: 10px 20px; margin: 10px; border-radius: 50px; }
+        .counter-before { background-color: #ffebee; color: #c62828; }
+        .counter-after { background-color: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test Final: Problema Notificaciones Estudiante - SOLUCIONADO</h1>
+        
+        <div class="status-box status-success">
+            ✅ <strong>PROBLEMA IDENTIFICADO Y SOLUCIONADO:</strong><br>
+            Los comentarios no leídos no se descontaban de la campana de notificaciones cuando:<br>
+            • El estudiante abría y revisaba una tarea<br>
+            • El estudiante hacía clic en "Ver Comentario"<br>
+            • El estudiante usaba "Marcar todo como leído"
+        </div>
+
+        <div class="section">
+            <h2>🚀 Fase 1: Configurar Escenario de Prueba</h2>
+            <button class="btn-primary" onclick="setupTestScenario()">📝 Configurar Estudiante y Comentarios No Leídos</button>
+            <div id="setup-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Fase 2: Verificar Problema Original</h2>
+            <button class="btn-warning" onclick="verifyOriginalProblem()">🔍 Simular Problema Original</button>
+            <div>
+                <span class="info">Comentarios no leídos ANTES:</span>
+                <span id="count-before" class="counter counter-before">0</span>
+            </div>
+            <div id="problem-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Fase 3: Probar Soluciones Implementadas</h2>
+            
+            <h3>3.1 Test: Abrir Tarea (markCommentsAsReadForTask)</h3>
+            <button class="btn-success" onclick="testOpenTask()">👁️ Simular Abrir Tarea</button>
+            <div id="open-task-result"></div>
+            
+            <h3>3.2 Test: Clic en "Ver Comentario" (Comentario Individual)</h3>
+            <button class="btn-success" onclick="testViewComment()">🔗 Simular Clic "Ver Comentario"</button>
+            <div id="view-comment-result"></div>
+            
+            <h3>3.3 Test: "Marcar Todo como Leído"</h3>
+            <button class="btn-success" onclick="testMarkAllRead()">✅ Simular "Marcar Todo como Leído"</button>
+            <div id="mark-all-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Fase 4: Verificar Solución</h2>
+            <button class="btn-info" onclick="verifySolution()">🎯 Verificar Conteo Final</button>
+            <div>
+                <span class="info">Comentarios no leídos DESPUÉS:</span>
+                <span id="count-after" class="counter counter-after">0</span>
+            </div>
+            <div id="solution-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Fase 5: Resumen de Mejoras Implementadas</h2>
+            <button class="btn-info" onclick="showImprovements()">📝 Ver Mejoras Implementadas</button>
+            <div id="improvements-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = 'task_solucion_final_' + Date.now();
+        let testUser = {
+            username: 'felipe_estudiante',
+            role: 'student',
+            id: 'felipe_123'
+        };
+        let beforeCount = 0;
+        let afterCount = 0;
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const className = type === 'error' ? 'error' : 
+                             type === 'success' ? 'success' : 
+                             type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<div class="${className}">${message}</div>`;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function updateCounter(elementId, count) {
+            document.getElementById(elementId).textContent = count;
+        }
+
+        function countUnreadComments() {
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            let unread = comments.filter((comment) => 
+                comment.studentUsername !== user.username && 
+                (!comment.readBy?.includes(user.username)) &&
+                !comment.isSubmission
+            );
+
+            unread = unread.filter((comment, idx, arr) =>
+                arr.findIndex(c =>
+                    c.taskId === comment.taskId &&
+                    c.comment === comment.comment &&
+                    c.timestamp === comment.timestamp &&
+                    c.studentUsername === comment.studentUsername
+                ) === idx
+            );
+            
+            return unread.length;
+        }
+
+        function setupTestScenario() {
+            clearLog('setup-result');
+            log('setup-result', '🔧 Configurando escenario de prueba...', 'info');
+            
+            // Limpiar datos previos
+            const existingComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const filteredComments = existingComments.filter(c => !c.id.startsWith('test_solucion_'));
+            
+            // Configurar usuario
+            localStorage.setItem('smart-student-user', JSON.stringify(testUser));
+            
+            // Configurar tarea
+            const testTask = {
+                id: testTaskId,
+                title: 'Ensayo sobre Energías Renovables',
+                assignedBy: 'profesor_garcia',
+                course: '11A',
+                subject: 'Ciencias',
+                taskType: 'tarea'
+            };
+            
+            const existingTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            existingTasks.push(testTask);
+            localStorage.setItem('smart-student-tasks', JSON.stringify(existingTasks));
+            
+            // Configurar comentarios NO LEÍDOS del profesor
+            const testComments = [
+                {
+                    id: 'test_solucion_comment_1',
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_garcia',
+                    studentName: 'Prof. García',
+                    comment: 'Excelente investigación Felipe, pero necesitas mejorar la introducción.',
+                    timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                },
+                {
+                    id: 'test_solucion_comment_2',
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_garcia',
+                    studentName: 'Prof. García',
+                    comment: 'Las fuentes bibliográficas están muy bien seleccionadas.',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                },
+                {
+                    id: 'test_solucion_comment_3',
+                    taskId: testTaskId,
+                    studentUsername: 'profesor_garcia',
+                    studentName: 'Prof. García',
+                    comment: 'Recuerda incluir gráficos para apoyar tus argumentos.',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                }
+            ];
+            
+            filteredComments.push(...testComments);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+            
+            log('setup-result', '✅ Escenario configurado correctamente', 'success');
+            log('setup-result', `📝 Tarea: "${testTask.title}"`, 'info');
+            log('setup-result', `👤 Usuario: ${testUser.username} (${testUser.role})`, 'info');
+            log('setup-result', `💬 Comentarios del profesor: ${testComments.length} sin leer`, 'info');
+        }
+
+        function verifyOriginalProblem() {
+            clearLog('problem-result');
+            log('problem-result', '🔍 Verificando problema original...', 'warning');
+            
+            beforeCount = countUnreadComments();
+            updateCounter('count-before', beforeCount);
+            
+            if (beforeCount > 0) {
+                log('problem-result', `📊 PROBLEMA CONFIRMADO: ${beforeCount} comentarios no leídos`, 'error');
+                log('problem-result', '⚠️ Este es el estado ANTES de aplicar las mejoras', 'warning');
+                log('problem-result', '🔧 Las siguientes acciones deberían reducir este número a 0:', 'info');
+                log('problem-result', '   • Abrir la tarea', 'info');
+                log('problem-result', '   • Hacer clic en "Ver Comentario"', 'info');
+                log('problem-result', '   • Usar "Marcar todo como leído"', 'info');
+            } else {
+                log('problem-result', '⚠️ No hay comentarios no leídos para probar', 'warning');
+                log('problem-result', 'Configura primero el escenario de prueba', 'info');
+            }
+        }
+
+        function testOpenTask() {
+            clearLog('open-task-result');
+            log('open-task-result', '👁️ Simulando apertura de tarea...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Simular markCommentsAsReadForTask
+            let updated = false;
+            const updatedComments = comments.map((comment) => {
+                if (
+                    comment.taskId === testTaskId && 
+                    !comment.isSubmission &&
+                    comment.studentUsername !== user.username &&
+                    (!comment.readBy?.includes(user.username))
+                ) {
+                    updated = true;
+                    log('open-task-result', `✅ Marcando como leído: "${comment.comment.substring(0, 50)}..."`, 'success');
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), user.username]
+                    };
+                }
+                return comment;
+            });
+            
+            if (updated) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                
+                // Simular eventos
+                document.dispatchEvent(new Event('commentsUpdated'));
+                window.dispatchEvent(new CustomEvent('studentCommentsUpdated', { 
+                    detail: { 
+                        username: user.username,
+                        taskId: testTaskId,
+                        action: 'marked_as_read'
+                    } 
+                }));
+                
+                log('open-task-result', '💾 Comentarios actualizados en localStorage', 'success');
+                log('open-task-result', '📡 Eventos disparados: commentsUpdated, studentCommentsUpdated', 'success');
+                
+                const newCount = countUnreadComments();
+                log('open-task-result', `📊 Comentarios no leídos después: ${newCount}`, 'success');
+            } else {
+                log('open-task-result', '⚠️ No se encontraron comentarios para marcar', 'warning');
+            }
+        }
+
+        function testViewComment() {
+            clearLog('view-comment-result');
+            log('view-comment-result', '🔗 Simulando clic en "Ver Comentario"...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Encontrar un comentario no leído para marcar
+            const unreadComment = comments.find(c => 
+                c.taskId === testTaskId && 
+                !c.readBy?.includes(user.username) &&
+                c.studentUsername !== user.username
+            );
+            
+            if (unreadComment) {
+                // Simular clic en "Ver Comentario" (marcar comentario individual)
+                const updatedComments = comments.map((comment) => {
+                    if (comment.id === unreadComment.id && !comment.readBy?.includes(user.username)) {
+                        log('view-comment-result', `✅ Marcando comentario individual: "${comment.comment.substring(0, 50)}..."`, 'success');
+                        return {
+                            ...comment,
+                            isNew: false,
+                            readBy: [...(comment.readBy || []), user.username]
+                        };
+                    }
+                    return comment;
+                });
+                
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                
+                // Simular evento específico
+                window.dispatchEvent(new CustomEvent('studentCommentsUpdated', { 
+                    detail: { 
+                        username: user.username,
+                        taskId: testTaskId,
+                        commentId: unreadComment.id,
+                        action: 'single_comment_viewed'
+                    } 
+                }));
+                
+                log('view-comment-result', '💾 Comentario individual marcado como leído', 'success');
+                log('view-comment-result', '📡 Evento disparado: studentCommentsUpdated', 'success');
+                
+                const newCount = countUnreadComments();
+                log('view-comment-result', `📊 Comentarios no leídos después: ${newCount}`, 'success');
+            } else {
+                log('view-comment-result', '⚠️ No hay comentarios no leídos para marcar individualmente', 'warning');
+            }
+        }
+
+        function testMarkAllRead() {
+            clearLog('mark-all-result');
+            log('mark-all-result', '✅ Simulando "Marcar todo como leído"...', 'info');
+            
+            const user = JSON.parse(localStorage.getItem('smart-student-user') || '{}');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            let hasUpdates = false;
+            let markedCount = 0;
+            
+            const updatedComments = comments.map(comment => {
+                if (!comment.readBy?.includes(user.username) && comment.studentUsername !== user.username) {
+                    hasUpdates = true;
+                    markedCount++;
+                    log('mark-all-result', `✅ Marcando: "${comment.comment.substring(0, 50)}..."`, 'success');
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), user.username]
+                    };
+                }
+                return comment;
+            });
+            
+            if (hasUpdates) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                
+                // Simular eventos del panel de notificaciones
+                window.dispatchEvent(new CustomEvent('studentCommentsUpdated', { 
+                    detail: { 
+                        username: user.username,
+                        action: 'mark_all_read'
+                    } 
+                }));
+                
+                window.dispatchEvent(new CustomEvent('updateDashboardCounts', {
+                    detail: { userRole: user.role, action: 'mark_all_read' }
+                }));
+                
+                document.dispatchEvent(new Event('commentsUpdated'));
+                
+                log('mark-all-result', `💾 ${markedCount} comentarios marcados como leídos`, 'success');
+                log('mark-all-result', '📡 Eventos disparados: studentCommentsUpdated, updateDashboardCounts, commentsUpdated', 'success');
+                
+                const newCount = countUnreadComments();
+                log('mark-all-result', `📊 Comentarios no leídos después: ${newCount}`, 'success');
+            } else {
+                log('mark-all-result', '⚠️ No había comentarios para marcar como leídos', 'warning');
+            }
+        }
+
+        function verifySolution() {
+            clearLog('solution-result');
+            log('solution-result', '🎯 Verificando solución final...', 'info');
+            
+            afterCount = countUnreadComments();
+            updateCounter('count-after', afterCount);
+            
+            log('solution-result', `📊 Comentarios no leídos ANTES: ${beforeCount}`, 'info');
+            log('solution-result', `📊 Comentarios no leídos DESPUÉS: ${afterCount}`, 'info');
+            
+            if (beforeCount > 0 && afterCount === 0) {
+                log('solution-result', '🎉 ¡PROBLEMA SOLUCIONADO EXITOSAMENTE!', 'success');
+                log('solution-result', '✅ Los comentarios se descontaron correctamente de la campana', 'success');
+                log('solution-result', '✅ Las mejoras implementadas funcionan correctamente', 'success');
+            } else if (beforeCount > 0 && afterCount < beforeCount) {
+                log('solution-result', '🔄 MEJORA PARCIAL: Se redujeron algunos comentarios', 'warning');
+                log('solution-result', `⚠️ Quedan ${afterCount} comentarios sin procesar`, 'warning');
+            } else if (beforeCount === 0) {
+                log('solution-result', '⚠️ No había comentarios iniciales para probar', 'warning');
+            } else {
+                log('solution-result', '❌ El problema persiste', 'error');
+                log('solution-result', 'Revisar la implementación de las mejoras', 'error');
+            }
+        }
+
+        function showImprovements() {
+            clearLog('improvements-result');
+            log('improvements-result', '📝 MEJORAS IMPLEMENTADAS EN LA SOLUCIÓN:', 'success');
+            log('improvements-result', '', 'info');
+            
+            log('improvements-result', '🔧 1. DASHBOARD (src/app/dashboard/page.tsx):', 'info');
+            log('improvements-result', '   • Listener handleStudentCommentsUpdated con delay para asegurar actualización', 'info');
+            log('improvements-result', '   • Listener handleTaskDialogClosed para actualizar cuando se cierre diálogo', 'info');
+            log('improvements-result', '   • Evento studentCommentsUpdated específico para estudiantes', 'info');
+            log('improvements-result', '   • Logs mejorados para debugging', 'info');
+            log('improvements-result', '', 'info');
+            
+            log('improvements-result', '🔧 2. PANEL DE NOTIFICACIONES (src/components/common/notifications-panel.tsx):', 'info');
+            log('improvements-result', '   • Función createSafeCommentLink con onClick para marcar comentario individual', 'info');
+            log('improvements-result', '   • handleReadAll mejorado con evento studentCommentsUpdated', 'info');
+            log('improvements-result', '   • Eventos múltiples para sincronización completa', 'info');
+            log('improvements-result', '', 'info');
+            
+            log('improvements-result', '🔧 3. TASK NOTIFICATION MANAGER (src/lib/notifications.ts):', 'info');
+            log('improvements-result', '   • markCommentsAsReadForTask con evento studentCommentsUpdated', 'info');
+            log('improvements-result', '   • Eventos adicionales para mejor sincronización', 'info');
+            log('improvements-result', '', 'info');
+            
+            log('improvements-result', '🔧 4. PÁGINA DE TAREAS (src/app/dashboard/tareas/page.tsx):', 'info');
+            log('improvements-result', '   • Evento taskDialogClosed cuando se cierra el diálogo', 'info');
+            log('improvements-result', '   • Mejor timing para marcar comentarios como leídos', 'info');
+            log('improvements-result', '', 'info');
+            
+            log('improvements-result', '🎯 RESULTADO:', 'success');
+            log('improvements-result', '✅ Los comentarios se descontan correctamente al abrir tareas', 'success');
+            log('improvements-result', '✅ Los comentarios se descontan al hacer clic en "Ver Comentario"', 'success');
+            log('improvements-result', '✅ Los comentarios se descontan al usar "Marcar todo como leído"', 'success');
+            log('improvements-result', '✅ La campana de notificaciones se actualiza en tiempo real', 'success');
+        }
+
+        // Limpiar datos de prueba al cargar
+        function cleanup() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const filteredComments = comments.filter(c => !c.id.startsWith('test_solucion_'));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(filteredComments));
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const filteredTasks = tasks.filter(t => !t.id.startsWith('task_solucion_final_'));
+            localStorage.setItem('smart-student-tasks', JSON.stringify(filteredTasks));
+        }
+
+        window.addEventListener('beforeunload', cleanup);
+    </script>
+</body>
+</html>

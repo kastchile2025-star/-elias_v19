@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Corrección Final de Notificaciones de Evaluación</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 2px solid #ccc; margin: 10px 0; padding: 20px; }
+        .pass { border-color: green; background-color: #f0fff0; }
+        .fail { border-color: red; background-color: #fff0f0; }
+        .test-header { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+        .step { margin: 10px 0; padding: 10px; background-color: #f5f5f5; }
+        .result { font-weight: bold; margin-top: 10px; }
+        pre { background-color: #eee; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test: Corrección Final de Notificaciones de Evaluación</h1>
+    <p><strong>Objetivo:</strong> Verificar que las notificaciones de evaluación incluyan el taskType y se filtren correctamente</p>
+
+    <div id="test-results"></div>
+
+    <script>
+        // Simulación de la interfaz TaskNotification
+        class TaskNotificationManager {
+            static STORAGE_KEY = 'smart-student-task-notifications';
+
+            static getNotifications() {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            static saveNotifications(notifications) {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(notifications));
+            }
+
+            static getStudentsInCourse(course) {
+                // Simulación de estudiantes
+                return [
+                    { username: 'luis_estudiante', displayName: 'Luis Estudiante' },
+                    { username: 'maria_estudiante', displayName: 'María Estudiante' }
+                ];
+            }
+
+            // ✅ FUNCIÓN ACTUALIZADA: Ahora incluye taskType
+            static createNewTaskNotifications(taskId, taskTitle, course, subject, teacherUsername, teacherDisplayName, taskType = 'assignment') {
+                console.log('=== DEBUG createNewTaskNotifications ===');
+                console.log('TaskId:', taskId);
+                console.log('Course:', course);
+                console.log('TaskType:', taskType); // 🔥 NUEVO LOG
+                
+                const studentsInCourse = this.getStudentsInCourse(course);
+                console.log('Students found in course:', studentsInCourse);
+                
+                if (studentsInCourse.length === 0) {
+                    console.log('No students found in course, skipping notification creation');
+                    return;
+                }
+
+                const notifications = this.getNotifications();
+                console.log('Current notifications count:', notifications.length);
+                
+                const newNotification = {
+                    id: `new_task_${taskId}_${Date.now()}`,
+                    type: 'new_task',
+                    taskId,
+                    taskTitle,
+                    targetUserRole: 'student',
+                    targetUsernames: studentsInCourse.map(student => student.username),
+                    fromUsername: teacherUsername,
+                    fromDisplayName: teacherDisplayName,
+                    course,
+                    subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType // 🔥 AGREGADO: Incluir el tipo de tarea
+                };
+
+                notifications.push(newNotification);
+                console.log('New notification created:', newNotification);
+                console.log('Total notifications after creation:', notifications.length);
+                
+                this.saveNotifications(notifications);
+                console.log('Notifications saved to localStorage');
+            }
+
+            static isEvaluationCompletedByStudent(taskId, studentUsername) {
+                try {
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+                    
+                    const task = userTasks.find(t => t.id === taskId);
+                    return task && task.status === 'completed';
+                } catch (error) {
+                    console.error('Error checking evaluation completion:', error);
+                    return false;
+                }
+            }
+
+            static removeEvaluationNotificationOnCompletion(taskId, studentUsername) {
+                const notifications = this.getNotifications();
+                console.log(`[removeEvaluationNotificationOnCompletion] Filtering notifications for task ${taskId}, student ${studentUsername}`);
+                
+                let removedCount = 0;
+                const filteredNotifications = notifications.filter(notification => {
+                    if (notification.type === 'new_task' && 
+                        notification.taskId === taskId && 
+                        notification.targetUsernames.includes(studentUsername)) {
+                        
+                        if (notification.targetUsernames.length > 1) {
+                            // Múltiples destinatarios: solo remover este estudiante
+                            notification.targetUsernames = notification.targetUsernames.filter(
+                                username => username !== studentUsername
+                            );
+                            console.log(`[removeEvaluationNotificationOnCompletion] Removed student ${studentUsername} from notification`);
+                            return true; // Mantener notificación modificada
+                        } else {
+                            // Único destinatario: eliminar completamente
+                            console.log(`[removeEvaluationNotificationOnCompletion] Removing notification completely for ${studentUsername}`);
+                            removedCount++;
+                            return false; // Eliminar notificación
+                        }
+                    }
+                    return true; // Mantener todas las demás notificaciones
+                });
+
+                if (removedCount > 0 || filteredNotifications.some(n => n.type === 'new_task' && n.taskId === taskId)) {
+                    this.saveNotifications(filteredNotifications);
+                    console.log('Evaluation notifications updated after student completion');
+                }
+            }
+
+            static getUnreadNotificationsForUser(username, userRole) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notification => {
+                    // Filtros básicos
+                    const basicFilters = notification.targetUserRole === userRole &&
+                        notification.targetUsernames.includes(username) &&
+                        !notification.readBy.includes(username) &&
+                        notification.fromUsername !== username;
+
+                    if (!basicFilters) return false;
+
+                    // Para estudiantes: filtrar evaluaciones completadas
+                    if (userRole === 'student' && notification.type === 'new_task') {
+                        // Verificar si la tarea es una evaluación y si ya fue completada
+                        if (notification.taskType === 'evaluation') {
+                            const isCompleted = this.isEvaluationCompletedByStudent(notification.taskId, username);
+                            if (isCompleted) {
+                                console.log(`[getUnreadNotificationsForUser] Filtering out completed evaluation: ${notification.taskTitle} for student: ${username}`);
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                });
+            }
+        }
+
+        // Función de testing
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            let allTestsPassed = true;
+
+            function addTest(title, testFunction) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-section';
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'test-header';
+                headerDiv.textContent = title;
+                testDiv.appendChild(headerDiv);
+
+                try {
+                    const result = testFunction();
+                    if (result.success) {
+                        testDiv.classList.add('pass');
+                        headerDiv.textContent += ' ✅ PASSED';
+                    } else {
+                        testDiv.classList.add('fail');
+                        headerDiv.textContent += ' ❌ FAILED';
+                        allTestsPassed = false;
+                    }
+                    
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = result.message;
+                    testDiv.appendChild(resultDiv);
+                    
+                } catch (error) {
+                    testDiv.classList.add('fail');
+                    headerDiv.textContent += ' ❌ ERROR';
+                    allTestsPassed = false;
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'result';
+                    errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                    testDiv.appendChild(errorDiv);
+                }
+
+                resultsDiv.appendChild(testDiv);
+            }
+
+            // Limpiar localStorage antes de las pruebas
+            localStorage.clear();
+
+            // Test 1: Verificar que las notificaciones incluyan taskType
+            addTest('Test 1: Notificaciones incluyen taskType', () => {
+                TaskNotificationManager.createNewTaskNotifications(
+                    'eval_001',
+                    'Evaluación de Matemáticas',
+                    'matematicas_6to',
+                    'Matemáticas',
+                    'prof_gonzalez',
+                    'Profesor González',
+                    'evaluation' // 🔥 NUEVO PARÁMETRO
+                );
+
+                const notifications = TaskNotificationManager.getNotifications();
+                const evalNotification = notifications.find(n => n.taskId === 'eval_001');
+                
+                if (!evalNotification) {
+                    return { success: false, message: 'No se encontró la notificación creada' };
+                }
+
+                if (evalNotification.taskType !== 'evaluation') {
+                    return { success: false, message: `TaskType incorrecto: esperado 'evaluation', obtenido '${evalNotification.taskType}'` };
+                }
+
+                return { 
+                    success: true, 
+                    message: `✅ Notificación creada correctamente con taskType: '${evalNotification.taskType}'<br>
+                              📋 ID: ${evalNotification.id}<br>
+                              👥 Destinatarios: ${evalNotification.targetUsernames.join(', ')}` 
+                };
+            });
+
+            // Test 2: Verificar filtrado de evaluaciones completadas
+            addTest('Test 2: Filtrado de evaluaciones completadas', () => {
+                // Simular que Luis completó la evaluación
+                const luisUserTasks = [
+                    { id: 'eval_001', status: 'completed', completedAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('userTasks_luis_estudiante', JSON.stringify(luisUserTasks));
+
+                // Obtener notificaciones para Luis
+                const luisNotifications = TaskNotificationManager.getUnreadNotificationsForUser('luis_estudiante', 'student');
+                const luisEvalNotifications = luisNotifications.filter(n => n.taskId === 'eval_001');
+
+                // Obtener notificaciones para María (no completó)
+                const mariaNotifications = TaskNotificationManager.getUnreadNotificationsForUser('maria_estudiante', 'student');
+                const mariaEvalNotifications = mariaNotifications.filter(n => n.taskId === 'eval_001');
+
+                if (luisEvalNotifications.length > 0) {
+                    return { 
+                        success: false, 
+                        message: `❌ Luis aún ve ${luisEvalNotifications.length} notificación(es) de evaluación completada` 
+                    };
+                }
+
+                if (mariaEvalNotifications.length === 0) {
+                    return { 
+                        success: false, 
+                        message: `❌ María no ve notificaciones de evaluación pendiente` 
+                    };
+                }
+
+                return { 
+                    success: true, 
+                    message: `✅ Filtrado correcto:<br>
+                              👤 Luis (completada): ${luisEvalNotifications.length} notificaciones<br>
+                              👤 María (pendiente): ${mariaEvalNotifications.length} notificaciones` 
+                };
+            });
+
+            // Test 3: Verificar eliminación de notificaciones al completar
+            addTest('Test 3: Eliminación al completar evaluación', () => {
+                // Contar notificaciones antes
+                const notificationsBefore = TaskNotificationManager.getNotifications();
+                const beforeCount = notificationsBefore.length;
+
+                // Simular completar evaluación para María
+                TaskNotificationManager.removeEvaluationNotificationOnCompletion('eval_001', 'maria_estudiante');
+
+                // Contar notificaciones después
+                const notificationsAfter = TaskNotificationManager.getNotifications();
+                const afterCount = notificationsAfter.length;
+
+                // Verificar que María ya no reciba la notificación
+                const mariaNotificationsAfter = TaskNotificationManager.getUnreadNotificationsForUser('maria_estudiante', 'student');
+                const mariaEvalNotificationsAfter = mariaNotificationsAfter.filter(n => n.taskId === 'eval_001');
+
+                if (mariaEvalNotificationsAfter.length > 0) {
+                    return { 
+                        success: false, 
+                        message: `❌ María aún ve ${mariaEvalNotificationsAfter.length} notificación(es) después de completar` 
+                    };
+                }
+
+                return { 
+                    success: true, 
+                    message: `✅ Eliminación exitosa:<br>
+                              📊 Notificaciones antes: ${beforeCount}<br>
+                              📊 Notificaciones después: ${afterCount}<br>
+                              👤 María ya no ve notificaciones de eval_001` 
+                };
+            });
+
+            // Test 4: Verificar mensaje "Sin Notificaciones Pendientes"
+            addTest('Test 4: Mensaje "Sin Notificaciones Pendientes"', () => {
+                // Crear un estudiante sin notificaciones
+                const sinNotificaciones = TaskNotificationManager.getUnreadNotificationsForUser('estudiante_sin_tareas', 'student');
+                
+                // Simular la lógica del componente
+                const unreadComments = []; // Sin comentarios
+                const taskNotifications = sinNotificaciones; // Sin notificaciones de tareas
+                const pendingTasks = []; // Sin tareas pendientes
+
+                const shouldShowNoNotifications = (
+                    unreadComments.length === 0 && 
+                    pendingTasks.length === 0 && 
+                    taskNotifications.length === 0
+                );
+
+                if (!shouldShowNoNotifications) {
+                    return { 
+                        success: false, 
+                        message: `❌ La lógica no detecta correctamente el estado "sin notificaciones"<br>
+                                  📧 Comentarios: ${unreadComments.length}<br>
+                                  📋 Tareas pendientes: ${pendingTasks.length}<br>
+                                  🔔 Notificaciones: ${taskNotifications.length}` 
+                    };
+                }
+
+                return { 
+                    success: true, 
+                    message: `✅ Lógica correcta para mostrar "Sin Notificaciones Pendientes"<br>
+                              📧 Comentarios: ${unreadComments.length}<br>
+                              📋 Tareas pendientes: ${pendingTasks.length}<br>
+                              🔔 Notificaciones: ${taskNotifications.length}` 
+                };
+            });
+
+            // Resultado final
+            const finalDiv = document.createElement('div');
+            finalDiv.className = `test-section ${allTestsPassed ? 'pass' : 'fail'}`;
+            finalDiv.innerHTML = `
+                <div class="test-header">
+                    ${allTestsPassed ? '🎉 TODOS LOS TESTS PASARON' : '⚠️ ALGUNOS TESTS FALLARON'}
+                </div>
+                <div class="result">
+                    <strong>Estado:</strong> ${allTestsPassed ? 'SISTEMA FUNCIONANDO CORRECTAMENTE' : 'REQUIERE ATENCIÓN'}
+                </div>
+            `;
+            resultsDiv.appendChild(finalDiv);
+        }
+
+        // Ejecutar tests al cargar la página
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

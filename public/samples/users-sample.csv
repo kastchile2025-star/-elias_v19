@@ -1,0 +1,5 @@
+role,name,rut,email,username,password,course,section,subjects
+student,Juan Pérez,12345678-9,juan@example.com,juan.perez,1234,1ro Básico,A,
+student,María Silva,22222222-2,maria@example.com,maria.silva,1234,1ro Básico,A,
+teacher,Ana López,11111111-1,ana@example.com,ana.lopez,1234,,,MAT, LEN
+admin,Admin Colegio,99999999-9,admin@example.com,admin,1234,,,

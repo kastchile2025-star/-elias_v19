@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Supabase - Borrado de Registros</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007acc;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #005a9e;
+        }
+        .button.danger {
+            background-color: #dc3545;
+        }
+        .button.danger:hover {
+            background-color: #c82333;
+        }
+        .button.warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .button.warning:hover {
+            background-color: #e0a800;
+        }
+        .log-area {
+            background-color: #000;
+            color: #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border: 1px solid #007acc;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico de Borrado Supabase</h1>
+        
+        <div class="info-box">
+            <h3>📋 Instrucciones:</h3>
+            <p>1. Abre las <strong>Herramientas de Desarrollador</strong> (F12)</p>
+            <p>2. Ve a la pestaña <strong>Consola</strong></p>
+            <p>3. Usa los botones de abajo para ejecutar diagnósticos</p>
+            <p>4. Observa los logs detallados en la consola del navegador</p>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>🚀 Diagnósticos Principales</h3>
+                <button class="button" onclick="ejecutarDiagnosticoCompleto()">
+                    🔍 Diagnóstico Completo
+                </button>
+                <button class="button" onclick="verificacionRapida()">
+                    ⚡ Verificación Rápida
+                </button>
+                <button class="button warning" onclick="verificarConexion()">
+                    📡 Verificar Conexión SQL
+                </button>
+            </div>
+
+            <div class="section">
+                <h3>📊 Verificaciones de Datos</h3>
+                <button class="button" onclick="contarRegistros()">
+                    📈 Contar Registros (2025)
+                </button>
+                <button class="button" onclick="consultaDirecta()">
+                    🔍 Consulta Directa Supabase
+                </button>
+                <button class="button" onclick="verificarAno(2024)">
+                    📅 Verificar Año 2024
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🗑️ Operaciones de Borrado (¡CUIDADO!)</h3>
+            <button class="button danger" onclick="ejecutarBorrado2025()">
+                🗑️ Borrar Registros 2025
+            </button>
+            <button class="button danger" onclick="ejecutarBorrado2024()">
+                🗑️ Borrar Registros 2024
+            </button>
+            <p><strong>⚠️ Advertencia:</strong> Estas operaciones eliminan datos permanentemente</p>
+        </div>
+
+        <div class="section">
+            <h3>📋 Estado Actual</h3>
+            <div id="estadoActual" class="status">
+                ⏳ Esperando diagnóstico...
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📝 Log de Actividades</h3>
+            <div id="logArea" class="log-area">
+🔍 DIAGNÓSTICO DE BORRADO SUPABASE CARGADO
+===========================================
+
+💡 Uso recomendado:
+1. Ejecutar "Diagnóstico Completo" primero
+2. Observar logs en la consola del navegador (F12)
+3. Identificar discrepancias entre conteos
+4. Usar "Consulta Directa" para verificar estado real
+
+📌 Todos los logs detallados aparecerán en la consola del navegador.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para agregar logs al área visual
+        function addLog(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.textContent += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // Función para actualizar estado
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('estadoActual');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        // Cargar el script de diagnóstico
+        async function cargarDiagnostico() {
+            try {
+                // Ejecutar el script de diagnóstico
+                const response = await fetch('/DIAGNOSTICO-SUPABASE-BORRADO.js');
+                const script = await response.text();
+                eval(script);
+                addLog('✅ Script de diagnóstico cargado exitosamente');
+                updateStatus('✅ Diagnóstico cargado y listo', 'success');
+            } catch (error) {
+                addLog(`❌ Error cargando diagnóstico: ${error.message}`);
+                updateStatus('❌ Error cargando diagnóstico', 'error');
+                console.error('Error cargando diagnóstico:', error);
+            }
+        }
+
+        // Diagnósticos principales
+        async function ejecutarDiagnosticoCompleto() {
+            addLog('🚀 Ejecutando diagnóstico completo...');
+            updateStatus('🔍 Ejecutando diagnóstico completo...', 'warning');
+            try {
+                const resultado = await diagnosticoSupabase.completo(2025);
+                addLog('✅ Diagnóstico completo finalizado - Ver consola para detalles');
+                updateStatus('✅ Diagnóstico completo finalizado', 'success');
+                console.log('🎯 RESULTADO FINAL DEL DIAGNÓSTICO:', resultado);
+            } catch (error) {
+                addLog(`❌ Error en diagnóstico completo: ${error.message}`);
+                updateStatus('❌ Error en diagnóstico', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        async function verificacionRapida() {
+            addLog('⚡ Ejecutando verificación rápida...');
+            updateStatus('⚡ Verificación rápida en curso...', 'warning');
+            try {
+                const resultado = await diagnosticoSupabase.rapido(2025);
+                addLog(`📊 Registros encontrados: ${resultado?.directCount || 0}`);
+                updateStatus(`📊 Registros actuales: ${resultado?.directCount || 0}`, 'success');
+            } catch (error) {
+                addLog(`❌ Error en verificación rápida: ${error.message}`);
+                updateStatus('❌ Error en verificación', 'error');
+            }
+        }
+
+        async function verificarConexion() {
+            addLog('📡 Verificando conexión SQL...');
+            updateStatus('📡 Verificando conexión...', 'warning');
+            try {
+                const sqlDatabase = await diagnosticoSupabase.verificarConexion();
+                if (sqlDatabase) {
+                    addLog('✅ Conexión SQL exitosa');
+                    updateStatus('✅ SQL conectado', 'success');
+                } else {
+                    addLog('❌ Falló la conexión SQL');
+                    updateStatus('❌ SQL desconectado', 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error verificando conexión: ${error.message}`);
+                updateStatus('❌ Error de conexión', 'error');
+            }
+        }
+
+        // Verificaciones específicas
+        async function contarRegistros() {
+            addLog('📈 Contando registros...');
+            try {
+                const sqlDatabase = await diagnosticoSupabase.verificarConexion();
+                const resultado = await diagnosticoSupabase.contarAntes(sqlDatabase, 2025);
+                addLog(`📊 Registros 2025: ${resultado?.countByYear?.count || 0}`);
+                addLog(`📊 Total registros: ${resultado?.countAll?.total || 0}`);
+            } catch (error) {
+                addLog(`❌ Error contando: ${error.message}`);
+            }
+        }
+
+        async function consultaDirecta() {
+            addLog('🔍 Ejecutando consulta directa...');
+            try {
+                const resultado = await diagnosticoSupabase.consultaDirecta(2025);
+                addLog(`📊 Consulta directa - Registros: ${resultado?.directCount || 0}`);
+                addLog(`📊 Total directo: ${resultado?.totalDirectCount || 0}`);
+            } catch (error) {
+                addLog(`❌ Error en consulta directa: ${error.message}`);
+            }
+        }
+
+        async function verificarAno(ano) {
+            addLog(`📅 Verificando año ${ano}...`);
+            try {
+                const resultado = await diagnosticoSupabase.consultaDirecta(ano);
+                addLog(`📊 Registros año ${ano}: ${resultado?.directCount || 0}`);
+            } catch (error) {
+                addLog(`❌ Error verificando año ${ano}: ${error.message}`);
+            }
+        }
+
+        // Operaciones de borrado
+        async function ejecutarBorrado2025() {
+            if (!confirm('⚠️ ¿Estás seguro de que quieres BORRAR todos los registros del año 2025? Esta acción es IRREVERSIBLE.')) {
+                return;
+            }
+            addLog('🗑️ EJECUTANDO BORRADO 2025...');
+            updateStatus('🗑️ Borrando registros 2025...', 'warning');
+            try {
+                const sqlDatabase = await diagnosticoSupabase.verificarConexion();
+                const resultado = await diagnosticoSupabase.ejecutarBorrado(sqlDatabase, 2025);
+                addLog(`✅ Borrado completado - Eliminados: ${resultado?.deleted || 0}`);
+                updateStatus(`🗑️ Borrado completado: ${resultado?.deleted || 0} registros`, 'success');
+            } catch (error) {
+                addLog(`❌ Error en borrado: ${error.message}`);
+                updateStatus('❌ Error en borrado', 'error');
+            }
+        }
+
+        async function ejecutarBorrado2024() {
+            if (!confirm('⚠️ ¿Estás seguro de que quieres BORRAR todos los registros del año 2024? Esta acción es IRREVERSIBLE.')) {
+                return;
+            }
+            addLog('🗑️ EJECUTANDO BORRADO 2024...');
+            updateStatus('🗑️ Borrando registros 2024...', 'warning');
+            try {
+                const sqlDatabase = await diagnosticoSupabase.verificarConexion();
+                const resultado = await diagnosticoSupabase.ejecutarBorrado(sqlDatabase, 2024);
+                addLog(`✅ Borrado completado - Eliminados: ${resultado?.deleted || 0}`);
+                updateStatus(`🗑️ Borrado completado: ${resultado?.deleted || 0} registros`, 'success');
+            } catch (error) {
+                addLog(`❌ Error en borrado: ${error.message}`);
+                updateStatus('❌ Error en borrado', 'error');
+            }
+        }
+
+        // Cargar diagnóstico al cargar la página
+        window.addEventListener('load', cargarDiagnostico);
+    </script>
+</body>
+</html>

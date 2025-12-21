@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Verificación Super Robusta - Toggle EN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 10px;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .results-box {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .toggle-simulation {
+            padding: 20px;
+            background: linear-gradient(135deg, #FFA726, #FF7043);
+            border-radius: 10px;
+            margin: 20px 0;
+            color: white;
+        }
+        .mockup-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            margin: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .mockup-toggle.active {
+            background: #4CAF50;
+            border-color: #45a049;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+        .toggle-switch {
+            width: 50px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .toggle-switch.checked {
+            background: #4CAF50;
+        }
+        .toggle-handle {
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .toggle-switch.checked .toggle-handle {
+            transform: translateX(25px);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-en { background: #4CAF50; }
+        .status-es { background: #FF5722; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Verificación Super Robusta - Detección Toggle EN</h1>
+            <p>Prueba la nueva función de detección súper robusta para el toggle EN</p>
+        </div>
+
+        <div class="toggle-simulation">
+            <h3>🎯 Simulación del Toggle de Idioma</h3>
+            <p>Haz clic en el toggle para simular el estado EN activo/inactivo:</p>
+            
+            <div class="mockup-toggle" id="languageToggle" onclick="toggleLanguage()">
+                <div class="toggle-switch" id="toggleSwitch">
+                    <div class="toggle-handle"></div>
+                </div>
+                <span id="toggleLabel">ES</span>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="currentStatus">Español Activo</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Prueba de Detección de Idioma</h3>
+            <p>Esta prueba simula la función <code>detectCurrentLanguage()</code> mejorada:</p>
+            
+            <button class="test-button" onclick="runLanguageDetection()">
+                🚀 Ejecutar Detección Super Robusta
+            </button>
+            
+            <div class="results-box" id="detectionResults">
+                Haz clic en el botón para ejecutar la detección...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚙️ Configuración de Estado</h3>
+            <p>Configura diferentes escenarios para probar:</p>
+            
+            <button class="test-button" onclick="setEnglishMode()">
+                🇺🇸 Forzar Modo Inglés
+            </button>
+            
+            <button class="test-button" onclick="setSpanishMode()">
+                🇪🇸 Forzar Modo Español
+            </button>
+            
+            <button class="test-button" onclick="clearAllSettings()">
+                🧹 Limpiar Todo
+            </button>
+            
+            <div class="results-box" id="configResults">
+                Estado actual se mostrará aquí...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Estado Completo del Sistema</h3>
+            <button class="test-button" onclick="showCompleteStatus()">
+                📋 Mostrar Estado Completo
+            </button>
+            
+            <div class="results-box" id="statusResults">
+                Estado completo se mostrará aquí...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEnglish = false;
+
+        function toggleLanguage() {
+            isEnglish = !isEnglish;
+            updateToggleUI();
+            updateLanguageState();
+        }
+
+        function updateToggleUI() {
+            const toggle = document.getElementById('languageToggle');
+            const toggleSwitch = document.getElementById('toggleSwitch');
+            const label = document.getElementById('toggleLabel');
+            const indicator = document.getElementById('statusIndicator');
+            const status = document.getElementById('currentStatus');
+
+            if (isEnglish) {
+                toggle.classList.add('active');
+                toggleSwitch.classList.add('checked');
+                toggleSwitch.setAttribute('data-state', 'checked');
+                toggleSwitch.setAttribute('aria-checked', 'true');
+                label.textContent = 'EN';
+                indicator.className = 'status-indicator status-en';
+                status.textContent = 'English Active';
+            } else {
+                toggle.classList.remove('active');
+                toggleSwitch.classList.remove('checked');
+                toggleSwitch.setAttribute('data-state', 'unchecked');
+                toggleSwitch.setAttribute('aria-checked', 'false');
+                label.textContent = 'ES';
+                indicator.className = 'status-indicator status-es';
+                status.textContent = 'Español Activo';
+            }
+        }
+
+        function updateLanguageState() {
+            if (isEnglish) {
+                localStorage.setItem('smart-student-lang', 'en');
+                localStorage.setItem('language', 'en');
+                document.documentElement.lang = 'en';
+                document.documentElement.setAttribute('data-lang', 'en');
+            } else {
+                localStorage.setItem('smart-student-lang', 'es');
+                localStorage.setItem('language', 'es');
+                document.documentElement.lang = 'es';
+                document.documentElement.setAttribute('data-lang', 'es');
+            }
+        }
+
+        function detectCurrentLanguage() {
+            console.log('🔍 SUPER ROBUST LANGUAGE DETECTION - Starting enhanced detection...');
+            
+            let results = {
+                enToggleFound: false,
+                enToggleActive: false,
+                detectionSteps: [],
+                finalLanguage: 'es',
+                reason: 'Default Spanish'
+            };
+            
+            // 🚀 MÉTODO 1: Verificar directamente el toggle EN en la página actual
+            const allTopElements = document.querySelectorAll('*');
+            
+            results.detectionSteps.push('🔍 Buscando elementos con texto "EN" en la parte superior...');
+            
+            // Buscar en elementos del top de la página
+            for (let element of allTopElements) {
+                const rect = element.getBoundingClientRect();
+                const text = element.textContent?.trim();
+                
+                // Si el elemento está en la parte superior de la página y contiene "EN"
+                if (rect.top >= 0 && rect.top < 100 && text === 'EN') {
+                    results.enToggleFound = true;
+                    results.detectionSteps.push(`🎯 EN toggle element found: ${element.tagName} at position ${rect.top}, ${rect.left}`);
+                    
+                    // Verificar si está activo usando MÚLTIPLES métodos
+                    const checkMethods = [
+                        element.getAttribute('data-state') === 'checked',
+                        element.getAttribute('aria-checked') === 'true',
+                        element.classList.contains('active'),
+                        element.classList.contains('checked'),
+                        element.parentElement?.getAttribute('data-state') === 'checked',
+                        element.parentElement?.getAttribute('aria-checked') === 'true',
+                        element.parentElement?.classList.contains('active'),
+                        element.closest('[data-state="checked"]') !== null,
+                        element.closest('[aria-checked="true"]') !== null,
+                    ];
+                    
+                    results.enToggleActive = checkMethods.some(method => method === true);
+                    
+                    results.detectionSteps.push(`🔍 Toggle state checks: ${JSON.stringify(checkMethods)}`);
+                    results.detectionSteps.push(`📊 Final toggle state: ${results.enToggleActive ? 'ACTIVE' : 'INACTIVE'}`);
+                    
+                    if (results.enToggleActive) {
+                        results.detectionSteps.push('✅ EN TOGGLE IS ACTIVE - Will force English');
+                        break;
+                    }
+                }
+            }
+            
+            // 🚀 MÉTODO 2: Verificar fuentes de almacenamiento
+            const storageIndicatesEnglish = localStorage.getItem('smart-student-lang') === 'en' ||
+                                           localStorage.getItem('language') === 'en' ||
+                                           document.documentElement.lang === 'en';
+                                           
+            results.detectionSteps.push(`💾 Storage check: ${storageIndicatesEnglish ? 'English' : 'Spanish'}`);
+            
+            // 🎯 DECISIÓN FINAL: Priorizar el toggle visual
+            if (results.enToggleActive) {
+                results.finalLanguage = 'en';
+                results.reason = 'EN toggle is visually active';
+                results.detectionSteps.push('🇺🇸 FINAL DECISION: ENGLISH (toggle active)');
+            } else if (storageIndicatesEnglish) {
+                results.finalLanguage = 'en';
+                results.reason = 'Storage indicates English';
+                results.detectionSteps.push('🇺🇸 FINAL DECISION: ENGLISH (storage)');
+            } else {
+                results.finalLanguage = 'es';
+                results.reason = 'Default Spanish';
+                results.detectionSteps.push('🇪🇸 FINAL DECISION: SPANISH (default)');
+            }
+            
+            return results;
+        }
+
+        function runLanguageDetection() {
+            const results = detectCurrentLanguage();
+            
+            const output = `🚀 SUPER ROBUST LANGUAGE DETECTION RESULTS:
+
+EN Toggle Found: ${results.enToggleFound}
+EN Toggle Active: ${results.enToggleActive}
+Final Language: ${results.finalLanguage}
+Reason: ${results.reason}
+
+📋 Detection Steps:
+${results.detectionSteps.join('\n')}
+
+📊 Current State:
+- localStorage.smart-student-lang: ${localStorage.getItem('smart-student-lang')}
+- localStorage.language: ${localStorage.getItem('language')}
+- document.documentElement.lang: ${document.documentElement.lang}
+- Toggle UI State: ${isEnglish ? 'EN' : 'ES'}
+
+🎯 EXPECTED RESULT: ${results.finalLanguage === 'en' ? 'ENGLISH EVALUATION' : 'SPANISH EVALUATION'}
+`;
+            
+            document.getElementById('detectionResults').textContent = output;
+            console.log('Detection Results:', results);
+        }
+
+        function setEnglishMode() {
+            isEnglish = true;
+            updateToggleUI();
+            updateLanguageState();
+            
+            const output = `🇺🇸 ENGLISH MODE ACTIVATED:
+- UI Toggle: EN (Active)
+- localStorage.smart-student-lang: en
+- localStorage.language: en
+- document.documentElement.lang: en
+- Expected Evaluation: ENGLISH`;
+            
+            document.getElementById('configResults').textContent = output;
+        }
+
+        function setSpanishMode() {
+            isEnglish = false;
+            updateToggleUI();
+            updateLanguageState();
+            
+            const output = `🇪🇸 SPANISH MODE ACTIVATED:
+- UI Toggle: ES (Inactive)
+- localStorage.smart-student-lang: es
+- localStorage.language: es
+- document.documentElement.lang: es
+- Expected Evaluation: SPANISH`;
+            
+            document.getElementById('configResults').textContent = output;
+        }
+
+        function clearAllSettings() {
+            localStorage.removeItem('smart-student-lang');
+            localStorage.removeItem('language');
+            document.documentElement.lang = '';
+            document.documentElement.removeAttribute('data-lang');
+            isEnglish = false;
+            updateToggleUI();
+            
+            const output = `🧹 ALL SETTINGS CLEARED:
+- UI Toggle: Reset to ES
+- localStorage cleared
+- document.lang cleared
+- System reset to default state`;
+            
+            document.getElementById('configResults').textContent = output;
+        }
+
+        function showCompleteStatus() {
+            const status = `📊 COMPLETE SYSTEM STATUS:
+
+🎮 UI State:
+- Toggle Position: ${isEnglish ? 'EN (Active)' : 'ES (Inactive)'}
+- Toggle Element: ${document.querySelector('#toggleSwitch')?.getAttribute('data-state')}
+
+💾 Storage State:
+- localStorage.smart-student-lang: ${localStorage.getItem('smart-student-lang')}
+- localStorage.language: ${localStorage.getItem('language')}
+
+🌐 Document State:
+- document.documentElement.lang: ${document.documentElement.lang}
+- document.documentElement.data-lang: ${document.documentElement.getAttribute('data-lang')}
+
+🔍 Detection Test:
+${(() => {
+    const results = detectCurrentLanguage();
+    return `- Would detect: ${results.finalLanguage}
+- Reason: ${results.reason}
+- Toggle found: ${results.enToggleFound}
+- Toggle active: ${results.enToggleActive}`;
+})()}
+
+🎯 EXPECTED BEHAVIOR:
+- When EN toggle is active → English evaluation
+- When ES toggle is active → Spanish evaluation
+- Super robust detection overrides all edge cases`;
+
+            document.getElementById('statusResults').textContent = status;
+        }
+
+        // Inicializar la página
+        window.onload = function() {
+            updateToggleUI();
+            showCompleteStatus();
+        };
+    </script>
+</body>
+</html>

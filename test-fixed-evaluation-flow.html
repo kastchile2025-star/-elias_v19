@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Flujo de Evaluación Corregido</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status.fixed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.issue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .issue-details {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .fix-details {
+            background: #d1ecf1;
+            border: 1px solid #b8daff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ Test - Flujo de Evaluación Corregido</h1>
+        
+        <div class="section">
+            <h2><span class="icon">🔧</span> Problemas Identificados y Resueltos</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <h3>1. Error de selección de libro <span class="status fixed">✅ CORREGIDO</span></h3>
+                <div class="issue-details">
+                    <strong>Problema:</strong> "Error al generar. Por favor, selecciona un libro" - aunque el libro estaba visible en la pantalla de carga.
+                </div>
+                <div class="fix-details">
+                    <strong>Solución:</strong> Modificada la función <code>handleCreateEvaluation</code> para usar directamente los parámetros de URL en modo autoStart, evitando problemas de sincronización de estado.
+                    <div class="code-block">
+// Antes: Solo usaba selectedBook (podía estar vacío por timing)
+if (!selectedBook) { /* Error */ }
+
+// Ahora: Usa parámetros URL directamente en autoStart
+let bookToUse = selectedBook;
+if (isAutoStartMode) {
+    const bookFromQuery = searchParams.get('book');
+    if (bookFromQuery) {
+        bookToUse = decodeURIComponent(bookFromQuery);
+    }
+}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3>2. Error de accesibilidad DialogTitle <span class="status fixed">✅ CORREGIDO</span></h3>
+                <div class="issue-details">
+                    <strong>Problema:</strong> Error de Radix UI - "DialogContent requires a DialogTitle for accessibility"
+                </div>
+                <div class="fix-details">
+                    <strong>Solución:</strong> Agregado DialogHeader con DialogTitle (oculto visualmente con sr-only) al diálogo de carga de evaluación.
+                    <div class="code-block">
+&lt;DialogContent className="sm:max-w-md"&gt;
+  &lt;DialogHeader&gt;
+    &lt;DialogTitle className="sr-only"&gt;Cargando Evaluación&lt;/DialogTitle&gt;
+  &lt;/DialogHeader&gt;
+  &lt;!-- resto del contenido --&gt;
+&lt;/DialogContent&gt;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🧪</span> Tests de Validación</h2>
+            <p>Prueba el flujo completo con estos enlaces:</p>
+            
+            <a href="http://localhost:3000/dashboard/tareas" class="test-link" target="_blank">
+                📝 Ir a Tareas (Punto de Inicio)
+            </a>
+            
+            <a href="http://localhost:3000/dashboard/evaluacion?course=4to%20B%C3%A1sico&book=Ciencias%20Naturales&topic=sistema%20respiratorio&autoStart=true" class="test-link" target="_blank">
+                🚀 Test AutoStart Directo
+            </a>
+            
+            <div style="margin-top: 20px;">
+                <h3>Flujo a probar:</h3>
+                <ol>
+                    <li>Ir a la página de Tareas</li>
+                    <li>Buscar una tarea/evaluación con parámetros preconfigurados</li>
+                    <li>Hacer click en "Realizar Evaluación"</li>
+                    <li>Verificar que:
+                        <ul>
+                            <li>✅ La pantalla de carga muestra los parámetros correctos</li>
+                            <li>✅ No aparece el error "Por favor, selecciona un libro"</li>
+                            <li>✅ No aparece el error de DialogTitle en la consola</li>
+                            <li>✅ La evaluación se genera correctamente</li>
+                            <li>✅ Se muestra la pantalla de transición "¡Evaluación Lista!"</li>
+                            <li>✅ La evaluación inicia automáticamente después del countdown</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔍</span> Cambios Técnicos Realizados</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <h3>📄 /src/app/dashboard/evaluacion/page.tsx</h3>
+                <ul>
+                    <li>Mejorada la función <code>handleCreateEvaluation</code> para usar parámetros URL directamente</li>
+                    <li>Agregado logging para debug de selección de libro</li>
+                    <li>Asegurado que <code>bookToUse</code> se use consistentemente en toda la función</li>
+                    <li>Corregido el parámetro <code>bookTitle</code> en todas las llamadas de API</li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h3>📄 /src/app/dashboard/tareas/page.tsx</h3>
+                <ul>
+                    <li>Agregado <code>DialogHeader</code> y <code>DialogTitle</code> al diálogo de carga de evaluación</li>
+                    <li>Usada clase <code>sr-only</code> para ocultar el título visualmente pero mantener accesibilidad</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">⚡</span> Estado Actual</h2>
+            <div class="status fixed">
+                ✅ Ambos problemas han sido corregidos
+            </div>
+            <div class="status fixed">
+                ✅ No hay errores de compilación
+            </div>
+            <div class="status fixed">
+                ✅ El flujo de evaluación debería funcionar sin problemas
+            </div>
+            
+            <p style="margin-top: 20px;">
+                <strong>Próximos pasos:</strong>
+            </p>
+            <ul>
+                <li>Probar el flujo completo en el navegador</li>
+                <li>Verificar que no aparezcan errores en la consola</li>
+                <li>Confirmar que la evaluación se genera correctamente</li>
+                <li>Validar que la experiencia de usuario sea fluida</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🛠️ Test page loaded - Ready to validate fixes');
+        console.log('📋 Issues addressed:');
+        console.log('  1. Book selection error in auto-start mode');
+        console.log('  2. DialogTitle accessibility warning');
+        console.log('🚀 Test the evaluation flow using the links above');
+    </script>
+</body>
+</html>

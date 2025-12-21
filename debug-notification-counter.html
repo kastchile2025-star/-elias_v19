@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Contador de Burbuja de Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .notification-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .notification-unread {
+            border-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        .notification-read {
+            border-color: #28a745;
+            background-color: #f8fff9;
+            opacity: 0.7;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug: Contador de Burbuja de Notificaciones</h1>
+    
+    <div class="debug-section">
+        <h2>🎯 Problema a Investigar</h2>
+        <div class="status warning">
+            <strong>Síntoma:</strong> La notificación aparece en el panel "Tareas Pendientes" pero la burbuja roja con el número no se mantiene visible hasta que se entrega la tarea.
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔍 Estado Actual</h2>
+        <button onclick="analyzeNotificationCount()">🔢 Analizar Contador</button>
+        <button onclick="listAllNotifications()">📋 Listar Todas las Notificaciones</button>
+        <button onclick="simulateTaskSubmission()">✅ Simular Entrega de Tarea</button>
+        <div id="analysisResults"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>📊 Detalles de Notificaciones</h2>
+        <div id="notificationDetails"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🧪 Herramientas de Prueba</h2>
+        <button onclick="createTestNotification()">➕ Crear Notificación de Prueba</button>
+        <button onclick="markTestAsRead()">👁️ Marcar Como Leída (Simular Ver Tarea)</button>
+        <button onclick="markTestAsSubmitted()">📤 Marcar Como Entregada</button>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        let testNotificationId = null;
+
+        function addResult(containerId, content, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = content;
+            container.appendChild(div);
+        }
+
+        function getCurrentUser() {
+            try {
+                return JSON.parse(localStorage.getItem('smart-student-current-user') || 'null');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getNotifications() {
+            try {
+                return JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveNotifications(notifications) {
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+        }
+
+        // Simular la función getUnreadCountForUser
+        function getUnreadCountForUser(username, userRole) {
+            const notifications = getNotifications();
+            return notifications.filter(notification => 
+                notification.targetUserRole === userRole &&
+                notification.targetUsernames.includes(username) &&
+                !notification.readBy.includes(username)
+            ).length;
+        }
+
+        function analyzeNotificationCount() {
+            const container = document.getElementById('analysisResults');
+            container.innerHTML = '';
+
+            const user = getCurrentUser();
+            if (!user) {
+                addResult('analysisResults', '❌ No hay usuario logueado', 'error');
+                return;
+            }
+
+            const notifications = getNotifications();
+            const unreadCount = getUnreadCountForUser(user.username, user.role);
+
+            addResult('analysisResults', `👤 Usuario: <span class="highlight">${user.username}</span> (${user.role})`, 'info');
+            addResult('analysisResults', `📊 Total de notificaciones: ${notifications.length}`, 'info');
+            addResult('analysisResults', `🔔 Notificaciones no leídas: <span class="highlight">${unreadCount}</span>`, unreadCount > 0 ? 'warning' : 'success');
+
+            // Filtrar notificaciones para este usuario
+            const userNotifications = notifications.filter(n => 
+                n.targetUsernames.includes(user.username) && n.targetUserRole === user.role
+            );
+
+            addResult('analysisResults', `📋 Notificaciones para este usuario: ${userNotifications.length}`, 'info');
+
+            // Analizar por tipo
+            const byType = {};
+            userNotifications.forEach(n => {
+                if (!byType[n.type]) byType[n.type] = { total: 0, unread: 0 };
+                byType[n.type].total++;
+                if (!n.readBy.includes(user.username)) {
+                    byType[n.type].unread++;
+                }
+            });
+
+            Object.keys(byType).forEach(type => {
+                const data = byType[type];
+                addResult('analysisResults', 
+                    `📝 Tipo "${type}": ${data.total} total, <span class="highlight">${data.unread} no leídas</span>`,
+                    data.unread > 0 ? 'warning' : 'info'
+                );
+            });
+        }
+
+        function listAllNotifications() {
+            const container = document.getElementById('notificationDetails');
+            container.innerHTML = '';
+
+            const user = getCurrentUser();
+            if (!user) {
+                addResult('notificationDetails', '❌ No hay usuario logueado', 'error');
+                return;
+            }
+
+            const notifications = getNotifications();
+            const userNotifications = notifications.filter(n => 
+                n.targetUsernames.includes(user.username) && n.targetUserRole === user.role
+            );
+
+            userNotifications.forEach((notification, index) => {
+                const isRead = notification.readBy.includes(user.username);
+                const div = document.createElement('div');
+                div.className = `notification-item ${isRead ? 'notification-read' : 'notification-unread'}`;
+                
+                div.innerHTML = `
+                    <strong>${isRead ? '✅' : '🔔'} ${notification.type.toUpperCase()}</strong><br>
+                    <strong>Tarea:</strong> ${notification.taskTitle}<br>
+                    <strong>Estado:</strong> ${isRead ? 'LEÍDA' : 'NO LEÍDA'}<br>
+                    <strong>Fecha:</strong> ${new Date(notification.timestamp).toLocaleString()}<br>
+                    <strong>ID:</strong> ${notification.id}<br>
+                    <strong>readBy:</strong> [${notification.readBy.join(', ')}]
+                    <pre>${JSON.stringify(notification, null, 2)}</pre>
+                `;
+                
+                document.getElementById('notificationDetails').appendChild(div);
+            });
+
+            if (userNotifications.length === 0) {
+                addResult('notificationDetails', 'ℹ️ No hay notificaciones para este usuario', 'info');
+            }
+        }
+
+        function createTestNotification() {
+            const user = getCurrentUser();
+            if (!user) {
+                addResult('testResults', '❌ No hay usuario logueado', 'error');
+                return;
+            }
+
+            testNotificationId = `test_new_task_${Date.now()}`;
+            
+            const testNotification = {
+                id: testNotificationId,
+                type: 'new_task',
+                taskId: 'test_task_001',
+                taskTitle: 'Tarea de Prueba - Debug Contador',
+                course: user.activeCourses?.[0] || '4to Básico',
+                subject: 'Debug',
+                teacherUsername: 'teacher_test',
+                teacherName: 'Profesor Debug',
+                targetUserRole: 'student',
+                targetUsernames: [user.username],
+                readBy: [], // Inicialmente no leída
+                read: false,
+                timestamp: new Date().toISOString()
+            };
+
+            const notifications = getNotifications();
+            notifications.push(testNotification);
+            saveNotifications(notifications);
+
+            addResult('testResults', `✅ Notificación de prueba creada con ID: ${testNotificationId}`, 'success');
+            addResult('testResults', '🔄 Refresca la página principal para ver el contador actualizado', 'info');
+        }
+
+        function markTestAsRead() {
+            if (!testNotificationId) {
+                addResult('testResults', '❌ No hay notificación de prueba. Crea una primero.', 'error');
+                return;
+            }
+
+            const user = getCurrentUser();
+            const notifications = getNotifications();
+            
+            const updated = notifications.map(n => {
+                if (n.id === testNotificationId && !n.readBy.includes(user.username)) {
+                    return {
+                        ...n,
+                        readBy: [...n.readBy, user.username],
+                        read: true
+                    };
+                }
+                return n;
+            });
+
+            saveNotifications(updated);
+            addResult('testResults', '👁️ Notificación marcada como LEÍDA (simula ver tarea)', 'warning');
+            addResult('testResults', '📊 El contador debería disminuir en 1', 'info');
+        }
+
+        function markTestAsSubmitted() {
+            if (!testNotificationId) {
+                addResult('testResults', '❌ No hay notificación de prueba. Crea una primero.', 'error');
+                return;
+            }
+
+            const user = getCurrentUser();
+            const notifications = getNotifications();
+            
+            // Simular markNewTaskNotificationAsReadOnSubmission
+            const updated = notifications.map(n => {
+                if (n.type === 'new_task' && n.taskId === 'test_task_001' && !n.readBy.includes(user.username)) {
+                    return {
+                        ...n,
+                        readBy: [...n.readBy, user.username],
+                        read: true
+                    };
+                }
+                return n;
+            });
+
+            saveNotifications(updated);
+            addResult('testResults', '📤 Notificación marcada como ENTREGADA', 'success');
+            addResult('testResults', '📊 El contador debería disminuir (comportamiento correcto)', 'success');
+        }
+
+        function simulateTaskSubmission() {
+            const user = getCurrentUser();
+            if (!user) {
+                addResult('analysisResults', '❌ No hay usuario logueado', 'error');
+                return;
+            }
+
+            const notifications = getNotifications();
+            let updated = false;
+
+            const updatedNotifications = notifications.map(notification => {
+                // Marcar solo notificaciones de 'new_task' como leídas
+                if (
+                    notification.type === 'new_task' &&
+                    notification.targetUsernames.includes(user.username) &&
+                    !notification.readBy.includes(user.username)
+                ) {
+                    updated = true;
+                    return {
+                        ...notification,
+                        readBy: [...notification.readBy, user.username],
+                        read: notification.readBy.length + 1 >= notification.targetUsernames.length
+                    };
+                }
+                return notification;
+            });
+
+            if (updated) {
+                saveNotifications(updatedNotifications);
+                addResult('analysisResults', '✅ Simulada entrega de tarea - notificaciones de nueva tarea marcadas como leídas', 'success');
+            } else {
+                addResult('analysisResults', 'ℹ️ No hay notificaciones de nueva tarea sin leer para marcar', 'info');
+            }
+        }
+
+        // Auto-analizar al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                analyzeNotificationCount();
+                listAllNotifications();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

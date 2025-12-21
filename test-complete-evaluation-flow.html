@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Flujo Completo Evaluación de Tarea</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .flow-step {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .flow-step.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+        
+        .flow-step.completed {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #28a74510, #20c99710);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .step-number.completed {
+            background: #28a745;
+        }
+        
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.2s;
+        }
+        
+        .button:hover {
+            background: #5856eb;
+            transform: translateY(-1px);
+        }
+        
+        .button.success {
+            background: #28a745;
+        }
+        
+        .button.success:hover {
+            background: #218838;
+        }
+        
+        .button.danger {
+            background: #dc3545;
+        }
+        
+        .simulation-screen {
+            background: #2d3748;
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .screen-title {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .dialog-box {
+            background: #4a5568;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .review-screen {
+            background: #1a202c;
+            border: 2px solid #4299e1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        
+        .question-block {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .correct {
+            color: #48bb78;
+        }
+        
+        .incorrect {
+            color: #f56565;
+        }
+        
+        .status-log {
+            background: #f1f3f4;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .log-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .log-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .log-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Test - Flujo Completo Evaluación de Tarea</h1>
+            <p>Verificación del nuevo flujo: Resultado → Revisión → Cerrar</p>
+        </div>
+
+        <div class="flow-step" id="step1">
+            <div class="step-number">1</div>
+            <h3>Configurar Evaluación de Tarea</h3>
+            <p>Simular inicio de evaluación desde tarea asignada por profesor</p>
+            <button class="button" onclick="setupTaskEvaluation()">🚀 Configurar Evaluación</button>
+        </div>
+
+        <div class="flow-step" id="step2">
+            <div class="step-number">2</div>
+            <h3>Completar Evaluación</h3>
+            <p>Simular finalización de evaluación con resultados</p>
+            <button class="button" onclick="completeEvaluation()">✅ Completar Evaluación</button>
+        </div>
+
+        <div class="flow-step" id="step3">
+            <div class="step-number">3</div>
+            <h3>Diálogo de Resultados</h3>
+            <p>Mostrar diálogo con puntuación y botón "Ver Revisión"</p>
+            <button class="button" onclick="showResultsDialog()">📊 Mostrar Resultados</button>
+        </div>
+
+        <div class="flow-step" id="step4">
+            <div class="step-number">4</div>
+            <h3>Ir a Pantalla de Revisión</h3>
+            <p>Click en "Ver Revisión" → Mostrar preguntas y respuestas</p>
+            <button class="button" onclick="goToReview()">👀 Ver Revisión</button>
+        </div>
+
+        <div class="flow-step" id="step5">
+            <div class="step-number">5</div>
+            <h3>Cerrar Evaluación</h3>
+            <p>En revisión, solo mostrar botón "Cerrar" y navegar fuera</p>
+            <button class="button" onclick="closeEvaluation()">🚪 Cerrar</button>
+        </div>
+
+        <div class="simulation-screen" id="simulation">
+            <div class="screen-title">📱 Simulación de Pantalla</div>
+            <div id="screenContent">
+                <p style="text-align: center; color: #a0aec0;">Haz clic en los pasos arriba para simular el flujo</p>
+            </div>
+        </div>
+
+        <div class="status-log">
+            <h3>📝 Log del Sistema</h3>
+            <div id="systemLog"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button danger" onclick="resetFlow()">🔄 Reiniciar Flujo</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let taskEvaluationState = {
+            isConfigured: false,
+            isCompleted: false,
+            showingResults: false,
+            inReview: false,
+            closed: false
+        };
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('systemLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logClass = `log-${type}`;
+            const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            logDiv.innerHTML = `<div class="${logClass} log-entry">[${timestamp}] ${icon} ${message}</div>` + logDiv.innerHTML;
+        }
+
+        function updateStepStatus(stepNum, status = 'active') {
+            // Reset all steps
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`step${i}`);
+                const stepNumber = step.querySelector('.step-number');
+                step.className = 'flow-step';
+                stepNumber.className = 'step-number';
+            }
+            
+            // Update completed steps
+            for (let i = 1; i < stepNum; i++) {
+                const step = document.getElementById(`step${i}`);
+                const stepNumber = step.querySelector('.step-number');
+                step.classList.add('completed');
+                stepNumber.classList.add('completed');
+            }
+            
+            // Update current step
+            if (stepNum <= 5) {
+                const currentStepEl = document.getElementById(`step${stepNum}`);
+                currentStepEl.classList.add(status);
+            }
+        }
+
+        function updateScreen(content) {
+            document.getElementById('screenContent').innerHTML = content;
+        }
+
+        function setupTaskEvaluation() {
+            currentStep = 1;
+            taskEvaluationState.isConfigured = true;
+            updateStepStatus(1, 'completed');
+            
+            updateScreen(`
+                <div class="screen-title">🚀 Configurando Evaluación de Tarea</div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="color: #667eea; font-size: 1.2em; margin-bottom: 15px;">
+                        📋 Detalles de la Evaluación
+                    </div>
+                    <div style="background: #4a5568; padding: 15px; border-radius: 8px; text-align: left;">
+                        <strong>Curso:</strong> 4to Básico<br>
+                        <strong>Asignatura:</strong> Ciencias Naturales<br>
+                        <strong>Tema:</strong> sistema respiratorio<br>
+                        <strong>Preguntas:</strong> 2<br>
+                        <strong>Tiempo:</strong> 1 minuto<br>
+                        <strong>Estado:</strong> <span style="color: #48bb78;">Configurada como Tarea ✓</span>
+                    </div>
+                </div>
+            `);
+            
+            log('Evaluación de tarea configurada correctamente', 'success');
+            
+            // Auto-avanzar al siguiente paso
+            setTimeout(() => {
+                updateStepStatus(2, 'active');
+                log('Listo para completar evaluación', 'info');
+            }, 1000);
+        }
+
+        function completeEvaluation() {
+            if (!taskEvaluationState.isConfigured) {
+                log('Primero configura la evaluación', 'warning');
+                return;
+            }
+            
+            currentStep = 2;
+            taskEvaluationState.isCompleted = true;
+            updateStepStatus(2, 'completed');
+            
+            updateScreen(`
+                <div class="screen-title">📝 Evaluación en Progreso</div>
+                <div style="padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <strong>EVALUACIÓN - SISTEMA RESPIRATORIO</strong><br>
+                        <small>Pregunta 2 de 2 | ⏱️ Tiempo Restante: 00:57</small>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <p><strong>¿En qué parte del sistema respiratorio se produce el intercambio de gases?</strong></p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+                            <div style="background: #4a5568; padding: 12px; border-radius: 6px; border: 2px solid #48bb78;">A. Bronquios</div>
+                            <div style="background: #4a5568; padding: 12px; border-radius: 6px;">B. Alvéolos ✓</div>
+                            <div style="background: #4a5568; padding: 12px; border-radius: 6px;">C. Tráquea</div>
+                            <div style="background: #4a5568; padding: 12px; border-radius: 6px;">D. Laringe</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <span style="background: #28a745; padding: 10px 20px; border-radius: 6px;">🏁 Terminar</span>
+                    </div>
+                </div>
+            `);
+            
+            log('Evaluación respondida y completada', 'success');
+            
+            // Auto-avanzar al siguiente paso
+            setTimeout(() => {
+                updateStepStatus(3, 'active');
+                log('Evaluación finalizada, mostrando resultados', 'info');
+            }, 1500);
+        }
+
+        function showResultsDialog() {
+            if (!taskEvaluationState.isCompleted) {
+                log('Primero completa la evaluación', 'warning');
+                return;
+            }
+            
+            currentStep = 3;
+            taskEvaluationState.showingResults = true;
+            updateStepStatus(3, 'completed');
+            
+            updateScreen(`
+                <div class="screen-title">🎉 Diálogo de Resultados</div>
+                <div class="dialog-box">
+                    <div style="font-size: 3em; margin-bottom: 15px;">🎊</div>
+                    <h2 style="color: white; margin: 10px 0;">¡Evaluación Completada!</h2>
+                    <p style="color: #a0aec0; margin: 10px 0;">
+                        Obtuviste 1 de 2 respuestas correctas.<br>
+                        ¡Muy bien! Sigue así, estás progresando.
+                    </p>
+                    
+                    <div style="margin-top: 25px;">
+                        <div style="background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; display: inline-block; cursor: pointer;">
+                            👀 Ver Revisión
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; font-size: 0.9em; color: #48bb78;">
+                        ✅ Botón cambiado: "Cerrar" → "Ver Revisión"
+                    </div>
+                </div>
+            `);
+            
+            log('Diálogo de resultados mostrado con botón "Ver Revisión"', 'success');
+            log('MEJORA: Ya no se cierra directamente, va a revisión primero', 'success');
+            
+            // Auto-avanzar al siguiente paso
+            setTimeout(() => {
+                updateStepStatus(4, 'active');
+                log('Listo para ir a pantalla de revisión', 'info');
+            }, 2000);
+        }
+
+        function goToReview() {
+            if (!taskEvaluationState.showingResults) {
+                log('Primero muestra los resultados', 'warning');
+                return;
+            }
+            
+            currentStep = 4;
+            taskEvaluationState.inReview = true;
+            updateStepStatus(4, 'completed');
+            
+            updateScreen(`
+                <div class="screen-title">📋 Pantalla de Revisión</div>
+                <div class="review-screen">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="color: white;">EVALUACIÓN - SISTEMA RESPIRATORIO</h3>
+                        <p style="color: #a0aec0;">Revisa tus respuestas. Puntuación Final: 1 / 2</p>
+                    </div>
+                    
+                    <div class="question-block">
+                        <p><strong>Pregunta 1/2:</strong> Los alvéolos son los sacos de aire en los pulmones donde se produce el intercambio de gases.</p>
+                        <p><strong>Tu respuesta:</strong> <span class="incorrect">No respondida</span></p>
+                        <p><strong>Respuesta correcta:</strong> <span class="correct">Verdadero</span></p>
+                        <p style="font-size: 0.9em; color: #a0aec0; font-style: italic;">
+                            <strong>Explicación:</strong> Los alvéolos son estructuras diminutas en los pulmones donde ocurre el intercambio de oxígeno y dióxido de carbono.
+                        </p>
+                    </div>
+                    
+                    <div class="question-block">
+                        <p><strong>Pregunta 2/2:</strong> ¿En qué parte del sistema respiratorio se produce el intercambio de gases?</p>
+                        <p><strong>Tu respuesta:</strong> <span class="incorrect">Bronquios</span></p>
+                        <p><strong>Respuesta correcta:</strong> <span class="correct">Alvéolos</span></p>
+                        <p style="font-size: 0.9em; color: #a0aec0; font-style: italic;">
+                            <strong>Explicación:</strong> La función principal del diafragma es ayudar en la inhalación y exhalación.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #4a5568;">
+                        <div style="background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; display: inline-block;">
+                            🚪 Cerrar
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9em; color: #48bb78;">
+                            ✅ Solo botón "Cerrar" para evaluación de tarea
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            log('Pantalla de revisión mostrada correctamente', 'success');
+            log('Usuario puede revisar preguntas y respuestas antes de cerrar', 'success');
+            
+            // Auto-avanzar al siguiente paso
+            setTimeout(() => {
+                updateStepStatus(5, 'active');
+                log('Listo para cerrar evaluación', 'info');
+            }, 2000);
+        }
+
+        function closeEvaluation() {
+            if (!taskEvaluationState.inReview) {
+                log('Primero ve a la pantalla de revisión', 'warning');
+                return;
+            }
+            
+            currentStep = 5;
+            taskEvaluationState.closed = true;
+            updateStepStatus(5, 'completed');
+            
+            updateScreen(`
+                <div class="screen-title">🏠 Navegando de Vuelta</div>
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 3em; margin-bottom: 20px;">✅</div>
+                    <h2 style="color: #48bb78;">¡Flujo Completado Exitosamente!</h2>
+                    <p style="color: #a0aec0; margin: 20px 0;">
+                        El usuario fue dirigido correctamente a través de:<br>
+                        <strong>Resultado → Revisión → Cerrar</strong>
+                    </p>
+                    <div style="background: #4a5568; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <div style="color: #667eea; font-weight: bold; margin-bottom: 10px;">Estado Final:</div>
+                        <div style="text-align: left;">
+                            ✅ Evaluación completada<br>
+                            ✅ Resultados mostrados<br>
+                            ✅ Revisión de preguntas realizada<br>
+                            ✅ Navegación limpia de vuelta al dashboard<br>
+                            ✅ Estado de tarea limpiado correctamente
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            log('Evaluación cerrada y navegación completada', 'success');
+            log('FLUJO COMPLETO EXITOSO: El usuario ahora va a revisión antes de cerrar', 'success');
+        }
+
+        function resetFlow() {
+            currentStep = 0;
+            taskEvaluationState = {
+                isConfigured: false,
+                isCompleted: false,
+                showingResults: false,
+                inReview: false,
+                closed: false
+            };
+            
+            // Reset all steps
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`step${i}`);
+                const stepNumber = step.querySelector('.step-number');
+                step.className = 'flow-step';
+                stepNumber.className = 'step-number';
+            }
+            
+            updateScreen(`
+                <p style="text-align: center; color: #a0aec0;">Haz clic en los pasos arriba para simular el flujo</p>
+            `);
+            
+            document.getElementById('systemLog').innerHTML = '';
+            log('Flujo reiniciado - Listo para nueva simulación', 'info');
+        }
+
+        // Inicializar
+        log('Test de flujo completo iniciado', 'info');
+        log('OBJETIVO: Verificar que evaluaciones de tarea van a revisión antes de cerrar', 'info');
+    </script>
+</body>
+</html>

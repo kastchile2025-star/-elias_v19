@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Comentarios entre Estudiantes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .student-section {
+            border-left: 4px solid #3b82f6;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-size: 11px;
+        }
+        .comment-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: #f9fafb;
+        }
+        .unread {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            font-weight: bold;
+        }
+        .read {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test - Comentarios entre Estudiantes CORREGIDO</h1>
+    <p>Verificar que TODOS los comentarios de otros usuarios se destaquen correctamente</p>
+
+    <div class="container">
+        <h2>🎯 Escenario de Prueba</h2>
+        <div class="section">
+            <h3>Configuración Inicial</h3>
+            <button onclick="setupCorrectScenario()">🔧 Crear Escenario Real</button>
+            <div id="setup-status"></div>
+        </div>
+    </div>
+
+    <div class="container student-section">
+        <h2>👨‍🎓 Test con Lógica CORREGIDA</h2>
+        
+        <div class="section">
+            <h3>1. Simular Maria Estudiante</h3>
+            <button onclick="simulateMariaStudent()">👩‍🎓 Login Maria</button>
+            <div id="maria-status"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Verificar Comentarios No Leídos (Nueva Lógica)</h3>
+            <button onclick="testNewHighlightLogic()">✨ Probar Nueva Lógica</button>
+            <div id="new-logic-result"></div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Simular Navegación desde Notificación</h3>
+            <button onclick="testNavigationMarkAsRead()">🔗 Simular Navegación</button>
+            <div id="navigation-result"></div>
+        </div>
+        
+        <div class="section">
+            <h3>4. Verificar Estado Final</h3>
+            <button onclick="verifyFinalResults()">✅ Verificar Resultado</button>
+            <div id="final-results"></div>
+        </div>
+        
+        <div class="section">
+            <h3>5. Contar Notificaciones</h3>
+            <button onclick="countNotifications()">📊 Contar Notificaciones</button>
+            <div id="notification-count"></div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = 'task-ciencias-naturales';
+        let mariaUser = {
+            username: 'maria_estudiante',
+            name: 'Maria Estudiante',
+            role: 'student',
+            course: '10A'
+        };
+
+        function setupCorrectScenario() {
+            const status = document.getElementById('setup-status');
+            status.innerHTML = '<div class="info">🔧 Creando escenario real...</div>';
+
+            // Replicar la tarea tal como aparece en la captura
+            const testTask = {
+                id: testTaskId,
+                title: 'Ciencias Naturales',
+                description: 'Sistema respiratorio',
+                dueDate: '2025-06-28T13:49:00.000Z',
+                priority: 'medium',
+                status: 'pending',
+                assignedBy: 'profesor_martinez',
+                course: '10A',
+                subject: 'Ciencias Naturales',
+                taskType: 'assignment',
+                createdAt: new Date().toISOString()
+            };
+
+            // Replicar exactamente los comentarios de la captura
+            const realComments = [
+                {
+                    id: 'comment-sofia-1',
+                    taskId: testTaskId,
+                    comment: 'hola felipe',
+                    author: 'Sofia Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'sofia_estudiante',
+                    studentName: 'Sofia Estudiante',
+                    timestamp: '2025-06-26T10:14:00.000Z',
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO por Maria
+                    isNew: true
+                },
+                {
+                    id: 'comment-luis-1',
+                    taskId: testTaskId,
+                    comment: 'hola a todos',
+                    author: 'Luis Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'luis_estudiante',
+                    studentName: 'Luis Estudiante',
+                    timestamp: '2025-06-26T12:45:00.000Z',
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO por Maria
+                    isNew: true
+                },
+                {
+                    id: 'comment-luis-2',
+                    taskId: testTaskId,
+                    comment: 'holaaaaaaaaaaaaaaaaa',
+                    author: 'Luis Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'luis_estudiante',
+                    studentName: 'Luis Estudiante',
+                    timestamp: '2025-06-26T12:57:00.000Z',
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO por Maria
+                    isNew: true
+                }
+            ];
+
+            // Guardar datos
+            localStorage.setItem('smart-student-tasks', JSON.stringify([testTask]));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(realComments));
+
+            status.innerHTML = `
+                <div class="success">✅ Escenario real recreado</div>
+                <div class="info">📝 Tarea: ${testTask.title}</div>
+                <div class="info">💬 ${realComments.length} comentarios de otros estudiantes</div>
+                <div class="warning">⚠️ Todos los comentarios están SIN LEER por Maria</div>
+            `;
+        }
+
+        function simulateMariaStudent() {
+            localStorage.setItem('smart-student-user', JSON.stringify(mariaUser));
+            
+            const status = document.getElementById('maria-status');
+            status.innerHTML = `
+                <div class="success">✅ Maria estudiante logueada</div>
+                <div class="info">👤 ${mariaUser.name} (${mariaUser.username})</div>
+                <div class="info">🎓 Rol: ${mariaUser.role}</div>
+            `;
+        }
+
+        function testNewHighlightLogic() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const user = mariaUser;
+            
+            const result = document.getElementById('new-logic-result');
+            let html = `<div class="info">✨ Probando NUEVA lógica de destacado:</div>`;
+            html += `<div class="info">👤 Usuario actual: ${user.username}</div>`;
+            
+            let shouldHighlightCount = 0;
+            
+            taskComments.forEach(comment => {
+                // NUEVA LÓGICA: Solo revisar si es de otro usuario y no leído
+                const isUnreadByUser = !comment.readBy?.includes(user?.username || '') &&
+                    comment.studentUsername !== user?.username;
+                
+                if (isUnreadByUser) shouldHighlightCount++;
+                
+                html += `
+                    <div class="comment-item ${isUnreadByUser ? 'unread' : 'read'}">
+                        <strong>Comentario:</strong> ${comment.comment}<br>
+                        <strong>Autor:</strong> ${comment.studentUsername} (${comment.userRole})<br>
+                        <strong>Usuario actual:</strong> ${user.username} (${user.role})<br>
+                        <strong>¿Es del mismo usuario?</strong> ${comment.studentUsername === user.username ? 'SÍ' : 'NO'}<br>
+                        <strong>¿Está en readBy?</strong> ${comment.readBy?.includes(user.username) ? 'SÍ' : 'NO'}<br>
+                        <strong>🎯 DEBE DESTACARSE:</strong> ${isUnreadByUser ? '✅ SÍ' : '❌ NO'}
+                    </div>
+                `;
+            });
+            
+            html = `
+                <div class="success">📊 Resumen: ${shouldHighlightCount} de ${taskComments.length} comentarios deben destacarse</div>
+                ${html}
+            `;
+            
+            result.innerHTML = html;
+        }
+
+        function testNavigationMarkAsRead() {
+            const user = mariaUser;
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            
+            if (!storedComments) {
+                document.getElementById('navigation-result').innerHTML = 
+                    '<div class="error">❌ No hay comentarios</div>';
+                return;
+            }
+
+            const commentsData = JSON.parse(storedComments);
+            let hasUpdates = false;
+            let markedCount = 0;
+            let debugInfo = [];
+
+            const updatedComments = commentsData.map(comment => {
+                if (comment.taskId === testTaskId) {
+                    // NUEVA LÓGICA: Marcar como leído si es de otro usuario
+                    const shouldMark = comment.studentUsername !== user.username && 
+                                     !comment.readBy?.includes(user.username);
+                    
+                    debugInfo.push({
+                        id: comment.id,
+                        comment: comment.comment,
+                        author: comment.studentUsername,
+                        currentUser: user.username,
+                        readByBefore: comment.readBy,
+                        shouldMark: shouldMark
+                    });
+                    
+                    if (shouldMark) {
+                        hasUpdates = true;
+                        markedCount++;
+                        return {
+                            ...comment,
+                            isNew: false,
+                            readBy: [...(comment.readBy || []), user.username]
+                        };
+                    }
+                }
+                return comment;
+            });
+
+            if (hasUpdates) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+            }
+
+            const result = document.getElementById('navigation-result');
+            result.innerHTML = `
+                <div class="info">🔗 Simulación de navegación desde notificación:</div>
+                <div class="success">✅ Comentarios encontrados: ${debugInfo.length}</div>
+                <div class="success">📖 Comentarios marcados como leídos: ${markedCount}</div>
+                <div class="info">🔍 Detalles:</div>
+                <pre>${JSON.stringify(debugInfo, null, 2)}</pre>
+            `;
+        }
+
+        function verifyFinalResults() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const user = mariaUser;
+            
+            const result = document.getElementById('final-results');
+            let html = `<div class="info">✅ Verificación final:</div>`;
+            
+            let totalUnread = 0;
+            let totalRead = 0;
+            
+            taskComments.forEach(comment => {
+                const isUnreadByUser = !comment.readBy?.includes(user?.username || '') &&
+                    comment.studentUsername !== user?.username;
+                
+                if (isUnreadByUser) {
+                    totalUnread++;
+                } else {
+                    totalRead++;
+                }
+                
+                html += `
+                    <div class="comment-item ${isUnreadByUser ? 'unread' : 'read'}">
+                        <strong>Comentario:</strong> ${comment.comment}<br>
+                        <strong>Autor:</strong> ${comment.studentUsername}<br>
+                        <strong>readBy:</strong> ${JSON.stringify(comment.readBy)}<br>
+                        <strong>Estado para Maria:</strong> ${isUnreadByUser ? '🔴 NO LEÍDO' : '✅ LEÍDO'}
+                    </div>
+                `;
+            });
+            
+            html = `
+                <div class="info">📊 Estado final:</div>
+                <div class="success">✅ Comentarios leídos: ${totalRead}</div>
+                <div class="warning">⚠️ Comentarios sin leer: ${totalUnread}</div>
+                <div class="${totalUnread === 0 ? 'success' : 'error'}">
+                    ${totalUnread === 0 ? '🎉 ÉXITO: Todos los comentarios marcados como leídos' : '❌ ERROR: Aún quedan comentarios sin leer'}
+                </div>
+                ${html}
+            `;
+            
+            result.innerHTML = html;
+        }
+
+        function countNotifications() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const user = mariaUser;
+            
+            // Simular la lógica del panel de notificaciones
+            const unreadComments = comments.filter(comment => 
+                comment.studentUsername !== user?.username && // Not own comments
+                (!comment.readBy?.includes(user?.username || '')) && // Not read by current user
+                !comment.isSubmission // Exclude submissions
+            );
+            
+            const result = document.getElementById('notification-count');
+            result.innerHTML = `
+                <div class="info">📊 Conteo de notificaciones:</div>
+                <div class="success">📬 Comentarios no leídos: ${unreadComments.length}</div>
+                <div class="info">📝 Detalles:</div>
+                <pre>${JSON.stringify(unreadComments.map(c => ({
+                    id: c.id,
+                    comment: c.comment,
+                    author: c.studentUsername,
+                    readBy: c.readBy
+                })), null, 2)}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>

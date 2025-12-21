@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Login - Usuarios Configuración</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .test-form {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Prueba de Usuarios - Configuración Admin</h1>
+        <p>Esta página permite probar si los usuarios creados en la pestaña de configuración pueden hacer login correctamente.</p>
+        
+        <div class="test-form">
+            <h3>➕ Crear Usuario de Prueba</h3>
+            <div class="form-group">
+                <label>Tipo de Usuario:</label>
+                <select id="userType">
+                    <option value="student">Estudiante</option>
+                    <option value="teacher">Profesor</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nombre de Usuario:</label>
+                <input type="text" id="username" placeholder="max, profesor1, admin2, etc.">
+            </div>
+            <div class="form-group">
+                <label>Nombre Completo:</label>
+                <input type="text" id="fullName" placeholder="Max Usuario">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" placeholder="max@test.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="text" id="password" value="1234">
+            </div>
+            <button class="button success" onclick="crearUsuarioManual()">Crear Usuario</button>
+        </div>
+        
+        <div class="test-form">
+            <h3>🔐 Probar Login</h3>
+            <div class="form-group">
+                <label>Usuario:</label>
+                <input type="text" id="loginUser" placeholder="max">
+            </div>
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="text" id="loginPass" value="1234">
+            </div>
+            <button class="button" onclick="probarLoginManual()">Probar Login</button>
+        </div>
+        
+        <div>
+            <h3>🔧 Acciones Rápidas</h3>
+            <button class="button" onclick="verificarUsuarios()">📋 Ver Usuarios</button>
+            <button class="button success" onclick="crearUsuarioMax()">👤 Crear Usuario "max"</button>
+            <button class="button" onclick="probarLoginMax()">🔑 Probar Login max/1234</button>
+            <button class="button danger" onclick="limpiarTodosLosUsuarios()">🗑️ Limpiar Usuarios</button>
+            <button class="button" onclick="abrirLogin()">🚪 Ir al Login</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function verificarUsuarios() {
+            clearResults();
+            log('🔍 Verificando usuarios en localStorage...', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            if (users.length === 0) {
+                log('❌ No hay usuarios en smart-student-users', 'error');
+                return;
+            }
+            
+            log(`✅ Total de usuarios: ${users.length}`, 'success');
+            
+            users.forEach((user, index) => {
+                log(`${index + 1}. ${user.username} (${user.role}) - ${user.displayName || user.name}
+   Password: ${user.password}
+   Email: ${user.email}
+   Courses: ${user.activeCourses ? user.activeCourses.join(', ') : 'None'}`);
+            });
+        }
+
+        function crearUsuarioMax() {
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            // Verificar si ya existe
+            const existing = users.find(u => u.username === 'max');
+            if (existing) {
+                log('⚠️ Usuario "max" ya existe', 'error');
+                log(`Datos existentes: ${JSON.stringify(existing, null, 2)}`);
+                return;
+            }
+            
+            // Crear usuario max
+            const maxUser = {
+                id: crypto.randomUUID(),
+                username: 'max',
+                name: 'Max Usuario',
+                email: 'max@test.com',
+                role: 'student',
+                password: '1234',
+                displayName: 'Max Usuario',
+                activeCourses: ['4to Básico'],
+                isActive: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            users.push(maxUser);
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            log('✅ Usuario "max" creado exitosamente', 'success');
+            log(`Credenciales: max / 1234`);
+            log(`Datos: ${JSON.stringify(maxUser, null, 2)}`);
+        }
+
+        function probarLoginMax() {
+            probarLogin('max', '1234');
+        }
+
+        function probarLoginManual() {
+            const username = document.getElementById('loginUser').value;
+            const password = document.getElementById('loginPass').value;
+            probarLogin(username, password);
+        }
+
+        function probarLogin(username, password) {
+            clearResults();
+            log(`🔐 Probando login: ${username} / ${password}`, 'info');
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const user = users.find(u => u.username === username.toLowerCase());
+            
+            if (!user) {
+                log(`❌ Usuario "${username}" no encontrado`, 'error');
+                log('Usuarios disponibles:', 'info');
+                users.forEach(u => log(`  - ${u.username} (${u.role})`));
+                return;
+            }
+            
+            log(`👤 Usuario encontrado: ${user.displayName || user.name}`, 'success');
+            log(`Rol: ${user.role}`);
+            log(`Email: ${user.email}`);
+            log(`Contraseña almacenada: "${user.password}"`);
+            log(`Contraseña ingresada: "${password}"`);
+            
+            if (user.password !== password) {
+                log(`❌ Contraseña incorrecta`, 'error');
+                return;
+            }
+            
+            log('✅ ¡Login exitoso!', 'success');
+            log('El usuario puede ingresar al sistema correctamente.');
+        }
+
+        function crearUsuarioManual() {
+            const userType = document.getElementById('userType').value;
+            const username = document.getElementById('username').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !fullName || !email) {
+                log('❌ Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            
+            // Verificar si ya existe
+            const existing = users.find(u => u.username === username.toLowerCase());
+            if (existing) {
+                log(`❌ Usuario "${username}" ya existe`, 'error');
+                return;
+            }
+            
+            // Crear usuario
+            const newUser = {
+                id: crypto.randomUUID(),
+                username: username.toLowerCase(),
+                name: fullName,
+                email: email,
+                role: userType,
+                password: password,
+                displayName: fullName,
+                activeCourses: userType === 'student' ? ['4to Básico'] : 
+                              userType === 'teacher' ? ['4to Básico'] : [],
+                isActive: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Agregar datos específicos por rol
+            if (userType === 'teacher') {
+                newUser.teachingAssignments = [{
+                    teacherUsername: username.toLowerCase(),
+                    teacherName: fullName,
+                    subject: 'Matemáticas',
+                    courses: ['4to Básico']
+                }];
+            }
+            
+            users.push(newUser);
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            clearResults();
+            log(`✅ Usuario "${username}" creado exitosamente`, 'success');
+            log(`Tipo: ${userType}`);
+            log(`Credenciales: ${username} / ${password}`);
+            log(`Ya puede hacer login en el sistema`);
+            
+            // Limpiar formulario
+            document.getElementById('username').value = '';
+            document.getElementById('fullName').value = '';
+            document.getElementById('email').value = '';
+        }
+
+        function limpiarTodosLosUsuarios() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los usuarios? Esta acción no se puede deshacer.')) {
+                localStorage.setItem('smart-student-users', '[]');
+                localStorage.setItem('smart-student-students', '[]');
+                localStorage.setItem('smart-student-teachers', '[]');
+                localStorage.setItem('smart-student-administrators', '[]');
+                
+                clearResults();
+                log('🗑️ Todos los usuarios han sido eliminados', 'success');
+                log('El sistema está limpio');
+            }
+        }
+
+        function abrirLogin() {
+            window.open('/login', '_blank');
+        }
+
+        // Auto-verificar al cargar
+        window.onload = function() {
+            log('🔄 Página cargada. Verificando estado inicial...', 'info');
+            verificarUsuarios();
+        };
+    </script>
+</body>
+</html>

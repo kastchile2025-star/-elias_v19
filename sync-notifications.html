@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Sincronización de Notificaciones - SMART STUDENT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .sync-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .sync-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #45a049;
+        }
+
+        .button.danger {
+            background: #f44336;
+        }
+
+        .button.danger:hover {
+            background: #da190b;
+        }
+
+        .button.warning {
+            background: #ff9800;
+        }
+
+        .button.warning:hover {
+            background: #e68900;
+        }
+
+        .sync-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+        .warning { color: #ffaa00; }
+        .info { color: #44aaff; }
+
+        .status-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .problem-detected {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        .problem-detected .status-value {
+            color: #f44336;
+        }
+
+        .all-good {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
+        .all-good .status-value {
+            color: #4caf50;
+        }
+
+        .sync-progress {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .sync-progress-bar {
+            background: #4CAF50;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .auto-sync-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Sincronización de Notificaciones - SMART STUDENT</h1>
+        
+        <div class="sync-section">
+            <h2>📊 Estado del Sistema</h2>
+            <div class="status-panel">
+                <div class="status-card" id="tasksStatus">
+                    <div class="status-value" id="tasksCount">0</div>
+                    <div class="status-label">Tareas Totales</div>
+                </div>
+                <div class="status-card" id="notificationsStatus">
+                    <div class="status-value" id="notificationsCount">0</div>
+                    <div class="status-label">Notificaciones Totales</div>
+                </div>
+                <div class="status-card" id="syncedStatus">
+                    <div class="status-value" id="syncedCount">0</div>
+                    <div class="status-label">Sincronizadas</div>
+                </div>
+                <div class="status-card" id="ghostStatus">
+                    <div class="status-value" id="ghostCount">0</div>
+                    <div class="status-label">Fantasma</div>
+                </div>
+                <div class="status-card" id="orphanStatus">
+                    <div class="status-value" id="orphanCount">0</div>
+                    <div class="status-label">Huérfanas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sync-section">
+            <h2>🔄 Sincronización Automática</h2>
+            <div class="auto-sync-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync()">
+                    <span class="slider"></span>
+                </label>
+                <span>Sincronización automática cada 30 segundos</span>
+            </div>
+            <div class="sync-progress">
+                <div class="sync-progress-bar" id="syncProgressBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="sync-section">
+            <h2>🔧 Herramientas de Sincronización</h2>
+            <button class="button" onclick="analyzeSystem()">🔍 Analizar Sistema</button>
+            <button class="button" onclick="syncNotifications()">🔄 Sincronizar Notificaciones</button>
+            <button class="button warning" onclick="cleanupGhosts()">👻 Limpiar Fantasmas</button>
+            <button class="button danger" onclick="rebuildNotifications()">🔥 Reconstruir Notificaciones</button>
+            <div id="syncLog" class="sync-output"></div>
+        </div>
+
+        <div class="sync-section">
+            <h2>📋 Reporte de Sincronización</h2>
+            <button class="button" onclick="generateReport()">📄 Generar Reporte</button>
+            <button class="button" onclick="exportData()">💾 Exportar Datos</button>
+            <div id="reportOutput" class="sync-output"></div>
+        </div>
+
+        <div class="sync-section">
+            <h2>🧪 Herramientas de Prueba</h2>
+            <button class="button" onclick="createTestScenario()">🎭 Crear Escenario de Prueba</button>
+            <button class="button" onclick="simulateUserActivity()">👤 Simular Actividad de Usuario</button>
+            <button class="button warning" onclick="createIntentionalGhosts()">👻 Crear Fantasmas de Prueba</button>
+            <div id="testOutput" class="sync-output"></div>
+        </div>
+    </div>
+
+    <script>
+        let autoSyncInterval = null;
+        let syncData = {
+            tasks: [],
+            notifications: [],
+            comments: [],
+            users: {}
+        };
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSyncData();
+            updateStatusPanel();
+            
+            // Auto-análisis inicial
+            setTimeout(analyzeSystem, 1000);
+        });
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : 
+                             type === 'success' ? 'success' : 
+                             type === 'warning' ? 'warning' : 'info';
+            
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function loadSyncData() {
+            try {
+                syncData.tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                syncData.notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                syncData.comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                syncData.users = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+            } catch (error) {
+                console.error('Error loading sync data:', error);
+            }
+        }
+
+        function updateStatusPanel() {
+            loadSyncData();
+            
+            const tasksCount = syncData.tasks.length;
+            const notificationsCount = syncData.notifications.length;
+            
+            // Calcular sincronizadas
+            const syncedNotifications = syncData.notifications.filter(notification => 
+                syncData.tasks.some(task => task.id === notification.taskId)
+            );
+            
+            // Calcular fantasmas
+            const ghostNotifications = syncData.notifications.filter(notification => 
+                !syncData.tasks.some(task => task.id === notification.taskId)
+            );
+            
+            // Calcular huérfanas (tareas sin notificaciones)
+            const orphanTasks = syncData.tasks.filter(task => 
+                !syncData.notifications.some(notification => notification.taskId === task.id)
+            );
+            
+            // Actualizar UI
+            document.getElementById('tasksCount').textContent = tasksCount;
+            document.getElementById('notificationsCount').textContent = notificationsCount;
+            document.getElementById('syncedCount').textContent = syncedNotifications.length;
+            document.getElementById('ghostCount').textContent = ghostNotifications.length;
+            document.getElementById('orphanCount').textContent = orphanTasks.length;
+            
+            // Actualizar colores según el estado
+            const ghostStatus = document.getElementById('ghostStatus');
+            const orphanStatus = document.getElementById('orphanStatus');
+            const syncedStatus = document.getElementById('syncedStatus');
+            
+            if (ghostNotifications.length > 0) {
+                ghostStatus.className = 'status-card problem-detected';
+            } else {
+                ghostStatus.className = 'status-card all-good';
+            }
+            
+            if (orphanTasks.length > 0) {
+                orphanStatus.className = 'status-card problem-detected';
+            } else {
+                orphanStatus.className = 'status-card all-good';
+            }
+            
+            if (syncedNotifications.length === notificationsCount && ghostNotifications.length === 0) {
+                syncedStatus.className = 'status-card all-good';
+            } else {
+                syncedStatus.className = 'status-card problem-detected';
+            }
+        }
+
+        function analyzeSystem() {
+            clearLog('syncLog');
+            log('syncLog', '🔍 Iniciando análisis del sistema...', 'info');
+            
+            loadSyncData();
+            
+            // Análisis de notificaciones fantasma
+            const ghostNotifications = syncData.notifications.filter(notification => 
+                !syncData.tasks.some(task => task.id === notification.taskId)
+            );
+            
+            // Análisis de tareas huérfanas
+            const orphanTasks = syncData.tasks.filter(task => 
+                !syncData.notifications.some(notification => notification.taskId === task.id)
+            );
+            
+            // Análisis de comentarios huérfanos
+            const orphanComments = syncData.comments.filter(comment => 
+                !syncData.tasks.some(task => task.id === comment.taskId)
+            );
+            
+            // Reporte de análisis
+            log('syncLog', '📊 RESULTADO DEL ANÁLISIS:', 'info');
+            log('syncLog', `📋 Tareas totales: ${syncData.tasks.length}`, 'info');
+            log('syncLog', `🔔 Notificaciones totales: ${syncData.notifications.length}`, 'info');
+            log('syncLog', `💬 Comentarios totales: ${syncData.comments.length}`, 'info');
+            log('syncLog', '', 'info');
+            
+            if (ghostNotifications.length > 0) {
+                log('syncLog', `👻 PROBLEMA: ${ghostNotifications.length} notificaciones fantasma detectadas`, 'error');
+                ghostNotifications.forEach((notification, index) => {
+                    log('syncLog', `   ${index + 1}. ${notification.taskTitle} (TaskId: ${notification.taskId})`, 'error');
+                });
+            } else {
+                log('syncLog', '✅ No se detectaron notificaciones fantasma', 'success');
+            }
+            
+            if (orphanTasks.length > 0) {
+                log('syncLog', `⚠️ ADVERTENCIA: ${orphanTasks.length} tareas sin notificaciones`, 'warning');
+                orphanTasks.forEach((task, index) => {
+                    log('syncLog', `   ${index + 1}. ${task.title} (ID: ${task.id})`, 'warning');
+                });
+            } else {
+                log('syncLog', '✅ Todas las tareas tienen notificaciones', 'success');
+            }
+            
+            if (orphanComments.length > 0) {
+                log('syncLog', `⚠️ ADVERTENCIA: ${orphanComments.length} comentarios huérfanos`, 'warning');
+            } else {
+                log('syncLog', '✅ Todos los comentarios están vinculados a tareas', 'success');
+            }
+            
+            updateStatusPanel();
+        }
+
+        function syncNotifications() {
+            clearLog('syncLog');
+            log('syncLog', '🔄 Iniciando sincronización de notificaciones...', 'info');
+            
+            loadSyncData();
+            
+            let syncedCount = 0;
+            let createdCount = 0;
+            let removedCount = 0;
+            
+            // Paso 1: Remover notificaciones fantasma
+            const originalNotificationCount = syncData.notifications.length;
+            syncData.notifications = syncData.notifications.filter(notification => {
+                const taskExists = syncData.tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) {
+                    removedCount++;
+                    return false;
+                }
+                return true;
+            });
+            
+            // Paso 2: Crear notificaciones faltantes para tareas existentes
+            syncData.tasks.forEach(task => {
+                const hasNotification = syncData.notifications.some(notification => 
+                    notification.taskId === task.id && notification.type === 'new_task'
+                );
+                
+                if (!hasNotification) {
+                    // Crear notificación faltante
+                    const newNotification = {
+                        id: `sync_${task.id}_${Date.now()}`,
+                        type: 'new_task',
+                        taskId: task.id,
+                        taskTitle: task.title,
+                        targetUserRole: 'student',
+                        targetUsernames: getStudentsForCourse(task.course),
+                        fromUsername: task.assignedBy,
+                        fromDisplayName: task.assignedByName,
+                        course: task.course,
+                        subject: task.subject,
+                        timestamp: task.createdAt || new Date().toISOString(),
+                        read: false,
+                        readBy: [],
+                        taskType: task.taskType || 'assignment'
+                    };
+                    
+                    syncData.notifications.push(newNotification);
+                    createdCount++;
+                }
+            });
+            
+            // Paso 3: Limpiar comentarios huérfanos
+            const originalCommentCount = syncData.comments.length;
+            syncData.comments = syncData.comments.filter(comment => {
+                return syncData.tasks.some(task => task.id === comment.taskId);
+            });
+            
+            const removedComments = originalCommentCount - syncData.comments.length;
+            
+            // Guardar cambios
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(syncData.notifications));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(syncData.comments));
+            
+            // Disparar evento de actualización
+            window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            
+            // Reporte de sincronización
+            log('syncLog', '✅ SINCRONIZACIÓN COMPLETADA', 'success');
+            log('syncLog', `🗑️ Notificaciones fantasma eliminadas: ${removedCount}`, 'warning');
+            log('syncLog', `➕ Notificaciones creadas: ${createdCount}`, 'success');
+            log('syncLog', `🗑️ Comentarios huérfanos eliminados: ${removedComments}`, 'warning');
+            log('syncLog', `🔄 Notificaciones sincronizadas: ${syncData.notifications.length}`, 'info');
+            
+            updateStatusPanel();
+        }
+
+        function cleanupGhosts() {
+            clearLog('syncLog');
+            log('syncLog', '👻 Limpiando notificaciones fantasma...', 'warning');
+            
+            loadSyncData();
+            
+            const initialCount = syncData.notifications.length;
+            
+            // Filtrar solo notificaciones válidas
+            syncData.notifications = syncData.notifications.filter(notification => {
+                const taskExists = syncData.tasks.some(task => task.id === notification.taskId);
+                if (!taskExists) {
+                    log('syncLog', `👻 Eliminando: ${notification.taskTitle} (TaskId: ${notification.taskId})`, 'warning');
+                }
+                return taskExists;
+            });
+            
+            const removedCount = initialCount - syncData.notifications.length;
+            
+            // Guardar cambios
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(syncData.notifications));
+            
+            // Disparar evento de actualización
+            window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            
+            log('syncLog', `✅ Limpieza completada. Eliminadas ${removedCount} notificaciones fantasma`, 'success');
+            
+            updateStatusPanel();
+        }
+
+        function rebuildNotifications() {
+            if (!confirm('¿Estás seguro de que quieres reconstruir todas las notificaciones? Esto eliminará todas las notificaciones existentes y las recreará basándose en las tareas actuales.')) {
+                return;
+            }
+            
+            clearLog('syncLog');
+            log('syncLog', '🔥 Reconstruyendo sistema de notificaciones...', 'warning');
+            
+            loadSyncData();
+            
+            // Limpiar todas las notificaciones existentes
+            syncData.notifications = [];
+            
+            // Recrear notificaciones basándose en tareas existentes
+            let createdCount = 0;
+            
+            syncData.tasks.forEach(task => {
+                const studentsInCourse = getStudentsForCourse(task.course);
+                
+                if (studentsInCourse.length > 0) {
+                    // Crear notificación de nueva tarea
+                    const newTaskNotification = {
+                        id: `rebuild_${task.id}_${Date.now()}`,
+                        type: 'new_task',
+                        taskId: task.id,
+                        taskTitle: task.title,
+                        targetUserRole: 'student',
+                        targetUsernames: studentsInCourse,
+                        fromUsername: task.assignedBy,
+                        fromDisplayName: task.assignedByName,
+                        course: task.course,
+                        subject: task.subject,
+                        timestamp: task.createdAt || new Date().toISOString(),
+                        read: false,
+                        readBy: [],
+                        taskType: task.taskType || 'assignment'
+                    };
+                    
+                    syncData.notifications.push(newTaskNotification);
+                    createdCount++;
+                    
+                    // Crear notificación pendiente para el profesor
+                    const pendingNotification = {
+                        id: `rebuild_pending_${task.id}_${Date.now()}`,
+                        type: 'pending_grading',
+                        taskId: task.id,
+                        taskTitle: task.title,
+                        targetUserRole: 'teacher',
+                        targetUsernames: [task.assignedBy],
+                        fromUsername: 'system',
+                        fromDisplayName: `${task.title} (${task.course})`,
+                        course: task.course,
+                        subject: task.subject,
+                        timestamp: task.createdAt || new Date().toISOString(),
+                        read: false,
+                        readBy: [],
+                        taskType: task.taskType || 'assignment'
+                    };
+                    
+                    syncData.notifications.push(pendingNotification);
+                    createdCount++;
+                }
+            });
+            
+            // Guardar cambios
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(syncData.notifications));
+            
+            // Disparar evento de actualización
+            window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            
+            log('syncLog', '✅ RECONSTRUCCIÓN COMPLETADA', 'success');
+            log('syncLog', `➕ Notificaciones creadas: ${createdCount}`, 'success');
+            log('syncLog', `📋 Basado en ${syncData.tasks.length} tareas existentes`, 'info');
+            
+            updateStatusPanel();
+        }
+
+        function getStudentsForCourse(course) {
+            const students = [];
+            
+            Object.values(syncData.users).forEach(user => {
+                if (user.role === 'student' && user.activeCourses && user.activeCourses.includes(course)) {
+                    students.push(user.username);
+                }
+            });
+            
+            return students;
+        }
+
+        function toggleAutoSync() {
+            const isEnabled = document.getElementById('autoSyncToggle').checked;
+            
+            if (isEnabled) {
+                log('syncLog', '🔄 Sincronización automática activada', 'success');
+                startAutoSync();
+            } else {
+                log('syncLog', '⏸️ Sincronización automática desactivada', 'warning');
+                stopAutoSync();
+            }
+        }
+
+        function startAutoSync() {
+            if (autoSyncInterval) {
+                clearInterval(autoSyncInterval);
+            }
+            
+            autoSyncInterval = setInterval(() => {
+                analyzeSystem();
+                
+                // Si hay problemas, sincronizar automáticamente
+                loadSyncData();
+                const ghostCount = syncData.notifications.filter(n => 
+                    !syncData.tasks.some(t => t.id === n.taskId)
+                ).length;
+                
+                if (ghostCount > 0) {
+                    log('syncLog', `🔄 Auto-sincronización: ${ghostCount} fantasmas detectados`, 'warning');
+                    cleanupGhosts();
+                }
+                
+                updateSyncProgress();
+            }, 30000); // Cada 30 segundos
+        }
+
+        function stopAutoSync() {
+            if (autoSyncInterval) {
+                clearInterval(autoSyncInterval);
+                autoSyncInterval = null;
+            }
+        }
+
+        function updateSyncProgress() {
+            const progressBar = document.getElementById('syncProgressBar');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.style.width = '0%';
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        function generateReport() {
+            clearLog('reportOutput');
+            log('reportOutput', '📄 Generando reporte de sincronización...', 'info');
+            
+            loadSyncData();
+            
+            const ghostNotifications = syncData.notifications.filter(n => 
+                !syncData.tasks.some(t => t.id === n.taskId)
+            );
+            
+            const orphanTasks = syncData.tasks.filter(t => 
+                !syncData.notifications.some(n => n.taskId === t.id)
+            );
+            
+            const orphanComments = syncData.comments.filter(c => 
+                !syncData.tasks.some(t => t.id === c.taskId)
+            );
+            
+            // Generar reporte
+            const report = {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    totalTasks: syncData.tasks.length,
+                    totalNotifications: syncData.notifications.length,
+                    totalComments: syncData.comments.length,
+                    ghostNotifications: ghostNotifications.length,
+                    orphanTasks: orphanTasks.length,
+                    orphanComments: orphanComments.length
+                },
+                details: {
+                    ghostNotifications: ghostNotifications.map(n => ({
+                        id: n.id,
+                        taskId: n.taskId,
+                        taskTitle: n.taskTitle,
+                        type: n.type,
+                        timestamp: n.timestamp
+                    })),
+                    orphanTasks: orphanTasks.map(t => ({
+                        id: t.id,
+                        title: t.title,
+                        course: t.course,
+                        assignedBy: t.assignedBy
+                    })),
+                    orphanComments: orphanComments.map(c => ({
+                        id: c.id,
+                        taskId: c.taskId,
+                        studentName: c.studentName,
+                        timestamp: c.timestamp
+                    }))
+                }
+            };
+            
+            log('reportOutput', '📊 REPORTE DE SINCRONIZACIÓN', 'success');
+            log('reportOutput', `📅 Fecha: ${new Date(report.timestamp).toLocaleString()}`, 'info');
+            log('reportOutput', '', 'info');
+            log('reportOutput', '📈 RESUMEN:', 'info');
+            log('reportOutput', `📋 Tareas totales: ${report.summary.totalTasks}`, 'info');
+            log('reportOutput', `🔔 Notificaciones totales: ${report.summary.totalNotifications}`, 'info');
+            log('reportOutput', `💬 Comentarios totales: ${report.summary.totalComments}`, 'info');
+            log('reportOutput', `👻 Notificaciones fantasma: ${report.summary.ghostNotifications}`, 'error');
+            log('reportOutput', `⚠️ Tareas huérfanas: ${report.summary.orphanTasks}`, 'warning');
+            log('reportOutput', `💬 Comentarios huérfanos: ${report.summary.orphanComments}`, 'warning');
+            
+            // Calcular score de salud
+            const healthScore = calculateHealthScore(report.summary);
+            log('reportOutput', '', 'info');
+            log('reportOutput', `💚 SCORE DE SALUD: ${healthScore}%`, healthScore > 90 ? 'success' : healthScore > 70 ? 'warning' : 'error');
+            
+            // Guardar reporte
+            localStorage.setItem('smart-student-sync-report', JSON.stringify(report));
+        }
+
+        function calculateHealthScore(summary) {
+            const totalItems = summary.totalTasks + summary.totalNotifications + summary.totalComments;
+            const problemItems = summary.ghostNotifications + summary.orphanTasks + summary.orphanComments;
+            
+            if (totalItems === 0) return 100;
+            
+            const healthScore = Math.max(0, Math.round((1 - problemItems / totalItems) * 100));
+            return healthScore;
+        }
+
+        function exportData() {
+            clearLog('reportOutput');
+            log('reportOutput', '💾 Exportando datos del sistema...', 'info');
+            
+            loadSyncData();
+            
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                data: {
+                    tasks: syncData.tasks,
+                    notifications: syncData.notifications,
+                    comments: syncData.comments,
+                    users: syncData.users
+                }
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `smart-student-sync-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            log('reportOutput', '✅ Datos exportados exitosamente', 'success');
+            log('reportOutput', `📋 Tareas: ${syncData.tasks.length}`, 'info');
+            log('reportOutput', `🔔 Notificaciones: ${syncData.notifications.length}`, 'info');
+            log('reportOutput', `💬 Comentarios: ${syncData.comments.length}`, 'info');
+            log('reportOutput', `👥 Usuarios: ${Object.keys(syncData.users).length}`, 'info');
+        }
+
+        function createTestScenario() {
+            clearLog('testOutput');
+            log('testOutput', '🎭 Creando escenario de prueba...', 'info');
+            
+            // Crear datos de prueba complejos
+            const testData = {
+                tasks: [
+                    {
+                        id: 'test_task_1',
+                        title: 'Matemáticas - Álgebra',
+                        course: 'matematicas_4to',
+                        assignedBy: 'jorge',
+                        assignedByName: 'Jorge Profesor',
+                        createdAt: new Date().toISOString(),
+                        taskType: 'assignment'
+                    },
+                    {
+                        id: 'test_task_2',
+                        title: 'Ciencias - Evaluación',
+                        course: 'ciencias_4to',
+                        assignedBy: 'jorge',
+                        assignedByName: 'Jorge Profesor',
+                        createdAt: new Date().toISOString(),
+                        taskType: 'evaluation'
+                    }
+                ],
+                notifications: [
+                    {
+                        id: 'test_notif_1',
+                        type: 'new_task',
+                        taskId: 'test_task_1',
+                        taskTitle: 'Matemáticas - Álgebra',
+                        targetUserRole: 'student',
+                        targetUsernames: ['felipe', 'maria'],
+                        fromUsername: 'jorge',
+                        fromDisplayName: 'Jorge Profesor',
+                        timestamp: new Date().toISOString(),
+                        read: false,
+                        readBy: []
+                    },
+                    // Notificación fantasma intencional
+                    {
+                        id: 'test_ghost_1',
+                        type: 'new_task',
+                        taskId: 'nonexistent_task',
+                        taskTitle: 'Tarea Fantasma',
+                        targetUserRole: 'student',
+                        targetUsernames: ['felipe'],
+                        fromUsername: 'jorge',
+                        fromDisplayName: 'Jorge Profesor',
+                        timestamp: new Date().toISOString(),
+                        read: false,
+                        readBy: []
+                    }
+                ],
+                users: {
+                    felipe: {
+                        username: 'felipe',
+                        displayName: 'Felipe Estudiante',
+                        role: 'student',
+                        activeCourses: ['matematicas_4to', 'ciencias_4to']
+                    },
+                    maria: {
+                        username: 'maria',
+                        displayName: 'María Estudiante',
+                        role: 'student',
+                        activeCourses: ['matematicas_4to']
+                    },
+                    jorge: {
+                        username: 'jorge',
+                        displayName: 'Jorge Profesor',
+                        role: 'teacher',
+                        activeCourses: ['matematicas_4to', 'ciencias_4to']
+                    }
+                }
+            };
+            
+            // Guardar datos de prueba
+            localStorage.setItem('smart-student-tasks', JSON.stringify(testData.tasks));
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(testData.notifications));
+            localStorage.setItem('smart-student-users', JSON.stringify(testData.users));
+            
+            log('testOutput', '✅ Escenario de prueba creado:', 'success');
+            log('testOutput', `📋 Tareas: ${testData.tasks.length}`, 'info');
+            log('testOutput', `🔔 Notificaciones: ${testData.notifications.length} (1 fantasma)`, 'warning');
+            log('testOutput', `👥 Usuarios: ${Object.keys(testData.users).length}`, 'info');
+            
+            updateStatusPanel();
+        }
+
+        function simulateUserActivity() {
+            clearLog('testOutput');
+            log('testOutput', '👤 Simulando actividad de usuario...', 'info');
+            
+            // Simular que un estudiante completa una tarea
+            loadSyncData();
+            
+            if (syncData.tasks.length > 0) {
+                const task = syncData.tasks[0];
+                
+                // Crear comentario de entrega
+                const submission = {
+                    id: `sim_submission_${Date.now()}`,
+                    taskId: task.id,
+                    studentUsername: 'felipe',
+                    studentName: 'Felipe Estudiante',
+                    comment: 'Adjunto mi tarea completada',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: true,
+                    readBy: []
+                };
+                
+                syncData.comments.push(submission);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(syncData.comments));
+                
+                log('testOutput', `✅ Simulada entrega de tarea: ${task.title}`, 'success');
+                log('testOutput', `👤 Estudiante: Felipe`, 'info');
+                log('testOutput', `📝 Comentario: ${submission.comment}`, 'info');
+                
+                updateStatusPanel();
+            } else {
+                log('testOutput', '⚠️ No hay tareas disponibles para simular', 'warning');
+            }
+        }
+
+        function createIntentionalGhosts() {
+            clearLog('testOutput');
+            log('testOutput', '👻 Creando notificaciones fantasma de prueba...', 'warning');
+            
+            loadSyncData();
+            
+            const ghostNotifications = [
+                {
+                    id: `ghost_${Date.now()}_1`,
+                    type: 'new_task',
+                    taskId: 'fake_task_001',
+                    taskTitle: 'Tarea Fantasma #1',
+                    targetUserRole: 'student',
+                    targetUsernames: ['felipe'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: []
+                },
+                {
+                    id: `ghost_${Date.now()}_2`,
+                    type: 'teacher_comment',
+                    taskId: 'fake_task_002',
+                    taskTitle: 'Comentario Fantasma',
+                    targetUserRole: 'student',
+                    targetUsernames: ['maria'],
+                    fromUsername: 'jorge',
+                    fromDisplayName: 'Jorge Profesor',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: []
+                }
+            ];
+            
+            syncData.notifications.push(...ghostNotifications);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(syncData.notifications));
+            
+            log('testOutput', `👻 Creadas ${ghostNotifications.length} notificaciones fantasma`, 'warning');
+            log('testOutput', '⚠️ Usa "Analizar Sistema" para detectarlas', 'info');
+            log('testOutput', '🧹 Usa "Limpiar Fantasmas" para eliminarlas', 'info');
+            
+            updateStatusPanel();
+        }
+
+        // Actualizar panel cada 5 segundos
+        setInterval(updateStatusPanel, 5000);
+    </script>
+</body>
+</html>

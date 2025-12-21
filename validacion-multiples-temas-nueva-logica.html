@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIDACIÓN: Múltiples Temas - Nueva Lógica de Generación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #2c3e50;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .theme-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            color: white;
+        }
+
+        .theme-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .theme-content {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .mindmap-mini {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .theme-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .theme-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .theme-info p {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .comparison-controls {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .comparison-controls h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .control-group select, .control-group button {
+            padding: 10px 15px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .control-group button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .stats-panel {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 VALIDACIÓN COMPLETA - NUEVA LÓGICA DE GENERACIÓN</h1>
+            <p>Comparativa de múltiples temas educativos con diseño revolucionario</p>
+        </div>
+
+        <div class="content">
+            <div class="comparison-controls">
+                <h2>🎛️ Controles Globales</h2>
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label>Idioma:</label>
+                        <select id="globalLanguage">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Diseño:</label>
+                        <select id="globalLayout">
+                            <option value="horizontal">Horizontal</option>
+                            <option value="radial">Radial</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Acción:</label>
+                        <button onclick="generarTodosLosMapas()">🚀 GENERAR TODOS</button>
+                    </div>
+                    <div class="control-group">
+                        <label>Comparar:</label>
+                        <button onclick="compararDisenos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);">📊 COMPARAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="themes-grid" id="themesGrid">
+                <!-- Los temas se cargarán dinámicamente -->
+            </div>
+
+            <div class="stats-panel">
+                <h2 style="color: #8b4513; margin-bottom: 15px;">📊 Estadísticas de Generación</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalThemes">8</div>
+                        <div class="stat-label">Temas Disponibles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="generatedMaps">0</div>
+                        <div class="stat-label">Mapas Generados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="averageNodes">0</div>
+                        <div class="stat-label">Promedio Nodos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="processingTime">0</div>
+                        <div class="stat-label">Tiempo (ms)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const availableThemes = [
+            {
+                id: 'fotosintesis',
+                name: 'Fotosíntesis',
+                description: 'Proceso biológico de conversión de energía lumínica',
+                color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                branches: 4,
+                subnodes: 12
+            },
+            {
+                id: 'sistema respiratorio',
+                name: 'Sistema Respiratorio',
+                description: 'Conjunto de órganos encargados de la respiración',
+                color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                branches: 4,
+                subnodes: 12
+            },
+            {
+                id: 'celula',
+                name: 'La Célula',
+                description: 'Unidad básica de la vida y organización biológica',
+                color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                branches: 3,
+                subnodes: 6
+            },
+            {
+                id: 'plantas',
+                name: 'Las Plantas',
+                description: 'Organismos fotosintéticos del reino vegetal',
+                color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                branches: 3,
+                subnodes: 9
+            },
+            {
+                id: 'agua',
+                name: 'El Agua',
+                description: 'Compuesto químico esencial para la vida',
+                color: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+                branches: 3,
+                subnodes: 9
+            },
+            {
+                id: 'ecosistema',
+                name: 'Ecosistema',
+                description: 'Sistema biológico con interacciones complejas',
+                color: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+                branches: 3,
+                subnodes: 9
+            }
+        ];
+
+        let generatedCount = 0;
+        let totalProcessingTime = 0;
+
+        function initializeThemeCards() {
+            const grid = document.getElementById('themesGrid');
+            grid.innerHTML = '';
+
+            availableThemes.forEach(theme => {
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                card.style.background = theme.color;
+                
+                card.innerHTML = `
+                    <div class="theme-title">${theme.name}</div>
+                    <div class="theme-content">
+                        <div class="mindmap-mini" id="mindmap-${theme.id}">
+                            <div class="loading">
+                                <span>Listo para generar mapa mental...</span>
+                            </div>
+                        </div>
+                        <button class="generate-btn" onclick="generarMapaIndividual('${theme.id}')">
+                            🎨 Generar ${theme.name}
+                        </button>
+                        <div class="theme-info">
+                            <h4>📋 Información del Tema</h4>
+                            <p><strong>Descripción:</strong> ${theme.description}</p>
+                            <p><strong>Ramas principales:</strong> ${theme.branches} | <strong>Subnodos:</strong> ${theme.subnodes}</p>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function generateMockMindMapStructure(centralTheme, language = 'es') {
+            const topicMappings = {
+                'fotosintesis': {
+                    centralLabel: language === 'es' ? 'Fotosíntesis' : 'Photosynthesis',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Reactivos' : 'Reactants',
+                            children: language === 'es' ? ['Dióxido de Carbono', 'Agua', 'Luz Solar'] : ['Carbon Dioxide', 'Water', 'Sunlight']
+                        },
+                        {
+                            label: language === 'es' ? 'Productos' : 'Products', 
+                            children: language === 'es' ? ['Glucosa', 'Oxígeno'] : ['Glucose', 'Oxygen']
+                        },
+                        {
+                            label: language === 'es' ? 'Fases' : 'Phases',
+                            children: language === 'es' ? ['Fase Luminosa', 'Fase Oscura', 'Ciclo de Calvin'] : ['Light Phase', 'Dark Phase', 'Calvin Cycle']
+                        },
+                        {
+                            label: language === 'es' ? 'Ubicación' : 'Location',
+                            children: language === 'es' ? ['Cloroplastos', 'Hojas', 'Células Vegetales'] : ['Chloroplasts', 'Leaves', 'Plant Cells']
+                        }
+                    ]
+                },
+                'sistema respiratorio': {
+                    centralLabel: language === 'es' ? 'Sistema Respiratorio' : 'Respiratory System',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Órganos Principales' : 'Main Organs',
+                            children: language === 'es' ? ['Pulmones', 'Tráquea', 'Bronquios'] : ['Lungs', 'Trachea', 'Bronchi']
+                        },
+                        {
+                            label: language === 'es' ? 'Proceso de Respiración' : 'Breathing Process',
+                            children: language === 'es' ? ['Inspiración', 'Espiración', 'Intercambio de Gases'] : ['Inspiration', 'Expiration', 'Gas Exchange']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Oxigenación', 'Eliminación CO2', 'Regulación pH'] : ['Oxygenation', 'CO2 Removal', 'pH Regulation']
+                        },
+                        {
+                            label: language === 'es' ? 'Enfermedades Comunes' : 'Common Diseases',
+                            children: language === 'es' ? ['Asma', 'Neumonía', 'Bronquitis'] : ['Asthma', 'Pneumonia', 'Bronchitis']
+                        }
+                    ]
+                },
+                'celula': {
+                    centralLabel: language === 'es' ? 'La Célula' : 'The Cell',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Tipos Celulares' : 'Cell Types',
+                            children: language === 'es' ? ['Célula Procariota', 'Célula Eucariota'] : ['Prokaryotic Cell', 'Eukaryotic Cell']
+                        },
+                        {
+                            label: language === 'es' ? 'Organelos' : 'Organelles',
+                            children: language === 'es' ? ['Núcleo', 'Mitocondrias', 'Ribosomas'] : ['Nucleus', 'Mitochondria', 'Ribosomes']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Reproducción', 'Metabolismo', 'Homeostasis'] : ['Reproduction', 'Metabolism', 'Homeostasis']
+                        }
+                    ]
+                },
+                'plantas': {
+                    centralLabel: language === 'es' ? 'Las Plantas' : 'Plants',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Tipos de Plantas' : 'Plant Types',
+                            children: language === 'es' ? ['Angiospermas', 'Gimnospermas', 'Helechos'] : ['Angiosperms', 'Gymnosperms', 'Ferns']
+                        },
+                        {
+                            label: language === 'es' ? 'Partes de la Planta' : 'Plant Parts',
+                            children: language === 'es' ? ['Raíz', 'Tallo', 'Hojas'] : ['Root', 'Stem', 'Leaves']
+                        },
+                        {
+                            label: language === 'es' ? 'Funciones' : 'Functions',
+                            children: language === 'es' ? ['Fotosíntesis', 'Respiración', 'Reproducción'] : ['Photosynthesis', 'Respiration', 'Reproduction']
+                        }
+                    ]
+                },
+                'agua': {
+                    centralLabel: language === 'es' ? 'El Agua' : 'Water',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Estados del Agua' : 'Water States',
+                            children: language === 'es' ? ['Líquido', 'Sólido', 'Gaseoso'] : ['Liquid', 'Solid', 'Gas']
+                        },
+                        {
+                            label: language === 'es' ? 'Ciclo del Agua' : 'Water Cycle',
+                            children: language === 'es' ? ['Evaporación', 'Condensación', 'Precipitación'] : ['Evaporation', 'Condensation', 'Precipitation']
+                        },
+                        {
+                            label: language === 'es' ? 'Importancia' : 'Importance',
+                            children: language === 'es' ? ['Vida', 'Ecosistemas', 'Agricultura'] : ['Life', 'Ecosystems', 'Agriculture']
+                        }
+                    ]
+                },
+                'ecosistema': {
+                    centralLabel: language === 'es' ? 'Ecosistema' : 'Ecosystem',
+                    branches: [
+                        {
+                            label: language === 'es' ? 'Componentes Vivos' : 'Living Components',
+                            children: language === 'es' ? ['Productores', 'Consumidores', 'Descomponedores'] : ['Producers', 'Consumers', 'Decomposers']
+                        },
+                        {
+                            label: language === 'es' ? 'Componentes No Vivos' : 'Non-Living Components',
+                            children: language === 'es' ? ['Agua', 'Suelo', 'Clima'] : ['Water', 'Soil', 'Climate']
+                        },
+                        {
+                            label: language === 'es' ? 'Interacciones' : 'Interactions',
+                            children: language === 'es' ? ['Cadenas Alimentarias', 'Simbiosis', 'Competencia'] : ['Food Chains', 'Symbiosis', 'Competition']
+                        }
+                    ]
+                }
+            };
+
+            const structure = topicMappings[centralTheme];
+            if (!structure) {
+                return {
+                    centralThemeLabel: centralTheme.toUpperCase(),
+                    mainBranches: [
+                        {
+                            label: language === 'es' ? 'Concepto Principal' : 'Main Concept',
+                            children: language === 'es' ? ['Subtema 1', 'Subtema 2'] : ['Subtopic 1', 'Subtopic 2']
+                        }
+                    ]
+                };
+            }
+
+            return {
+                centralThemeLabel: structure.centralLabel.toUpperCase(),
+                mainBranches: structure.branches.map(branch => ({
+                    label: branch.label,
+                    children: branch.children
+                }))
+            };
+        }
+
+        function generateCompactSvg(structure, isHorizontal) {
+            // Versión compacta para la vista de comparación
+            const width = 480;
+            const height = 280;
+            const centerX = isHorizontal ? 80 : width / 2;
+            const centerY = height / 2;
+            
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">
+                <defs>
+                    <linearGradient id="cGrad-${Math.random()}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb"/>
+                        <stop offset="100%" stop-color="#1d4ed8"/>
+                    </linearGradient>
+                    <linearGradient id="bGrad-${Math.random()}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#059669"/>
+                        <stop offset="100%" stop-color="#047857"/>
+                    </linearGradient>
+                    <linearGradient id="sGrad-${Math.random()}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#dc2626"/>
+                        <stop offset="100%" stop-color="#b91c1c"/>
+                    </linearGradient>
+                </defs>
+                <style>
+                    .compact-text { font-family: Arial, sans-serif; text-anchor: middle; dominant-baseline: central; font-weight: 600; }
+                    .compact-central { fill: white; font-size: 10px; }
+                    .compact-branch { fill: white; font-size: 8px; }
+                    .compact-sub { fill: white; font-size: 6px; }
+                    .compact-line { stroke: #6b7280; stroke-width: 2; }
+                </style>`;
+
+            if (isHorizontal) {
+                // Nodo central compacto
+                svg += `<rect x="${centerX - 35}" y="${centerY - 20}" width="70" height="40" rx="8" fill="url(#cGrad-${Math.random()})" stroke="#1d4ed8"/>`;
+                svg += `<text x="${centerX}" y="${centerY}" class="compact-text compact-central">${structure.centralThemeLabel.substring(0, 12)}</text>`;
+                
+                // Ramas compactas
+                structure.mainBranches.slice(0, 3).forEach((branch, index) => {
+                    const branchY = 60 + (index * 50);
+                    const branchX = centerX + 120;
+                    
+                    svg += `<line x1="${centerX + 35}" y1="${centerY}" x2="${branchX - 30}" y2="${branchY}" class="compact-line"/>`;
+                    svg += `<rect x="${branchX - 30}" y="${branchY - 15}" width="60" height="30" rx="6" fill="url(#bGrad-${Math.random()})"/>`;
+                    svg += `<text x="${branchX}" y="${branchY}" class="compact-text compact-branch">${branch.label.substring(0, 8)}</text>`;
+                    
+                    // Subnodos compactos
+                    if (branch.children) {
+                        branch.children.slice(0, 2).forEach((child, childIndex) => {
+                            const subX = branchX + 80 + (childIndex * 40);
+                            const subY = branchY;
+                            
+                            svg += `<line x1="${branchX + 30}" y1="${branchY}" x2="${subX - 15}" y2="${subY}" class="compact-line"/>`;
+                            svg += `<circle cx="${subX}" cy="${subY}" r="12" fill="url(#sGrad-${Math.random()})"/>`;
+                            svg += `<text x="${subX}" y="${subY}" class="compact-text compact-sub">${child.substring(0, 6)}</text>`;
+                        });
+                    }
+                });
+            } else {
+                // Diseño radial compacto
+                svg += `<circle cx="${centerX}" cy="${centerY}" r="25" fill="url(#cGrad-${Math.random()})" stroke="#1d4ed8"/>`;
+                svg += `<text x="${centerX}" y="${centerY}" class="compact-text compact-central">${structure.centralThemeLabel.substring(0, 8)}</text>`;
+                
+                structure.mainBranches.slice(0, 4).forEach((branch, index) => {
+                    const angle = (index * Math.PI * 2) / 4 - Math.PI / 2;
+                    const branchX = centerX + Math.cos(angle) * 80;
+                    const branchY = centerY + Math.sin(angle) * 80;
+                    
+                    svg += `<line x1="${centerX + Math.cos(angle) * 25}" y1="${centerY + Math.sin(angle) * 25}" x2="${branchX - Math.cos(angle) * 25}" y2="${branchY - Math.sin(angle) * 15}" class="compact-line"/>`;
+                    svg += `<rect x="${branchX - 25}" y="${branchY - 10}" width="50" height="20" rx="5" fill="url(#bGrad-${Math.random()})"/>`;
+                    svg += `<text x="${branchX}" y="${branchY}" class="compact-text compact-branch">${branch.label.substring(0, 6)}</text>`;
+                });
+            }
+            
+            svg += '</svg>';
+            return svg;
+        }
+
+        function generarMapaIndividual(themeId) {
+            const language = document.getElementById('globalLanguage').value;
+            const layout = document.getElementById('globalLayout').value;
+            const isHorizontal = layout === 'horizontal';
+            
+            const container = document.getElementById(`mindmap-${themeId}`);
+            container.innerHTML = '<div class="loading">🔄 Generando mapa mental...</div>';
+            
+            const startTime = performance.now();
+            
+            setTimeout(() => {
+                try {
+                    const structure = generateMockMindMapStructure(themeId, language);
+                    const svgContent = generateCompactSvg(structure, isHorizontal);
+                    
+                    container.innerHTML = svgContent;
+                    
+                    // Actualizar estadísticas
+                    generatedCount++;
+                    const endTime = performance.now();
+                    totalProcessingTime += (endTime - startTime);
+                    
+                    updateStats();
+                    
+                } catch (error) {
+                    container.innerHTML = `<div class="loading" style="color: #e74c3c;">❌ Error: ${error.message}</div>`;
+                }
+            }, Math.random() * 1000 + 500); // Simular tiempo de procesamiento variable
+        }
+
+        function generarTodosLosMapas() {
+            generatedCount = 0;
+            totalProcessingTime = 0;
+            
+            availableThemes.forEach((theme, index) => {
+                setTimeout(() => {
+                    generarMapaIndividual(theme.id);
+                }, index * 200); // Stagger generation
+            });
+        }
+
+        function compararDisenos() {
+            const language = document.getElementById('globalLanguage').value;
+            
+            // Cambiar layout y regenerar
+            const currentLayout = document.getElementById('globalLayout').value;
+            const newLayout = currentLayout === 'horizontal' ? 'radial' : 'horizontal';
+            document.getElementById('globalLayout').value = newLayout;
+            
+            setTimeout(() => {
+                generarTodosLosMapas();
+            }, 500);
+        }
+
+        function updateStats() {
+            document.getElementById('generatedMaps').textContent = generatedCount;
+            
+            const totalNodes = availableThemes.reduce((sum, theme) => sum + theme.branches + theme.subnodes, 0);
+            const avgNodes = generatedCount > 0 ? Math.round(totalNodes / generatedCount) : 0;
+            document.getElementById('averageNodes').textContent = avgNodes;
+            
+            const avgTime = generatedCount > 0 ? Math.round(totalProcessingTime / generatedCount) : 0;
+            document.getElementById('processingTime').textContent = avgTime;
+        }
+
+        // Inicialización
+        window.onload = function() {
+            initializeThemeCards();
+            setTimeout(() => {
+                generarTodosLosMapas();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

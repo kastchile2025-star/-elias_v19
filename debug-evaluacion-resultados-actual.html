@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Estado Actual Evaluación Resultados</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f1c0c7;
+        }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .notification {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        .notification.sistema {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        .notification.fixed {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+        .empty-message {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Estado Actual Evaluación y Resultados</h1>
+        <p>Diagnosticar problemas con notificaciones "Sistema" y tabla de resultados vacía.</p>
+        
+        <button onclick="initializeTestData()">1. Inicializar Datos de Prueba</button>
+        <button onclick="checkNotifications()">2. Verificar Notificaciones</button>
+        <button onclick="checkEvaluationResults()">3. Verificar Resultados Evaluación</button>
+        <button onclick="runMigration()">4. Ejecutar Migración</button>
+        <button onclick="clearAll()">5. Limpiar Todo</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let results = document.getElementById('results');
+
+        function log(html) {
+            results.innerHTML += html + '\n';
+        }
+
+        function initializeTestData() {
+            results.innerHTML = '<div class="section"><h3>🔄 Inicializando datos de prueba...</h3></div>';
+            
+            // Configurar usuario actual como profesor Jorge
+            const currentUser = {
+                username: 'jorge.profesor',
+                role: 'teacher',
+                displayName: 'Jorge Profesor',
+                activeCourses: ['Ciencias Naturales'],
+                subject: 'Ciencias Naturales'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Crear evaluación de prueba
+            const evaluationTask = {
+                id: 'eval_test_debug_2025',
+                title: 'dsasd',
+                description: 'dasda',
+                dueDate: '2025-07-04T17:07:00.000Z',
+                subject: 'Ciencias Naturales',
+                course: 'Ciencias Naturales',
+                assignedBy: 'jorge.profesor',
+                assignedByName: 'dsasd (Ciencias Naturales)', // Ya corregido
+                assignedTo: 'course',
+                taskType: 'evaluation',
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                evaluationConfig: {
+                    questionCount: 5,
+                    timeLimit: 10,
+                    passingGrade: 60,
+                    allowReview: true
+                },
+                evaluationResults: {
+                    'felipe.estudiante': {
+                        score: 4,
+                        completionPercentage: 80,
+                        completedAt: '2025-06-30T14:29:00.000Z',
+                        totalQuestions: 5,
+                        attempt: 1
+                    }
+                }
+            };
+
+            // Crear estudiantes de prueba
+            const students = [
+                { username: 'felipe.estudiante', displayName: 'Felipe Estudiante', activeCourses: ['Ciencias Naturales'] },
+                { username: 'maria.estudiante', displayName: 'María Estudiante', activeCourses: ['Ciencias Naturales'] },
+                { username: 'luis.estudiante', displayName: 'Luis Estudiante', activeCourses: ['Ciencias Naturales'] },
+                { username: 'sofia.estudiante', displayName: 'Sofía Estudiante', activeCourses: ['Ciencias Naturales'] }
+            ];
+            
+            students.forEach(student => {
+                localStorage.setItem(`userData_${student.username}`, JSON.stringify(student));
+            });
+
+            // Crear tarea de evaluación completada por Felipe
+            const felipeUserTask = {
+                id: 'eval_test_debug_2025',
+                title: 'dsasd',
+                description: 'dasda',
+                dueDate: '2025-07-04T17:07:00.000Z',
+                subject: 'Ciencias Naturales',
+                course: 'Ciencias Naturales',
+                assignedBy: 'jorge.profesor',
+                assignedByName: 'dsasd (Ciencias Naturales)',
+                status: 'completed',
+                taskType: 'evaluation',
+                completedAt: '2025-06-30T14:29:00.000Z',
+                score: 4,
+                completionPercentage: 80,
+                evaluationConfig: {
+                    questionCount: 5,
+                    timeLimit: 10,
+                    passingGrade: 60,
+                    allowReview: true
+                }
+            };
+            localStorage.setItem('userTasks_felipe.estudiante', JSON.stringify([felipeUserTask]));
+
+            // Guardar tareas globales
+            localStorage.setItem('smart-student-tasks', JSON.stringify([evaluationTask]));
+
+            // Crear notificaciones problemáticas para demostrar el problema
+            const notifications = [
+                {
+                    id: 'notif_sistema_1',
+                    type: 'task_completed',
+                    taskId: 'eval_test_debug_2025',
+                    taskTitle: 'dsasd',
+                    targetUserRole: 'teacher',
+                    targetUsernames: ['jorge.profesor'],
+                    fromUsername: 'felipe.estudiante',
+                    fromDisplayName: 'Sistema', // ❌ PROBLEMA: Debería mostrar nombre de evaluación
+                    course: 'Ciencias Naturales',
+                    subject: 'Ciencias Naturales',
+                    timestamp: '2025-06-30T14:29:00.000Z',
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                }
+            ];
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+
+            log('<div class="section success"><h3>✅ Datos inicializados correctamente</h3></div>');
+        }
+
+        function checkNotifications() {
+            log('<div class="section"><h3>🔔 Estado Actual de Notificaciones</h3></div>');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            log(`<p><strong>Total notificaciones:</strong> ${notifications.length}</p>`);
+            
+            if (notifications.length === 0) {
+                log('<div class="empty-message">No hay notificaciones</div>');
+                return;
+            }
+
+            notifications.forEach(notification => {
+                const isProblematic = notification.fromDisplayName === 'Sistema' || notification.fromDisplayName === 'system';
+                const classes = isProblematic ? 'notification sistema' : 'notification fixed';
+                
+                log(`
+                    <div class="${classes}">
+                        <strong>${isProblematic ? '❌' : '✅'} ${notification.type}</strong><br>
+                        ID: ${notification.id}<br>
+                        Task: ${notification.taskTitle}<br>
+                        From Display Name: <strong>${notification.fromDisplayName}</strong><br>
+                        Course: ${notification.course}<br>
+                        Target: ${notification.targetUsernames.join(', ')}<br>
+                        Timestamp: ${notification.timestamp}
+                    </div>
+                `);
+            });
+        }
+
+        function checkEvaluationResults() {
+            log('<div class="section"><h3>📊 Estado Actual de Resultados de Evaluación</h3></div>');
+            
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const evaluationTask = tasks.find(task => task.taskType === 'evaluation');
+            
+            if (!evaluationTask) {
+                log('<div class="empty-message">No se encontró tarea de evaluación</div>');
+                return;
+            }
+
+            log(`<p><strong>Evaluación encontrada:</strong> ${evaluationTask.title}</p>`);
+            log(`<p><strong>ID:</strong> ${evaluationTask.id}</p>`);
+            log(`<p><strong>Curso:</strong> ${evaluationTask.course}</p>`);
+            
+            // Simular función getAllEvaluationResults
+            const getAllEvaluationResults = (task) => {
+                console.log('🔍 getAllEvaluationResults called for task:', task.id, task.title);
+                console.log('📊 Current task.evaluationResults:', task.evaluationResults);
+                
+                const results = [];
+                
+                // Get all students who should take this evaluation  
+                const allStudents = ['felipe.estudiante', 'maria.estudiante', 'luis.estudiante', 'sofia.estudiante'];
+                const targetStudents = allStudents.filter(student => {
+                    const userData = JSON.parse(localStorage.getItem(`userData_${student}`) || '{}');
+                    return userData.activeCourses?.includes(task.course);
+                });
+                
+                console.log('👥 Target students for evaluation:', targetStudents);
+                
+                targetStudents.forEach(studentUsername => {
+                    console.log(`🔍 Checking results for student: ${studentUsername}`);
+                    
+                    // Check if student has completed evaluation in task.evaluationResults
+                    if (task.evaluationResults && task.evaluationResults[studentUsername]) {
+                        const result = task.evaluationResults[studentUsername];
+                        console.log(`✅ Found results in task.evaluationResults for ${studentUsername}:`, result);
+                        const userData = JSON.parse(localStorage.getItem(`userData_${studentUsername}`) || '{}');
+                        results.push({
+                            studentUsername,
+                            studentName: userData.displayName || studentUsername,
+                            ...result
+                        });
+                        return;
+                    }
+                    
+                    // Check in student's localStorage
+                    const userTasksKey = `userTasks_${studentUsername}`;
+                    const userTasksString = localStorage.getItem(userTasksKey);
+                    if (userTasksString) {
+                        try {
+                            const userTasks = JSON.parse(userTasksString);
+                            const userTask = userTasks.find(ut => ut.id === task.id);
+                            console.log(`📋 User task for ${studentUsername}:`, userTask);
+                            
+                            if (userTask && userTask.status === 'completed') {
+                                console.log(`✅ Found completed evaluation in user tasks for ${studentUsername}`);
+                                
+                                // Sincronizar a tarea global si no existe
+                                if (!task.evaluationResults) {
+                                    task.evaluationResults = {};
+                                }
+                                if (!task.evaluationResults[studentUsername]) {
+                                    const resultData = {
+                                        score: userTask.score || 0,
+                                        completionPercentage: userTask.completionPercentage || 0,
+                                        completedAt: userTask.completedAt,
+                                        totalQuestions: userTask.evaluationConfig?.questionCount || task.evaluationConfig?.questionCount || 0,
+                                        attempt: 1
+                                    };
+                                    
+                                    task.evaluationResults[studentUsername] = resultData;
+                                    
+                                    // Guardar en localStorage
+                                    const updatedTasks = tasks.map(t => t.id === task.id ? task : t);
+                                    localStorage.setItem('smart-student-tasks', JSON.stringify(updatedTasks));
+                                    console.log(`🔧 Synced evaluation results for ${studentUsername} to global task`);
+                                }
+                                
+                                const userData = JSON.parse(localStorage.getItem(`userData_${studentUsername}`) || '{}');
+                                results.push({
+                                    studentUsername,
+                                    studentName: userData.displayName || studentUsername,
+                                    score: userTask.score || 0,
+                                    completionPercentage: userTask.completionPercentage || 0,
+                                    completedAt: userTask.completedAt,
+                                    totalQuestions: userTask.evaluationConfig?.questionCount || task.evaluationConfig?.questionCount || 0
+                                });
+                            }
+                        } catch (error) {
+                            console.error(`Error parsing userTasks for ${studentUsername}:`, error);
+                        }
+                    }
+                });
+                
+                console.log('📊 Final evaluation results:', results);
+                return results.sort((a, b) => b.completionPercentage - a.completionPercentage);
+            };
+
+            const results = getAllEvaluationResults(evaluationTask);
+            
+            log(`<p><strong>Resultados encontrados:</strong> ${results.length}</p>`);
+            
+            if (results.length === 0) {
+                log('<div class="warning"><h4>⚠️ PROBLEMA: No se encontraron resultados</h4></div>');
+                
+                // Debugging
+                log('<h4>🔍 Información de Debug:</h4>');
+                log(`<div class="code">task.evaluationResults: ${JSON.stringify(evaluationTask.evaluationResults, null, 2)}</div>`);
+                
+                // Check userTasks for Felipe
+                const felipeUserTasks = localStorage.getItem('userTasks_felipe.estudiante');
+                log(`<div class="code">userTasks_felipe.estudiante: ${felipeUserTasks}</div>`);
+                
+            } else {
+                log('<table>');
+                log('<tr><th>Estudiante</th><th>Puntaje</th><th>Porcentaje</th><th>Completado</th></tr>');
+                results.forEach(result => {
+                    log(`<tr>
+                        <td>${result.studentName}</td>
+                        <td>${result.score}/${result.totalQuestions}</td>
+                        <td>${result.completionPercentage}%</td>
+                        <td>${result.completedAt ? new Date(result.completedAt).toLocaleString() : '-'}</td>
+                    </tr>`);
+                });
+                log('</table>');
+                log('<div class="success"><h4>✅ Los resultados se muestran correctamente</h4></div>');
+            }
+        }
+
+        function runMigration() {
+            log('<div class="section"><h3>🔄 Ejecutando Migración de Notificaciones</h3></div>');
+            
+            // Simular función migrateSystemNotifications
+            const migrateSystemNotifications = () => {
+                console.log('[TaskNotificationManager] 🔄 Migrando notificaciones que muestran "Sistema"...');
+                
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                let migrated = 0;
+                
+                // Obtener tareas para poder acceder a los títulos y cursos
+                const globalTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                
+                const updatedNotifications = notifications.map(notification => {
+                    if (notification.fromDisplayName === 'Sistema' || notification.fromDisplayName === 'system') {
+                        // Buscar la tarea correspondiente para obtener el título correcto
+                        const relatedTask = globalTasks.find(task => task.id === notification.taskId);
+                        
+                        if (relatedTask) {
+                            console.log(`Migrando notificación de "${notification.fromDisplayName}" a "${relatedTask.title} (${relatedTask.course})"`);
+                            migrated++;
+                            return {
+                                ...notification,
+                                fromDisplayName: `${relatedTask.title} (${relatedTask.course})`
+                            };
+                        } else {
+                            // Si no se encuentra la tarea, usar información de la notificación
+                            const newDisplayName = `${notification.taskTitle} (${notification.course})`;
+                            console.log(`Migrando notificación de "${notification.fromDisplayName}" a "${newDisplayName}"`);
+                            migrated++;
+                            return {
+                                ...notification,
+                                fromDisplayName: newDisplayName
+                            };
+                        }
+                    }
+                    
+                    return notification;
+                });
+                
+                if (migrated > 0) {
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(updatedNotifications));
+                    console.log(`[TaskNotificationManager] ✅ ${migrated} notificaciones migradas exitosamente`);
+                    return migrated;
+                } else {
+                    console.log('[TaskNotificationManager] ℹ️ No se encontraron notificaciones que necesiten migración');
+                    return 0;
+                }
+            };
+
+            const migrated = migrateSystemNotifications();
+            
+            if (migrated > 0) {
+                log(`<div class="success"><h4>✅ Migración completada: ${migrated} notificaciones actualizadas</h4></div>`);
+                
+                // Mostrar notificaciones después de la migración
+                setTimeout(() => {
+                    checkNotifications();
+                }, 100);
+            } else {
+                log('<div class="warning"><h4>ℹ️ No se encontraron notificaciones que necesiten migración</h4></div>');
+            }
+        }
+
+        function clearAll() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('smart-student-tasks');
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('userTasks_felipe.estudiante');
+            localStorage.removeItem('userData_felipe.estudiante');
+            localStorage.removeItem('userData_maria.estudiante');
+            localStorage.removeItem('userData_luis.estudiante');
+            localStorage.removeItem('userData_sofia.estudiante');
+            
+            results.innerHTML = '<div class="section success"><h3>🧹 Todos los datos de prueba eliminados</h3></div>';
+        }
+
+        // Auto-inicializar al cargar la página
+        window.onload = function() {
+            log('<div class="section"><h3>🚀 Página cargada - Lista para diagnosticar</h3></div>');
+        };
+    </script>
+</body>
+</html>

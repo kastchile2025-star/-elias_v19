@@ -1,0 +1,18 @@
+nombre,rut,curso,seccion,asignatura,profesor,fecha,tipo,nota
+Carlos Cubillos,10000183-7,3ro Básico,A,Historia Geografía y Ciencias Sociales,Sofía Martínez,2025-03-01,evaluacion,85
+María Rodríguez,10000184-5,4to Básico,B,Matemáticas,Juan Pérez,2025-03-02,tarea,92
+José González,10000185-3,5to Básico,A,Lenguaje y Comunicación,Ana López,2025-03-03,prueba,78
+Carmen Muñoz,10000186-1,6to Básico,B,Ciencias Naturales,Pedro Sánchez,2025-03-04,evaluacion,88
+Diego Hernández,10000187-k,1ro Medio,A,Historia,María García,2025-03-05,tarea,91
+Francisca Silva,10000188-8,2do Medio,B,Inglés,Roberto Torres,2025-03-06,prueba,83
+Andrés Morales,10000189-6,3ro Medio,A,Física,Carolina Rojas,2025-03-07,evaluacion,89
+Valentina Ruiz,10000190-x,4to Medio,B,Química,Fernando Castro,2025-03-08,tarea,94
+Sebastián Flores,10000191-8,1ro Básico,A,Educación Física,Laura Vega,2025-03-09,evaluacion,87
+Isidora Pizarro,10000192-6,2do Básico,B,Artes Visuales,Claudia Moreno,2025-03-10,prueba,90
+Matías Vargas,10000193-4,3ro Básico,A,Música,Ricardo Jiménez,2025-03-11,tarea,86
+Sofía Reyes,10000194-2,4to Básico,B,Tecnología,Patricia Herrera,2025-03-12,evaluacion,93
+Gabriel Espinoza,10000195-0,5to Básico,A,Filosofía,Miguel Contreras,2025-03-13,prueba,81
+Antonia Guerrero,10000196-9,6to Básico,B,Religión,Carmen Valdés,2025-03-14,tarea,88
+Nicolás Bravo,10000197-7,1ro Medio,A,Orientación,Héctor Mendoza,2025-03-15,evaluacion,85
+Emilia Cortés,10000198-5,2do Medio,B,Biología,Mónica Fuentes,2025-03-16,prueba,92
+Joaquín Medina,10000199-3,3ro Medio,A,Geografía,Rodrigo Peña,2025-03-17,tarea,79

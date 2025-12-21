@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Notificaciones de Evaluaciones Completadas - Profesor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        button.success {
+            background: #28a745;
+        }
+        button.success:hover {
+            background: #218838;
+        }
+        .notification-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .notification-completed {
+            background: #e8f5e8;
+            border-color: #28a745;
+        }
+        .log {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+        }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .status.info { background: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test: Notificaciones de Evaluaciones Completadas - Profesor</h1>
+        <p><strong>Propósito:</strong> Verificar que cuando un estudiante completa una evaluación, aparece en las notificaciones del profesor y desaparece cuando el profesor la ve.</p>
+        
+        <div class="test-section">
+            <h3>🎯 Flujo de Prueba</h3>
+            <ol>
+                <li><strong>Estudiante completa evaluación</strong> → Se crea notificación para el profesor</li>
+                <li><strong>Profesor ve notificación</strong> → Aparece en "Evaluaciones Completadas"</li>
+                <li><strong>Profesor abre la evaluación</strong> → La notificación desaparece</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Configuración Inicial</h3>
+            <button onclick="setupInitialData()">1. Configurar Datos Iniciales</button>
+            <button onclick="createTestEvaluation()">2. Crear Evaluación de Prueba</button>
+            <button onclick="simulateStudentCompletion()">3. Simular Estudiante Completa Evaluación</button>
+            <div id="setup-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Notificaciones del Profesor</h3>
+            <button onclick="loadTeacherNotifications()">Cargar Notificaciones</button>
+            <button onclick="simulateViewEvaluation()">Simular: Ver Resultados de Evaluación</button>
+            <div id="teacher-notifications"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Log de Eventos</h3>
+            <div class="log" id="log"></div>
+            <button onclick="clearLog()">Limpiar Log</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🗑️ Limpieza</h3>
+            <button class="danger" onclick="clearAllData()">Limpiar Todos los Datos</button>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de logs
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        // Sistema de notificaciones simplificado
+        class TaskNotificationManager {
+            static STORAGE_KEY = 'smart-student-task-notifications';
+
+            static getNotifications() {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            static saveNotifications(notifications) {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(notifications));
+                window.dispatchEvent(new CustomEvent('taskNotificationsUpdated'));
+            }
+
+            static createEvaluationCompletedNotification(taskId, taskTitle, course, subject, studentUsername, studentDisplayName, teacherUsername, evaluationResults) {
+                log(`🔔 Creando notificación de evaluación completada para profesor: ${teacherUsername}`);
+                
+                const notifications = this.getNotifications();
+                
+                const newNotification = {
+                    id: `eval_completed_${taskId}_${studentUsername}_${Date.now()}`,
+                    type: 'task_completed',
+                    taskId,
+                    taskTitle,
+                    targetUserRole: 'teacher',
+                    targetUsernames: [teacherUsername],
+                    fromUsername: studentUsername,
+                    fromDisplayName: studentDisplayName,
+                    course,
+                    subject,
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    readBy: [],
+                    taskType: 'evaluation'
+                };
+
+                notifications.push(newNotification);
+                this.saveNotifications(notifications);
+                
+                log(`✅ Notificación creada: ${JSON.stringify(newNotification, null, 2)}`);
+                return newNotification;
+            }
+
+            static removeEvaluationCompletedNotifications(taskId, teacherUsername) {
+                log(`🗑️ Eliminando notificaciones de evaluaciones completadas para tarea: ${taskId}, profesor: ${teacherUsername}`);
+                
+                const notifications = this.getNotifications();
+                let removedCount = 0;
+                
+                const filteredNotifications = notifications.filter(notification => {
+                    const shouldRemove = notification.taskId === taskId && 
+                        notification.type === 'task_completed' &&
+                        notification.taskType === 'evaluation' &&
+                        notification.targetUsernames.includes(teacherUsername);
+                    
+                    if (shouldRemove) {
+                        log(`📭 Eliminando notificación: ${notification.id} - ${notification.taskTitle} de ${notification.fromUsername}`);
+                        removedCount++;
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                if (removedCount > 0) {
+                    this.saveNotifications(filteredNotifications);
+                    log(`✅ ${removedCount} notificaciones eliminadas`);
+                } else {
+                    log(`ℹ️ No se encontraron notificaciones para eliminar`);
+                }
+                
+                return removedCount;
+            }
+
+            static getUnreadNotificationsForUser(username, role) {
+                const notifications = this.getNotifications();
+                return notifications.filter(notif => 
+                    notif.targetUsernames.includes(username) && 
+                    notif.targetUserRole === role &&
+                    !notif.readBy.includes(username)
+                );
+            }
+        }
+
+        // Variables globales para el test
+        let testData = {
+            taskId: 'eval_test_' + Date.now(),
+            taskTitle: 'Evaluación de Matemáticas - Fracciones',
+            course: 'Matemáticas',
+            subject: 'Matemáticas',
+            studentUsername: 'felipe_estudiante',
+            studentDisplayName: 'Felipe García',
+            teacherUsername: 'profesor_jorge',
+            teacherDisplayName: 'Jorge Profesor'
+        };
+
+        // Configuración inicial
+        function setupInitialData() {
+            log('🔧 Configurando datos iniciales...');
+            
+            // Crear usuario profesor
+            const teachers = [{
+                id: 'teacher_001',
+                username: testData.teacherUsername,
+                displayName: testData.teacherDisplayName,
+                role: 'teacher',
+                teachingAssignments: [{
+                    subject: 'Matemáticas',
+                    course: testData.course
+                }]
+            }];
+            
+            // Crear usuario estudiante
+            const students = [{
+                id: 'student_001',
+                username: testData.studentUsername,
+                displayName: testData.studentDisplayName,
+                role: 'student',
+                activeCourses: [testData.course]
+            }];
+            
+            localStorage.setItem('smart-student-users', JSON.stringify([...teachers, ...students]));
+            localStorage.setItem('smart-student-user', JSON.stringify(teachers[0])); // Simular login como profesor
+            
+            document.getElementById('setup-status').innerHTML = `
+                <div class="status success">✅ Datos configurados</div>
+                <p><strong>Profesor:</strong> ${testData.teacherDisplayName} (${testData.teacherUsername})</p>
+                <p><strong>Estudiante:</strong> ${testData.studentDisplayName} (${testData.studentUsername})</p>
+            `;
+            
+            log('✅ Datos iniciales configurados');
+        }
+
+        function createTestEvaluation() {
+            log('📝 Creando evaluación de prueba...');
+            
+            const evaluations = [{
+                id: testData.taskId,
+                title: testData.taskTitle,
+                description: 'Evaluación sobre operaciones con fracciones',
+                taskType: 'evaluation',
+                course: testData.course,
+                subject: testData.subject,
+                assignedBy: testData.teacherUsername,
+                assignedByName: testData.teacherDisplayName,
+                createdAt: new Date().toISOString(),
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                status: 'active',
+                assignedTo: 'course',
+                assignedStudentIds: ['student_001']
+            }];
+            
+            localStorage.setItem('smart-student-tasks', JSON.stringify(evaluations));
+            
+            document.getElementById('setup-status').innerHTML += `
+                <div class="status success">✅ Evaluación creada: ${testData.taskTitle}</div>
+            `;
+            
+            log('✅ Evaluación de prueba creada');
+        }
+
+        function simulateStudentCompletion() {
+            log('🎓 Simulando estudiante completando evaluación...');
+            
+            // Simular resultados de evaluación
+            const evaluationResults = {
+                score: 8,
+                totalQuestions: 10,
+                completionPercentage: 80,
+                completedAt: new Date().toISOString()
+            };
+            
+            // Crear notificación para el profesor
+            const notification = TaskNotificationManager.createEvaluationCompletedNotification(
+                testData.taskId,
+                testData.taskTitle,
+                testData.course,
+                testData.subject,
+                testData.studentUsername,
+                testData.studentDisplayName,
+                testData.teacherUsername,
+                evaluationResults
+            );
+            
+            document.getElementById('setup-status').innerHTML += `
+                <div class="status success">✅ Estudiante completó evaluación (80% - 8/10)</div>
+            `;
+            
+            log(`✅ Evaluación completada por ${testData.studentDisplayName}: ${evaluationResults.completionPercentage}%`);
+            
+            // Cargar notificaciones automáticamente
+            setTimeout(loadTeacherNotifications, 500);
+        }
+
+        function loadTeacherNotifications() {
+            log('📋 Cargando notificaciones del profesor...');
+            
+            const notifications = TaskNotificationManager.getUnreadNotificationsForUser(
+                testData.teacherUsername, 
+                'teacher'
+            );
+            
+            const evaluationNotifications = notifications.filter(notif => 
+                notif.type === 'task_completed' && 
+                notif.taskType === 'evaluation'
+            );
+            
+            const container = document.getElementById('teacher-notifications');
+            
+            if (evaluationNotifications.length === 0) {
+                container.innerHTML = `
+                    <div class="status info">ℹ️ No hay notificaciones de evaluaciones completadas</div>
+                `;
+                log('ℹ️ No se encontraron notificaciones de evaluaciones completadas');
+                return;
+            }
+            
+            let html = `<h4>📊 Evaluaciones Completadas (${evaluationNotifications.length})</h4>`;
+            
+            evaluationNotifications.forEach(notif => {
+                html += `
+                    <div class="notification-item notification-completed">
+                        <strong>📝 ${notif.taskTitle}</strong><br>
+                        <small>👤 Estudiante: ${notif.fromDisplayName} (${notif.fromUsername})</small><br>
+                        <small>📅 ${new Date(notif.timestamp).toLocaleString()}</small><br>
+                        <small>🏫 Curso: ${notif.course}</small>
+                        <div style="margin-top: 10px;">
+                            <button onclick="viewEvaluationResults('${notif.taskId}')" class="success">Ver Resultados</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            log(`📊 ${evaluationNotifications.length} notificaciones de evaluaciones completadas cargadas`);
+        }
+
+        function viewEvaluationResults(taskId) {
+            log(`👁️ Profesor abriendo resultados de evaluación: ${taskId}`);
+            
+            // Simular que el profesor ve los resultados
+            const removedCount = TaskNotificationManager.removeEvaluationCompletedNotifications(
+                taskId, 
+                testData.teacherUsername
+            );
+            
+            log(`🎯 Simulando apertura de vista de evaluación - Notificaciones eliminadas: ${removedCount}`);
+            
+            // Actualizar vista
+            setTimeout(() => {
+                loadTeacherNotifications();
+                document.getElementById('setup-status').innerHTML += `
+                    <div class="status success">✅ Profesor vio los resultados - Notificación eliminada</div>
+                `;
+            }, 500);
+        }
+
+        function simulateViewEvaluation() {
+            viewEvaluationResults(testData.taskId);
+        }
+
+        function clearAllData() {
+            if (confirm('¿Estás seguro de que quieres limpiar todos los datos de prueba?')) {
+                localStorage.removeItem('smart-student-task-notifications');
+                localStorage.removeItem('smart-student-tasks');
+                localStorage.removeItem('smart-student-users');
+                localStorage.removeItem('smart-student-user');
+                
+                document.getElementById('setup-status').innerHTML = `
+                    <div class="status info">🗑️ Todos los datos han sido limpiados</div>
+                `;
+                document.getElementById('teacher-notifications').innerHTML = '';
+                
+                log('🗑️ Todos los datos de prueba han sido limpiados');
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Test de notificaciones de evaluaciones completadas iniciado');
+            log('📖 Sigue los pasos en orden para probar la funcionalidad');
+        });
+
+        // Escuchar eventos de notificaciones
+        window.addEventListener('taskNotificationsUpdated', function() {
+            log('🔄 Evento: taskNotificationsUpdated disparado');
+        });
+    </script>
+</body>
+</html>

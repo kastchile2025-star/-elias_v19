@@ -1,0 +1,8 @@
+/* Estilos para la sombra naranja en las tarjetas de tareas */
+.card-orange-shadow {
+  transition: box-shadow 0.3s ease;
+}
+
+.card-orange-shadow:hover {
+  box-shadow: 0 0 10px 2px rgba(249, 115, 22, 0.3) !important; /* Sombra naranja */
+}

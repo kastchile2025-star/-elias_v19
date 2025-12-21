@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Marcado de Comentarios (Ambos Roles)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .student-section {
+            border-left: 4px solid #3b82f6;
+        }
+        .teacher-section {
+            border-left: 4px solid #f59e0b;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .teacher-btn {
+            background: #f59e0b;
+        }
+        .teacher-btn:hover {
+            background: #d97706;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .comment-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: #f9fafb;
+        }
+        .unread {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        .read {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test - Marcado de Comentarios (Ambos Roles)</h1>
+    <p>Este test verifica que tanto estudiantes como profesores puedan marcar comentarios como leídos correctamente cuando navegan desde notificaciones.</p>
+
+    <div class="container">
+        <h2>🎯 Escenario de Prueba</h2>
+        <div class="test-section">
+            <h3>Configuración Inicial</h3>
+            <button onclick="setupTestScenario()">🔧 Configurar Escenario de Prueba</button>
+            <div id="setup-status"></div>
+        </div>
+    </div>
+
+    <div class="container student-section">
+        <h2>👨‍🎓 Test - Estudiante</h2>
+        <div class="test-section">
+            <h3>Paso 1: Simular usuario estudiante</h3>
+            <button onclick="simulateStudentLogin()">👨‍🎓 Simular Login Estudiante (carlos_ruiz)</button>
+            <div id="student-login-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 2: Ver comentarios sin leer</h3>
+            <button onclick="showUnreadCommentsForStudent()">📋 Ver Comentarios Sin Leer</button>
+            <div id="student-unread-comments"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 3: Simular navegación desde notificación</h3>
+            <button onclick="simulateNavigationFromNotificationAsStudent()">🔗 Navegar desde Notificación</button>
+            <div id="student-navigation-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 4: Verificar comentarios marcados como leídos</h3>
+            <button onclick="verifyCommentsMarkedAsReadForStudent()">✅ Verificar Comentarios Leídos</button>
+            <div id="student-verification-result"></div>
+        </div>
+    </div>
+
+    <div class="container teacher-section">
+        <h2>👩‍🏫 Test - Profesor</h2>
+        <div class="test-section">
+            <h3>Paso 1: Simular usuario profesor</h3>
+            <button onclick="simulateTeacherLogin()">👩‍🏫 Simular Login Profesor (profesor_martinez)</button>
+            <div id="teacher-login-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 2: Ver comentarios sin leer</h3>
+            <button onclick="showUnreadCommentsForTeacher()">📋 Ver Comentarios Sin Leer</button>
+            <div id="teacher-unread-comments"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 3: Simular navegación desde notificación</h3>
+            <button onclick="simulateNavigationFromNotificationAsTeacher()">🔗 Navegar desde Notificación</button>
+            <div id="teacher-navigation-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Paso 4: Verificar comentarios marcados como leídos</h3>
+            <button onclick="verifyCommentsMarkedAsReadForTeacher()">✅ Verificar Comentarios Leídos</button>
+            <div id="teacher-verification-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Resultado Final</h2>
+        <button onclick="showFinalResults()">📊 Ver Resultados Comparativos</button>
+        <div id="final-results"></div>
+    </div>
+
+    <script>
+        let testTaskId = 'test-task-' + Date.now();
+        let studentUser = null;
+        let teacherUser = null;
+
+        function setupTestScenario() {
+            const status = document.getElementById('setup-status');
+            status.innerHTML = '<div class="info">🔧 Configurando escenario...</div>';
+
+            // Create test task
+            const testTask = {
+                id: testTaskId,
+                title: 'Ensayo de Literatura',
+                description: 'Analizar "Cien años de soledad"',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                priority: 'medium',
+                status: 'pending',
+                assignedBy: 'profesor_martinez',
+                course: '10A',
+                subject: 'Literatura',
+                taskType: 'essay',
+                createdAt: new Date().toISOString()
+            };
+
+            // Create test comments from teacher to student
+            const testComments = [
+                {
+                    id: 'comment-1-' + Date.now(),
+                    taskId: testTaskId,
+                    comment: 'Necesitas mejorar la introducción del ensayo.',
+                    author: 'profesor_martinez',
+                    userRole: 'teacher',
+                    studentUsername: 'carlos_ruiz',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    isNew: true
+                },
+                {
+                    id: 'comment-2-' + Date.now(),
+                    taskId: testTaskId,
+                    comment: 'El análisis del simbolismo está muy bien desarrollado.',
+                    author: 'profesor_martinez',
+                    userRole: 'teacher',
+                    studentUsername: 'carlos_ruiz',
+                    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                    isSubmission: false,
+                    readBy: [],
+                    isNew: true
+                },
+                {
+                    id: 'comment-3-' + Date.now(),
+                    taskId: testTaskId,
+                    comment: 'He subido mi primera versión del ensayo.',
+                    author: 'carlos_ruiz',
+                    userRole: 'student',
+                    studentUsername: 'carlos_ruiz',
+                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    isSubmission: true,
+                    readBy: [],
+                    isNew: true
+                }
+            ];
+
+            // Save test data
+            localStorage.setItem('smart-student-tasks', JSON.stringify([testTask]));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+
+            status.innerHTML = `
+                <div class="success">✅ Escenario configurado correctamente</div>
+                <div class="info">📝 Tarea creada: ${testTask.title}</div>
+                <div class="info">💬 ${testComments.length} comentarios creados</div>
+                <div class="warning">📋 Task ID: ${testTaskId}</div>
+            `;
+        }
+
+        function simulateStudentLogin() {
+            studentUser = {
+                username: 'carlos_ruiz',
+                name: 'Carlos Ruiz',
+                role: 'student',
+                course: '10A',
+                profilePicture: '/images/default-avatar.jpg'
+            };
+
+            localStorage.setItem('smart-student-user', JSON.stringify(studentUser));
+            
+            const status = document.getElementById('student-login-status');
+            status.innerHTML = `
+                <div class="success">✅ Usuario estudiante simulado</div>
+                <div class="info">👤 ${studentUser.name} (${studentUser.username})</div>
+                <div class="info">🎓 Rol: ${studentUser.role}</div>
+            `;
+        }
+
+        function simulateTeacherLogin() {
+            teacherUser = {
+                username: 'profesor_martinez',
+                name: 'Profesor Martínez',
+                role: 'teacher',
+                activeCourses: ['10A', '10B', '11A'],
+                profilePicture: '/images/default-avatar.jpg'
+            };
+
+            localStorage.setItem('smart-student-user', JSON.stringify(teacherUser));
+            
+            const status = document.getElementById('teacher-login-status');
+            status.innerHTML = `
+                <div class="success">✅ Usuario profesor simulado</div>
+                <div class="info">👤 ${teacherUser.name} (${teacherUser.username})</div>
+                <div class="info">🏫 Rol: ${teacherUser.role}</div>
+            `;
+        }
+
+        function showUnreadCommentsForStudent() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const unreadComments = comments.filter(c => 
+                c.taskId === testTaskId && 
+                c.userRole === 'teacher' && 
+                !c.readBy?.includes('carlos_ruiz')
+            );
+
+            const container = document.getElementById('student-unread-comments');
+            if (unreadComments.length === 0) {
+                container.innerHTML = '<div class="warning">⚠️ No hay comentarios sin leer del profesor</div>';
+                return;
+            }
+
+            let html = `<div class="success">📬 ${unreadComments.length} comentarios sin leer del profesor:</div>`;
+            unreadComments.forEach(comment => {
+                html += `
+                    <div class="comment-item unread">
+                        <strong>${comment.author}:</strong> ${comment.comment}
+                        <br><small>📅 ${new Date(comment.timestamp).toLocaleString()}</small>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function showUnreadCommentsForTeacher() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const unreadComments = comments.filter(c => 
+                c.taskId === testTaskId && 
+                c.userRole === 'student' && 
+                !c.readBy?.includes('profesor_martinez')
+            );
+
+            const container = document.getElementById('teacher-unread-comments');
+            if (unreadComments.length === 0) {
+                container.innerHTML = '<div class="warning">⚠️ No hay comentarios sin leer del estudiante</div>';
+                return;
+            }
+
+            let html = `<div class="success">📬 ${unreadComments.length} comentarios sin leer del estudiante:</div>`;
+            unreadComments.forEach(comment => {
+                html += `
+                    <div class="comment-item unread">
+                        <strong>${comment.author}:</strong> ${comment.comment}
+                        <br><small>📅 ${new Date(comment.timestamp).toLocaleString()}</small>
+                        ${comment.isSubmission ? '<br><span class="success">📤 Entrega</span>' : ''}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function simulateNavigationFromNotificationAsStudent() {
+            // Simulate the logic from markAllTaskCommentsAsRead function
+            const user = studentUser;
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            
+            if (!storedComments) {
+                document.getElementById('student-navigation-result').innerHTML = 
+                    '<div class="error">❌ No hay comentarios en localStorage</div>';
+                return;
+            }
+
+            const commentsData = JSON.parse(storedComments);
+            let hasUpdates = false;
+            let markedCount = 0;
+
+            const updatedComments = commentsData.map(comment => {
+                // Mark ALL unread comments in this task as read (from different role)
+                if (comment.taskId === testTaskId && 
+                    comment.userRole !== user.role && 
+                    !comment.readBy?.includes(user.username)) {
+                    hasUpdates = true;
+                    markedCount++;
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), user.username]
+                    };
+                }
+                return comment;
+            });
+
+            if (hasUpdates) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                document.getElementById('student-navigation-result').innerHTML = `
+                    <div class="success">✅ Navegación desde notificación simulada</div>
+                    <div class="info">📖 ${markedCount} comentarios marcados como leídos</div>
+                    <div class="info">👤 Usuario: ${user.username}</div>
+                `;
+            } else {
+                document.getElementById('student-navigation-result').innerHTML = `
+                    <div class="warning">⚠️ No había comentarios sin leer para marcar</div>
+                `;
+            }
+        }
+
+        function simulateNavigationFromNotificationAsTeacher() {
+            // Simulate the logic from markAllTaskCommentsAsRead function
+            const user = teacherUser;
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            
+            if (!storedComments) {
+                document.getElementById('teacher-navigation-result').innerHTML = 
+                    '<div class="error">❌ No hay comentarios en localStorage</div>';
+                return;
+            }
+
+            const commentsData = JSON.parse(storedComments);
+            let hasUpdates = false;
+            let markedCount = 0;
+
+            const updatedComments = commentsData.map(comment => {
+                // Mark ALL unread comments in this task as read (from different role)
+                if (comment.taskId === testTaskId && 
+                    comment.userRole !== user.role && 
+                    !comment.readBy?.includes(user.username)) {
+                    hasUpdates = true;
+                    markedCount++;
+                    return {
+                        ...comment,
+                        isNew: false,
+                        readBy: [...(comment.readBy || []), user.username]
+                    };
+                }
+                return comment;
+            });
+
+            if (hasUpdates) {
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                document.getElementById('teacher-navigation-result').innerHTML = `
+                    <div class="success">✅ Navegación desde notificación simulada</div>
+                    <div class="info">📖 ${markedCount} comentarios marcados como leídos</div>
+                    <div class="info">👤 Usuario: ${user.username}</div>
+                `;
+            } else {
+                document.getElementById('teacher-navigation-result').innerHTML = `
+                    <div class="warning">⚠️ No había comentarios sin leer para marcar</div>
+                `;
+            }
+        }
+
+        function verifyCommentsMarkedAsReadForStudent() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const readComments = taskComments.filter(c => c.readBy?.includes('carlos_ruiz'));
+            const unreadComments = taskComments.filter(c => !c.readBy?.includes('carlos_ruiz'));
+
+            const container = document.getElementById('student-verification-result');
+            let html = `
+                <div class="info">📊 Estado de comentarios para estudiante:</div>
+                <div class="success">✅ Comentarios leídos: ${readComments.length}</div>
+                <div class="warning">⚠️ Comentarios sin leer: ${unreadComments.length}</div>
+            `;
+
+            if (readComments.length > 0) {
+                html += '<div class="info">📖 Comentarios leídos:</div>';
+                readComments.forEach(comment => {
+                    html += `
+                        <div class="comment-item read">
+                            <strong>${comment.author}:</strong> ${comment.comment}
+                            <br><small>👥 Leído por: ${comment.readBy.join(', ')}</small>
+                        </div>
+                    `;
+                });
+            }
+
+            if (unreadComments.length > 0) {
+                html += '<div class="warning">📬 Comentarios sin leer:</div>';
+                unreadComments.forEach(comment => {
+                    html += `
+                        <div class="comment-item unread">
+                            <strong>${comment.author}:</strong> ${comment.comment}
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function verifyCommentsMarkedAsReadForTeacher() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const readComments = taskComments.filter(c => c.readBy?.includes('profesor_martinez'));
+            const unreadComments = taskComments.filter(c => !c.readBy?.includes('profesor_martinez'));
+
+            const container = document.getElementById('teacher-verification-result');
+            let html = `
+                <div class="info">📊 Estado de comentarios para profesor:</div>
+                <div class="success">✅ Comentarios leídos: ${readComments.length}</div>
+                <div class="warning">⚠️ Comentarios sin leer: ${unreadComments.length}</div>
+            `;
+
+            if (readComments.length > 0) {
+                html += '<div class="info">📖 Comentarios leídos:</div>';
+                readComments.forEach(comment => {
+                    html += `
+                        <div class="comment-item read">
+                            <strong>${comment.author}:</strong> ${comment.comment}
+                            <br><small>👥 Leído por: ${comment.readBy.join(', ')}</small>
+                            ${comment.isSubmission ? '<br><span class="success">📤 Entrega</span>' : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            if (unreadComments.length > 0) {
+                html += '<div class="warning">📬 Comentarios sin leer:</div>';
+                unreadComments.forEach(comment => {
+                    html += `
+                        <div class="comment-item unread">
+                            <strong>${comment.author}:</strong> ${comment.comment}
+                            ${comment.isSubmission ? '<br><span class="success">📤 Entrega</span>' : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function showFinalResults() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+
+            const studentReadComments = taskComments.filter(c => c.readBy?.includes('carlos_ruiz'));
+            const teacherReadComments = taskComments.filter(c => c.readBy?.includes('profesor_martinez'));
+
+            const container = document.getElementById('final-results');
+            container.innerHTML = `
+                <div class="info">📊 Resumen Comparativo:</div>
+                <div class="test-section">
+                    <h4>👨‍🎓 Estudiante (carlos_ruiz)</h4>
+                    <div class="success">✅ Comentarios leídos: ${studentReadComments.length}</div>
+                    <div class="info">📝 Tipos de comentarios leídos: ${studentReadComments.map(c => c.userRole).join(', ')}</div>
+                </div>
+                <div class="test-section">
+                    <h4>👩‍🏫 Profesor (profesor_martinez)</h4>
+                    <div class="success">✅ Comentarios leídos: ${teacherReadComments.length}</div>
+                    <div class="info">📝 Tipos de comentarios leídos: ${teacherReadComments.map(c => c.userRole).join(', ')}</div>
+                </div>
+                <div class="test-section">
+                    <h4>🎯 Verificación</h4>
+                    <div class="${studentReadComments.length > 0 && teacherReadComments.length > 0 ? 'success' : 'error'}">
+                        ${studentReadComments.length > 0 && teacherReadComments.length > 0 ? 
+                          '✅ ÉXITO: Ambos roles pueden marcar comentarios como leídos' : 
+                          '❌ ERROR: La funcionalidad no está funcionando para ambos roles'}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

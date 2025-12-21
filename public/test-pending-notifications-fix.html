@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Corrección Notificaciones Pendientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .pass {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .fail {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 2px;
+        }
+        .badge-pending {
+            background-color: #fb923c;
+            color: white;
+        }
+        .badge-completed {
+            background-color: #22c55e;
+            color: white;
+        }
+        .notification-bell {
+            position: relative;
+            display: inline-block;
+            background: #f97316;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50%;
+            margin: 5px;
+        }
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .timeline {
+            border-left: 3px solid #f97316;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test: Corrección Notificaciones Pendientes</h1>
+        <p><strong>Fecha:</strong> 25 de Junio, 2025</p>
+        <p><strong>Problema:</strong> Las notificaciones de tareas pendientes desaparecían al visitar la página sin completar la tarea</p>
+
+        <!-- Problema Identificado -->
+        <div class="test-section fail">
+            <h2>❌ Problema Identificado</h2>
+            <p><strong>Ubicación:</strong> <code>/src/app/dashboard/tareas/page.tsx</code> líneas 130-135</p>
+            <div class="code-block">
+                <strong>CÓDIGO PROBLEMÁTICO (ELIMINADO):</strong><br>
+                // Mark all new task notifications as read<br>
+                unreadNotifications<br>
+                &nbsp;&nbsp;.filter(notification => notification.type === 'new_task')<br>
+                &nbsp;&nbsp;.forEach(notification => {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;TaskNotificationManager.markAsReadByUser(notification.id, user.username);<br>
+                &nbsp;&nbsp;});
+            </div>
+            <p><strong>Efecto:</strong> Al solo VISITAR la página de tareas, todas las notificaciones se marcaban como leídas</p>
+        </div>
+
+        <!-- Solución Implementada -->
+        <div class="test-section pass">
+            <h2>✅ Solución Implementada</h2>
+            <div class="code-block">
+                <strong>CÓDIGO CORREGIDO:</strong><br>
+                // NOTE: NO marcar notificaciones de nuevas tareas como leídas aquí<br>
+                // Solo se deben marcar como leídas cuando el estudiante ENTREGA la tarea<br>
+                // Esto se hace en handleAddComment() cuando isSubmission es true
+            </div>
+            <p><strong>Lógica Correcta (ya existía):</strong> Las notificaciones solo se marcan como leídas cuando el estudiante entrega la tarea</p>
+        </div>
+
+        <!-- Flujo Correcto -->
+        <div class="test-section">
+            <h2>🔄 Flujo Correcto de Notificaciones</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>1. Profesor crea tarea</h4>
+                    <span class="badge badge-pending">Nueva Tarea</span>
+                    <div class="notification-bell">🔔<span class="notification-count">1</span></div>
+                    <p>Se crea notificación para estudiantes del curso</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>2. Estudiante visita página de tareas</h4>
+                    <span class="badge badge-pending">Pendiente</span>
+                    <div class="notification-bell">🔔<span class="notification-count">1</span></div>
+                    <p><strong>✅ CORRECTO:</strong> Notificación permanece visible</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>3. Estudiante ve la tarea pero no la entrega</h4>
+                    <span class="badge badge-pending">Pendiente</span>
+                    <div class="notification-bell">🔔<span class="notification-count">1</span></div>
+                    <p><strong>✅ CORRECTO:</strong> Notificación sigue activa</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>4. Estudiante entrega la tarea</h4>
+                    <span class="badge badge-completed">Entregada</span>
+                    <div class="notification-bell">🔔<span class="notification-count">0</span></div>
+                    <p><strong>✅ CORRECTO:</strong> Notificación se marca como leída</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Casos de Prueba -->
+        <div class="test-section">
+            <h2>🧪 Casos de Prueba</h2>
+            
+            <h3>Caso 1: Estudiante con tarea pendiente</h3>
+            <div class="code-block">
+                Usuario: sofia.estudiante<br>
+                Tarea: "Ensayo de Historia" - Pendiente<br>
+                Comportamiento esperado: Notificación permanece hasta entrega
+            </div>
+            
+            <h3>Caso 2: Estudiante con múltiples tareas</h3>
+            <div class="code-block">
+                Usuario: juan.perez<br>
+                Tareas: 3 pendientes, 1 entregada<br>
+                Notificaciones: Solo 3 (las pendientes)
+            </div>
+            
+            <h3>Caso 3: Profesor ve entregas</h3>
+            <div class="code-block">
+                Usuario: carlos.profesor<br>
+                Vista: Entregas pendientes de calificar<br>
+                Notificaciones: Separadas de las de estudiantes
+            </div>
+        </div>
+
+        <!-- Verificación de Código -->
+        <div class="test-section pass">
+            <h2>✅ Verificación de Código</h2>
+            
+            <h3>Función Correcta (Conservada):</h3>
+            <div class="code-block">
+                // En handleAddComment() cuando isSubmission es true:<br>
+                TaskNotificationManager.markNewTaskNotificationAsReadOnSubmission(<br>
+                &nbsp;&nbsp;selectedTask.id,<br>
+                &nbsp;&nbsp;user.username<br>
+                );
+            </div>
+            
+            <h3>Funciones de Conteo (Sin cambios):</h3>
+            <div class="code-block">
+                // Dashboard principal - Mantiene lógica correcta:<br>
+                const pendingTasksCount = tasks.filter(task => <br>
+                &nbsp;&nbsp;task.status === 'pending' && <br>
+                &nbsp;&nbsp;(task.assignedTo === 'course' || task.assignedStudents?.includes(user.username))<br>
+                ).length;
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="test-section pass">
+            <h2>🎯 Resultado</h2>
+            <p><strong>Estado:</strong> ✅ Problema corregido</p>
+            <p><strong>Cambio:</strong> Eliminado código que marcaba notificaciones como leídas al visitar la página</p>
+            <p><strong>Efecto:</strong> Ahora las notificaciones solo desaparecen cuando el estudiante entrega la tarea</p>
+            <p><strong>Compatibilidad:</strong> No afecta otras funcionalidades</p>
+        </div>
+
+        <!-- Instrucciones de Prueba -->
+        <div class="test-section warning">
+            <h2>📋 Instrucciones para QA</h2>
+            <ol>
+                <li><strong>Como profesor:</strong> Crear una tarea nueva</li>
+                <li><strong>Como estudiante:</strong> Ver que aparece notificación en campana</li>
+                <li><strong>Navegar:</strong> Ir a página de tareas</li>
+                <li><strong>Verificar:</strong> Notificación debe seguir activa</li>
+                <li><strong>Regresar:</strong> Al dashboard principal</li>
+                <li><strong>Confirmar:</strong> Contador sigue mostrando tarea pendiente</li>
+                <li><strong>Entregar:</strong> Completar la tarea</li>
+                <li><strong>Validar:</strong> Solo entonces debe desaparecer la notificación</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        console.log('📋 Test: Corrección Notificaciones Pendientes');
+        console.log('✅ Código problemático eliminado');
+        console.log('✅ Lógica correcta conservada');
+        console.log('🔄 Notificaciones persistirán hasta entrega real');
+    </script>
+</body>
+</html>

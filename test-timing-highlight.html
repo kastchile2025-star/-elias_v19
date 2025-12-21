@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Timing de Destacado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        .comment-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+        }
+        .unread {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            font-weight: bold;
+        }
+        .read {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+        }
+        .highlighted {
+            background: #fef08a !important;
+            border: 2px solid #eab308 !important;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        .timeline {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>⏱️ Test - Timing de Destacado de Comentarios</h1>
+    <p>Verificar que los comentarios se destaquen ANTES de marcarse como leídos</p>
+
+    <div class="container">
+        <h2>🎯 Simulación del Flujo Temporal</h2>
+        
+        <div class="section">
+            <h3>1. Configurar Escenario</h3>
+            <button onclick="setupScenario()">🔧 Crear Comentarios No Leídos</button>
+            <div id="setup-result"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Simular Navegación con Timing</h3>
+            <button onclick="simulateNavigationTiming()">⏱️ Simular Navegación (Con Timing)</button>
+            <div id="timing-result"></div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Timeline de Eventos</h3>
+            <div id="timeline"></div>
+        </div>
+        
+        <div class="section">
+            <h3>4. Estado de Comentarios en Tiempo Real</h3>
+            <div id="comments-state"></div>
+        </div>
+    </div>
+
+    <script>
+        let testTaskId = 'task-timing-test';
+        let mariaUser = {
+            username: 'maria_estudiante',
+            name: 'Maria Estudiante',
+            role: 'student'
+        };
+
+        let timelineEvents = [];
+
+        function addTimelineEvent(event) {
+            const timestamp = new Date().toLocaleTimeString();
+            timelineEvents.push(`[${timestamp}] ${event}`);
+            updateTimeline();
+        }
+
+        function updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = `
+                <div class="timeline">
+                    <strong>📋 Timeline de Eventos:</strong><br>
+                    ${timelineEvents.join('<br>')}
+                </div>
+            `;
+        }
+
+        function setupScenario() {
+            timelineEvents = [];
+            addTimelineEvent('🔧 Configurando escenario de prueba...');
+            
+            const testComments = [
+                {
+                    id: 'comment-1',
+                    taskId: testTaskId,
+                    comment: 'Primer comentario no leído',
+                    author: 'Sofia Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'sofia_estudiante',
+                    studentName: 'Sofia Estudiante',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                },
+                {
+                    id: 'comment-2',
+                    taskId: testTaskId,
+                    comment: 'Segundo comentario no leído',
+                    author: 'Luis Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'luis_estudiante',
+                    studentName: 'Luis Estudiante',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                },
+                {
+                    id: 'comment-3',
+                    taskId: testTaskId,
+                    comment: 'Tercer comentario no leído',
+                    author: 'Carlos Estudiante',
+                    userRole: 'student',
+                    studentUsername: 'carlos_estudiante',
+                    studentName: 'Carlos Estudiante',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    readBy: [], // NO LEÍDO
+                    isNew: true
+                }
+            ];
+
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(testComments));
+            localStorage.setItem('smart-student-user', JSON.stringify(mariaUser));
+
+            addTimelineEvent(`✅ ${testComments.length} comentarios no leídos creados`);
+            
+            document.getElementById('setup-result').innerHTML = `
+                <div class="success">✅ Escenario configurado</div>
+                <div class="info">💬 ${testComments.length} comentarios no leídos por Maria</div>
+            `;
+            
+            updateCommentsDisplay();
+        }
+
+        function updateCommentsDisplay() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const user = mariaUser;
+            
+            let html = '<div class="info">📋 Estado actual de comentarios:</div>';
+            
+            taskComments.forEach(comment => {
+                const isUnreadByUser = !comment.readBy?.includes(user?.username || '') &&
+                    comment.studentUsername !== user?.username;
+                
+                html += `
+                    <div class="comment-item ${isUnreadByUser ? 'unread' : 'read'}" id="display-${comment.id}">
+                        <strong>💬 ${comment.comment}</strong><br>
+                        <small>👤 ${comment.studentUsername}</small><br>
+                        <small>📖 Estado: ${isUnreadByUser ? '🔴 NO LEÍDO' : '✅ LEÍDO'}</small><br>
+                        <small>👥 readBy: [${comment.readBy.join(', ')}]</small>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('comments-state').innerHTML = html;
+        }
+
+        function simulateNavigationTiming() {
+            addTimelineEvent('🔗 Usuario hace clic en "ver comentario"');
+            addTimelineEvent('📱 Navegando a la tarea...');
+            
+            // Simular apertura del diálogo
+            setTimeout(() => {
+                addTimelineEvent('📖 Diálogo de tarea abierto');
+                addTimelineEvent('✨ Comentarios renderizados con destacado');
+                
+                // Destacar visualmente los comentarios
+                highlightUnreadComments();
+                
+                // Simular el delay de 2 segundos antes de marcar como leídos
+                setTimeout(() => {
+                    addTimelineEvent('⏱️ Ejecutando markAllTaskCommentsAsRead() después de 2 segundos');
+                    markAllCommentsAsRead();
+                }, 2000);
+                
+            }, 500); // Simular tiempo de apertura del diálogo
+        }
+
+        function highlightUnreadComments() {
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const taskComments = comments.filter(c => c.taskId === testTaskId);
+            const user = mariaUser;
+            
+            let highlightedCount = 0;
+            
+            taskComments.forEach(comment => {
+                const isUnreadByUser = !comment.readBy?.includes(user?.username || '') &&
+                    comment.studentUsername !== user?.username;
+                
+                if (isUnreadByUser) {
+                    highlightedCount++;
+                    const element = document.getElementById(`display-${comment.id}`);
+                    if (element) {
+                        element.classList.add('highlighted');
+                    }
+                }
+            });
+            
+            addTimelineEvent(`🌟 ${highlightedCount} comentarios destacados visualmente`);
+            updateCommentsDisplay();
+        }
+
+        function markAllCommentsAsRead() {
+            const user = mariaUser;
+            const storedComments = localStorage.getItem('smart-student-task-comments');
+            
+            if (storedComments) {
+                const commentsData = JSON.parse(storedComments);
+                let markedCount = 0;
+                
+                const updatedComments = commentsData.map(comment => {
+                    if (comment.taskId === testTaskId && 
+                        comment.studentUsername !== user.username && 
+                        !comment.readBy?.includes(user.username)) {
+                        markedCount++;
+                        return {
+                            ...comment,
+                            isNew: false,
+                            readBy: [...(comment.readBy || []), user.username]
+                        };
+                    }
+                    return comment;
+                });
+                
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(updatedComments));
+                addTimelineEvent(`📖 ${markedCount} comentarios marcados como leídos`);
+                
+                // Quitar el destacado después de marcar como leídos
+                setTimeout(() => {
+                    addTimelineEvent('🎨 Removiendo destacado visual');
+                    removeHighlights();
+                    updateCommentsDisplay();
+                }, 500);
+            }
+        }
+
+        function removeHighlights() {
+            const highlightedElements = document.querySelectorAll('.highlighted');
+            highlightedElements.forEach(element => {
+                element.classList.remove('highlighted');
+            });
+        }
+
+        // Actualizar display cada segundo
+        setInterval(() => {
+            if (document.getElementById('comments-state').innerHTML) {
+                updateCommentsDisplay();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

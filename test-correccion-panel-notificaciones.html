@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test: Corrección Notificaciones Tareas Completadas - Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        .info { color: #17a2b8; font-weight: bold; }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        .notification-preview {
+            border: 1px solid orange;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #fff5f0;
+        }
+        .notification-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #ff8c00;
+            background: #fffef9;
+            border-radius: 4px;
+        }
+        .filter-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .visible { background: #ffebee; color: #c62828; }
+        .hidden { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Test: Corrección Notificaciones Tareas Completadas</h1>
+            <p>Verificación del filtro de calificaciones en el panel de notificaciones</p>
+        </div>
+        
+        <div class="content">
+            <!-- Sección 1: Configuración del Test -->
+            <div class="section">
+                <h2>🎯 1. Configuración del Escenario de Prueba</h2>
+                <button class="button" onclick="setupTest()">📋 Configurar Datos de Prueba</button>
+                <button class="button" onclick="clearData()">🗑️ Limpiar Datos</button>
+                <div id="setup-status"></div>
+            </div>
+            
+            <!-- Sección 2: Simulación de Entregas -->
+            <div class="section">
+                <h2>📤 2. Simulación de Entregas de Estudiantes</h2>
+                <button class="button" onclick="simulateSubmission('maria123', 'María García')">👩‍🎓 María entrega tarea</button>
+                <button class="button" onclick="simulateSubmission('carlos456', 'Carlos López')">👨‍🎓 Carlos entrega tarea</button>
+                <button class="button" onclick="simulateSubmission('ana789', 'Ana Martínez')">👩‍🎓 Ana entrega tarea</button>
+                <div id="submission-status"></div>
+            </div>
+            
+            <!-- Sección 3: Vista del Panel de Notificaciones -->
+            <div class="section">
+                <h2>🔔 3. Panel de Notificaciones del Profesor</h2>
+                <button class="button" onclick="showNotificationPanel()">👁️ Ver Panel de Notificaciones</button>
+                <div id="notification-panel"></div>
+            </div>
+            
+            <!-- Sección 4: Proceso de Calificación -->
+            <div class="section">
+                <h2>📊 4. Proceso de Calificación</h2>
+                <button class="button" onclick="gradeSubmission('maria123', 85)">✅ Calificar María (85%)</button>
+                <button class="button" onclick="gradeSubmission('carlos456', 92)">✅ Calificar Carlos (92%)</button>
+                <button class="button" onclick="gradeSubmission('ana789', 78)">✅ Calificar Ana (78%)</button>
+                <div id="grading-status"></div>
+            </div>
+            
+            <!-- Sección 5: Verificación Final -->
+            <div class="section">
+                <h2>🔍 5. Verificación de Corrección</h2>
+                <button class="button" onclick="verifyFix()">🧪 Verificar Corrección del Panel</button>
+                <div id="verification-results"></div>
+            </div>
+            
+            <!-- Sección 6: Debug -->
+            <div class="section">
+                <h2>🔧 6. Información de Debug</h2>
+                <button class="button" onclick="showDebugInfo()">🐛 Mostrar Debug</button>
+                <div id="debug-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let testTaskId = 'test-task-12345';
+        let teacherUsername = 'profesor1';
+        
+        // Función para configurar datos de prueba
+        function setupTest() {
+            console.log('🎯 Configurando datos de prueba...');
+            
+            // Configurar usuarios
+            const users = {
+                'profesor1': {
+                    role: 'teacher',
+                    displayName: 'Prof. Juan Pérez',
+                    activeCourses: ['MAT101']
+                },
+                'maria123': {
+                    role: 'student',
+                    displayName: 'María García',
+                    activeCourses: ['MAT101']
+                },
+                'carlos456': {
+                    role: 'student',
+                    displayName: 'Carlos López',
+                    activeCourses: ['MAT101']
+                },
+                'ana789': {
+                    role: 'student',
+                    displayName: 'Ana Martínez',
+                    activeCourses: ['MAT101']
+                }
+            };
+            localStorage.setItem('smart-student-users', JSON.stringify(users));
+            
+            // Configurar curso
+            const courses = [
+                {
+                    id: 'MAT101',
+                    name: 'Matemáticas Básicas',
+                    teacher: 'profesor1'
+                }
+            ];
+            localStorage.setItem('smart-student-courses', JSON.stringify(courses));
+            
+            // Configurar tarea de prueba
+            const tasks = [
+                {
+                    id: testTaskId,
+                    title: 'Tarea de Álgebra - Ecuaciones Lineales',
+                    course: 'MAT101',
+                    subject: 'Matemáticas',
+                    teacher: 'profesor1',
+                    type: 'assignment',
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            localStorage.setItem('smart-student-tasks', JSON.stringify(tasks));
+            
+            // Limpiar notificaciones y comentarios existentes
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify([]));
+            localStorage.setItem('smart-student-task-comments', JSON.stringify([]));
+            
+            document.getElementById('setup-status').innerHTML = `
+                <div class="step success">✅ Datos de prueba configurados correctamente</div>
+                <div class="step info">👥 Usuarios: 1 profesor + 3 estudiantes</div>
+                <div class="step info">📚 Curso: MAT101 - Matemáticas Básicas</div>
+                <div class="step info">📝 Tarea: ${testTaskId}</div>
+            `;
+        }
+        
+        // Función para simular entrega de estudiante
+        function simulateSubmission(studentUsername, studentDisplayName) {
+            console.log(`📤 Simulando entrega de ${studentUsername}...`);
+            
+            // Simular creación de notificación task_submission
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            const submissionNotification = {
+                id: `submission_${testTaskId}_${studentUsername}_${Date.now()}`,
+                type: 'task_submission',
+                taskId: testTaskId,
+                taskTitle: 'Tarea de Álgebra - Ecuaciones Lineales',
+                targetUserRole: 'teacher',
+                targetUsernames: [teacherUsername],
+                fromUsername: studentUsername,
+                fromDisplayName: studentDisplayName,
+                course: 'MAT101',
+                subject: 'Matemáticas',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+            
+            notifications.push(submissionNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notifications));
+            
+            // Simular creación del comentario de entrega
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const submissionComment = {
+                id: `comment_${Date.now()}_${studentUsername}`,
+                taskId: testTaskId,
+                studentUsername: studentUsername,
+                teacherUsername: teacherUsername,
+                comment: `Entrega de ${studentDisplayName}`,
+                isSubmission: true,
+                timestamp: new Date().toISOString(),
+                // grade: undefined (sin calificar aún)
+            };
+            
+            comments.push(submissionComment);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+            
+            document.getElementById('submission-status').innerHTML += `
+                <div class="step success">✅ ${studentDisplayName} entregó la tarea</div>
+            `;
+            
+            showNotificationPanel();
+        }
+        
+        // Función para mostrar panel de notificaciones
+        function showNotificationPanel() {
+            console.log('🔔 Mostrando panel de notificaciones...');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Simular función isTaskAlreadyGraded
+            function isTaskAlreadyGraded(taskId, studentUsername) {
+                const studentSubmission = comments.find(comment => 
+                    comment.taskId === taskId && 
+                    comment.studentUsername === studentUsername && 
+                    comment.isSubmission === true
+                );
+                
+                if (studentSubmission) {
+                    const isGraded = studentSubmission.grade !== undefined && studentSubmission.grade !== null;
+                    return isGraded;
+                }
+                return false;
+            }
+            
+            // Filtrar notificaciones task_submission (similar al código corregido)
+            const taskSubmissionNotifications = notifications.filter(notif => 
+                notif.type === 'task_submission' &&
+                notif.targetUsernames.includes(teacherUsername) &&
+                !isTaskAlreadyGraded(notif.taskId, notif.fromUsername)
+            );
+            
+            // Filtrar notificaciones task_completed
+            const taskCompletedNotifications = notifications.filter(notif => 
+                notif.type === 'task_completed' &&
+                notif.taskType === 'assignment' &&
+                notif.targetUsernames.includes(teacherUsername) &&
+                !isTaskAlreadyGraded(notif.taskId, notif.fromUsername)
+            );
+            
+            let panelHTML = `
+                <div class="notification-preview">
+                    <h3>🔔 Panel de Notificaciones del Profesor</h3>
+                    
+                    <h4>📤 5. ENTREGAS INDIVIDUALES DE ESTUDIANTES (${taskSubmissionNotifications.length})</h4>
+            `;
+            
+            if (taskSubmissionNotifications.length > 0) {
+                taskSubmissionNotifications.forEach(notif => {
+                    const isGraded = isTaskAlreadyGraded(notif.taskId, notif.fromUsername);
+                    panelHTML += `
+                        <div class="notification-item">
+                            <strong>${notif.fromDisplayName}</strong> entregó: ${notif.taskTitle}
+                            <span class="filter-status ${isGraded ? 'hidden' : 'visible'}">
+                                ${isGraded ? 'FILTRADA (calificada)' : 'VISIBLE (sin calificar)'}
+                            </span>
+                        </div>
+                    `;
+                });
+            } else {
+                panelHTML += `<div class="step info">📭 No hay entregas pendientes de calificar</div>`;
+            }
+            
+            panelHTML += `
+                    <h4>✅ 4. TAREAS COMPLETADAS POR ESTUDIANTES (${taskCompletedNotifications.length})</h4>
+            `;
+            
+            if (taskCompletedNotifications.length > 0) {
+                taskCompletedNotifications.forEach(notif => {
+                    const isGraded = isTaskAlreadyGraded(notif.taskId, notif.fromUsername);
+                    panelHTML += `
+                        <div class="notification-item">
+                            <strong>${notif.fromDisplayName}</strong> completó: ${notif.taskTitle}
+                            <span class="filter-status ${isGraded ? 'hidden' : 'visible'}">
+                                ${isGraded ? 'FILTRADA (calificada)' : 'VISIBLE (sin calificar)'}
+                            </span>
+                        </div>
+                    `;
+                });
+            } else {
+                panelHTML += `<div class="step info">📭 No hay tareas completadas pendientes</div>`;
+            }
+            
+            panelHTML += '</div>';
+            
+            document.getElementById('notification-panel').innerHTML = panelHTML;
+        }
+        
+        // Función para calificar entrega
+        function gradeSubmission(studentUsername, grade) {
+            console.log(`📊 Calificando entrega de ${studentUsername} con ${grade}%...`);
+            
+            // Actualizar comentario de entrega con calificación
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const submissionComment = comments.find(comment => 
+                comment.taskId === testTaskId && 
+                comment.studentUsername === studentUsername && 
+                comment.isSubmission === true
+            );
+            
+            if (submissionComment) {
+                submissionComment.grade = grade;
+                submissionComment.gradedAt = new Date().toISOString();
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(comments));
+                
+                // Simular eliminación de notificaciones (como en el código real)
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                // Eliminar notificaciones task_submission específicas del estudiante
+                const filteredNotifications = notifications.filter(notif => 
+                    !(notif.type === 'task_submission' && 
+                      notif.taskId === testTaskId && 
+                      notif.fromUsername === studentUsername)
+                );
+                
+                localStorage.setItem('smart-student-task-notifications', JSON.stringify(filteredNotifications));
+                
+                document.getElementById('grading-status').innerHTML += `
+                    <div class="step success">✅ ${studentUsername} calificado con ${grade}%</div>
+                `;
+                
+                // Actualizar panel automáticamente
+                showNotificationPanel();
+            }
+        }
+        
+        // Función para verificar la corrección
+        function verifyFix() {
+            console.log('🔍 Verificando corrección...');
+            
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            // Contar notificaciones por tipo
+            const taskSubmissions = notifications.filter(n => n.type === 'task_submission');
+            const taskCompleted = notifications.filter(n => n.type === 'task_completed');
+            
+            // Verificar estudiantes calificados
+            const gradedStudents = comments
+                .filter(c => c.taskId === testTaskId && c.isSubmission && c.grade !== undefined)
+                .map(c => c.studentUsername);
+            
+            // Verificar estudiantes sin calificar
+            const ungradedSubmissions = taskSubmissions.filter(n => 
+                !gradedStudents.includes(n.fromUsername)
+            );
+            
+            let verificationHTML = `
+                <div class="notification-preview">
+                    <h3>🔍 Resultados de Verificación</h3>
+                    
+                    <div class="step ${gradedStudents.length > 0 ? 'success' : 'warning'}">
+                        📊 Estudiantes calificados: ${gradedStudents.length}
+                        ${gradedStudents.length > 0 ? ' (' + gradedStudents.join(', ') + ')' : ''}
+                    </div>
+                    
+                    <div class="step ${ungradedSubmissions.length === 0 ? 'success' : 'info'}">
+                        📤 Entregas sin calificar en panel: ${ungradedSubmissions.length}
+                        ${ungradedSubmissions.length > 0 ? ' (' + ungradedSubmissions.map(n => n.fromUsername).join(', ') + ')' : ''}
+                    </div>
+                    
+                    <div class="step ${ungradedSubmissions.length === 0 ? 'success' : 'error'}">
+                        ${ungradedSubmissions.length === 0 
+                            ? '✅ CORRECCIÓN EXITOSA: Las notificaciones calificadas desaparecieron del panel' 
+                            : '❌ PROBLEMA: Aún hay notificaciones de estudiantes calificados en el panel'
+                        }
+                    </div>
+                    
+                    <div class="step info">
+                        🎯 <strong>Comportamiento Esperado:</strong><br>
+                        - Cuando un estudiante entrega → Aparece notificación en panel<br>
+                        - Cuando profesor califica → Notificación desaparece del panel<br>
+                        - Solo se muestran entregas pendientes de calificar
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('verification-results').innerHTML = verificationHTML;
+        }
+        
+        // Función para mostrar información de debug
+        function showDebugInfo() {
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            
+            let debugHTML = `
+                <div class="notification-preview">
+                    <h3>🐛 Información de Debug</h3>
+                    
+                    <h4>📋 Notificaciones en localStorage:</h4>
+                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+${JSON.stringify(notifications, null, 2)}
+                    </pre>
+                    
+                    <h4>💬 Comentarios/Entregas en localStorage:</h4>
+                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+${JSON.stringify(comments, null, 2)}
+                    </pre>
+                </div>
+            `;
+            
+            document.getElementById('debug-info').innerHTML = debugHTML;
+        }
+        
+        // Función para limpiar datos
+        function clearData() {
+            localStorage.removeItem('smart-student-task-notifications');
+            localStorage.removeItem('smart-student-task-comments');
+            localStorage.removeItem('smart-student-users');
+            localStorage.removeItem('smart-student-courses');
+            localStorage.removeItem('smart-student-tasks');
+            
+            document.getElementById('setup-status').innerHTML = '<div class="step warning">🗑️ Datos limpiados</div>';
+            document.getElementById('submission-status').innerHTML = '';
+            document.getElementById('notification-panel').innerHTML = '';
+            document.getElementById('grading-status').innerHTML = '';
+            document.getElementById('verification-results').innerHTML = '';
+            document.getElementById('debug-info').innerHTML = '';
+        }
+        
+        // Auto-setup en carga de página
+        window.onload = function() {
+            setupTest();
+        };
+    </script>
+</body>
+</html>

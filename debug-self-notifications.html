@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug: Notificaciones Propias - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .button.danger:hover {
+            background: #dc2626;
+        }
+        .button.success {
+            background: #10b981;
+        }
+        .button.success:hover {
+            background: #059669;
+        }
+        .log {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .notification-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        .notification-item.self {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+        .notification-item.other {
+            background: #f0f9ff;
+            border-color: #bfdbfe;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        .tag.self {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        .tag.other {
+            background: #bfdbfe;
+            color: #1e40af;
+        }
+        .tag.excluded {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .test-scenario {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .test-scenario.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Debug: Notificaciones Propias</h1>
+        <p>Herramienta para verificar que los usuarios NO reciban notificaciones de sus propios comentarios</p>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Configuración de Usuario</h2>
+        <div>
+            <label for="userSelect">Usuario Actual:</label>
+            <select id="userSelect" style="margin-left: 10px; padding: 5px;">
+                <option value="">-- Seleccionar Usuario --</option>
+            </select>
+            <button class="button" onclick="loadUserData()">Cargar Datos</button>
+        </div>
+        <div id="currentUser" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalNotifications">0</div>
+            <div>Total Notificaciones</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="selfNotifications">0</div>
+            <div>Notificaciones Propias</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="otherNotifications">0</div>
+            <div>Notificaciones de Otros</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="filteredNotifications">0</div>
+            <div>Notificaciones Filtradas</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🧪 Pruebas de Escenarios</h2>
+        
+        <div class="test-scenario" id="scenario1">
+            <h3>📝 Escenario 1: Profesor envía comentario</h3>
+            <p>Crear un comentario como profesor y verificar que no aparezca en sus notificaciones</p>
+            <button class="button" onclick="testProfessorComment()">Probar Comentario Profesor</button>
+        </div>
+
+        <div class="test-scenario" id="scenario2">
+            <h3>🎓 Escenario 2: Estudiante envía comentario</h3>
+            <p>Crear un comentario como estudiante y verificar que no aparezca en sus notificaciones</p>
+            <button class="button" onclick="testStudentComment()">Probar Comentario Estudiante</button>
+        </div>
+
+        <div class="test-scenario" id="scenario3">
+            <h3>🔄 Escenario 3: Cambiar usuario</h3>
+            <p>Cambiar de usuario para ver notificaciones de comentarios de otros</p>
+            <button class="button" onclick="switchUser()">Cambiar Usuario</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Análisis de Notificaciones</h2>
+        <button class="button success" onclick="analyzeNotifications()">🔍 Analizar Notificaciones</button>
+        <button class="button" onclick="showRawData()">📋 Ver Datos Raw</button>
+        <button class="button danger" onclick="clearAllData()">🗑️ Limpiar Todo</button>
+        
+        <div id="notificationAnalysis"></div>
+    </div>
+
+    <div class="section">
+        <h2>📝 Log de Actividad</h2>
+        <div id="activityLog" class="log">Iniciando debug de notificaciones propias...</div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let activityLog = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            activityLog.push(logMessage);
+            document.getElementById('activityLog').textContent = activityLog.join('\n');
+            document.getElementById('activityLog').scrollTop = document.getElementById('activityLog').scrollHeight;
+        }
+
+        function loadUsers() {
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const userSelect = document.getElementById('userSelect');
+                userSelect.innerHTML = '<option value="">-- Seleccionar Usuario --</option>';
+                
+                Object.entries(usersObj).forEach(([username, userData]) => {
+                    const option = document.createElement('option');
+                    option.value = username;
+                    option.textContent = `${userData.displayName || username} (${userData.role})`;
+                    userSelect.appendChild(option);
+                });
+                
+                log(`Cargados ${Object.keys(usersObj).length} usuarios del sistema`);
+            } catch (error) {
+                log(`❌ Error cargando usuarios: ${error.message}`);
+            }
+        }
+
+        function loadUserData() {
+            const username = document.getElementById('userSelect').value;
+            if (!username) {
+                log('❌ Selecciona un usuario primero');
+                return;
+            }
+
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                currentUser = {
+                    username: username,
+                    ...usersObj[username]
+                };
+
+                document.getElementById('currentUser').innerHTML = 
+                    `👤 Usuario: <strong>${currentUser.displayName || currentUser.username}</strong> (${currentUser.role})`;
+                
+                log(`✅ Usuario cargado: ${currentUser.displayName || currentUser.username} (${currentUser.role})`);
+                analyzeNotifications();
+            } catch (error) {
+                log(`❌ Error cargando datos del usuario: ${error.message}`);
+            }
+        }
+
+        function testProfessorComment() {
+            if (!currentUser || currentUser.role !== 'teacher') {
+                log('❌ Debes seleccionar un usuario profesor');
+                return;
+            }
+
+            // Crear un comentario de prueba del profesor
+            const testComment = {
+                id: `test_prof_${Date.now()}`,
+                taskId: 'task_test_123',
+                studentUsername: currentUser.username,
+                studentName: currentUser.displayName || currentUser.username,
+                comment: 'Este es un comentario de prueba del profesor',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                userRole: 'teacher',
+                readBy: []
+            };
+
+            // Agregar a localStorage
+            const storedComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            storedComments.push(testComment);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(storedComments));
+
+            // Crear notificación de prueba
+            const testNotification = {
+                id: `test_notif_prof_${Date.now()}`,
+                type: 'teacher_comment',
+                taskId: 'task_test_123',
+                taskTitle: 'Tarea de Prueba',
+                targetUserRole: 'student',
+                targetUsernames: ['student1', 'student2', currentUser.username], // Incluir al propio profesor
+                fromUsername: currentUser.username,
+                fromDisplayName: currentUser.displayName || currentUser.username,
+                course: 'Ciencias Naturales',
+                subject: 'Ciencias Naturales',
+                timestamp: new Date().toISOString(),
+                read: false,
+                readBy: []
+            };
+
+            const storedNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            storedNotifications.push(testNotification);
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(storedNotifications));
+
+            log(`✅ Comentario de prueba del profesor creado: ${testComment.id}`);
+            log(`✅ Notificación de prueba creada: ${testNotification.id}`);
+            
+            document.getElementById('scenario1').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('scenario1').classList.remove('active');
+                analyzeNotifications();
+            }, 1000);
+        }
+
+        function testStudentComment() {
+            if (!currentUser || currentUser.role !== 'student') {
+                log('❌ Debes seleccionar un usuario estudiante');
+                return;
+            }
+
+            // Crear un comentario de prueba del estudiante
+            const testComment = {
+                id: `test_stud_${Date.now()}`,
+                taskId: 'task_test_456',
+                studentUsername: currentUser.username,
+                studentName: currentUser.displayName || currentUser.username,
+                comment: 'Este es un comentario de prueba del estudiante',
+                timestamp: new Date().toISOString(),
+                isSubmission: false,
+                userRole: 'student',
+                readBy: []
+            };
+
+            // Agregar a localStorage
+            const storedComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            storedComments.push(testComment);
+            localStorage.setItem('smart-student-task-comments', JSON.stringify(storedComments));
+
+            log(`✅ Comentario de prueba del estudiante creado: ${testComment.id}`);
+            
+            document.getElementById('scenario2').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('scenario2').classList.remove('active');
+                analyzeNotifications();
+            }, 1000);
+        }
+
+        function switchUser() {
+            document.getElementById('userSelect').focus();
+            log('🔄 Selecciona un usuario diferente para probar las notificaciones');
+        }
+
+        function analyzeNotifications() {
+            if (!currentUser) {
+                log('❌ Selecciona un usuario primero');
+                return;
+            }
+
+            try {
+                // Cargar notificaciones del sistema
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+
+                log(`📊 Analizando notificaciones para: ${currentUser.username} (${currentUser.role})`);
+
+                // Filtrar notificaciones para este usuario
+                const userNotifications = notifications.filter(notification => 
+                    notification.targetUserRole === currentUser.role &&
+                    notification.targetUsernames.includes(currentUser.username)
+                );
+
+                const selfNotifications = userNotifications.filter(notification => 
+                    notification.fromUsername === currentUser.username
+                );
+
+                const otherNotifications = userNotifications.filter(notification => 
+                    notification.fromUsername !== currentUser.username
+                );
+
+                // Aplicar la lógica de filtrado del sistema
+                const filteredNotifications = userNotifications.filter(notification => 
+                    notification.fromUsername !== currentUser.username && // ✅ Excluir propias
+                    !notification.readBy.includes(currentUser.username)
+                );
+
+                // Actualizar estadísticas
+                document.getElementById('totalNotifications').textContent = userNotifications.length;
+                document.getElementById('selfNotifications').textContent = selfNotifications.length;
+                document.getElementById('otherNotifications').textContent = otherNotifications.length;
+                document.getElementById('filteredNotifications').textContent = filteredNotifications.length;
+
+                // Mostrar análisis detallado
+                let analysisHTML = '<h3>📋 Análisis Detallado</h3>';
+
+                if (selfNotifications.length > 0) {
+                    analysisHTML += '<h4>⚠️ Notificaciones Propias (DEBERÍAN SER EXCLUIDAS):</h4>';
+                    selfNotifications.forEach(notification => {
+                        analysisHTML += `
+                            <div class="notification-item self">
+                                <strong>${notification.type}</strong> - ${notification.taskTitle}
+                                <span class="tag self">PROPIA</span>
+                                <br><small>De: ${notification.fromDisplayName} | Para: ${notification.targetUsernames.join(', ')}</small>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (otherNotifications.length > 0) {
+                    analysisHTML += '<h4>✅ Notificaciones de Otros (VÁLIDAS):</h4>';
+                    otherNotifications.forEach(notification => {
+                        analysisHTML += `
+                            <div class="notification-item other">
+                                <strong>${notification.type}</strong> - ${notification.taskTitle}
+                                <span class="tag other">OTROS</span>
+                                <br><small>De: ${notification.fromDisplayName} | Para: ${notification.targetUsernames.join(', ')}</small>
+                            </div>
+                        `;
+                    });
+                }
+
+                analysisHTML += '<h4>🔍 Resultado del Filtrado:</h4>';
+                if (filteredNotifications.length === otherNotifications.length && selfNotifications.length === 0) {
+                    analysisHTML += '<div style="color: green; font-weight: bold;">✅ FILTRADO CORRECTO: No hay notificaciones propias</div>';
+                } else if (filteredNotifications.length === otherNotifications.length && selfNotifications.length > 0) {
+                    analysisHTML += '<div style="color: orange; font-weight: bold;">⚠️ FILTRADO FUNCIONA: Las notificaciones propias están siendo excluidas correctamente</div>';
+                } else {
+                    analysisHTML += '<div style="color: red; font-weight: bold;">❌ PROBLEMA DETECTADO: El filtrado no está funcionando correctamente</div>';
+                }
+
+                // Análisis de comentarios también
+                const userComments = comments.filter(comment => 
+                    comment.studentUsername !== currentUser.username &&
+                    !comment.readBy?.includes(currentUser.username)
+                );
+
+                analysisHTML += `<h4>💬 Comentarios No Leídos de Otros: ${userComments.length}</h4>`;
+
+                document.getElementById('notificationAnalysis').innerHTML = analysisHTML;
+
+                log(`📊 Análisis completado:`);
+                log(`   Total: ${userNotifications.length}`);
+                log(`   Propias: ${selfNotifications.length} ${selfNotifications.length > 0 ? '⚠️' : '✅'}`);
+                log(`   De otros: ${otherNotifications.length}`);
+                log(`   Filtradas: ${filteredNotifications.length}`);
+
+            } catch (error) {
+                log(`❌ Error analizando notificaciones: ${error.message}`);
+            }
+        }
+
+        function showRawData() {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                
+                let rawHTML = '<h3>📋 Datos Raw</h3>';
+                rawHTML += `<h4>🔔 Notificaciones (${notifications.length}):</h4>`;
+                rawHTML += `<div class="log">${JSON.stringify(notifications, null, 2)}</div>`;
+                rawHTML += `<h4>💬 Comentarios (${comments.length}):</h4>`;
+                rawHTML += `<div class="log">${JSON.stringify(comments, null, 2)}</div>`;
+                
+                document.getElementById('notificationAnalysis').innerHTML = rawHTML;
+                log('📋 Datos raw mostrados');
+            } catch (error) {
+                log(`❌ Error mostrando datos raw: ${error.message}`);
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('¿Estás seguro de que quieres limpiar TODOS los datos de prueba?')) {
+                // Solo limpiar datos de prueba, no todos los datos
+                try {
+                    const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                    const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                    
+                    const cleanComments = comments.filter(c => !c.id.startsWith('test_'));
+                    const cleanNotifications = notifications.filter(n => !n.id.startsWith('test_'));
+                    
+                    localStorage.setItem('smart-student-task-comments', JSON.stringify(cleanComments));
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(cleanNotifications));
+                    
+                    log('🗑️ Datos de prueba limpiados');
+                    analyzeNotifications();
+                } catch (error) {
+                    log(`❌ Error limpiando datos: ${error.message}`);
+                }
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+            log('🚀 Debug de notificaciones propias iniciado');
+            log('📋 Instrucciones:');
+            log('1. Selecciona un usuario');
+            log('2. Carga sus datos');
+            log('3. Prueba los escenarios');
+            log('4. Analiza las notificaciones');
+        });
+    </script>
+</body>
+</html>

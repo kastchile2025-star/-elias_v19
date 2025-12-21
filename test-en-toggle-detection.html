@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test EN Toggle Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 EN Toggle Detection Test</h1>
+    
+    <div class="test-section">
+        <h3>Script para ejecutar en la consola del navegador:</h3>
+        <p>Copia y pega este código en la consola del navegador mientras estás en la página de evaluación:</p>
+        
+        <pre><code>
+// 🔍 SCRIPT DE DETECCIÓN DEL TOGGLE EN
+function testEnToggleDetection() {
+    console.log('🔍 STARTING EN TOGGLE DETECTION TEST...');
+    
+    // Buscar elementos EN más específicamente
+    const potentialEnElements = document.querySelectorAll('span, button, div, label, *');
+    let foundElements = [];
+    
+    for (const element of potentialEnElements) {
+        const text = element.textContent?.trim().toUpperCase();
+        if (text === 'EN') {
+            const rect = element.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0 && rect.top >= 0 && rect.top < 200) {
+                // Verificar estado activo con múltiples métodos
+                const parent = element.parentElement;
+                const grandParent = parent?.parentElement;
+                
+                const isActiveChecks = [
+                    element.getAttribute('data-state') === 'checked',
+                    element.getAttribute('aria-checked') === 'true',
+                    parent?.getAttribute('data-state') === 'checked',
+                    parent?.getAttribute('aria-checked') === 'true',
+                    grandParent?.getAttribute('data-state') === 'checked',
+                    grandParent?.getAttribute('aria-checked') === 'true',
+                    element.closest('[data-state="checked"]') !== null,
+                    element.closest('[aria-checked="true"]') !== null
+                ];
+                
+                const isActive = isActiveChecks.some(check => check === true);
+                
+                foundElements.push({
+                    element: element,
+                    text: element.textContent,
+                    tag: element.tagName,
+                    active: isActive,
+                    position: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+                    checks: isActiveChecks,
+                    className: element.className,
+                    id: element.id,
+                    parentTag: parent?.tagName,
+                    parentClass: parent?.className
+                });
+                
+                console.log('🔍 EN Element found:', {
+                    text: element.textContent,
+                    tag: element.tagName,
+                    active: isActive,
+                    position: { top: rect.top, left: rect.left },
+                    checks: isActiveChecks,
+                    element: element
+                });
+            }
+        }
+    }
+    
+    console.log('📊 SUMMARY:', {
+        totalEnElementsFound: foundElements.length,
+        activeElements: foundElements.filter(el => el.active),
+        inactiveElements: foundElements.filter(el => !el.active)
+    });
+    
+    const activeToggle = foundElements.find(el => el.active);
+    if (activeToggle) {
+        console.log('✅ ACTIVE EN TOGGLE FOUND!', activeToggle);
+        return 'en';
+    } else {
+        console.log('❌ NO ACTIVE EN TOGGLE FOUND');
+        return 'es';
+    }
+}
+
+// Ejecutar el test
+const detectedLanguage = testEnToggleDetection();
+console.log('🎯 DETECTED LANGUAGE:', detectedLanguage);
+        </code></pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>Pasos para probar:</h3>
+        <ol>
+            <li>Ve a la página de evaluación con el toggle EN activado</li>
+            <li>Abre las herramientas de desarrollador (F12)</li>
+            <li>Ve a la pestaña "Console"</li>
+            <li>Copia y pega el script anterior</li>
+            <li>Presiona Enter para ejecutarlo</li>
+            <li>Revisa los resultados en la consola</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>Resultados esperados:</h3>
+        <div class="result success">
+            <strong>Si el toggle EN está activo:</strong>
+            <ul>
+                <li>Debería mostrar "✅ ACTIVE EN TOGGLE FOUND!"</li>
+                <li>DETECTED LANGUAGE debería ser "en"</li>
+                <li>Las evaluaciones deberían generarse en inglés</li>
+            </ul>
+        </div>
+        <div class="result error">
+            <strong>Si el toggle EN NO está activo:</strong>
+            <ul>
+                <li>Debería mostrar "❌ NO ACTIVE EN TOGGLE FOUND"</li>
+                <li>DETECTED LANGUAGE debería ser "es"</li>
+                <li>Las evaluaciones se generarán en español</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Script adicional para verificar contexto React:</h3>
+        <pre><code>
+// Verificar el contexto de React para el idioma
+console.log('🔍 CHECKING REACT CONTEXT...');
+console.log('localStorage.smart-student-lang:', localStorage.getItem('smart-student-lang'));
+console.log('localStorage.language:', localStorage.getItem('language'));
+console.log('document.documentElement.lang:', document.documentElement.lang);
+console.log('document.title:', document.title);
+
+// Buscar elementos específicos del toggle
+const toggleElements = document.querySelectorAll('[role="switch"], button[aria-pressed], input[type="checkbox"]');
+console.log('Toggle elements found:', toggleElements.length);
+toggleElements.forEach((el, i) => {
+    console.log(`Toggle ${i}:`, {
+        element: el,
+        role: el.getAttribute('role'),
+        ariaPressed: el.getAttribute('aria-pressed'),
+        ariaChecked: el.getAttribute('aria-checked'),
+        dataState: el.getAttribute('data-state'),
+        textContent: el.textContent?.trim()
+    });
+});
+        </code></pre>
+    </div>
+</body>
+</html>

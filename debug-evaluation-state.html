@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Estado de Evaluaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .debug-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .debug-button:hover {
+            background-color: #0056b3;
+        }
+        .debug-output {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Estado de Evaluaciones</h1>
+        
+        <div class="info">
+            <h3>ℹ️ Información</h3>
+            <p>Esta página te ayudará a diagnosticar por qué las evaluaciones no cambian de estado o no redirigen correctamente.</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>👤 Simular Usuario Estudiante</h3>
+            <p>Ingresa el nombre de usuario del estudiante para revisar su estado:</p>
+            <input type="text" id="studentUsername" placeholder="Ej: estudiante1" style="padding: 10px; width: 200px; margin-right: 10px;">
+            <button class="debug-button" onclick="setCurrentUser()">Establecer Usuario</button>
+            <div id="userStatus" class="debug-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📋 Revisar Tareas del Estudiante</h3>
+            <button class="debug-button" onclick="checkUserTasks()">Ver Tareas del Usuario</button>
+            <div id="userTasksOutput" class="debug-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 Revisar Entregas</h3>
+            <button class="debug-button" onclick="checkSubmissions()">Ver Entregas</button>
+            <div id="submissionsOutput" class="debug-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🎯 Crear Tarea de Evaluación de Prueba</h3>
+            <button class="debug-button" onclick="createTestEvaluationTask()">Crear Tarea de Evaluación</button>
+            <div id="taskCreationOutput" class="debug-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>✅ Simular Completar Evaluación</h3>
+            <input type="text" id="taskIdToComplete" placeholder="ID de la tarea" style="padding: 10px; width: 200px; margin-right: 10px;">
+            <button class="debug-button" onclick="simulateCompleteEvaluation()">Completar Evaluación</button>
+            <div id="completionOutput" class="debug-output"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🧹 Limpiar Datos</h3>
+            <button class="debug-button" onclick="clearAllData()" style="background-color: #dc3545;">Limpiar Todo</button>
+            <button class="debug-button" onclick="clearEvaluationStates()" style="background-color: #ffc107; color: #000;">Limpiar Estados de Evaluación</button>
+            <div id="clearOutput" class="debug-output"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = 'estudiante1';
+
+        function setCurrentUser() {
+            const username = document.getElementById('studentUsername').value;
+            if (username) {
+                currentUser = username;
+                document.getElementById('userStatus').textContent = `Usuario actual: ${currentUser}`;
+            } else {
+                document.getElementById('userStatus').textContent = 'Por favor ingresa un nombre de usuario';
+            }
+        }
+
+        function checkUserTasks() {
+            const userTasksKey = `userTasks_${currentUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            let output = `Tareas para ${currentUser}:\n\n`;
+            
+            if (userTasks.length === 0) {
+                output += 'No hay tareas para este usuario.\n';
+            } else {
+                userTasks.forEach((task, index) => {
+                    output += `${index + 1}. ${task.title || 'Sin título'}\n`;
+                    output += `   ID: ${task.id}\n`;
+                    output += `   Tipo: ${task.taskType || 'No especificado'}\n`;
+                    output += `   Estado: ${task.status || 'Sin estado'}\n`;
+                    output += `   Curso: ${task.course || 'Sin curso'}\n`;
+                    output += `   Asignatura: ${task.subject || 'Sin asignatura'}\n`;
+                    if (task.completedAt) {
+                        output += `   Completado: ${task.completedAt}\n`;
+                    }
+                    if (task.score !== undefined) {
+                        output += `   Puntuación: ${task.score}\n`;
+                    }
+                    if (task.completionPercentage !== undefined) {
+                        output += `   Porcentaje: ${task.completionPercentage}%\n`;
+                    }
+                    output += '\n';
+                });
+            }
+            
+            document.getElementById('userTasksOutput').textContent = output;
+        }
+
+        function checkSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('taskSubmissions') || '[]');
+            
+            let output = 'Entregas del sistema:\n\n';
+            
+            if (submissions.length === 0) {
+                output += 'No hay entregas en el sistema.\n';
+            } else {
+                submissions.forEach((submission, index) => {
+                    output += `${index + 1}. ${submission.evaluationTitle || 'Sin título'}\n`;
+                    output += `   ID: ${submission.id}\n`;
+                    output += `   Estudiante: ${submission.studentName}\n`;
+                    output += `   Tarea ID: ${submission.taskId}\n`;
+                    output += `   Puntuación: ${submission.score}/${submission.totalQuestions}\n`;
+                    output += `   Porcentaje: ${submission.completionPercentage}%\n`;
+                    output += `   Fecha: ${submission.submissionDate}\n`;
+                    output += `   Estado: ${submission.status}\n`;
+                    output += '\n';
+                });
+            }
+            
+            document.getElementById('submissionsOutput').textContent = output;
+        }
+
+        function createTestEvaluationTask() {
+            const taskId = `eval_test_${Date.now()}`;
+            const newTask = {
+                id: taskId,
+                title: 'Evaluación de Prueba',
+                description: 'Esta es una evaluación de prueba para debug',
+                taskType: 'evaluation',
+                status: 'pending',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                createdAt: new Date().toISOString(),
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 días
+                evaluationConfig: {
+                    topic: 'Células y Tejidos',
+                    questionCount: 10,
+                    timeLimit: 30
+                }
+            };
+
+            // Agregar a las tareas del usuario
+            const userTasksKey = `userTasks_${currentUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            userTasks.push(newTask);
+            localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+
+            let output = `Tarea de evaluación creada:\n\n`;
+            output += `ID: ${taskId}\n`;
+            output += `Título: ${newTask.title}\n`;
+            output += `Tipo: ${newTask.taskType}\n`;
+            output += `Estado: ${newTask.status}\n`;
+            output += `Tema: ${newTask.evaluationConfig.topic}\n`;
+            output += `Preguntas: ${newTask.evaluationConfig.questionCount}\n`;
+            output += `Tiempo límite: ${newTask.evaluationConfig.timeLimit} minutos\n`;
+            output += `\nAsignada al usuario: ${currentUser}\n`;
+
+            document.getElementById('taskCreationOutput').textContent = output;
+        }
+
+        function simulateCompleteEvaluation() {
+            const taskId = document.getElementById('taskIdToComplete').value;
+            if (!taskId) {
+                document.getElementById('completionOutput').textContent = 'Por favor ingresa un ID de tarea';
+                return;
+            }
+
+            // Simular datos de completación
+            const submissionId = `submission_${taskId}_${currentUser}_${Date.now()}`;
+            const completionPercentage = 85; // 85% de completitud
+            const score = 8; // 8 de 10
+            const totalQuestions = 10;
+
+            // Crear entrega
+            const newSubmission = {
+                id: submissionId,
+                taskId: taskId,
+                studentId: currentUser,
+                studentName: currentUser,
+                submissionDate: new Date().toISOString(),
+                answers: [true, false, 2, [0, 2], true, 1, false, 3, [1, 3], true], // Respuestas simuladas
+                score: score,
+                totalQuestions: totalQuestions,
+                completionPercentage: completionPercentage,
+                timeSpent: 1200, // 20 minutos
+                evaluationTitle: 'Evaluación de Prueba',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                topic: 'Células y Tejidos',
+                status: 'completed',
+                type: 'evaluation'
+            };
+
+            // Agregar a entregas
+            const existingSubmissions = JSON.parse(localStorage.getItem('taskSubmissions') || '[]');
+            existingSubmissions.push(newSubmission);
+            localStorage.setItem('taskSubmissions', JSON.stringify(existingSubmissions));
+
+            // Actualizar estado de la tarea
+            const userTasksKey = `userTasks_${currentUser}`;
+            const userTasks = JSON.parse(localStorage.getItem(userTasksKey) || '[]');
+            
+            const taskIndex = userTasks.findIndex(task => task.id === taskId);
+            if (taskIndex !== -1) {
+                userTasks[taskIndex].status = 'completed';
+                userTasks[taskIndex].completedAt = new Date().toISOString();
+                userTasks[taskIndex].score = score;
+                userTasks[taskIndex].completionPercentage = completionPercentage;
+                
+                localStorage.setItem(userTasksKey, JSON.stringify(userTasks));
+            }
+
+            // Actualizar historial de evaluaciones
+            const evaluationHistoryKey = `evaluationHistory_${currentUser}`;
+            const evaluationHistory = JSON.parse(localStorage.getItem(evaluationHistoryKey) || '[]');
+            
+            const historyEntry = {
+                id: submissionId,
+                evaluationTitle: 'Evaluación de Prueba',
+                course: 'Ciencias Naturales',
+                subject: 'Biología',
+                topic: 'Células y Tejidos',
+                score: score,
+                totalQuestions: totalQuestions,
+                completionPercentage: completionPercentage,
+                timeSpent: 1200,
+                completedAt: new Date().toISOString(),
+                taskId: taskId
+            };
+            
+            evaluationHistory.push(historyEntry);
+            localStorage.setItem(evaluationHistoryKey, JSON.stringify(evaluationHistory));
+
+            let output = `Evaluación completada simulada:\n\n`;
+            output += `ID de entrega: ${submissionId}\n`;
+            output += `Tarea ID: ${taskId}\n`;
+            output += `Estudiante: ${currentUser}\n`;
+            output += `Puntuación: ${score}/${totalQuestions}\n`;
+            output += `Porcentaje: ${completionPercentage}%\n`;
+            output += `Tiempo gastado: ${1200} segundos\n`;
+            output += `Estado de la tarea: completed\n`;
+            output += `\n✅ Datos actualizados en:\n`;
+            output += `- taskSubmissions\n`;
+            output += `- userTasks_${currentUser}\n`;
+            output += `- evaluationHistory_${currentUser}\n`;
+
+            document.getElementById('completionOutput').textContent = output;
+        }
+
+        function clearAllData() {
+            // Limpiar datos de tareas
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('userTasks_') || 
+                    key.startsWith('evaluationHistory_') ||
+                    key === 'taskSubmissions' ||
+                    key === 'isTaskEvaluation' ||
+                    key === 'evaluationFinished') {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Limpiar sessionStorage
+            Object.keys(sessionStorage).forEach(key => {
+                if (key === 'isTaskEvaluation' || key === 'evaluationFinished') {
+                    sessionStorage.removeItem(key);
+                }
+            });
+
+            document.getElementById('clearOutput').textContent = 'Todos los datos han sido limpiados.';
+        }
+
+        function clearEvaluationStates() {
+            localStorage.removeItem('isTaskEvaluation');
+            localStorage.removeItem('evaluationFinished');
+            sessionStorage.removeItem('isTaskEvaluation');
+            sessionStorage.removeItem('evaluationFinished');
+
+            document.getElementById('clearOutput').textContent = 'Estados de evaluación limpiados.';
+        }
+
+        // Inicializar usuario por defecto
+        window.onload = function() {
+            setCurrentUser();
+        };
+    </script>
+</body>
+</html>

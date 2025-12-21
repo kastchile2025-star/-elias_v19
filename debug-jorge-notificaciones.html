@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug - Notificaciones Jorge Profesor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        .success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+        .warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            background: #f8f9fa;
+        }
+        .notification {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .notification.own-comment {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+        .notification.system {
+            border-left-color: #27ae60;
+            background: #f0fff4;
+        }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Notificaciones Jorge Profesor</h1>
+        
+        <div class="section">
+            <h2>🎯 Diagnóstico Específico</h2>
+            <p>Esta herramienta diagnostica por qué el profesor Jorge ve notificaciones de sus propios comentarios.</p>
+            <button class="button" onclick="diagnosticarJorge()">🔍 DIAGNOSTICAR JORGE</button>
+            <button class="button danger" onclick="corregirJorgeInmediatamente()">🚑 CORREGIR INMEDIATAMENTE</button>
+            <button class="button warning" onclick="mostrarTodasNotificaciones()">📋 VER TODAS LAS NOTIFICACIONES</button>
+        </div>
+
+        <div id="resultado" class="section" style="display: none;">
+            <h3>📊 Resultados del Diagnóstico</h3>
+            <div id="contenidoResultado"></div>
+        </div>
+
+        <div id="notificaciones" class="section" style="display: none;">
+            <h3>📋 Todas las Notificaciones</h3>
+            <div id="contenidoNotificaciones"></div>
+        </div>
+    </div>
+
+    <script>
+        function diagnosticarJorge() {
+            const usuario = 'jorge_profesor';
+            const rol = 'teacher';
+            
+            console.log('🔍 INICIANDO DIAGNÓSTICO PARA JORGE PROFESOR...');
+            
+            // Obtener todas las notificaciones
+            const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            console.log('📋 Total de notificaciones en sistema:', notificaciones.length);
+            
+            // Filtrar notificaciones para Jorge
+            const notificacionesJorge = notificaciones.filter(n => 
+                n.targetUsernames.includes(usuario) && n.targetUserRole === rol
+            );
+            console.log('🎯 Notificaciones dirigidas a Jorge:', notificacionesJorge.length);
+            
+            // Filtrar notificaciones no leídas por Jorge
+            const noLeidasJorge = notificacionesJorge.filter(n => 
+                !n.readBy.includes(usuario)
+            );
+            console.log('📬 Notificaciones no leídas por Jorge:', noLeidasJorge.length);
+            
+            // Filtrar notificaciones propias (problema)
+            const notificacionesPropias = noLeidasJorge.filter(n => 
+                n.fromUsername === usuario
+            );
+            console.log('❌ PROBLEMA - Notificaciones propias de Jorge:', notificacionesPropias.length);
+            
+            // Filtrar notificaciones de comentarios propios
+            const comentariosPropios = notificacionesPropias.filter(n => 
+                n.type === 'teacher_comment'
+            );
+            console.log('💬 PROBLEMA ESPECÍFICO - Comentarios propios:', comentariosPropios.length);
+            
+            // Mostrar resultados
+            let html = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-number">${notificaciones.length}</span>
+                        Total Notificaciones
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">${notificacionesJorge.length}</span>
+                        Para Jorge
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">${noLeidasJorge.length}</span>
+                        No Leídas
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <span class="stat-number">${notificacionesPropias.length}</span>
+                        ❌ Propias (Problema)
+                    </div>
+                </div>
+            `;
+            
+            if (notificacionesPropias.length > 0) {
+                html += '<h4>❌ NOTIFICACIONES PROBLEMÁTICAS:</h4>';
+                notificacionesPropias.forEach(n => {
+                    html += `
+                        <div class="notification own-comment">
+                            <strong>Tipo:</strong> ${n.type}<br>
+                            <strong>Tarea:</strong> ${n.taskTitle}<br>
+                            <strong>De:</strong> ${n.fromDisplayName} (${n.fromUsername})<br>
+                            <strong>Para:</strong> ${n.targetUsernames.join(', ')}<br>
+                            <strong>Fecha:</strong> ${new Date(n.timestamp).toLocaleString()}<br>
+                            <strong>ID:</strong> ${n.id}
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    <div class="code">CAUSA DEL PROBLEMA:
+Jorge está en targetUsernames de notificaciones donde él es fromUsername.
+Esto no debería suceder según las reglas de negocio.</div>
+                `;
+            } else {
+                html += '<div class="notification system">✅ No se encontraron notificaciones problemáticas para Jorge.</div>';
+            }
+            
+            // Mostrar notificaciones válidas
+            const notificacionesValidas = noLeidasJorge.filter(n => 
+                n.fromUsername !== usuario
+            );
+            
+            if (notificacionesValidas.length > 0) {
+                html += '<h4>✅ NOTIFICACIONES VÁLIDAS:</h4>';
+                notificacionesValidas.forEach(n => {
+                    html += `
+                        <div class="notification system">
+                            <strong>Tipo:</strong> ${n.type}<br>
+                            <strong>Tarea:</strong> ${n.taskTitle}<br>
+                            <strong>De:</strong> ${n.fromDisplayName} (${n.fromUsername})<br>
+                            <strong>Fecha:</strong> ${new Date(n.timestamp).toLocaleString()}
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('contenidoResultado').innerHTML = html;
+            document.getElementById('resultado').style.display = 'block';
+        }
+        
+        function corregirJorgeInmediatamente() {
+            const usuario = 'jorge_profesor';
+            
+            console.log('🚑 INICIANDO CORRECCIÓN INMEDIATA PARA JORGE...');
+            
+            // Obtener todas las notificaciones
+            const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            console.log('📋 Notificaciones antes de corrección:', notificaciones.length);
+            
+            // Filtrar eliminando notificaciones propias de Jorge
+            const notificacionesCorregidas = notificaciones.filter(n => {
+                // Eliminar notificaciones donde Jorge es emisor Y receptor
+                if (n.fromUsername === usuario && n.targetUsernames.includes(usuario)) {
+                    console.log('🗑️ Eliminando notificación propia:', n.id, n.type, n.taskTitle);
+                    return false; // Eliminar
+                }
+                return true; // Mantener
+            });
+            
+            console.log('✅ Notificaciones después de corrección:', notificacionesCorregidas.length);
+            console.log('🔧 Notificaciones eliminadas:', notificaciones.length - notificacionesCorregidas.length);
+            
+            // Guardar notificaciones corregidas
+            localStorage.setItem('smart-student-task-notifications', JSON.stringify(notificacionesCorregidas));
+            
+            // Mostrar resultado
+            const eliminadas = notificaciones.length - notificacionesCorregidas.length;
+            let html = `
+                <div class="notification system">
+                    <h3>🎉 ¡CORRECCIÓN COMPLETADA!</h3>
+                    <p><strong>Notificaciones eliminadas:</strong> ${eliminadas}</p>
+                    <p><strong>Notificaciones restantes:</strong> ${notificacionesCorregidas.length}</p>
+                    <p>✅ Jorge ya no debería ver notificaciones de sus propios comentarios.</p>
+                    <p>🔄 <strong>RECARGA LA PÁGINA PRINCIPAL</strong> para ver los cambios.</p>
+                </div>
+            `;
+            
+            if (eliminadas === 0) {
+                html = `
+                    <div class="notification">
+                        <h3>ℹ️ No Hay Cambios</h3>
+                        <p>No se encontraron notificaciones problemáticas para eliminar.</p>
+                        <p>El problema puede estar en otro lugar del sistema.</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('contenidoResultado').innerHTML = html;
+            document.getElementById('resultado').style.display = 'block';
+            
+            // Ejecutar diagnóstico después de la corrección
+            setTimeout(() => {
+                diagnosticarJorge();
+            }, 1000);
+        }
+        
+        function mostrarTodasNotificaciones() {
+            const notificaciones = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+            
+            let html = `<p><strong>Total:</strong> ${notificaciones.length} notificaciones</p>`;
+            
+            notificaciones.forEach(n => {
+                const esProblematica = n.fromUsername === 'jorge_profesor' && n.targetUsernames.includes('jorge_profesor');
+                const clase = esProblematica ? 'own-comment' : 'system';
+                
+                html += `
+                    <div class="notification ${clase}">
+                        ${esProblematica ? '❌ PROBLEMÁTICA - ' : ''}
+                        <strong>ID:</strong> ${n.id}<br>
+                        <strong>Tipo:</strong> ${n.type}<br>
+                        <strong>Tarea:</strong> ${n.taskTitle}<br>
+                        <strong>De:</strong> ${n.fromDisplayName} (${n.fromUsername})<br>
+                        <strong>Para:</strong> ${n.targetUsernames.join(', ')}<br>
+                        <strong>Leída por:</strong> ${n.readBy.join(', ') || 'Nadie'}<br>
+                        <strong>Fecha:</strong> ${new Date(n.timestamp).toLocaleString()}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('contenidoNotificaciones').innerHTML = html;
+            document.getElementById('notificaciones').style.display = 'block';
+        }
+        
+        // Ejecutar diagnóstico automático al cargar
+        window.onload = function() {
+            console.log('🔍 Herramienta de diagnóstico de Jorge cargada');
+            diagnosticarJorge();
+        };
+    </script>
+</body>
+</html>

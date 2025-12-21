@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Counter Debug</title>
+</head>
+<body>
+    <h1>Notification Counter Debug Tool</h1>
+    <p>Open the browser console to see debugging information.</p>
+    <button onclick="debugNotificationCounter()">Debug Notification Counter</button>
+    
+    <script>
+        function debugNotificationCounter() {
+            console.log('=== DEBUGGING NOTIFICATION COUNTER ===');
+
+            // Verificar datos en localStorage
+            const users = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+            const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+
+            console.log('Total users:', users.length);
+            console.log('Total comments:', comments.length);
+            console.log('Total tasks:', tasks.length);
+            console.log('Total notifications:', notifications.length);
+
+            // Buscar al usuario profesor actual
+            const teachers = users.filter(u => u.role === 'teacher');
+            console.log('Teachers found:', teachers.length);
+            
+            teachers.forEach(teacher => {
+                console.log(`\n=== TEACHER: ${teacher.username} ===`);
+                
+                // Filtrar tareas asignadas por este profesor
+                const teacherTasks = tasks.filter(task => task.assignedBy === teacher.username);
+                console.log('Tasks assigned by this teacher:', teacherTasks.length);
+                
+                if (teacherTasks.length > 0) {
+                    console.log('Teacher tasks:');
+                    teacherTasks.forEach(task => {
+                        console.log(`- ${task.title} (ID: ${task.id})`);
+                    });
+                }
+                
+                const teacherTaskIds = teacherTasks.map(task => task.id);
+                
+                // Filtrar entregas sin calificar
+                const submissions = comments.filter(comment => 
+                    comment.isSubmission && 
+                    teacherTaskIds.includes(comment.taskId) &&
+                    !comment.grade
+                );
+                
+                console.log('Ungraded submissions:', submissions.length);
+                if (submissions.length > 0) {
+                    console.log('Submissions detail:');
+                    submissions.forEach(sub => {
+                        const task = tasks.find(t => t.id === sub.taskId);
+                        console.log(`- ${sub.studentName} submitted "${task?.title}" at ${sub.timestamp}, grade: ${sub.grade ? 'YES' : 'NO'}`);
+                    });
+                }
+                
+                // Verificar notificaciones de tareas
+                const teacherNotifications = notifications.filter(n => 
+                    n.targetUserRole === 'teacher' &&
+                    n.targetUsernames.includes(teacher.username) &&
+                    !n.readBy.includes(teacher.username)
+                );
+                
+                console.log('Unread task notifications for teacher:', teacherNotifications.length);
+                if (teacherNotifications.length > 0) {
+                    console.log('Teacher notifications:');
+                    teacherNotifications.forEach(notif => {
+                        console.log(`- ${notif.type}: ${notif.taskTitle} from ${notif.fromDisplayName} at ${notif.timestamp}`);
+                    });
+                }
+                
+                console.log('=== SUMMARY FOR', teacher.username, '===');
+                console.log('Ungraded submissions:', submissions.length);
+                console.log('Unread task notifications:', teacherNotifications.length);
+                console.log('Total expected count:', submissions.length + teacherNotifications.length);
+            });
+
+            console.log('=== END DEBUG ===');
+        }
+        
+        // Auto-run on load
+        window.addEventListener('load', debugNotificationCounter);
+    </script>
+</body>
+</html>

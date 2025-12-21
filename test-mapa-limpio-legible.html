@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRUEBA: Mapa Mental Limpio y Legible</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        label {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        select, button {
+            padding: 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .mindmap-container {
+            background: white;
+            border: 3px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: auto;
+            min-height: 600px;
+        }
+
+        .mindmap-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .mindmap-svg {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .comparison-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e1e8ed;
+        }
+
+        .comparison-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .info-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            background: rgba(255,255,255,0.7);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            color: #2c3e50;
+        }
+
+        .info-list li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 MAPA MENTAL LIMPIO Y LEGIBLE</h1>
+            <p>Validación de texto claro y estructura correcta</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="tema">Tema:</label>
+                    <select id="tema">
+                        <option value="sistema respiratorio">Sistema Respiratorio</option>
+                        <option value="fotosíntesis">Fotosíntesis</option>
+                        <option value="célula">La Célula</option>
+                        <option value="plantas">Las Plantas</option>
+                        <option value="agua">El Agua</option>
+                        <option value="ecosistema">Ecosistema</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="idioma">Idioma:</label>
+                    <select id="idioma">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="layout">Diseño:</label>
+                    <select id="layout">
+                        <option value="horizontal">Horizontal</option>
+                        <option value="radial">Radial</option>
+                    </select>
+                </div>
+                
+                <button onclick="generarMapaLimpio()">🎨 GENERAR MAPA LIMPIO</button>
+                <button onclick="compararDisenos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);">📊 COMPARAR</button>
+            </div>
+
+            <div class="mindmap-container">
+                <div class="mindmap-title" id="mapTitle">MAPA MENTAL - SISTEMA RESPIRATORIO</div>
+                <div id="mindmapContent">
+                    <p style="color: #666; font-size: 1.2rem; padding: 50px;">
+                        Haz clic en "GENERAR MAPA LIMPIO" para ver el resultado
+                    </p>
+                </div>
+            </div>
+
+            <div class="comparison-grid" id="comparisonGrid" style="display: none;">
+                <div class="comparison-card">
+                    <div class="comparison-title">HORIZONTAL</div>
+                    <div id="horizontalMap"></div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-title">RADIAL</div>
+                    <div id="radialMap"></div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>🔧 Mejoras Implementadas para Legibilidad</h3>
+                <ul class="info-list">
+                    <li>Fuente Arial/Helvetica para máxima legibilidad</li>
+                    <li>Tamaños de fuente optimizados (16px, 13px, 11px)</li>
+                    <li>Colores de alto contraste (texto blanco sobre fondos coloreados)</li>
+                    <li>Función de envoltura de texto simplificada</li>
+                    <li>Espaciado perfecto entre elementos</li>
+                    <li>Formas simples y claras (rectángulos y círculos)</li>
+                    <li>Eliminación de efectos complejos que afectan legibilidad</li>
+                </ul>
+            </div>
+
+            <div id="status" class="status" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Datos educativos limpios y correctos
+        const topicMappings = {
+            'sistema respiratorio': {
+                centralLabel: { es: 'Sistema Respiratorio', en: 'Respiratory System' },
+                branches: [
+                    {
+                        label: { es: 'Órganos Principales', en: 'Main Organs' },
+                        children: { es: ['Pulmones', 'Tráquea', 'Bronquios'], en: ['Lungs', 'Trachea', 'Bronchi'] }
+                    },
+                    {
+                        label: { es: 'Proceso de Respiración', en: 'Breathing Process' },
+                        children: { es: ['Inspiración', 'Espiración', 'Intercambio de Gases'], en: ['Inspiration', 'Expiration', 'Gas Exchange'] }
+                    },
+                    {
+                        label: { es: 'Funciones', en: 'Functions' },
+                        children: { es: ['Oxigenación', 'Eliminación CO2', 'Regulación pH'], en: ['Oxygenation', 'CO2 Removal', 'pH Regulation'] }
+                    },
+                    {
+                        label: { es: 'Enfermedades Comunes', en: 'Common Diseases' },
+                        children: { es: ['Asma', 'Neumonía', 'Bronquitis'], en: ['Asthma', 'Pneumonia', 'Bronchitis'] }
+                    }
+                ]
+            },
+            'fotosíntesis': {
+                centralLabel: { es: 'Fotosíntesis', en: 'Photosynthesis' },
+                branches: [
+                    {
+                        label: { es: 'Reactivos', en: 'Reactants' },
+                        children: { es: ['Dióxido de Carbono', 'Agua', 'Luz Solar'], en: ['Carbon Dioxide', 'Water', 'Sunlight'] }
+                    },
+                    {
+                        label: { es: 'Productos', en: 'Products' },
+                        children: { es: ['Glucosa', 'Oxígeno'], en: ['Glucose', 'Oxygen'] }
+                    },
+                    {
+                        label: { es: 'Fases', en: 'Phases' },
+                        children: { es: ['Fase Luminosa', 'Fase Oscura', 'Ciclo de Calvin'], en: ['Light Phase', 'Dark Phase', 'Calvin Cycle'] }
+                    },
+                    {
+                        label: { es: 'Ubicación', en: 'Location' },
+                        children: { es: ['Cloroplastos', 'Hojas', 'Células Vegetales'], en: ['Chloroplasts', 'Leaves', 'Plant Cells'] }
+                    }
+                ]
+            },
+            'célula': {
+                centralLabel: { es: 'La Célula', en: 'The Cell' },
+                branches: [
+                    {
+                        label: { es: 'Tipos Celulares', en: 'Cell Types' },
+                        children: { es: ['Célula Procariota', 'Célula Eucariota'], en: ['Prokaryotic Cell', 'Eukaryotic Cell'] }
+                    },
+                    {
+                        label: { es: 'Organelos', en: 'Organelles' },
+                        children: { es: ['Núcleo', 'Mitocondrias', 'Ribosomas'], en: ['Nucleus', 'Mitochondria', 'Ribosomes'] }
+                    },
+                    {
+                        label: { es: 'Funciones', en: 'Functions' },
+                        children: { es: ['Reproducción', 'Metabolismo', 'Homeostasis'], en: ['Reproduction', 'Metabolism', 'Homeostasis'] }
+                    }
+                ]
+            },
+            'plantas': {
+                centralLabel: { es: 'Las Plantas', en: 'Plants' },
+                branches: [
+                    {
+                        label: { es: 'Tipos de Plantas', en: 'Plant Types' },
+                        children: { es: ['Angiospermas', 'Gimnospermas', 'Helechos'], en: ['Angiosperms', 'Gymnosperms', 'Ferns'] }
+                    },
+                    {
+                        label: { es: 'Partes de la Planta', en: 'Plant Parts' },
+                        children: { es: ['Raíz', 'Tallo', 'Hojas'], en: ['Root', 'Stem', 'Leaves'] }
+                    },
+                    {
+                        label: { es: 'Funciones', en: 'Functions' },
+                        children: { es: ['Fotosíntesis', 'Respiración', 'Reproducción'], en: ['Photosynthesis', 'Respiration', 'Reproduction'] }
+                    }
+                ]
+            },
+            'agua': {
+                centralLabel: { es: 'El Agua', en: 'Water' },
+                branches: [
+                    {
+                        label: { es: 'Estados del Agua', en: 'Water States' },
+                        children: { es: ['Líquido', 'Sólido', 'Gaseoso'], en: ['Liquid', 'Solid', 'Gas'] }
+                    },
+                    {
+                        label: { es: 'Ciclo del Agua', en: 'Water Cycle' },
+                        children: { es: ['Evaporación', 'Condensación', 'Precipitación'], en: ['Evaporation', 'Condensation', 'Precipitation'] }
+                    },
+                    {
+                        label: { es: 'Importancia', en: 'Importance' },
+                        children: { es: ['Vida', 'Ecosistemas', 'Agricultura'], en: ['Life', 'Ecosystems', 'Agriculture'] }
+                    }
+                ]
+            },
+            'ecosistema': {
+                centralLabel: { es: 'Ecosistema', en: 'Ecosystem' },
+                branches: [
+                    {
+                        label: { es: 'Componentes Vivos', en: 'Living Components' },
+                        children: { es: ['Productores', 'Consumidores', 'Descomponedores'], en: ['Producers', 'Consumers', 'Decomposers'] }
+                    },
+                    {
+                        label: { es: 'Componentes No Vivos', en: 'Non-Living Components' },
+                        children: { es: ['Agua', 'Suelo', 'Clima'], en: ['Water', 'Soil', 'Climate'] }
+                    },
+                    {
+                        label: { es: 'Interacciones', en: 'Interactions' },
+                        children: { es: ['Cadenas Alimentarias', 'Simbiosis', 'Competencia'], en: ['Food Chains', 'Symbiosis', 'Competition'] }
+                    }
+                ]
+            }
+        };
+
+        function cleanTextWrap(text, maxChars) {
+            if (!text || text.length <= maxChars) return [text || ''];
+            
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (const word of words) {
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                
+                if (testLine.length <= maxChars) {
+                    currentLine = testLine;
+                } else {
+                    if (currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        lines.push(word.substring(0, maxChars));
+                        currentLine = word.length > maxChars ? word.substring(maxChars) : '';
+                    }
+                }
+            }
+            
+            if (currentLine) lines.push(currentLine);
+            return lines.slice(0, 2);
+        }
+
+        function generateCleanSvg(structure, isHorizontal) {
+            const width = isHorizontal ? 1200 : 800;
+            const height = isHorizontal ? 800 : 700;
+            const centerX = isHorizontal ? 150 : width / 2;
+            const centerY = height / 2;
+            
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 ${width} ${height}" style="background: #ffffff;" class="mindmap-svg">
+                <defs>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.2)"/>
+                    </filter>
+                </defs>
+                <style>
+                    .text-clean { 
+                        font-family: 'Arial', 'Helvetica', sans-serif; 
+                        text-anchor: middle; 
+                        dominant-baseline: central; 
+                        font-weight: 600;
+                    }
+                    .central-text { fill: #ffffff; font-size: 16px; font-weight: bold; }
+                    .branch-text { fill: #ffffff; font-size: 13px; font-weight: 600; }
+                    .sub-text { fill: #ffffff; font-size: 11px; font-weight: 500; }
+                    .connection { stroke: #64748b; stroke-width: 3; opacity: 0.8; }
+                </style>`;
+
+            if (isHorizontal) {
+                // Nodo central (rectángulo azul)
+                const centralWidth = 160;
+                const centralHeight = 70;
+                svg += `<rect x="${centerX - centralWidth/2}" y="${centerY - centralHeight/2}" 
+                    width="${centralWidth}" height="${centralHeight}" rx="12" 
+                    fill="#3b82f6" stroke="#1e40af" stroke-width="2" filter="url(#shadow)"/>`;
+                
+                const centralLines = cleanTextWrap(structure.centralThemeLabel, 16);
+                centralLines.forEach((line, idx) => {
+                    const yOffset = (idx - (centralLines.length - 1) / 2) * 16;
+                    svg += `<text x="${centerX}" y="${centerY + yOffset}" class="text-clean central-text">${line}</text>`;
+                });
+                
+                const branches = structure.mainBranches;
+                const verticalSpacing = (height - 160) / (branches.length + 1);
+                
+                branches.forEach((branch, branchIdx) => {
+                    const branchY = 80 + (branchIdx + 1) * verticalSpacing;
+                    const branchX = centerX + 250;
+                    
+                    svg += `<line x1="${centerX + centralWidth/2}" y1="${centerY}" 
+                        x2="${branchX - 80}" y2="${branchY}" class="connection"/>`;
+                    
+                    const branchWidth = 140;
+                    const branchHeight = 50;
+                    svg += `<rect x="${branchX - branchWidth/2}" y="${branchY - branchHeight/2}" 
+                        width="${branchWidth}" height="${branchHeight}" rx="8" 
+                        fill="#10b981" stroke="#047857" stroke-width="2" filter="url(#shadow)"/>`;
+                    
+                    const branchLines = cleanTextWrap(branch.label, 14);
+                    branchLines.forEach((line, lineIdx) => {
+                        const yOffset = (lineIdx - (branchLines.length - 1) / 2) * 13;
+                        svg += `<text x="${branchX}" y="${branchY + yOffset}" class="text-clean branch-text">${line}</text>`;
+                    });
+                    
+                    if (branch.children && branch.children.length > 0) {
+                        const subStartX = branchX + 150;
+                        const subSpacing = 120;
+                        
+                        branch.children.forEach((child, childIdx) => {
+                            const subX = subStartX + (childIdx * subSpacing);
+                            const subY = branchY;
+                            
+                            svg += `<line x1="${branchX + branchWidth/2}" y1="${branchY}" 
+                                x2="${subX - 35}" y2="${subY}" class="connection"/>`;
+                            
+                            svg += `<circle cx="${subX}" cy="${subY}" r="32" 
+                                fill="#f59e0b" stroke="#d97706" stroke-width="2" filter="url(#shadow)"/>`;
+                            
+                            const subLines = cleanTextWrap(child, 8);
+                            subLines.forEach((line, lineIdx) => {
+                                const yOffset = (lineIdx - (subLines.length - 1) / 2) * 10;
+                                svg += `<text x="${subX}" y="${subY + yOffset}" class="text-clean sub-text">${line}</text>`;
+                            });
+                        });
+                    }
+                });
+                
+            } else {
+                // Diseño radial
+                const centralRadius = 60;
+                svg += `<circle cx="${centerX}" cy="${centerY}" r="${centralRadius}" 
+                    fill="#3b82f6" stroke="#1e40af" stroke-width="2" filter="url(#shadow)"/>`;
+                
+                const centralLines = cleanTextWrap(structure.centralThemeLabel, 12);
+                centralLines.forEach((line, idx) => {
+                    const yOffset = (idx - (centralLines.length - 1) / 2) * 14;
+                    svg += `<text x="${centerX}" y="${centerY + yOffset}" class="text-clean central-text">${line}</text>`;
+                });
+                
+                const branches = structure.mainBranches;
+                const angleStep = (2 * Math.PI) / branches.length;
+                const branchDistance = 150;
+                
+                branches.forEach((branch, idx) => {
+                    const angle = idx * angleStep - Math.PI / 2;
+                    const branchX = centerX + Math.cos(angle) * branchDistance;
+                    const branchY = centerY + Math.sin(angle) * branchDistance;
+                    
+                    svg += `<line x1="${centerX + Math.cos(angle) * centralRadius}" 
+                        y1="${centerY + Math.sin(angle) * centralRadius}" 
+                        x2="${branchX - Math.cos(angle) * 50}" 
+                        y2="${branchY - Math.sin(angle) * 20}" class="connection"/>`;
+                    
+                    svg += `<rect x="${branchX - 55}" y="${branchY - 18}" width="110" height="36" rx="8" 
+                        fill="#10b981" stroke="#047857" stroke-width="2" filter="url(#shadow)"/>`;
+                    
+                    const branchLines = cleanTextWrap(branch.label, 12);
+                    branchLines.forEach((line, lineIdx) => {
+                        const yOffset = (lineIdx - (branchLines.length - 1) / 2) * 11;
+                        svg += `<text x="${branchX}" y="${branchY + yOffset}" class="text-clean branch-text">${line}</text>`;
+                    });
+                    
+                    if (branch.children && branch.children.length > 0) {
+                        const subDistance = 80;
+                        const subAngleSpread = Math.PI / 4;
+                        
+                        branch.children.forEach((child, childIdx) => {
+                            const subAngleOffset = (childIdx - (branch.children.length - 1) / 2) * 
+                                (subAngleSpread / Math.max(1, branch.children.length - 1));
+                            const subAngle = angle + subAngleOffset;
+                            const subX = branchX + Math.cos(subAngle) * subDistance;
+                            const subY = branchY + Math.sin(subAngle) * subDistance;
+                            
+                            svg += `<line x1="${branchX + Math.cos(subAngle) * 55}" 
+                                y1="${branchY + Math.sin(subAngle) * 18}" 
+                                x2="${subX - Math.cos(subAngle) * 25}" 
+                                y2="${subY - Math.sin(subAngle) * 25}" class="connection"/>`;
+                            
+                            svg += `<circle cx="${subX}" cy="${subY}" r="25" 
+                                fill="#f59e0b" stroke="#d97706" stroke-width="2" filter="url(#shadow)"/>`;
+                            
+                            const subLines = cleanTextWrap(child, 6);
+                            subLines.forEach((line, lineIdx) => {
+                                const yOffset = (lineIdx - (subLines.length - 1) / 2) * 8;
+                                svg += `<text x="${subX}" y="${subY + yOffset}" class="text-clean sub-text">${line}</text>`;
+                            });
+                        });
+                    }
+                });
+            }
+            
+            svg += '</svg>';
+            return svg;
+        }
+
+        function generarMapaLimpio() {
+            const tema = document.getElementById('tema').value;
+            const idioma = document.getElementById('idioma').value;
+            const layout = document.getElementById('layout').value;
+            const isHorizontal = layout === 'horizontal';
+            
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status';
+            status.innerHTML = '🔄 Generando mapa mental limpio y legible...';
+            
+            setTimeout(() => {
+                try {
+                    const topicData = topicMappings[tema];
+                    if (!topicData) throw new Error('Tema no encontrado');
+                    
+                    const structure = {
+                        centralThemeLabel: topicData.centralLabel[idioma].toUpperCase(),
+                        mainBranches: topicData.branches.map(branch => ({
+                            label: branch.label[idioma],
+                            children: branch.children[idioma]
+                        }))
+                    };
+                    
+                    const svgContent = generateCleanSvg(structure, isHorizontal);
+                    
+                    document.getElementById('mapTitle').textContent = `MAPA MENTAL - ${structure.centralThemeLabel}`;
+                    document.getElementById('mindmapContent').innerHTML = svgContent;
+                    
+                    status.className = 'status success';
+                    status.innerHTML = '✅ Mapa mental generado exitosamente - Texto limpio y legible';
+                    
+                    // Ocultar comparación si estaba visible
+                    document.getElementById('comparisonGrid').style.display = 'none';
+                    
+                } catch (error) {
+                    status.className = 'status error';
+                    status.innerHTML = '❌ Error al generar el mapa mental: ' + error.message;
+                }
+            }, 1000);
+        }
+
+        function compararDisenos() {
+            const tema = document.getElementById('tema').value;
+            const idioma = document.getElementById('idioma').value;
+            
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status';
+            status.innerHTML = '🔄 Generando comparación de diseños...';
+            
+            setTimeout(() => {
+                try {
+                    const topicData = topicMappings[tema];
+                    if (!topicData) throw new Error('Tema no encontrado');
+                    
+                    const structure = {
+                        centralThemeLabel: topicData.centralLabel[idioma].toUpperCase(),
+                        mainBranches: topicData.branches.map(branch => ({
+                            label: branch.label[idioma],
+                            children: branch.children[idioma]
+                        }))
+                    };
+                    
+                    const horizontalSvg = generateCleanSvg(structure, true);
+                    const radialSvg = generateCleanSvg(structure, false);
+                    
+                    document.getElementById('horizontalMap').innerHTML = horizontalSvg;
+                    document.getElementById('radialMap').innerHTML = radialSvg;
+                    
+                    document.getElementById('comparisonGrid').style.display = 'grid';
+                    document.getElementById('mindmapContent').innerHTML = '<p style="color: #666; padding: 20px;">Ver comparación abajo ⬇️</p>';
+                    
+                    status.className = 'status success';
+                    status.innerHTML = '✅ Comparación generada - Ambos diseños con texto limpio';
+                    
+                } catch (error) {
+                    status.className = 'status error';
+                    status.innerHTML = '❌ Error en la comparación: ' + error.message;
+                }
+            }, 1500);
+        }
+
+        // Generar mapa inicial
+        window.onload = function() {
+            generarMapaLimpio();
+        };
+    </script>
+</body>
+</html>

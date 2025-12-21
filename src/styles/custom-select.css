@@ -1,0 +1,210 @@
+/* Estilos personalizados para los componentes Select */
+
+/* Modificar el hover de los elementos del Select */
+.select-orange-hover [data-radix-select-item],
+.select-orange-hover [role="option"],
+.select-orange-hover li {
+  transition: background-color 0.2s, color 0.2s;
+  /* Asegura que cada elemento tenga su propio fondo inicial */
+  background-color: transparent;
+}
+
+/* Aplica el hover solo al elemento exacto */
+.select-orange-hover [data-radix-select-item]:hover,
+.select-orange-hover [role="option"]:hover,
+.select-orange-hover li:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+  /* Asegura que solo este elemento tenga el efecto */
+  z-index: 10;
+  position: relative;
+}
+
+/* Modificar el estilo del item seleccionado */
+.select-orange-hover [data-radix-select-item][data-state="checked"],
+.select-orange-hover [role="option"][aria-selected="true"],
+.select-orange-hover li[aria-selected="true"] {
+  background-color: rgb(251, 146, 60) !important; /* orange-400 */
+  color: white !important;
+}
+
+/* Modificar el hover del trigger */
+.select-orange-hover-trigger:hover {
+  border-color: rgb(249, 115, 22) !important; /* orange-500 */
+}
+
+.select-orange-hover-trigger:focus-visible,
+.select-orange-hover-trigger:focus {
+  outline-color: rgb(249, 115, 22) !important; /* orange-500 */
+  border-color: rgb(249, 115, 22) !important; /* orange-500 */
+  --ring-color: rgb(254, 215, 170) !important; /* orange-200 */
+}
+
+/* Estilos para evaluaciones (morado) */
+.select-purple-hover [data-radix-select-item],
+.select-purple-hover [role="option"],
+.select-purple-hover li {
+  transition: background-color 0.2s, color 0.2s;
+  background-color: transparent;
+}
+
+.select-purple-hover [data-radix-select-item]:hover,
+.select-purple-hover [role="option"]:hover,
+.select-purple-hover li:hover {
+  background-color: rgb(233, 213, 255) !important; /* purple-100 */
+  color: rgb(107, 33, 168) !important; /* purple-700 */
+  z-index: 10;
+  position: relative;
+}
+
+.select-purple-hover [data-radix-select-item][data-state="checked"],
+.select-purple-hover [role="option"][aria-selected="true"],
+.select-purple-hover li[aria-selected="true"] {
+  background-color: rgb(168, 85, 247) !important; /* purple-500 */
+  color: white !important;
+}
+
+.select-purple-hover-trigger:hover {
+  border-color: rgb(168, 85, 247) !important; /* purple-500 */
+}
+
+.select-purple-hover-trigger:focus-visible,
+.select-purple-hover-trigger:focus {
+  outline-color: rgb(168, 85, 247) !important; /* purple-500 */
+  border-color: rgb(168, 85, 247) !important; /* purple-500 */
+  --ring-color: rgb(233, 213, 255) !important; /* purple-200 */
+}
+
+/* Estilo específico para cada opción individual en listas desplegables */
+.select-content-item, 
+[data-radix-menu-content] div[role="menuitem"], 
+[role="listbox"] [role="option"],
+[role="option"],
+div[class*="select-content"] li {
+  transition: background-color 0.2s, color 0.2s;
+  background-color: transparent; /* Asegura un estado inicial transparente */
+}
+
+/* Aplica el efecto hover solo al elemento específico sobre el que está el cursor */
+.select-content-item:hover, 
+[data-radix-menu-content] div[role="menuitem"]:hover, 
+[role="listbox"] [role="option"]:hover,
+[role="option"]:hover,
+div[class*="select-content"] li:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+}
+
+/* Asegurar que solo el elemento exacto sobre el que está el cursor cambie */
+.select-orange-hover [data-radix-select-item]:not(:hover),
+.select-orange-hover [role="option"]:not(:hover),
+.select-orange-hover li:not(:hover) {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Anulación de estilos por defecto de focus */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Ajustar el espaciado para opciones sin selector */
+[data-radix-select-item] {
+  padding-left: 1rem !important; /* Reducimos el padding izquierdo al eliminar el ícono */
+}
+
+/* Aplicar las clases para espaciado y hover a todos los SelectItem */
+[data-radix-select-item]:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+}
+
+/* Ocultar completamente cualquier indicador de ítem (check) */
+[data-radix-select-item-indicator],
+.radix-select-item-indicator,
+[class*="ItemIndicator"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ocultar completamente el indicador de selección */
+[data-radix-select-item] [data-radix-select-item-indicator] {
+  display: none !important;
+}
+
+.select-orange-hover [data-radix-select-item] span {
+  padding-left: 0.5rem !important; /* Espacio para el texto */
+}
+
+/* Clase específica para mejorar el formato de las opciones */
+.individual-option {
+  padding-left: 1rem !important;
+  position: relative;
+}
+
+/* Clase específica para mejorar el espaciado de los items en la lista desplegable */
+.select-item-spaced {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0.5rem 1rem !important;
+  position: relative !important;
+}
+
+/* Ocultar completamente el indicador de selección */
+.select-item-spaced [data-radix-select-item-indicator] {
+  display: none !important;
+}
+
+/* Estilos específicos para focus con teclado */
+.select-orange-hover [data-radix-select-item]:focus,
+.select-orange-hover [role="option"]:focus,
+.select-orange-hover li:focus {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+  outline: 1px solid rgb(249, 115, 22) !important; /* orange-500 */
+}
+
+/* Reset para todos los demás elementos cuando uno está en hover */
+.select-orange-hover:hover [data-radix-select-item]:not(:hover),
+.select-orange-hover:hover [role="option"]:not(:hover),
+.select-orange-hover:hover li:not(:hover) {
+  background-color: transparent !important;
+}
+
+/* Estilos específicos para cada selector de curso en la lista desplegable */
+div[role="listbox"] [role="option"] {
+  display: block !important;
+  padding: 0.5rem 1rem !important;
+  clear: both !important;
+  width: 100% !important;
+}
+
+/* Clase específica para aislar el efecto hover a cada opción individual */
+.individual-option {
+  isolation: isolate;
+  position: relative;
+}
+
+.individual-option:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+  z-index: 5 !important;
+}
+
+/* Sobrescribir cualquier otro estilo para garantizar el efecto por ítem */
+.select-content-item.individual-option:hover, 
+[data-radix-select-item].individual-option:hover, 
+[role="option"].individual-option:hover {
+  background-color: rgb(255, 237, 213) !important; /* orange-100 */
+  color: rgb(194, 65, 12) !important; /* orange-700 */
+}
+
+/* Asegurar que las opciones no afectadas mantengan su estado original */
+.select-orange-hover:hover .individual-option:not(:hover) {
+  background-color: transparent !important;
+  color: inherit !important;
+}

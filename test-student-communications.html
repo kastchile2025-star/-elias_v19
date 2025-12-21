@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Módulo de Comunicaciones para Estudiantes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 10px;
+        }
+        .step {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #1e40af;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .success {
+            background: #dcfce7;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+        .warning {
+            background: #fef3c7;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+        .data-display {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .login-info {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Test - Módulo de Comunicaciones para Estudiantes</h1>
+        
+        <div class="step info">
+            <h3>📋 Información del Test</h3>
+            <p>Esta página te permite probar el módulo de comunicaciones desde la perspectiva de un estudiante. 
+            Los estudiantes pueden recibir y leer comunicaciones enviadas por sus profesores.</p>
+        </div>
+
+        <div class="login-info">
+            <h3>🔐 Credenciales de Prueba - Estudiante</h3>
+            <p><strong>Usuario:</strong> student_carlos</p>
+            <p><strong>Contraseña:</strong> password123</p>
+            <p><strong>Rol:</strong> Estudiante</p>
+            <p><strong>Cursos asignados:</strong> Matemáticas, Historia, Química</p>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Paso 1: Configurar Datos de Prueba</h3>
+            <p>Configura comunicaciones de ejemplo que los profesores han enviado al estudiante.</p>
+            <button onclick="setupTestData()">Configurar Datos de Prueba</button>
+            <div id="setup-result"></div>
+        </div>
+
+        <div class="step">
+            <h3>📊 Paso 2: Ver Estadísticas de Comunicaciones</h3>
+            <p>Revisa cuántas comunicaciones están disponibles en el sistema.</p>
+            <button onclick="showStats()">Mostrar Estadísticas</button>
+            <div id="stats-container"></div>
+        </div>
+
+        <div class="step">
+            <h3>📱 Paso 3: Ver Comunicaciones del Estudiante</h3>
+            <p>Simula la vista del estudiante para ver qué comunicaciones recibiría.</p>
+            <button onclick="showStudentCommunications()">Ver Comunicaciones de Carlos</button>
+            <div id="student-comms-result"></div>
+        </div>
+
+        <div class="step">
+            <h3>✅ Paso 4: Marcar como Leídas</h3>
+            <p>Simula la acción de marcar comunicaciones como leídas.</p>
+            <button onclick="markAsRead()">Marcar Primera Comunicación como Leída</button>
+            <div id="mark-read-result"></div>
+        </div>
+
+        <div class="step success">
+            <h3>🌐 Paso 5: Probar en la Aplicación</h3>
+            <p>Ahora puedes ir a la aplicación y probar el módulo completo:</p>
+            <ol>
+                <li>Ve a <strong>http://localhost:3000</strong></li>
+                <li>Inicia sesión como estudiante (student_carlos)</li>
+                <li>Navega a la pestaña "Comunicaciones"</li>
+                <li>Verás las comunicaciones recibidas</li>
+                <li>Haz clic en cualquier comunicación para ver los detalles</li>
+                <li>Las comunicaciones se marcarán automáticamente como leídas</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🗂️ Datos Almacenados en LocalStorage</h3>
+            <button onclick="showStoredData()">Ver Datos Almacenados</button>
+            <button onclick="clearTestData()">Limpiar Datos de Prueba</button>
+            <div id="stored-data"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function setupTestData() {
+            const resultDiv = document.getElementById('setup-result');
+            
+            try {
+                // Ejecutar el script de configuración
+                eval(setupScript);
+                
+                resultDiv.innerHTML = `
+                    <div class="data-display">
+✅ Datos de prueba configurados correctamente
+
+Se han creado comunicaciones de ejemplo:
+• Cambio de horario de evaluación (Matemáticas)
+• Recordatorio entrega proyecto (Historia) 
+• Felicitaciones por desempeño (Individual)
+• Invitación charla universitaria (Orientación)
+• Material de apoyo disponible (Química)
+• Citación entrevista apoderado (Individual)
+
+📧 Total: 6 comunicaciones de prueba
+🎯 Dirigidas al estudiante Carlos (student_carlos)
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="data-display" style="color: #dc2626;">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function showStats() {
+            const communications = JSON.parse(localStorage.getItem('smart-student-communications') || '[]');
+            const courseCommunications = communications.filter(c => c.type === 'course').length;
+            const studentCommunications = communications.filter(c => c.type === 'student').length;
+            
+            document.getElementById('stats-container').innerHTML = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">${communications.length}</div>
+                        <div>Total Comunicaciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${courseCommunications}</div>
+                        <div>Para Cursos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${studentCommunications}</div>
+                        <div>Individuales</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showStudentCommunications() {
+            const communications = JSON.parse(localStorage.getItem('smart-student-communications') || '[]');
+            const studentId = 'student_carlos';
+            
+            // Filtrar comunicaciones para el estudiante
+            const studentCommunications = communications.filter(comm => {
+                // Comunicaciones directas al estudiante
+                if (comm.type === 'student' && comm.targetStudent === studentId) {
+                    return true;
+                }
+                
+                // Comunicaciones a cursos donde está inscrito el estudiante
+                if (comm.type === 'course') {
+                    // Verificar si tiene cursos activos que coincidan
+                    const user = JSON.parse(localStorage.getItem('smart-student-users') || '[]')
+                        .find(u => u.id === studentId);
+                    
+                    if (user && user.activeCourses && user.activeCourses.includes(comm.targetCourse)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            });
+
+            const resultDiv = document.getElementById('student-comms-result');
+            
+            if (studentCommunications.length === 0) {
+                resultDiv.innerHTML = `<div class="data-display">📭 No hay comunicaciones para el estudiante Carlos</div>`;
+                return;
+            }
+
+            let html = `<div class="data-display">📧 Comunicaciones para Carlos (${studentCommunications.length}):\n\n`;
+            
+            studentCommunications.forEach((comm, index) => {
+                const isRead = comm.readBy && comm.readBy.includes(studentId);
+                const readStatus = isRead ? '✅ Leída' : '📩 Sin leer';
+                
+                html += `${index + 1}. ${comm.title}
+   Tipo: ${comm.type === 'course' ? 'Curso' : 'Individual'}
+   Estado: ${readStatus}
+   Fecha: ${new Date(comm.createdAt).toLocaleDateString()}
+   
+`;
+            });
+            
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+        }
+
+        function markAsRead() {
+            const communications = JSON.parse(localStorage.getItem('smart-student-communications') || '[]');
+            const studentId = 'student_carlos';
+            
+            if (communications.length === 0) {
+                document.getElementById('mark-read-result').innerHTML = 
+                    '<div class="data-display">❌ No hay comunicaciones para marcar</div>';
+                return;
+            }
+            
+            // Marcar la primera comunicación como leída
+            const firstComm = communications[0];
+            if (!firstComm.readBy) {
+                firstComm.readBy = [];
+            }
+            
+            if (!firstComm.readBy.includes(studentId)) {
+                firstComm.readBy.push(studentId);
+                localStorage.setItem('smart-student-communications', JSON.stringify(communications));
+                
+                document.getElementById('mark-read-result').innerHTML = `
+                    <div class="data-display">✅ Comunicación marcada como leída:
+"${firstComm.title}"
+
+Estado actualizado en localStorage</div>
+                `;
+            } else {
+                document.getElementById('mark-read-result').innerHTML = `
+                    <div class="data-display">ℹ️ La comunicación ya estaba marcada como leída:
+"${firstComm.title}"</div>
+                `;
+            }
+        }
+
+        function showStoredData() {
+            const communications = localStorage.getItem('smart-student-communications');
+            const assignments = localStorage.getItem('smart-student-student-assignments');
+            
+            document.getElementById('stored-data').innerHTML = `
+                <div class="data-display">
+📦 DATOS EN LOCALSTORAGE:
+
+🔹 smart-student-communications:
+${JSON.stringify(JSON.parse(communications || '[]'), null, 2)}
+
+🔹 smart-student-student-assignments:
+${JSON.stringify(JSON.parse(assignments || '[]'), null, 2)}
+                </div>
+            `;
+        }
+
+        function clearTestData() {
+            if (confirm('¿Estás seguro de que quieres limpiar todos los datos de prueba?')) {
+                localStorage.removeItem('smart-student-communications');
+                localStorage.removeItem('smart-student-student-assignments');
+                
+                document.getElementById('stored-data').innerHTML = `
+                    <div class="data-display" style="color: #dc2626;">
+🗑️ Datos de prueba eliminados
+
+Los siguientes elementos fueron removidos de localStorage:
+• smart-student-communications
+• smart-student-student-assignments
+                    </div>
+                `;
+            }
+        }
+
+        // Script de configuración embebido
+        const setupScript = `
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+const sampleCommunications = [
+  {
+    id: generateId(),
+    title: "Importante: Cambio de horario de evaluación",
+    content: "Estimados estudiantes,\\n\\nLes informo que la evaluación de Matemáticas programada para el jueves 15 de marzo ha sido reprogramada para el viernes 16 de marzo a las 10:00 AM.\\n\\nPor favor, asegúrense de traer:\\n- Calculadora científica\\n- Lápices HB y 2B\\n- Borrador\\n- Regla\\n\\nRecuerden que el temario incluye:\\n- Funciones trigonométricas\\n- Logaritmos\\n- Ecuaciones cuadráticas\\n\\nSaludos cordiales,\\nProfesor Juan López",
+    type: "course",
+    targetCourse: "course_matematicast",
+    targetSection: "section_3ro_a",
+    senderId: "teacher_001",
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    readBy: []
+  },
+  {
+    id: generateId(),
+    title: "Recordatorio: Entrega de proyecto de Historia",
+    content: "Queridos estudiantes,\\n\\nEste es un recordatorio de que el proyecto sobre la Independencia de Chile debe ser entregado el próximo lunes 20 de marzo antes de las 23:59 horas.\\n\\nRequisitos del proyecto:\\n- Mínimo 10 páginas\\n- Incluir bibliografía\\n- Formato PDF\\n- Enviar por correo electrónico\\n\\nNo se aceptarán entregas tardías sin justificación médica.\\n\\nÉxito en sus trabajos,\\nProfesora María González",
+    type: "course",
+    targetCourse: "course_historia",
+    targetSection: "section_3ro_a",
+    senderId: "teacher_002",
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    readBy: []
+  },
+  {
+    id: generateId(),
+    title: "Felicitaciones por tu excelente desempeño",
+    content: "Estimado Carlos,\\n\\nQuiero felicitarte por tu destacado desempeño en la última evaluación de Física. Tu calificación de 95/100 demuestra tu dedicación y comprensión profunda de los conceptos.\\n\\nEspecialmente destacable fue tu resolución del problema de cinemática, donde aplicaste correctamente las ecuaciones de movimiento rectilíneo uniformemente acelerado.\\n\\nSigue así, tienes un gran potencial en las ciencias.\\n\\nSaludos,\\nProfesor Roberto Silva",
+    type: "student",
+    targetStudent: "student_carlos",
+    senderId: "teacher_003",
+    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    readBy: []
+  },
+  {
+    id: generateId(),
+    title: "Material de apoyo para Química disponible",
+    content: "Estimados estudiantes,\\n\\nHe subido material complementario para el tema de Enlaces Químicos en la plataforma del colegio.\\n\\nEl material incluye:\\n- Presentación PowerPoint con ejemplos\\n- Ejercicios resueltos paso a paso\\n- Videos explicativos\\n- Ejercicios para practicar en casa\\n\\nLes recomiendo revisar este material antes de la próxima clase del martes.\\n\\nCualquier duda, pueden escribirme o consultarme en la próxima clase.\\n\\nSaludos,\\nProfesora Ana Torres",
+    type: "course",
+    targetCourse: "course_quimica",
+    targetSection: "section_3ro_a",
+    senderId: "teacher_005",
+    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    readBy: []
+  },
+  {
+    id: generateId(),
+    title: "Citación a entrevista con apoderado",
+    content: "Estimado Carlos,\\n\\nNecesito solicitar una reunión con tu apoderado para conversar sobre tu rendimiento académico y algunas situaciones que han surgido en clases.\\n\\nPor favor, pide a tu apoderado que se comunique conmigo para coordinar una cita durante esta semana.\\n\\nPuede contactarme:\\n- Por teléfono: 22-123-4567\\n- Por correo: profesora.garcia@colegio.cl\\n- Presencialmente en mi oficina (Sala 201)\\n\\nEs importante que esta reunión se realice a la brevedad.\\n\\nSaludos,\\nProfesora Patricia García\\nProfesora Jefe 3°A",
+    type: "student",
+    targetStudent: "student_carlos",
+    senderId: "teacher_006",
+    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    readBy: []
+  }
+];
+
+// Configurar datos
+const existingCommunications = localStorage.getItem('smart-student-communications');
+let currentCommunications = existingCommunications ? JSON.parse(existingCommunications) : [];
+
+sampleCommunications.forEach(newComm => {
+  const exists = currentCommunications.some(existing => existing.title === newComm.title);
+  if (!exists) {
+    currentCommunications.push(newComm);
+  }
+});
+
+localStorage.setItem('smart-student-communications', JSON.stringify(currentCommunications));
+
+// Configurar asignaciones de estudiante
+const studentAssignments = localStorage.getItem('smart-student-student-assignments');
+if (!studentAssignments) {
+  const defaultAssignments = [
+    {
+      studentId: "student_carlos",
+      sectionId: "section_3ro_a",
+      courseId: "course_matematicast"
+    },
+    {
+      studentId: "student_carlos", 
+      sectionId: "section_3ro_a",
+      courseId: "course_historia"
+    },
+    {
+      studentId: "student_carlos",
+      sectionId: "section_3ro_a", 
+      courseId: "course_quimica"
+    }
+  ];
+  
+  localStorage.setItem('smart-student-student-assignments', JSON.stringify(defaultAssignments));
+}
+`;
+    </script>
+</body>
+</html>

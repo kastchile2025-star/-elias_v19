@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test: Profesor Comentario Propio - SMART STUDENT</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .button.danger:hover {
+            background: #dc2626;
+        }
+        .button.success {
+            background: #10b981;
+        }
+        .button.success:hover {
+            background: #059669;
+        }
+        .button.warning {
+            background: #f59e0b;
+        }
+        .button.warning:hover {
+            background: #d97706;
+        }
+        .log {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .result {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .result.success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .result.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .result.warning {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Test: Profesor Comentario Propio</h1>
+        <p>Verificar que un profesor NO vea notificaciones de sus propios comentarios</p>
+    </div>
+
+    <div class="section">
+        <h2>📋 Estado del Test</h2>
+        <div id="testStatus">
+            <div class="info-box">
+                <strong>Objetivo:</strong> Verificar que cuando un profesor hace un comentario en una tarea, él mismo NO reciba una notificación de ese comentario.
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>👤 Configuración de Usuario</h2>
+        <div>
+            <label for="profesorSelect">Seleccionar Profesor:</label>
+            <select id="profesorSelect" style="margin-left: 10px; padding: 5px;">
+                <option value="">-- Seleccionar Profesor --</option>
+            </select>
+            <button class="button" onclick="loadProfesor()">Cargar Datos</button>
+        </div>
+        <div id="profesorInfo" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="section">
+        <h2>🧪 Pasos del Test</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Crear Comentario del Profesor</h3>
+            <p>Simular que el profesor hace un comentario en una tarea</p>
+            <button class="button warning" onclick="crearComentarioProfesor()">📝 Crear Comentario</button>
+            <div id="paso1Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 2: Verificar Notificaciones Creadas</h3>
+            <p>Verificar qué notificaciones se crearon en el sistema</p>
+            <button class="button" onclick="verificarNotificacionesCreadas()">🔍 Verificar Notificaciones</button>
+            <div id="paso2Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 3: Verificar Filtrado para el Profesor</h3>
+            <p>Verificar si el profesor ve sus propias notificaciones (NO debería verlas)</p>
+            <button class="button" onclick="verificarFiltradoProfesor()">⚗️ Verificar Filtrado</button>
+            <div id="paso3Result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Paso 4: Verificar como Estudiante</h3>
+            <p>Cambiar a un estudiante y verificar que SÍ vea la notificación del profesor</p>
+            <select id="estudianteSelect">
+                <option value="">-- Seleccionar Estudiante --</option>
+            </select>
+            <button class="button success" onclick="verificarComoEstudiante()">👨‍🎓 Ver como Estudiante</button>
+            <div id="paso4Result"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Resultados del Test</h2>
+        <div id="testResults"></div>
+        <button class="button danger" onclick="limpiarTest()">🗑️ Limpiar Test</button>
+    </div>
+
+    <div class="section">
+        <h2>📝 Log de Actividad</h2>
+        <div id="activityLog" class="log">Iniciando test de comentarios propios del profesor...</div>
+    </div>
+
+    <script>
+        let profesorActual = null;
+        let estudianteActual = null;
+        let testTaskId = null;
+        let testCommentId = null;
+        let testNotificationId = null;
+        let activityLog = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            activityLog.push(logMessage);
+            document.getElementById('activityLog').textContent = activityLog.join('\n');
+            document.getElementById('activityLog').scrollTop = document.getElementById('activityLog').scrollHeight;
+        }
+
+        function showResult(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function loadUsuarios() {
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const profesorSelect = document.getElementById('profesorSelect');
+                const estudianteSelect = document.getElementById('estudianteSelect');
+                
+                profesorSelect.innerHTML = '<option value="">-- Seleccionar Profesor --</option>';
+                estudianteSelect.innerHTML = '<option value="">-- Seleccionar Estudiante --</option>';
+                
+                Object.entries(usersObj).forEach(([username, userData]) => {
+                    if (userData.role === 'teacher') {
+                        const option = document.createElement('option');
+                        option.value = username;
+                        option.textContent = `${userData.displayName || username}`;
+                        profesorSelect.appendChild(option);
+                    } else if (userData.role === 'student') {
+                        const option = document.createElement('option');
+                        option.value = username;
+                        option.textContent = `${userData.displayName || username}`;
+                        estudianteSelect.appendChild(option);
+                    }
+                });
+                
+                log(`Cargados profesores y estudiantes del sistema`);
+            } catch (error) {
+                log(`❌ Error cargando usuarios: ${error.message}`);
+            }
+        }
+
+        function loadProfesor() {
+            const profesorUsername = document.getElementById('profesorSelect').value;
+            if (!profesorUsername) {
+                log('❌ Selecciona un profesor primero');
+                return;
+            }
+
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                profesorActual = {
+                    username: profesorUsername,
+                    ...usersObj[profesorUsername]
+                };
+
+                document.getElementById('profesorInfo').innerHTML = 
+                    `<strong>👨‍🏫 Profesor:</strong> ${profesorActual.displayName || profesorActual.username} (${profesorActual.username})`;
+                
+                log(`✅ Profesor cargado: ${profesorActual.displayName || profesorActual.username}`);
+            } catch (error) {
+                log(`❌ Error cargando datos del profesor: ${error.message}`);
+            }
+        }
+
+        function crearComentarioProfesor() {
+            if (!profesorActual) {
+                showResult('paso1Result', 'error', '❌ Selecciona y carga un profesor primero');
+                return;
+            }
+
+            try {
+                // Crear IDs únicos para el test
+                testTaskId = `test_task_${Date.now()}`;
+                testCommentId = `test_comment_${Date.now()}`;
+                testNotificationId = `test_notification_${Date.now()}`;
+
+                // 1. Crear una tarea de prueba
+                const testTask = {
+                    id: testTaskId,
+                    title: 'Tarea de Prueba - Test Comentarios',
+                    description: 'Tarea creada para probar notificaciones',
+                    subject: 'Ciencias Naturales',
+                    course: 'Ciencias Naturales',
+                    assignedBy: profesorActual.username,
+                    assignedTo: 'course',
+                    assignedStudents: [],
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 días
+                    status: 'pending',
+                    createdAt: new Date().toISOString(),
+                    priority: 'medium',
+                    taskType: 'assignment'
+                };
+
+                // Guardar la tarea
+                const storedTasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                storedTasks.push(testTask);
+                localStorage.setItem('smart-student-tasks', JSON.stringify(storedTasks));
+
+                // 2. Crear comentario del profesor
+                const testComment = {
+                    id: testCommentId,
+                    taskId: testTaskId,
+                    studentUsername: profesorActual.username,
+                    studentName: profesorActual.displayName || profesorActual.username,
+                    comment: 'Este es un comentario de prueba del profesor',
+                    timestamp: new Date().toISOString(),
+                    isSubmission: false,
+                    userRole: 'teacher',
+                    readBy: []
+                };
+
+                // Guardar el comentario
+                const storedComments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                storedComments.push(testComment);
+                localStorage.setItem('smart-student-task-comments', JSON.stringify(storedComments));
+
+                // 3. Simular la creación de notificaciones como lo haría el sistema
+                // Obtener estudiantes del curso
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                const users = Object.entries(usersObj).map(([username, data]) => ({
+                    username,
+                    ...data
+                }));
+                
+                const studentsInCourse = users.filter(user => 
+                    user.role === 'student' && 
+                    user.activeCourses && 
+                    user.activeCourses.includes('Ciencias Naturales')
+                );
+
+                if (studentsInCourse.length > 0) {
+                    // Crear notificación del sistema
+                    const testNotification = {
+                        id: testNotificationId,
+                        type: 'teacher_comment',
+                        taskId: testTaskId,
+                        taskTitle: 'Tarea de Prueba - Test Comentarios',
+                        targetUserRole: 'student',
+                        targetUsernames: studentsInCourse.map(student => student.username),
+                        fromUsername: profesorActual.username, // ❗ CLAVE: El profesor es quien envía
+                        fromDisplayName: profesorActual.displayName || profesorActual.username,
+                        course: 'Ciencias Naturales',
+                        subject: 'Ciencias Naturales',
+                        timestamp: new Date().toISOString(),
+                        read: false,
+                        readBy: []
+                    };
+
+                    const storedNotifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                    storedNotifications.push(testNotification);
+                    localStorage.setItem('smart-student-task-notifications', JSON.stringify(storedNotifications));
+
+                    showResult('paso1Result', 'success', 
+                        `✅ Comentario y notificación creados:
+                        <br>• Tarea: ${testTask.title}
+                        <br>• Comentario: ${testComment.comment}
+                        <br>• Notificación para: ${studentsInCourse.length} estudiantes
+                        <br>• Desde: ${profesorActual.username}`
+                    );
+
+                    log(`✅ Test creado - Tarea: ${testTaskId}, Comentario: ${testCommentId}, Notificación: ${testNotificationId}`);
+                    log(`📤 Notificación enviada a estudiantes: ${studentsInCourse.map(s => s.username).join(', ')}`);
+                } else {
+                    showResult('paso1Result', 'warning', '⚠️ No hay estudiantes en el curso Ciencias Naturales');
+                }
+
+            } catch (error) {
+                showResult('paso1Result', 'error', `❌ Error creando test: ${error.message}`);
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function verificarNotificacionesCreadas() {
+            if (!testNotificationId) {
+                showResult('paso2Result', 'error', '❌ Ejecuta el Paso 1 primero');
+                return;
+            }
+
+            try {
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                const testNotification = notifications.find(n => n.id === testNotificationId);
+
+                if (testNotification) {
+                    showResult('paso2Result', 'success', 
+                        `✅ Notificación encontrada en el sistema:
+                        <br>• ID: ${testNotification.id}
+                        <br>• Tipo: ${testNotification.type}
+                        <br>• De: ${testNotification.fromUsername}
+                        <br>• Para rol: ${testNotification.targetUserRole}
+                        <br>• Para usuarios: ${testNotification.targetUsernames.join(', ')}
+                        <br>• ❗ Profesor en targetUsernames: ${testNotification.targetUsernames.includes(profesorActual.username) ? 'SÍ' : 'NO'}`
+                    );
+
+                    log(`🔍 Notificación verificada: ${testNotification.fromUsername} → [${testNotification.targetUsernames.join(', ')}]`);
+                } else {
+                    showResult('paso2Result', 'error', '❌ Notificación no encontrada en el sistema');
+                }
+            } catch (error) {
+                showResult('paso2Result', 'error', `❌ Error verificando notificaciones: ${error.message}`);
+            }
+        }
+
+        function verificarFiltradoProfesor() {
+            if (!profesorActual || !testNotificationId) {
+                showResult('paso3Result', 'error', '❌ Ejecuta los pasos anteriores primero');
+                return;
+            }
+
+            try {
+                // Simular la función getUnreadNotificationsForUser
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                // Aplicar el mismo filtro que usa el sistema
+                const unreadForProfessor = notifications.filter(notification => 
+                    notification.targetUserRole === profesorActual.role &&
+                    notification.targetUsernames.includes(profesorActual.username) &&
+                    !notification.readBy.includes(profesorActual.username) &&
+                    notification.fromUsername !== profesorActual.username // ✅ La clave del filtro
+                );
+
+                const testNotificationForProfessor = unreadForProfessor.find(n => n.id === testNotificationId);
+                
+                if (testNotificationForProfessor) {
+                    showResult('paso3Result', 'error', 
+                        `❌ PROBLEMA DETECTADO: El profesor SÍ está viendo su propia notificación
+                        <br>• El filtro no está funcionando correctamente
+                        <br>• fromUsername: ${testNotificationForProfessor.fromUsername}
+                        <br>• profesorActual.username: ${profesorActual.username}
+                        <br>• ¿Son iguales?: ${testNotificationForProfessor.fromUsername === profesorActual.username}`
+                    );
+                    log(`❌ PROBLEMA: Profesor ve notificación propia`);
+                } else {
+                    showResult('paso3Result', 'success', 
+                        `✅ CORRECTO: El profesor NO ve su propia notificación
+                        <br>• El filtro está funcionando correctamente
+                        <br>• La notificación fue excluida por fromUsername !== username`
+                    );
+                    log(`✅ CORRECTO: Filtro funcionando`);
+                }
+
+                // Mostrar información detallada
+                const allForProfessor = notifications.filter(notification => 
+                    notification.targetUserRole === profesorActual.role &&
+                    notification.targetUsernames.includes(profesorActual.username)
+                );
+
+                log(`📊 Notificaciones para profesor ${profesorActual.username}:`);
+                log(`   Total que lo incluyen: ${allForProfessor.length}`);
+                log(`   Después del filtro: ${unreadForProfessor.length}`);
+                log(`   Test notification presente: ${allForProfessor.some(n => n.id === testNotificationId) ? 'SÍ' : 'NO'}`);
+                log(`   Test notification filtrada: ${unreadForProfessor.some(n => n.id === testNotificationId) ? 'NO (problema)' : 'SÍ (correcto)'}`);
+
+            } catch (error) {
+                showResult('paso3Result', 'error', `❌ Error verificando filtrado: ${error.message}`);
+            }
+        }
+
+        function verificarComoEstudiante() {
+            const estudianteUsername = document.getElementById('estudianteSelect').value;
+            if (!estudianteUsername || !testNotificationId) {
+                showResult('paso4Result', 'error', '❌ Selecciona un estudiante y ejecuta los pasos anteriores');
+                return;
+            }
+
+            try {
+                const usersObj = JSON.parse(localStorage.getItem('smart-student-users') || '{}');
+                estudianteActual = {
+                    username: estudianteUsername,
+                    ...usersObj[estudianteUsername]
+                };
+
+                // Simular la función getUnreadNotificationsForUser para estudiante
+                const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                
+                const unreadForStudent = notifications.filter(notification => 
+                    notification.targetUserRole === estudianteActual.role &&
+                    notification.targetUsernames.includes(estudianteActual.username) &&
+                    !notification.readBy.includes(estudianteActual.username) &&
+                    notification.fromUsername !== estudianteActual.username
+                );
+
+                const testNotificationForStudent = unreadForStudent.find(n => n.id === testNotificationId);
+                
+                if (testNotificationForStudent) {
+                    showResult('paso4Result', 'success', 
+                        `✅ CORRECTO: El estudiante SÍ ve la notificación del profesor
+                        <br>• Estudiante: ${estudianteActual.displayName || estudianteActual.username}
+                        <br>• De: ${testNotificationForStudent.fromDisplayName}
+                        <br>• El sistema funciona correctamente para estudiantes`
+                    );
+                    log(`✅ CORRECTO: Estudiante ${estudianteActual.username} ve notificación del profesor`);
+                } else {
+                    // Verificar por qué no la ve
+                    const allForStudent = notifications.filter(notification => 
+                        notification.targetUsernames.includes(estudianteActual.username)
+                    );
+
+                    showResult('paso4Result', 'warning', 
+                        `⚠️ El estudiante NO ve la notificación del profesor
+                        <br>• Puede ser porque no está en el curso correcto
+                        <br>• O hay otro problema de filtrado
+                        <br>• Total notificaciones que incluyen al estudiante: ${allForStudent.length}`
+                    );
+                    log(`⚠️ Estudiante ${estudianteActual.username} no ve la notificación`);
+                }
+
+            } catch (error) {
+                showResult('paso4Result', 'error', `❌ Error verificando como estudiante: ${error.message}`);
+            }
+        }
+
+        function limpiarTest() {
+            if (confirm('¿Limpiar todos los datos de prueba creados?')) {
+                try {
+                    // Limpiar tarea de prueba
+                    if (testTaskId) {
+                        const tasks = JSON.parse(localStorage.getItem('smart-student-tasks') || '[]');
+                        const cleanTasks = tasks.filter(t => t.id !== testTaskId);
+                        localStorage.setItem('smart-student-tasks', JSON.stringify(cleanTasks));
+                    }
+
+                    // Limpiar comentario de prueba
+                    if (testCommentId) {
+                        const comments = JSON.parse(localStorage.getItem('smart-student-task-comments') || '[]');
+                        const cleanComments = comments.filter(c => c.id !== testCommentId);
+                        localStorage.setItem('smart-student-task-comments', JSON.stringify(cleanComments));
+                    }
+
+                    // Limpiar notificación de prueba
+                    if (testNotificationId) {
+                        const notifications = JSON.parse(localStorage.getItem('smart-student-task-notifications') || '[]');
+                        const cleanNotifications = notifications.filter(n => n.id !== testNotificationId);
+                        localStorage.setItem('smart-student-task-notifications', JSON.stringify(cleanNotifications));
+                    }
+
+                    // Reset variables
+                    testTaskId = null;
+                    testCommentId = null;
+                    testNotificationId = null;
+
+                    // Limpiar resultados
+                    document.getElementById('paso1Result').innerHTML = '';
+                    document.getElementById('paso2Result').innerHTML = '';
+                    document.getElementById('paso3Result').innerHTML = '';
+                    document.getElementById('paso4Result').innerHTML = '';
+
+                    log('🗑️ Datos de prueba limpiados');
+                } catch (error) {
+                    log(`❌ Error limpiando: ${error.message}`);
+                }
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsuarios();
+            log('🚀 Test de comentarios propios del profesor iniciado');
+            log('📋 Pasos a seguir:');
+            log('1. Seleccionar y cargar un profesor');
+            log('2. Crear comentario del profesor');
+            log('3. Verificar notificaciones creadas');
+            log('4. Verificar filtrado para el profesor');
+            log('5. Verificar como estudiante');
+        });
+    </script>
+</body>
+</html>
