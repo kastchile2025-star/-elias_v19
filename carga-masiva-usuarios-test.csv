@@ -1,0 +1,6 @@
+role,name,rut,email,username,password,course,section,subjects,student_ruts,relationship,phone
+teacher,Carlos González Profesor,11111111-1,carlos.gonzalez@escuela.cl,carlos.profesor,1234,1ro Básico,A,"MAT, LEN, HIST",,
+student,María Fernanda López,22222222-2,maria.lopez@escuela.cl,maria.estudiante1,1234,1ro Básico,A,,,
+student,José Andrés Martínez,33333333-3,jose.martinez@escuela.cl,jose.estudiante2,1234,1ro Básico,A,,,
+student,Camila Alejandra Soto,44444444-4,camila.soto@escuela.cl,camila.estudiante3,1234,1ro Básico,A,,,
+guardian,Rosa María López Mamá,55555555-5,rosa.mama@gmail.com,rosa.apoderada,1234,,,,"22222222-2",mother,+56912345678

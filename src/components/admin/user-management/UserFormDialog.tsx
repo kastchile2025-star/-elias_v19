@@ -66,6 +66,8 @@ export function UserFormDialog({
   const { translate } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
+  const [filterCourseId, setFilterCourseId] = useState<string>('');
+  const [filterSectionId, setFilterSectionId] = useState<string>('');
 
   const getRoleIcon = (role: string) => {
     if (role === 'admin') return <Crown className="w-4 h-4 mr-1"/>;
@@ -74,8 +76,21 @@ export function UserFormDialog({
     return <GraduationCap className="w-4 h-4 mr-1"/>;
   };
 
-  // Filter students based on search term
+  // Filter students based on search term, course and section
   const filteredStudents = availableStudents.filter((student: any) => {
+    // Filter by course if selected
+    if (filterCourseId) {
+      if (filterCourseId === 'unassigned') {
+        // Show only students without course assigned
+        if (student.courseId) return false;
+      } else {
+        // Show only students with the selected course
+        if (student.courseId !== filterCourseId) return false;
+      }
+    }
+    // Filter by section if selected
+    if (filterSectionId && student.sectionId !== filterSectionId) return false;
+    // Filter by search term
     if (!studentSearchTerm) return true;
     const searchLower = studentSearchTerm.toLowerCase();
     return (
@@ -84,6 +99,11 @@ export function UserFormDialog({
       student.rut?.toLowerCase().includes(searchLower)
     );
   });
+
+  // Get sections filtered by selected course
+  const sectionsForFilter = filterCourseId && filterCourseId !== 'unassigned'
+    ? availableSections.filter((s: any) => s.courseId === filterCourseId)
+    : availableSections;
 
   // Get student info by ID
   const getStudentInfo = (studentId: string) => {
@@ -395,6 +415,49 @@ export function UserFormDialog({
                 {translate('userManagementSelectStudentsForGuardian') || 'Selecciona los estudiantes que están a cargo de este apoderado'}
               </p>
               
+              {/* Filters by course and section */}
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <Label className="text-xs">{translate('userManagementFilterByCourse') || 'Filtrar por curso'}</Label>
+                  <Select
+                    value={filterCourseId}
+                    onValueChange={(value) => {
+                      setFilterCourseId(value === 'all' ? '' : value);
+                      setFilterSectionId(''); // Reset section when course changes
+                    }}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder={translate('userManagementAllCourses') || 'Todos los cursos'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{translate('userManagementAllCourses') || 'Todos los cursos'}</SelectItem>
+                      <SelectItem value="unassigned">{translate('userManagementNoAssignedCourse') || 'Sin curso asignado'}</SelectItem>
+                      {availableCourses.map((course: any) => (
+                        <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">{translate('userManagementFilterBySection') || 'Filtrar por sección'}</Label>
+                  <Select
+                    value={filterSectionId}
+                    onValueChange={(value) => setFilterSectionId(value === 'all' ? '' : value)}
+                    disabled={!filterCourseId || filterCourseId === 'unassigned'}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder={translate('userManagementAllSections') || 'Todas las secciones'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{translate('userManagementAllSections') || 'Todas las secciones'}</SelectItem>
+                      {sectionsForFilter.map((section: any) => (
+                        <SelectItem key={section.id} value={section.id}>{section.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               {/* Search input */}
               <Input
                 placeholder={translate('userManagementSearchStudents') || 'Buscar estudiantes por nombre, usuario o RUT...'}
@@ -430,10 +493,22 @@ export function UserFormDialog({
 
               {/* Available students list */}
               <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-1">
-                {filteredStudents.length === 0 ? (
+                {availableStudents.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center py-4">
-                    {translate('userManagementNoStudentsFound') || 'No se encontraron estudiantes'}
+                    {translate('userManagementNoStudentsInSystem') || 'No hay estudiantes registrados en el sistema'}
                   </p>
+                ) : filteredStudents.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-xs text-muted-foreground">
+                      {translate('userManagementNoStudentsFound') || 'No se encontraron estudiantes'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {translate('userManagementTryDifferentFilter') || 'Intenta con otro filtro o selecciona "Todos los cursos"'}
+                    </p>
+                    <p className="text-xs text-purple-500 mt-2">
+                      {translate('userManagementTotalStudentsAvailable') || 'Total de estudiantes'}: {availableStudents.length}
+                    </p>
+                  </div>
                 ) : (
                   filteredStudents.slice(0, 50).map((student: any) => {
                     const isSelected = form.studentIds?.includes(student.id);
