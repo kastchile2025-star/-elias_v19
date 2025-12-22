@@ -1103,7 +1103,7 @@ export default function PerfilClient() {
 
           setDynamicUserProfileData({
             name: user.displayName || user.username,
-            roleKey: user.role === 'teacher' ? 'profileRoleTeacher' : 'profileRoleStudent',
+            roleKey: user.role === 'teacher' ? 'profileRoleTeacher' : user.role === 'guardian' ? 'profileRoleGuardian' : 'profileRoleStudent',
             activeCourses: user.activeCourses || ['Sin curso asignado'],
             subjects: defaultSubjects,
             evaluationsCompleted: evaluationHistory.length,
@@ -1129,7 +1129,7 @@ export default function PerfilClient() {
 
           setDynamicUserProfileData({
             name: user.displayName || user.username,
-            roleKey: user.role === 'teacher' ? 'profileRoleTeacher' : 'profileRoleStudent',
+            roleKey: user.role === 'teacher' ? 'profileRoleTeacher' : user.role === 'guardian' ? 'profileRoleGuardian' : 'profileRoleStudent',
             activeCourses: user.activeCourses || ['Sin curso asignado'],
             subjects: defaultSubjects,
             evaluationsCompleted: evaluationHistory.length,
@@ -1295,9 +1295,7 @@ export default function PerfilClient() {
         // Actualizar el estado con toda la información obtenida
         setDynamicUserProfileData({
           name: fullUserData.displayName || fullUserData.username,
-          roleKey: fullUserData.role === 'teacher' ? 'profileRoleTeacher' : (fullUserData.role === 'admin' ? 'profileRoleAdmin' : 'profileRoleStudent'),
-          activeCourses: activeCoursesWithCount,
-          subjects: allSubjects,
+          roleKey: fullUserData.role === 'teacher' ? 'profileRoleTeacher' : fullUserData.role === 'admin' ? 'profileRoleAdmin' : fullUserData.role === 'guardian' ? 'profileRoleGuardian' : 'profileRoleStudent',
           evaluationsCompleted: evaluationHistory.length,
         });
 
@@ -1316,7 +1314,7 @@ export default function PerfilClient() {
 
         setDynamicUserProfileData({
           name: user?.displayName || user?.username || 'Usuario',
-          roleKey: user?.role === 'teacher' ? 'profileRoleTeacher' : 'profileRoleStudent',
+          roleKey: user?.role === 'teacher' ? 'profileRoleTeacher' : user?.role === 'guardian' ? 'profileRoleGuardian' : 'profileRoleStudent',
           activeCourses: user?.activeCourses || ['Sin curso asignado'],
           subjects: defaultSubjects,
           evaluationsCompleted: evaluationHistory.length,

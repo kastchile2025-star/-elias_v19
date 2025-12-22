@@ -1298,6 +1298,7 @@ export default function DashboardHomePage() {
       case 'admin': return 'bg-red-100 text-red-800 border-red-200 hover:bg-gray-100 hover:text-red-800 transition-colors duration-200'; // NotificationBadge: hover fondo gris claro
       case 'teacher': return 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-gray-100 hover:text-blue-800 transition-colors duration-200'; // NotificationBadge: hover fondo gris claro
       case 'student': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200 border-green-200 dark:border-green-700 hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors duration-200';
+      case 'guardian': return 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-gray-100 hover:text-purple-800 transition-colors duration-200';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-200 border-gray-200 dark:border-gray-700';
     }
   };
@@ -1525,9 +1526,13 @@ export default function DashboardHomePage() {
                 {user.role === 'student' && (
                   <GraduationCap className="w-3 h-3 text-green-500 dark:text-green-400 flex-shrink-0" />
                 )}
+                {user.role === 'guardian' && (
+                  <Users className="w-3 h-3 text-purple-700 dark:text-purple-400 flex-shrink-0" />
+                )}
                 {user.role === 'admin' && translate('adminRole')}
                 {user.role === 'teacher' && translate('teacherRole')}
                 {user.role === 'student' && translate('studentRole')}
+                {user.role === 'guardian' && translate('guardianRole')}
               </Badge>
               {/* Notification Panel */}
               <NotificationsPanel count={

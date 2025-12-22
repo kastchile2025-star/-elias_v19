@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/auth-context';
 import { useLanguage } from '@/contexts/language-context';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Shield, Crown } from 'lucide-react';
+import { GraduationCap, Shield, Crown, Users } from 'lucide-react';
 
 export function UserRoleBadge() {
   const { user } = useAuth();
@@ -31,6 +31,12 @@ export function UserRoleBadge() {
       labelKey: 'studentRole',
       variant: 'outline' as const,
       className: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-200 dark:border-green-700 transition-colors duration-200 hover:bg-green-100 hover:text-green-800 dark:hover:bg-green-900/30 dark:hover:text-green-200'
+    },
+    guardian: {
+      labelKey: 'guardianRole',
+      variant: 'default' as const,
+      className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-200 dark:border-purple-700',
+      activeClassName: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-200 dark:border-purple-700'
     },
     // ✅ Agregar soporte para rol 'estudiante' en español
     estudiante: {
@@ -81,6 +87,9 @@ export function UserRoleBadge() {
       )}
       {(user.role === 'student' || user.role === 'estudiante') && (
         <GraduationCap className="w-3 h-3 text-green-700 dark:text-green-400 flex-shrink-0" />
+      )}
+      {user.role === 'guardian' && (
+        <Users className="w-3 h-3 text-purple-700 dark:text-purple-400 flex-shrink-0" />
       )}
       {translate(config.labelKey)}
     </Badge>

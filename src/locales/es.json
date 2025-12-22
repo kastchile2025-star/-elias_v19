@@ -834,6 +834,8 @@
     "adminRole": "Administrador",
     "teacherRole": "Profesor", 
     "studentRole": "Estudiante",
+    "guardianRole": "Apoderado",
+    "profileRoleGuardian": "Apoderado",
     "userManagementPageTitle": "Gestión de Usuarios",
     "userManagementPageDescription": "Administra usuarios, roles y permisos del sistema",
     "roleLabel": "Rol *",

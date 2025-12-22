@@ -852,6 +852,8 @@
     "adminRole": "Administrator",
     "teacherRole": "Teacher",
     "studentRole": "Student",
+    "guardianRole": "Guardian",
+    "profileRoleGuardian": "Guardian",
     "userManagementPageTitle": "User Management",
     "userManagementPageDescription": "Manage users, roles and system permissions",
     "roleLabel": "Role *",

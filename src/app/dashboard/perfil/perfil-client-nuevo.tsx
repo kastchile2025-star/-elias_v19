@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { UserCircle, BarChart3, History as HistoryIcon, Download, Trash2, Edit3, Award, Percent, Newspaper, Network, FileQuestion } from 'lucide-react';
+import { UserCircle, BarChart3, History as HistoryIcon, Download, Trash2, Edit3, Award, Percent, Newspaper, Network, FileQuestion, Users } from 'lucide-react';
 import type { UserProfile, SubjectProgress, EvaluationHistoryItem } from '@/lib/types';
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -596,8 +596,13 @@ export default function PerfilClient() {
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-md ${
                   dynamicUserProfileData.roleKey === 'profileRoleStudent'
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
-                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800'
+                    : dynamicUserProfileData.roleKey === 'profileRoleGuardian'
+                      ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-800'
+                      : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800'
                 }`}>
+                  {dynamicUserProfileData.roleKey === 'profileRoleGuardian' && (
+                    <Users className="w-4 h-4 text-purple-700 dark:text-purple-400 mr-2" />
+                  )}
                   {translate(dynamicUserProfileData.roleKey)}
                 </span>
               </div>

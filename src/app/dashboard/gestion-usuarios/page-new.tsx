@@ -374,6 +374,7 @@ export default function GestionUsuariosPage() {
       case 'admin': return 'destructive';
       case 'teacher': return 'default';
       case 'student': return 'outline'; // Will be styled with custom green
+      case 'guardian': return 'default';
       default: return 'outline';
     }
   };
@@ -381,6 +382,7 @@ export default function GestionUsuariosPage() {
   const getRoleBadgeCustomClass = (role: UserRole) => {
     switch (role) {
       case 'student': return 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30';
+      case 'guardian': return 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:hover:bg-purple-900/30';
       default: return '';
     }
   };
@@ -390,6 +392,7 @@ export default function GestionUsuariosPage() {
       case 'admin': return 'Administrador';
       case 'teacher': return 'Profesor';
       case 'student': return 'Estudiante';
+      case 'guardian': return 'Apoderado';
       default: return role;
     }
   };
