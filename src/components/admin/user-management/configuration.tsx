@@ -4440,14 +4440,47 @@ export default function Configuration() {
         if (!row || row.length === 0) continue;
 
         try {
+          const cleanCell = (v: any): string => (v != null ? String(v).replace(/\r/g, '').replace(/\n/g, '').trim() : '');
+          let rowValues: string[] = Array.isArray(row) ? row.map(cleanCell) : [];
+
+          // ✅ Reparación para CSV: si un campo contiene comas sin comillas, XLSX lo separa en columnas extra.
+          // Esto afecta especialmente a apoderados cuando `student_ruts` trae más de un RUT separado por coma.
+          const roleIdx = headers.indexOf('role');
+          const studentRutsIdx = headers.indexOf('student_ruts');
+          const relationshipIdx = headers.indexOf('relationship');
+          const phoneIdx = headers.indexOf('phone');
+          const roleRaw = roleIdx >= 0 ? String(rowValues[roleIdx] || '').toLowerCase() : '';
+          const isGuardianRow = roleRaw === 'guardian' || roleRaw === 'apoderado';
+
+          if (
+            isGuardianRow &&
+            studentRutsIdx >= 0 &&
+            relationshipIdx >= 0 &&
+            phoneIdx >= 0 &&
+            studentRutsIdx < relationshipIdx &&
+            relationshipIdx < phoneIdx &&
+            rowValues.length > headers.length
+          ) {
+            const relationshipRaw = rowValues[rowValues.length - 2] || '';
+            const phoneRaw = rowValues[rowValues.length - 1] || '';
+            const joinedStudentRuts = rowValues.slice(studentRutsIdx, rowValues.length - 2).join(',');
+
+            rowValues = [
+              ...rowValues.slice(0, studentRutsIdx),
+              joinedStudentRuts,
+              relationshipRaw,
+              phoneRaw,
+            ];
+          }
+
+          // Normalizar largo vs headers
+          if (rowValues.length < headers.length) {
+            rowValues = [...rowValues, ...Array(headers.length - rowValues.length).fill('')];
+          }
+
           const userData: any = {};
           headers.forEach((header, index) => {
-            // ✅ Limpiar valores: remover \r, \n, y espacios extra
-            const rawValue = row[index];
-            const cleanValue = rawValue != null 
-              ? String(rawValue).replace(/\r/g, '').replace(/\n/g, '').trim()
-              : '';
-            userData[header] = cleanValue;
+            userData[header] = rowValues[index] ?? '';
           });
 
           // Validar campos mínimos
@@ -4510,7 +4543,7 @@ export default function Configuration() {
             // Primera vez que vemos este usuario/curso/sección
             // Procesar campos específicos de apoderado
             const studentRuts = String(userData.student_ruts || userData.studentruts || '')
-              .split(',')
+              .split(/[,;]/)
               .map(r => r.trim())
               .filter(r => r.length > 0);
             const relationship = String(userData.relationship || 'tutor').toLowerCase();
@@ -4772,7 +4805,15 @@ export default function Configuration() {
             teachersYear.push(teacherRec);
           } else if (role === 'guardian' || role === 'apoderado') {
             // Procesar apoderado
-            const studentRuts = Array.isArray(u.studentRuts) ? u.studentRuts : [];
+            let studentRuts: string[] = [];
+            if (Array.isArray(u.studentRuts)) {
+              studentRuts = u.studentRuts;
+            } else if (typeof (u as any).studentRuts === 'string' && String((u as any).studentRuts).trim()) {
+              studentRuts = String((u as any).studentRuts)
+                .split(/[,;]/)
+                .map((r: string) => r.trim())
+                .filter((r: string) => r.length > 0);
+            }
             const studentIds: string[] = [];
             
             // Resolver RUTs de estudiantes a IDs
@@ -8947,6 +8988,18 @@ function UserManagementSection({
   const teachers = LocalStorageManager.getTeachersForYear(selectedYear);
   const updatedTeachers = teachers.filter((t: any) => t.id !== userToDelete.id);
   LocalStorageManager.setTeachersForYear(selectedYear, updatedTeachers);
+      } else if (userToDelete.type === 'guardian') {
+  // Eliminar apoderado de la colección de apoderados del año
+  const guardians = LocalStorageManager.getGuardiansForYear(selectedYear) || [];
+  const updatedGuardians = guardians.filter((g: any) => g.id !== userToDelete.id && g.username !== userToDelete.username);
+  LocalStorageManager.setGuardiansForYear(selectedYear, updatedGuardians);
+  
+  // También eliminar las relaciones guardian-student
+  const relations = LocalStorageManager.getGuardianStudentRelationsForYear(selectedYear) || [];
+  const updatedRelations = relations.filter((r: any) => r.guardianId !== userToDelete.id);
+  LocalStorageManager.setGuardianStudentRelationsForYear(selectedYear, updatedRelations);
+  
+  console.log('✅ Apoderado eliminado:', userToDelete.username);
       }
 
       // Remove from main users

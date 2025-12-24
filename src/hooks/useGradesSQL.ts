@@ -863,7 +863,16 @@ export function useGradesSQL() {
 
       const usingFirebase = isFirebaseEnabled();
       if (!usingFirebase) {
-        throw new Error('Firebase no está habilitado. Esta función solo funciona con Firebase.');
+        // Si Firebase no está habilitado, simplemente retornar éxito
+        // Las calificaciones en LocalStorage se eliminan en otro paso del reset
+        console.log('ℹ️ [HOOK] Firebase no está habilitado, omitiendo eliminación de calificaciones de Firebase');
+        setDeleteProgress(prev => prev && ({
+          ...prev,
+          phase: 'completado',
+          success: 0,
+          logs: [...prev.logs, '✅ Firebase no habilitado - omitido']
+        }));
+        return;
       }
 
       // Modo paginado para evitar timeouts con grandes volúmenes
