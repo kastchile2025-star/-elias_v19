@@ -224,28 +224,132 @@ export default function LibrosPage() {
 
     try {
       const assignments = JSON.parse(localStorage.getItem('smart-student-student-assignments') || '[]');
-      const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+      const coursesData = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
       const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
       const my = Array.isArray(assignments) ? assignments.filter((a: any) => String(a.studentId) === String(user.id) || String(a.studentUsername) === String(user.username)) : [];
       const names = new Set<string>();
       for (const a of my) {
         let courseName: string | null = null;
         if (a.courseId) {
-          const c = courses.find((c: any) => String(c.id) === String(a.courseId));
+          const c = coursesData.find((c: any) => String(c.id) === String(a.courseId));
           courseName = c?.name || null;
         } else if (a.sectionId) {
           const s = sections.find((s: any) => String(s.id) === String(a.sectionId));
           if (s) {
-            const c = courses.find((c: any) => String(c.id) === String(s.courseId));
+            const c = coursesData.find((c: any) => String(c.id) === String(s.courseId));
             courseName = c?.name || null;
           }
         }
         if (courseName) names.add(String(courseName));
       }
       const list = Array.from(names);
+      console.log('📚 [Libros] Cursos accesibles para estudiante:', list);
       return list.length > 0 ? list : base;
     } catch {
       return base;
+    }
+  };
+
+  // 👨‍👩‍👧 FUNCIÓN PARA OBTENER CURSOS ACCESIBLES PARA APODERADO (GUARDIAN)
+  const getGuardianAccessibleCourses = (): string[] => {
+    if (!user || user.role !== 'guardian') return [];
+
+    try {
+      console.log('👨‍👩‍👧 [Libros] Obteniendo cursos para apoderado:', user.username);
+      
+      const currentYear = new Date().getFullYear();
+      const usersData = JSON.parse(localStorage.getItem('smart-student-users') || '[]');
+      const studentAssignments = JSON.parse(localStorage.getItem('smart-student-student-assignments') || '[]');
+      const coursesData = JSON.parse(localStorage.getItem('smart-student-courses') || '[]');
+      const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]');
+      
+      // Buscar estudiantes asignados al apoderado
+      let assignedStudentIds: string[] = [];
+      
+      // Prioridad 1: fullUserData.studentIds
+      const fullUserData = usersData.find((u: any) => 
+        u.username?.toLowerCase() === user.username?.toLowerCase()
+      );
+      
+      if (fullUserData?.studentIds && fullUserData.studentIds.length > 0) {
+        assignedStudentIds = fullUserData.studentIds;
+        console.log(`👨‍👩‍👧 [Libros] studentIds desde usuario:`, assignedStudentIds);
+      }
+      
+      // Prioridad 2: guardian-student-relations
+      if (assignedStudentIds.length === 0) {
+        let guardianRelations = JSON.parse(localStorage.getItem(`smart-student-guardian-student-relations-${currentYear}`) || '[]');
+        if (guardianRelations.length === 0) {
+          guardianRelations = JSON.parse(localStorage.getItem('smart-student-guardian-student-relations') || '[]');
+        }
+        
+        assignedStudentIds = guardianRelations
+          .filter((rel: any) => rel.guardianId === (user as any).id || rel.guardianUsername === user.username)
+          .map((rel: any) => rel.studentId);
+        
+        if (assignedStudentIds.length > 0) {
+          console.log(`👨‍👩‍👧 [Libros] studentIds desde relations:`, assignedStudentIds);
+        }
+      }
+      
+      if (assignedStudentIds.length === 0) {
+        console.warn('👨‍👩‍👧 [Libros] No se encontraron estudiantes asignados al apoderado');
+        return [];
+      }
+      
+      // Buscar los cursos de los estudiantes asignados
+      const courseNames = new Set<string>();
+      
+      for (const studentId of assignedStudentIds) {
+        // Buscar asignaciones del estudiante
+        const studentAssigns = studentAssignments.filter((a: any) => 
+          String(a.studentId) === String(studentId)
+        );
+        
+        for (const assignment of studentAssigns) {
+          let courseName: string | null = null;
+          
+          if (assignment.courseId) {
+            const course = coursesData.find((c: any) => String(c.id) === String(assignment.courseId));
+            courseName = course?.name || null;
+          } else if (assignment.sectionId) {
+            const section = sections.find((s: any) => String(s.id) === String(assignment.sectionId));
+            if (section) {
+              const course = coursesData.find((c: any) => String(c.id) === String(section.courseId));
+              courseName = course?.name || null;
+            }
+          }
+          
+          if (courseName) {
+            courseNames.add(courseName);
+          }
+        }
+        
+        // Fallback: revisar activeCourses del estudiante
+        const student = usersData.find((u: any) => 
+          String(u.id) === String(studentId) && (u.role === 'student' || u.role === 'estudiante')
+        );
+        
+        if (student?.activeCourses && Array.isArray(student.activeCourses)) {
+          for (const courseId of student.activeCourses) {
+            const course = coursesData.find((c: any) => String(c.id) === String(courseId) || c.name === courseId);
+            if (course?.name) {
+              courseNames.add(course.name);
+            } else if (typeof courseId === 'string' && courseId.includes('Básico') || courseId.includes('Medio')) {
+              // Si el courseId parece ser un nombre de curso directamente
+              courseNames.add(courseId);
+            }
+          }
+        }
+      }
+      
+      const result = Array.from(courseNames);
+      console.log('👨‍👩‍👧 [Libros] Cursos accesibles para apoderado:', result);
+      return result;
+      
+    } catch (error) {
+      console.error('👨‍👩‍👧 [Libros] Error al obtener cursos del apoderado:', error);
+      return [];
     }
   };
 
@@ -285,9 +389,15 @@ export default function LibrosPage() {
         // Si no se pueden obtener asignaciones, mostrar solo libros básicos por defecto
         filteredBooks = bookPDFs.filter(book => book.course === '4to Básico' && book.subject === 'Matemáticas');
       }
-    } else if (user.role === 'student') {
+    } else if (user.role === 'student' || user.role === 'estudiante') {
       // Para estudiantes: tomar cursos desde activeCourses; si está vacío, usar asignaciones
       const accessibleCourses = getStudentAccessibleCourses();
+      console.log('📚 [Libros] Estudiante - Cursos accesibles:', accessibleCourses);
+      filteredBooks = bookPDFs.filter(book => accessibleCourses.includes(book.course));
+    } else if (user.role === 'guardian') {
+      // 👨‍👩‍👧 Para apoderados: mostrar libros de los cursos de sus estudiantes asignados
+      const accessibleCourses = getGuardianAccessibleCourses();
+      console.log('👨‍👩‍👧 [Libros] Apoderado - Cursos accesibles:', accessibleCourses);
       filteredBooks = bookPDFs.filter(book => accessibleCourses.includes(book.course));
     } else {
       // Admin u otros roles: lógica existente
@@ -321,8 +431,12 @@ export default function LibrosPage() {
       );
       
       return courseMatch && subjectMatch;
-    } else if (user.role === 'student') {
+    } else if (user.role === 'student' || user.role === 'estudiante') {
       const accessibleCourses = getStudentAccessibleCourses();
+      return accessibleCourses.includes(book.course);
+    } else if (user.role === 'guardian') {
+      // 👨‍👩‍👧 Para apoderados: verificar si el libro está en los cursos de sus estudiantes
+      const accessibleCourses = getGuardianAccessibleCourses();
       return accessibleCourses.includes(book.course);
     } else {
       // Admin u otros roles
@@ -359,8 +473,30 @@ export default function LibrosPage() {
         });
         return;
       }
+    } else if (user.role === 'student' || user.role === 'estudiante') {
+      // Para estudiantes: verificar usando cursos accesibles
+      const accessibleCourses = getStudentAccessibleCourses();
+      if (!accessibleCourses.includes(book.course)) {
+        toast({
+          title: translate('accessDenied'),
+          description: translate('noBookPermissions'),
+          variant: 'destructive'
+        });
+        return;
+      }
+    } else if (user.role === 'guardian') {
+      // 👨‍👩‍👧 Para apoderados: verificar usando cursos de sus estudiantes
+      const accessibleCourses = getGuardianAccessibleCourses();
+      if (!accessibleCourses.includes(book.course)) {
+        toast({
+          title: translate('accessDenied'),
+          description: translate('noBookPermissions'),
+          variant: 'destructive'
+        });
+        return;
+      }
     } else {
-      // Para estudiantes y admin, usar verificación existente
+      // Para admin y otros, usar verificación existente
       if (!hasAccessToCourse(book.course)) {
         toast({
           title: translate('accessDenied'),
@@ -440,6 +576,75 @@ export default function LibrosPage() {
               </p>
             </div>
           );
+        })()}
+
+        {/* 👨‍👩‍👧 INFORMACIÓN DE CURSOS PARA APODERADOS */}
+        {user.role === 'guardian' && (() => {
+          const accessibleCourses = getGuardianAccessibleCourses();
+          
+          if (accessibleCourses.length > 0) {
+            return (
+              <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
+                    {translate('guardianBooksTitle') || 'Biblioteca de tus Estudiantes'}
+                  </h3>
+                </div>
+                <p className="text-sm text-purple-700 dark:text-purple-300 mb-3">
+                  {translate('guardianBooksAccessInfo') || 'Tienes acceso a los libros de los cursos asignados a tus estudiantes'}
+                </p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {accessibleCourses.map((course, index) => (
+                    <Badge key={`course-${index}`} variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
+                      📚 {translateCourse(course)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          
+          return (
+            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-300">
+                  {translate('noStudentsAssigned') || 'Sin estudiantes asignados'}
+                </h3>
+              </div>
+              <p className="text-sm text-amber-700 dark:text-amber-300">
+                {translate('contactAdminForStudentAssignment') || 'Contacta al administrador para asignar estudiantes a tu cuenta.'}
+              </p>
+            </div>
+          );
+        })()}
+
+        {/* 📚 INFORMACIÓN DE CURSO PARA ESTUDIANTES */}
+        {(user.role === 'student' || user.role === 'estudiante') && (() => {
+          const accessibleCourses = getStudentAccessibleCourses();
+          
+          if (accessibleCourses.length > 0) {
+            return (
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <GraduationCap className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <h3 className="text-lg font-semibold text-green-800 dark:text-green-300">
+                    {translate('yourCourseBooks') || 'Libros de tu Curso'}
+                  </h3>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {accessibleCourses.map((course, index) => (
+                    <Badge key={`course-${index}`} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
+                      📚 {translateCourse(course)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          
+          return null;
         })()}
       </div>
 
