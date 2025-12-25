@@ -129,6 +129,7 @@ export default function ResumenPage() {
         topic: topicForSummary,
         includeKeyPoints: includeKeyPoints,
         language: currentUiLanguage,
+        course: selectedCourse, // Include course for better content matching
       };
       
       console.log('Sending request to API:', requestBody);

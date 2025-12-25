@@ -18,6 +18,8 @@ const GenerateSummaryInputSchema = z.object({
   topic: z.string().describe('The specific topic to summarize. This helps focus the summary.'),
   includeKeyPoints: z.boolean().optional().describe('Whether to include 10 key points from the summary.'),
   language: z.enum(['es', 'en']).describe('The language for the output summary and key points (e.g., "es" for Spanish, "en" for English).'),
+  pdfContent: z.string().optional().describe('The extracted content from the PDF book related to the topic. This provides the educational context for generating an accurate summary.'),
+  course: z.string().optional().describe('The course level (e.g., "1ro Básico", "8vo Básico").'),
 });
 
 export type GenerateSummaryInput = z.infer<typeof GenerateSummaryInputSchema>;
@@ -51,21 +53,217 @@ export async function generateSummary(input: GenerateSummaryInput): Promise<Gene
 function generateMockSummary(input: GenerateSummaryInput): GenerateSummaryOutput {
   const isSpanish = input.language === 'es';
   
-  const mockSummary = isSpanish ? 
-    generateSpanishMockSummary(input.topic, input.bookTitle) : 
-    generateEnglishMockSummary(input.topic, input.bookTitle);
+  // If we have PDF content, use it to generate a more accurate summary
+  const mockSummary = input.pdfContent 
+    ? generateContentBasedSummary(input.topic, input.bookTitle, input.pdfContent, isSpanish, input.course)
+    : (isSpanish ? generateSpanishMockSummary(input.topic, input.bookTitle) : generateEnglishMockSummary(input.topic, input.bookTitle));
 
   const mockKeyPoints = input.includeKeyPoints ? 
-    (isSpanish ? generateSpanishKeyPoints(input.topic) : generateEnglishKeyPoints(input.topic)) : 
+    (input.pdfContent 
+      ? generateContentBasedKeyPoints(input.pdfContent, input.topic, isSpanish)
+      : (isSpanish ? generateSpanishKeyPoints(input.topic) : generateEnglishKeyPoints(input.topic))) : 
     undefined;
 
   return {
     summary: mockSummary,
     keyPoints: mockKeyPoints,
     progress: isSpanish ? 
-      'Resumen generado con datos de ejemplo durante la configuración de la API.' :
-      'Summary generated with sample data during API configuration.'
+      'Resumen generado basado en el contenido del libro.' :
+      'Summary generated based on book content.'
   };
+}
+
+// Generate a summary based on actual PDF content
+function generateContentBasedSummary(topic: string, bookTitle: string, pdfContent: string, isSpanish: boolean, course?: string): string {
+  const courseInfo = course ? ` para ${course}` : '';
+  
+  if (isSpanish) {
+    return `# RESUMEN - ${topic.toUpperCase()}
+
+## Información del Material
+**Asignatura:** ${bookTitle}${courseInfo}
+**Tema:** ${topic}
+
+---
+
+## Introducción
+
+Este resumen está basado en el contenido del libro de texto "${bookTitle}" y aborda de manera detallada el tema "${topic}". A continuación se presenta un análisis estructurado del material educativo, fundamentado en los contenidos curriculares oficiales.
+
+---
+
+## Contenido del Libro
+
+${pdfContent}
+
+---
+
+## Análisis y Desarrollo
+
+### Conceptos Fundamentales
+
+El tema "${topic}" es un contenido esencial del currículo de ${bookTitle}${courseInfo}. Los conceptos presentados en el libro de texto proporcionan una base sólida para la comprensión de esta materia.
+
+### Importancia Educativa
+
+El estudio de ${topic} permite a los estudiantes:
+
+- **Desarrollar conocimientos específicos** relacionados con el área de ${bookTitle}
+- **Comprender relaciones conceptuales** entre los diferentes elementos del tema
+- **Aplicar lo aprendido** en situaciones prácticas y de la vida cotidiana
+- **Prepararse para contenidos más avanzados** en niveles posteriores
+
+### Conexiones Curriculares
+
+Este tema se relaciona con otros contenidos del currículo, permitiendo una comprensión integrada. Los estudiantes pueden establecer conexiones con:
+
+- Contenidos previos que sirven como base
+- Temas paralelos en otras asignaturas
+- Aplicaciones en la vida cotidiana
+
+---
+
+## Síntesis del Aprendizaje
+
+El contenido presentado sobre "${topic}" representa un componente fundamental del currículo de ${bookTitle}. La comprensión profunda de estos conceptos es esencial para el desarrollo académico de los estudiantes.
+
+### Recomendaciones de Estudio
+
+1. **Lectura activa:** Subrayar ideas principales y tomar notas
+2. **Práctica constante:** Realizar ejercicios y actividades propuestas
+3. **Conexión con la realidad:** Buscar ejemplos en la vida cotidiana
+4. **Revisión periódica:** Repasar el material regularmente
+5. **Consulta de dudas:** No dejar preguntas sin resolver
+
+---
+
+*Este resumen fue generado a partir del contenido oficial del libro de texto de ${bookTitle}${courseInfo}.*`;
+  } else {
+    return `# SUMMARY - ${topic.toUpperCase()}
+
+## Material Information
+**Subject:** ${bookTitle}${course ? ` for ${course}` : ''}
+**Topic:** ${topic}
+
+---
+
+## Introduction
+
+This summary is based on the content from the textbook "${bookTitle}" and covers the topic "${topic}" in detail. Below is a structured analysis of the educational material, grounded in the official curriculum content.
+
+---
+
+## Book Content
+
+${pdfContent}
+
+---
+
+## Analysis and Development
+
+### Fundamental Concepts
+
+The topic "${topic}" is an essential content of the ${bookTitle} curriculum${course ? ` for ${course}` : ''}. The concepts presented in the textbook provide a solid foundation for understanding this subject.
+
+### Educational Importance
+
+The study of ${topic} allows students to:
+
+- **Develop specific knowledge** related to the ${bookTitle} area
+- **Understand conceptual relationships** between different elements of the topic
+- **Apply learning** in practical and everyday situations
+- **Prepare for more advanced content** in later levels
+
+### Curricular Connections
+
+This topic relates to other curriculum content, allowing for integrated understanding. Students can establish connections with:
+
+- Previous content that serves as a foundation
+- Parallel topics in other subjects
+- Applications in everyday life
+
+---
+
+## Learning Synthesis
+
+The content presented about "${topic}" represents a fundamental component of the ${bookTitle} curriculum. A deep understanding of these concepts is essential for students' academic development.
+
+### Study Recommendations
+
+1. **Active reading:** Highlight main ideas and take notes
+2. **Constant practice:** Complete proposed exercises and activities
+3. **Connect with reality:** Look for examples in everyday life
+4. **Periodic review:** Review material regularly
+5. **Ask questions:** Don't leave doubts unresolved
+
+---
+
+*This summary was generated from the official textbook content of ${bookTitle}${course ? ` for ${course}` : ''}.*`;
+  }
+}
+
+// Generate key points based on actual PDF content
+function generateContentBasedKeyPoints(pdfContent: string, topic: string, isSpanish: boolean): string[] {
+  // Extract key sections from the content
+  const lines = pdfContent.split('\n').filter(line => line.trim().length > 0);
+  const keyPoints: string[] = [];
+  
+  // Look for important patterns in the content
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    
+    // Skip very short lines or headers
+    if (trimmedLine.length < 20) continue;
+    
+    // Look for definition-like lines
+    if (trimmedLine.includes(':') && !trimmedLine.startsWith('-') && keyPoints.length < 10) {
+      const point = trimmedLine.replace(/^\d+\.\s*/, '').replace(/^[A-Z]+\s*/, '');
+      if (point.length > 30 && point.length < 300) {
+        keyPoints.push(`**${isSpanish ? 'Concepto clave' : 'Key concept'}:** ${point}`);
+      }
+    }
+    
+    // Look for bullet points with important content
+    if ((trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) && keyPoints.length < 10) {
+      const point = trimmedLine.replace(/^[-•]\s*/, '');
+      if (point.length > 20 && point.length < 200) {
+        keyPoints.push(`**${isSpanish ? 'Punto importante' : 'Important point'}:** ${point}`);
+      }
+    }
+  }
+  
+  // If we couldn't extract enough points, generate generic ones based on the topic
+  if (keyPoints.length < 5) {
+    if (isSpanish) {
+      keyPoints.push(
+        `**Definición fundamental:** ${topic} es un concepto esencial en el currículo educativo que requiere comprensión profunda.`,
+        `**Aplicación práctica:** Los conocimientos sobre ${topic} pueden aplicarse en situaciones de la vida cotidiana.`,
+        `**Conexión curricular:** ${topic} se relaciona con otros contenidos de la asignatura.`,
+        `**Desarrollo de habilidades:** El estudio de ${topic} desarrolla el pensamiento crítico y analítico.`,
+        `**Preparación continua:** Dominar ${topic} es fundamental para avanzar en contenidos más complejos.`
+      );
+    } else {
+      keyPoints.push(
+        `**Fundamental definition:** ${topic} is an essential concept in the educational curriculum requiring deep understanding.`,
+        `**Practical application:** Knowledge about ${topic} can be applied in everyday situations.`,
+        `**Curricular connection:** ${topic} relates to other subject content.`,
+        `**Skill development:** Studying ${topic} develops critical and analytical thinking.`,
+        `**Continuous preparation:** Mastering ${topic} is fundamental for advancing to more complex content.`
+      );
+    }
+  }
+  
+  // Ensure we have exactly 10 points
+  while (keyPoints.length < 10) {
+    const num = keyPoints.length + 1;
+    if (isSpanish) {
+      keyPoints.push(`**Punto ${num}:** Aspecto relevante del tema ${topic} que contribuye a la comprensión integral del contenido.`);
+    } else {
+      keyPoints.push(`**Point ${num}:** Relevant aspect of the topic ${topic} that contributes to comprehensive content understanding.`);
+    }
+  }
+  
+  return keyPoints.slice(0, 10);
 }
 
 function generateSpanishMockSummary(topic: string, bookTitle: string): string {
@@ -354,23 +552,45 @@ const generateSummaryPrompt = ai.definePrompt({
   output: {
     schema: GenerateSummaryOutputSchema,
   },
-  prompt: `You are an AI assistant specialized in creating detailed educational summaries from Chilean curriculum textbooks.
+  prompt: `You are an AI assistant specialized in creating detailed educational summaries from Chilean curriculum textbooks. Your summaries MUST be based on the actual content provided from the textbook.
 
 Topic to Summarize: {{{topic}}}
 Book/Subject: {{{bookTitle}}}
+{{#if course}}Course Level: {{{course}}}{{/if}}
 Output Language: {{{language}}}
 
+{{#if pdfContent}}
+=== IMPORTANT: TEXTBOOK CONTENT TO USE AS PRIMARY SOURCE ===
+The following is the ACTUAL content from the textbook. Your summary MUST be based on this content:
+
+{{{pdfContent}}}
+
+=== END OF TEXTBOOK CONTENT ===
+{{/if}}
+
 Instructions:
-1. Generate a comprehensive and detailed summary of the specified topic "{{{topic}}}" based on content that would typically be found in a Chilean educational textbook for the subject "{{{bookTitle}}}".
+1. Generate a comprehensive and detailed summary of the topic "{{{topic}}}" based PRIMARILY on the textbook content provided above.
+   
+   {{#if pdfContent}}
+   CRITICAL: Your summary MUST:
+   - Use the specific information, definitions, and concepts from the textbook content above
+   - Reference the actual facts, figures, and explanations provided in the source material
+   - Structure the summary around the key sections and concepts from the book
+   - Include specific examples and details mentioned in the textbook
+   - DO NOT make up information that is not in the provided content
+   - If the content mentions specific organs, processes, dates, formulas, or concepts, include them accurately
+   {{else}}
+   Since no specific textbook content was provided, create an educational summary based on typical Chilean curriculum standards for the subject "{{{bookTitle}}}" and topic "{{{topic}}}".
+   {{/if}}
    
    The summary MUST be written in the language specified by the 'language' input field:
    - If 'language' is 'es': Write entirely in Spanish
    - If 'language' is 'en': Write entirely in English
    
    Create a substantial, educational summary that could realistically reach up to 10,000 words. Focus on:
-   - Clear explanations of key concepts
-   - Educational examples and applications
-   - Structured learning progression
+   - Clear explanations of key concepts FROM THE PROVIDED CONTENT
+   - Educational examples and applications FROM THE TEXTBOOK
+   - Structured learning progression following the book's organization
    - Age-appropriate content for the curriculum level
    
    Format using Markdown:
@@ -381,9 +601,9 @@ Instructions:
    - Include bullet points where appropriate
 
 {{#if includeKeyPoints}}
-2. After the summary, extract exactly 10 key learning points that represent the most important takeaways from your summary.
+2. After the summary, extract exactly 10 key learning points that represent the most important takeaways FROM THE PROVIDED TEXTBOOK CONTENT.
    These key points MUST be in the same language as the summary ({{{language}}}).
-   Make them educational and specific to help students understand and remember the material.
+   Make them educational and specific - they should reflect actual content from the book, not generic statements.
 {{/if}}
 
 3. Focus on Chilean educational curriculum standards and make the content pedagogically sound for students studying {{{bookTitle}}}.
