@@ -34,7 +34,15 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray;
 }
 
-const INITIAL_TIME_LIMIT = 120; // 2 minutes in seconds
+// Tiempo por pregunta en segundos (1.5 minutos = 90 segundos por pregunta)
+const SECONDS_PER_QUESTION = 90;
+const DEFAULT_QUESTION_COUNT = 15;
+const INITIAL_TIME_LIMIT = DEFAULT_QUESTION_COUNT * SECONDS_PER_QUESTION; // 22.5 minutes by default
+
+// Función para calcular tiempo límite basado en cantidad de preguntas
+const calculateTimeLimit = (questionCount: number): number => {
+  return questionCount * SECONDS_PER_QUESTION;
+};
 
 export default function EvaluacionPage() {
   const { translate, language: currentUiLanguage, setLanguage } = useLanguage();
@@ -864,13 +872,15 @@ export default function EvaluacionPage() {
     let bookToUse = bookFromQuery ? decodeURIComponent(bookFromQuery) : (selectedSubject || selectedBook);
     let topicToUse = topicFromQuery ? decodeURIComponent(topicFromQuery) : topic;
     let questionCountToUse = questionCountFromQuery ? parseInt(questionCountFromQuery) : selectedQuestionCount;
-    // Convertir minutos a segundos para timeLimitToUse
-    let timeLimitToUse = timeLimitFromQuery ? parseInt(timeLimitFromQuery) * 60 : 120;
+    // Calcular tiempo límite: si viene de URL (en minutos), convertir a segundos; sino, calcular dinámicamente
+    let timeLimitToUse = timeLimitFromQuery 
+      ? parseInt(timeLimitFromQuery) * 60 
+      : calculateTimeLimit(questionCountToUse);
     
     console.log('📊 Evaluation Parameters:', {
       questionCount: questionCountToUse,
       timeLimit: timeLimitToUse,
-      timeLimitMinutes: timeLimitFromQuery ? parseInt(timeLimitFromQuery) : 2,
+      timeLimitMinutes: Math.round(timeLimitToUse / 60),
       fromURL: { questionCount: questionCountFromQuery, timeLimit: timeLimitFromQuery },
       isTaskEvaluation: autoStartFromQuery === 'true'
     });

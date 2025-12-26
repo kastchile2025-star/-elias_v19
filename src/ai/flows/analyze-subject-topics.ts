@@ -325,6 +325,27 @@ function getSpecificTopics(courseName: string, subjectName: string, language: 'e
       'Sistema nervioso', 'Sistema óseo y muscular', 'Microorganismos',
       'Relaciones tróficas', 'Reacciones químicas', 'Circuitos eléctricos',
       'Estructura de la Tierra', 'Clima y tiempo', 'Desarrollo sustentable', 'Placas tectónicas'
+    ],
+    '5to basico': [
+      'Sistemas del cuerpo humano', 'Sistema digestivo y nutrición', 'Sistema respiratorio',
+      'Sistema circulatorio', 'Ciclos de la materia', 'Fotosíntesis', 'Energía en los ecosistemas',
+      'Electricidad y circuitos', 'Propiedades de la luz', 'Capas de la Tierra'
+    ],
+    '6to basico': [
+      'Pubertad y adolescencia', 'Sistema reproductor', 'Células y tejidos',
+      'Niveles de organización biológica', 'Transferencia de energía', 'Formación de suelos',
+      'Capas de la Tierra', 'Sismos y volcanes', 'Energías renovables', 'Cambio climático'
+    ],
+    '7mo basico': [
+      'Organización celular', 'Microorganismos', 'Virus y bacterias', 'Sistema inmunológico',
+      'Fuerza y movimiento', 'Leyes de Newton', 'Ondas y sonido', 'Efectos de la fuerza',
+      'Modelos atómicos', 'Tabla periódica', 'Enlaces químicos'
+    ],
+    '8vo basico': [
+      'Nutrición y digestión', 'Sistema circulatorio y respiratorio', 'Excreción y sistema urinario',
+      'Sexualidad y reproducción humana', 'Modelo corpuscular de la materia', 'Estructura atómica',
+      'Reacciones químicas', 'Electricidad y magnetismo', 'Circuitos eléctricos', 'El universo',
+      'Sistema solar', 'Origen del universo', 'Evolución estelar'
     ]
   };
   
@@ -351,27 +372,94 @@ function getSpecificTopics(courseName: string, subjectName: string, language: 'e
       'Chile en el siglo XIX', 'Independencia de Chile', 'Organización de la República',
       'Expansión territorial', 'Guerra del Pacífico', 'Sociedad chilena del siglo XIX',
       'Economía del salitre', 'Geografía de Chile', 'Democracia en Chile', 'Derechos ciudadanos'
+    ],
+    '5to basico': [
+      'Grecia antigua', 'Democracia ateniense', 'Roma antigua', 'Legado greco-romano',
+      'Civilización medieval', 'Feudalismo', 'El Renacimiento', 'Geografía de Europa',
+      'Derechos humanos fundamentales', 'Ciudadanía y participación', 'Trabajo y economía'
+    ],
+    '6to basico': [
+      'Proceso de independencia', 'Formación de América Latina', 'Chile republicano',
+      'Organización política de Chile', 'Constitución y derechos', 'Geografía de América',
+      'Recursos naturales americanos', 'Integración latinoamericana', 'Problemas ambientales',
+      'Economía y comercio', 'Democracia y Estado de derecho'
+    ],
+    '7mo basico': [
+      'Primeras civilizaciones', 'Mesopotamia y Egipto', 'India y China antiguas',
+      'Imperio persa', 'Grecia clásica', 'Alejandro Magno', 'República romana',
+      'Imperio romano', 'Caída del Imperio romano', 'Edad Media temprana',
+      'El Islam y su expansión', 'Feudalismo europeo'
+    ],
+    '8vo basico': [
+      'Renacimiento y Humanismo', 'Reforma protestante', 'Expansión europea',
+      'Conquista de América', 'Colonización de América', 'Economía colonial',
+      'Ilustración', 'Revoluciones del siglo XVIII', 'Independencia de EE.UU.',
+      'Revolución Francesa', 'Revolución Industrial', 'Imperialismo',
+      'Formación de los Estados nacionales', 'Chile colonial'
     ]
   };
   
-  // Buscar temas específicos
-  for (const [key, topics] of Object.entries(languageTopicsEs)) {
-    if (course.includes(key.split(' ')[0]) && course.includes('basico') && 
-        (subject.includes('lenguaje') || subject.includes('comunicacion'))) {
-      return language === 'es' ? topics : topics; // TODO: Agregar versión en inglés
+  // Función auxiliar para normalizar nombre de curso
+  const normalizeCourseName = (course: string): string => {
+    const normalized = normalize(course);
+    // Mapear variantes de nombres de cursos
+    if (normalized.includes('8vo') || normalized.includes('8°') || normalized.includes('octavo')) {
+      return '8vo basico';
     }
-  }
+    if (normalized.includes('7mo') || normalized.includes('7°') || normalized.includes('septimo')) {
+      return '7mo basico';
+    }
+    if (normalized.includes('6to') || normalized.includes('6°') || normalized.includes('sexto')) {
+      return '6to basico';
+    }
+    if (normalized.includes('5to') || normalized.includes('5°') || normalized.includes('quinto')) {
+      return '5to basico';
+    }
+    if (normalized.includes('4to') || normalized.includes('4°') || normalized.includes('cuarto')) {
+      return '4to basico';
+    }
+    if (normalized.includes('3ro') || normalized.includes('3°') || normalized.includes('tercero')) {
+      return '3ro basico';
+    }
+    if (normalized.includes('2do') || normalized.includes('2°') || normalized.includes('segundo')) {
+      return '2do basico';
+    }
+    if (normalized.includes('1ro') || normalized.includes('1°') || normalized.includes('primero')) {
+      return '1ro basico';
+    }
+    return normalized;
+  };
+
+  const normalizedCourse = normalizeCourseName(course);
   
-  for (const [key, topics] of Object.entries(scienceTopicsEs)) {
-    if (course.includes(key.split(' ')[0]) && course.includes('basico') && 
-        (subject.includes('ciencia') || subject.includes('natural'))) {
+  console.log('[getSpecificTopics] Checking subject:', subject, 'course:', normalizedCourse);
+  
+  // IMPORTANTE: El orden de detección importa!
+  // Historia DEBE ir ANTES de Ciencias porque "Historia, Geografía y Ciencias Sociales" contiene "ciencia"
+  
+  // Buscar temas específicos para Historia (detectar primero por "historia" o "social")
+  if (subject.includes('historia') || subject.includes('social') || subject.includes('geografia')) {
+    console.log('[getSpecificTopics] Detected as HISTORY');
+    const topics = historyTopicsEs[normalizedCourse];
+    if (topics) {
       return language === 'es' ? topics : topics;
     }
   }
   
-  for (const [key, topics] of Object.entries(historyTopicsEs)) {
-    if (course.includes(key.split(' ')[0]) && course.includes('basico') && 
-        (subject.includes('historia') || subject.includes('social') || subject.includes('geografia'))) {
+  // Buscar temas específicos para Ciencias Naturales (solo si contiene "natural" o es exactamente "ciencias")
+  if (subject.includes('natural') || (subject.includes('ciencia') && !subject.includes('social'))) {
+    console.log('[getSpecificTopics] Detected as SCIENCE');
+    const topics = scienceTopicsEs[normalizedCourse];
+    if (topics) {
+      return language === 'es' ? topics : topics;
+    }
+  }
+  
+  // Buscar temas específicos para Lenguaje
+  if (subject.includes('lenguaje') || subject.includes('comunicacion')) {
+    console.log('[getSpecificTopics] Detected as LANGUAGE');
+    const topics = languageTopicsEs[normalizedCourse];
+    if (topics) {
       return language === 'es' ? topics : topics;
     }
   }

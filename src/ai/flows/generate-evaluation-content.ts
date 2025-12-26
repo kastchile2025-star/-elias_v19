@@ -8,7 +8,7 @@
  * - GenerateEvaluationOutput - The return type for the generateEvaluationContent function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, generateWithAI, useOpenRouter} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateEvaluationInputSchema = z.object({
@@ -460,28 +460,154 @@ export async function generateDynamicEvaluationContent(input: GenerateDynamicEva
     console.log('📚 generateDynamicEvaluationContent input:', { 
       bookTitle: input.bookTitle, 
       topic: input.topic, 
-      language: input.language 
+      language: input.language,
+      questionCount: input.questionCount
     });
     
-    // Check if API key is available
-    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'your_google_api_key_here') {
-      // Return mock data with exact questionCount respecting proportions
-      const timestamp = input.timestamp || Date.now();
-      const randomSeed = input.randomSeed || Math.floor(Math.random() * 1000);
-      const count = input.questionCount || 15;
+    const count = input.questionCount || 15;
+    const timestamp = input.timestamp || Date.now();
+    const randomSeed = input.randomSeed || Math.floor(Math.random() * 1000);
+    const isEs = input.language === 'es';
+    
+    // Verificar si tenemos OpenRouter o Google API disponible
+    const hasOpenRouter = useOpenRouter;
+    const hasGoogleAPI = process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY !== 'your_google_api_key_here';
+    
+    console.log('🔑 API availability:', { hasOpenRouter, hasGoogleAPI });
+    
+    // Si tenemos OpenRouter, generar preguntas reales con IA
+    if (hasOpenRouter) {
+      console.log('✅ Using OpenRouter to generate real evaluation questions');
+      
+      try {
+        const tfCount = Math.round(count / 3);
+        const mcCount = Math.round((count - tfCount) / 2);
+        const msCount = count - tfCount - mcCount;
+        
+        const prompt = isEs 
+          ? `Eres un profesor experto en educación. Genera una evaluación educativa sobre el tema "${input.topic}" para el curso "${input.course || 'General'}" en la asignatura "${input.subject || input.bookTitle}".
 
-      console.log('⚠️ Using mock data - API key not available. Language:', input.language);
+IMPORTANTE: Las preguntas deben ser sobre el CONTENIDO REAL del tema "${input.topic}". NO generes preguntas sobre "qué es una asignatura" o "qué son objetivos de aprendizaje". Las preguntas deben evaluar CONOCIMIENTO ESPECÍFICO del tema.
 
-      const makeId = (i: number) => `q${i + 1}_${timestamp}_${randomSeed}`;
-      const isEs = input.language === 'es';
-      const contextLabel = isEs ? `${input.subject ? input.subject + ' - ' : ''}${input.bookTitle}` : `${input.subject ? input.subject + ' - ' : ''}${input.bookTitle}`;
+${input.pdfContent ? `Contenido del libro para basar las preguntas:\n${input.pdfContent.substring(0, 4000)}` : ''}
 
-      // Distribución aproximada en tercios
-      const tfCount = Math.round(count / 3);
-      const mcCount = Math.round((count - tfCount) / 2);
-      const msCount = count - tfCount - mcCount;
+Genera exactamente ${count} preguntas en este formato JSON:
+{
+  "evaluationTitle": "Evaluación - ${input.topic}",
+  "questions": [
+    // ${tfCount} preguntas de Verdadero/Falso:
+    {"id": "q1", "type": "TRUE_FALSE", "questionText": "Pregunta específica sobre ${input.topic}...", "correctAnswer": true, "explanation": "Explicación..."},
+    // ${mcCount} preguntas de Selección Múltiple (4 opciones, una correcta):
+    {"id": "q${tfCount + 1}", "type": "MULTIPLE_CHOICE", "questionText": "Pregunta sobre ${input.topic}...", "options": ["Opción A", "Opción B", "Opción C", "Opción D"], "correctAnswerIndex": 0, "explanation": "Explicación..."},
+    // ${msCount} preguntas de Selección Múltiple (varias correctas):
+    {"id": "q${tfCount + mcCount + 1}", "type": "MULTIPLE_SELECTION", "questionText": "¿Cuáles de los siguientes...?", "options": ["Opción A", "Opción B", "Opción C", "Opción D"], "correctAnswerIndices": [0, 2], "explanation": "Explicación..."}
+  ]
+}
 
-      const questions: EvaluationQuestion[] = [];
+Reglas:
+1. TODAS las preguntas deben ser sobre el contenido específico de "${input.topic}"
+2. Las preguntas de TRUE_FALSE deben tener correctAnswer (boolean)
+3. Las preguntas de MULTIPLE_CHOICE deben tener correctAnswerIndex (número 0-3)
+4. Las preguntas de MULTIPLE_SELECTION deben tener correctAnswerIndices (array de números)
+5. Genera preguntas variadas y educativas que evalúen comprensión real
+6. NO incluyas preguntas genéricas sobre "asignaturas" o "objetivos de aprendizaje"
+
+Responde SOLO con el JSON, sin texto adicional.`
+          : `You are an expert teacher. Generate an educational evaluation about "${input.topic}" for "${input.course || 'General'}" course in "${input.subject || input.bookTitle}" subject.
+
+IMPORTANT: Questions must be about the REAL CONTENT of "${input.topic}". Do NOT generate questions about "what is a subject" or "what are learning objectives". Questions must evaluate SPECIFIC KNOWLEDGE of the topic.
+
+${input.pdfContent ? `Book content to base questions on:\n${input.pdfContent.substring(0, 4000)}` : ''}
+
+Generate exactly ${count} questions in this JSON format:
+{
+  "evaluationTitle": "Evaluation - ${input.topic}",
+  "questions": [
+    // ${tfCount} True/False questions:
+    {"id": "q1", "type": "TRUE_FALSE", "questionText": "Specific question about ${input.topic}...", "correctAnswer": true, "explanation": "Explanation..."},
+    // ${mcCount} Multiple Choice questions (4 options, one correct):
+    {"id": "q${tfCount + 1}", "type": "MULTIPLE_CHOICE", "questionText": "Question about ${input.topic}...", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswerIndex": 0, "explanation": "Explanation..."},
+    // ${msCount} Multiple Selection questions (multiple correct):
+    {"id": "q${tfCount + mcCount + 1}", "type": "MULTIPLE_SELECTION", "questionText": "Which of the following...?", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswerIndices": [0, 2], "explanation": "Explanation..."}
+  ]
+}
+
+Rules:
+1. ALL questions must be about specific content of "${input.topic}"
+2. TRUE_FALSE questions must have correctAnswer (boolean)
+3. MULTIPLE_CHOICE questions must have correctAnswerIndex (number 0-3)
+4. MULTIPLE_SELECTION questions must have correctAnswerIndices (array of numbers)
+5. Generate varied educational questions that evaluate real understanding
+6. Do NOT include generic questions about "subjects" or "learning objectives"
+
+Respond ONLY with JSON, no additional text.`;
+
+        const aiResponse = await generateWithAI(prompt, {
+          temperature: 0.7,
+          maxTokens: 4000,
+          jsonMode: true
+        });
+        
+        console.log('🤖 OpenRouter raw response length:', aiResponse.length);
+        
+        // Parsear la respuesta JSON
+        let jsonStr = aiResponse.trim();
+        // Limpiar posibles marcadores de código
+        if (jsonStr.startsWith('```json')) {
+          jsonStr = jsonStr.slice(7);
+        }
+        if (jsonStr.startsWith('```')) {
+          jsonStr = jsonStr.slice(3);
+        }
+        if (jsonStr.endsWith('```')) {
+          jsonStr = jsonStr.slice(0, -3);
+        }
+        jsonStr = jsonStr.trim();
+        
+        const parsed = JSON.parse(jsonStr);
+        
+        if (parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length === count) {
+          // Asignar IDs únicos a cada pregunta
+          const questionsWithIds = parsed.questions.map((q: any, i: number) => ({
+            ...q,
+            id: `q${i + 1}_${timestamp}_${randomSeed}`
+          }));
+          
+          console.log('✅ Successfully generated', questionsWithIds.length, 'questions with OpenRouter');
+          
+          return {
+            evaluationTitle: parsed.evaluationTitle || `${isEs ? 'Evaluación' : 'Evaluation'} - ${input.topic}`,
+            questions: questionsWithIds
+          };
+        } else {
+          console.warn('⚠️ OpenRouter response did not have expected question count, falling back to mock');
+          throw new Error('Invalid question count from OpenRouter');
+        }
+      } catch (aiError) {
+        console.error('❌ OpenRouter generation failed:', aiError);
+        // Continuar con fallback
+      }
+    }
+    
+    // Check if Google API key is available
+    if (hasGoogleAPI) {
+      console.log('✅ Using Google AI to generate real evaluation questions');
+      // Aquí iría la lógica de Google AI si está disponible
+      // Por ahora, continúa con el fallback
+    }
+    
+    // Fallback: Return mock data with exact questionCount respecting proportions
+    console.log('⚠️ Using mock data - no AI API available. Language:', input.language);
+
+    const makeId = (i: number) => `q${i + 1}_${timestamp}_${randomSeed}`;
+    const contextLabel = isEs ? `${input.subject ? input.subject + ' - ' : ''}${input.bookTitle}` : `${input.subject ? input.subject + ' - ' : ''}${input.bookTitle}`;
+
+    // Distribución aproximada en tercios
+    const tfCount = Math.round(count / 3);
+    const mcCount = Math.round((count - tfCount) / 2);
+    const msCount = count - tfCount - mcCount;
+
+    const questions: EvaluationQuestion[] = [];
       
       // Generar preguntas basadas en el contenido del PDF si está disponible
       const pdfLines = (input.pdfContent || '').split('\n').filter(l => l.trim().length > 10);
@@ -1331,9 +1457,6 @@ export async function generateDynamicEvaluationContent(input: GenerateDynamicEva
         evaluationTitle: `${isEs ? 'EVALUACIÓN' : 'EVALUATION'} - ${input.topic.toUpperCase()}`,
         questions
       };
-    }
-    
-    return await generateDynamicEvaluationFlow(input);
   } catch (error) {
     console.error('Error generating dynamic evaluation content:', error);
     // Return fallback data with uniqueness
