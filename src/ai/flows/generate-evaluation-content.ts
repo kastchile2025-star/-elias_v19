@@ -10,6 +10,7 @@
 
 import {ai, generateWithAI, useOpenRouter} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getOpenRouterClient, hasOpenRouterApiKey, OPENROUTER_MODELS } from '@/lib/openrouter-client';
 
 const GenerateEvaluationInputSchema = z.object({
   topic: z.string().describe('The specific topic for the evaluation.'),
@@ -85,23 +86,125 @@ export async function generateEvaluationContent(input: GenerateEvaluationInput):
     });
     console.log('🌍 generateEvaluationContent received language:', input.language);
     
-    // Check if API key is available
-    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'your_google_api_key_here') {
-      console.log('📝 Using mock generation with questionCount:', questionCount);
-      console.log('⚠️ Using mock data - API key not available. Language:', input.language);
-      // Generate mock data dynamically based on questionCount with educational content
-      const mockQuestions: EvaluationQuestion[] = [];
-      const isEs = input.language === 'es';
-      const topic = input.topic;
-      const topicLower = topic.toLowerCase();
+    const isEs = input.language === 'es';
+    const topic = input.topic;
+    const topicLower = topic.toLowerCase();
+    
+    // Distribuir tipos de preguntas equitativamente
+    const tfCount = Math.round(questionCount / 3);
+    const mcCount = Math.round((questionCount - tfCount) / 2);
+    const msCount = questionCount - tfCount - mcCount;
+    
+    // =====================================================================
+    // PRIORIDAD 1: OpenRouter (más confiable y económico)
+    // =====================================================================
+    if (hasOpenRouterApiKey()) {
+      console.log('[generateEvaluationContent] 🚀 Intentando con OpenRouter primero...');
+      const openRouterClient = getOpenRouterClient();
       
-      // Distribuir tipos de preguntas equitativamente
-      const tfCount = Math.round(questionCount / 3);
-      const mcCount = Math.round((questionCount - tfCount) / 2);
-      const msCount = questionCount - tfCount - mcCount;
-      
-      // Banco de preguntas específicas por tema
-      const getTopicQuestions = () => {
+      if (openRouterClient) {
+        try {
+          const systemPrompt = isEs 
+            ? `Eres un experto educador. Genera evaluaciones educativas de alta calidad con preguntas variadas.`
+            : `You are an expert educator. Generate high-quality educational evaluations with varied questions.`;
+          
+          const userPrompt = isEs 
+            ? `Genera una evaluación educativa sobre "${topic}" del libro "${input.bookTitle}".
+
+Genera exactamente ${questionCount} preguntas distribuidas así:
+- ${tfCount} preguntas Verdadero/Falso (type: "TRUE_FALSE")
+- ${mcCount} preguntas de Selección Múltiple con 4 opciones (type: "MULTIPLE_CHOICE")
+- ${msCount} preguntas de Selección Múltiple con varias correctas (type: "MULTIPLE_SELECTION")
+
+Responde en JSON con este formato exacto:
+{
+  "evaluationTitle": "EVALUACIÓN - ${topic.toUpperCase()}",
+  "questions": [
+    {"id": "1", "type": "TRUE_FALSE", "questionText": "¿Pregunta V/F?", "correctAnswer": true, "explanation": "Explicación..."},
+    {"id": "2", "type": "MULTIPLE_CHOICE", "questionText": "¿Pregunta SM?", "options": ["A", "B", "C", "D"], "correctAnswerIndex": 0, "explanation": "Explicación..."},
+    {"id": "3", "type": "MULTIPLE_SELECTION", "questionText": "¿Cuáles son correctas?", "options": ["A", "B", "C", "D"], "correctAnswerIndices": [0, 2], "explanation": "Explicación..."}
+  ]
+}
+
+IMPORTANTE:
+- Las preguntas deben ser específicas sobre el contenido de "${topic}"
+- Genera contenido educativo real y variado
+- Responde SOLO con JSON válido, sin texto adicional`
+            : `Generate an educational evaluation about "${topic}" from the book "${input.bookTitle}".
+
+Generate exactly ${questionCount} questions distributed as:
+- ${tfCount} True/False questions (type: "TRUE_FALSE")
+- ${mcCount} Multiple Choice questions with 4 options (type: "MULTIPLE_CHOICE")
+- ${msCount} Multiple Selection questions with multiple correct answers (type: "MULTIPLE_SELECTION")
+
+Respond in JSON with this exact format:
+{
+  "evaluationTitle": "EVALUATION - ${topic.toUpperCase()}",
+  "questions": [
+    {"id": "1", "type": "TRUE_FALSE", "questionText": "T/F Question?", "correctAnswer": true, "explanation": "Explanation..."},
+    {"id": "2", "type": "MULTIPLE_CHOICE", "questionText": "MC Question?", "options": ["A", "B", "C", "D"], "correctAnswerIndex": 0, "explanation": "Explanation..."},
+    {"id": "3", "type": "MULTIPLE_SELECTION", "questionText": "Which are correct?", "options": ["A", "B", "C", "D"], "correctAnswerIndices": [0, 2], "explanation": "Explanation..."}
+  ]
+}
+
+IMPORTANT:
+- Questions must be specific about "${topic}" content
+- Generate real and varied educational content
+- Respond ONLY with valid JSON, no additional text`;
+          
+          const response = await openRouterClient.generateText(systemPrompt, userPrompt, {
+            model: OPENROUTER_MODELS.GPT_4O_MINI,
+            temperature: 0.7,
+            maxTokens: 5000,
+          });
+          
+          // Parsear JSON
+          let jsonStr = response.trim();
+          if (jsonStr.startsWith('```json')) jsonStr = jsonStr.slice(7);
+          if (jsonStr.startsWith('```')) jsonStr = jsonStr.slice(3);
+          if (jsonStr.endsWith('```')) jsonStr = jsonStr.slice(0, -3);
+          jsonStr = jsonStr.trim();
+          
+          const parsed = JSON.parse(jsonStr);
+          
+          if (parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+            console.log('[generateEvaluationContent] ✅ OpenRouter generó', parsed.questions.length, 'preguntas exitosamente');
+            return {
+              evaluationTitle: parsed.evaluationTitle || (isEs ? `Evaluación - ${topic.toUpperCase()}` : `Evaluation - ${topic.toUpperCase()}`),
+              questions: parsed.questions
+            };
+          }
+        } catch (openRouterErr) {
+          console.warn('[generateEvaluationContent] ⚠️ OpenRouter falló:', openRouterErr);
+          // Continuar con Google Gemini como fallback
+        }
+      }
+    }
+    
+    // =====================================================================
+    // PRIORIDAD 2: Google Gemini (fallback)
+    // =====================================================================
+    const hasGoogleKey = !!(process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY !== 'your_google_api_key_here');
+    
+    if (hasGoogleKey) {
+      console.log('[generateEvaluationContent] 🔄 Intentando con Google Gemini como fallback...');
+      try {
+        return await generateEvaluationFlow(input);
+      } catch (geminiErr) {
+        console.warn('[generateEvaluationContent] ⚠️ Google Gemini falló:', geminiErr);
+      }
+    }
+    
+    // =====================================================================
+    // FALLBACK: Generar preguntas desde banco local
+    // =====================================================================
+    console.log('[generateEvaluationContent] ⚠️ Usando fallback con banco de preguntas local');
+    
+    // Generate mock data dynamically based on questionCount with educational content
+    const mockQuestions: EvaluationQuestion[] = [];
+    
+    // Banco de preguntas específicas por tema
+    const getTopicQuestions = () => {
         if (topicLower.includes('respiratorio')) {
           return {
             trueFalse: [
@@ -186,69 +289,67 @@ export async function generateEvaluationContent(input: GenerateEvaluationInput):
           ]
         };
       };
-      
-      const questions = getTopicQuestions();
-      
-      // Generar preguntas Verdadero/Falso
-      for (let i = 0; i < tfCount; i++) {
-        const qNum = mockQuestions.length + 1;
-        const q = questions.trueFalse[i % questions.trueFalse.length];
-        mockQuestions.push({
-          id: qNum.toString(),
-          type: 'TRUE_FALSE',
-          questionText: isEs ? q.q : q.q,
-          correctAnswer: q.a,
-          explanation: isEs ? q.e : q.e
-        });
-      }
-      
-      // Generar preguntas Selección Simple
-      for (let i = 0; i < mcCount; i++) {
-        const qNum = mockQuestions.length + 1;
-        const q = questions.multipleChoice[i % questions.multipleChoice.length];
-        mockQuestions.push({
-          id: qNum.toString(),
-          type: 'MULTIPLE_CHOICE',
-          questionText: isEs ? q.q : q.q,
-          options: q.opts,
-          correctAnswerIndex: q.correct,
-          explanation: isEs 
-            ? `La respuesta correcta es "${q.opts[q.correct]}".`
-            : `The correct answer is "${q.opts[q.correct]}".`
-        });
-      }
-      
-      // Generar preguntas Selección Múltiple
-      for (let i = 0; i < msCount; i++) {
-        const qNum = mockQuestions.length + 1;
-        const q = questions.multipleSelection[i % questions.multipleSelection.length];
-        mockQuestions.push({
-          id: qNum.toString(),
-          type: 'MULTIPLE_SELECTION',
-          questionText: isEs ? q.q : q.q,
-          options: q.opts,
-          correctAnswerIndices: q.correct,
-          explanation: isEs
-            ? `Las opciones correctas son "${q.opts[q.correct[0]]}" y "${q.opts[q.correct[1]]}".`
-            : `The correct options are "${q.opts[q.correct[0]]}" and "${q.opts[q.correct[1]]}".`
-        });
-      }
-      
-      console.log('✅ Mock questions generated:', {
-        requested: questionCount,
-        generated: mockQuestions.length,
-        questions: mockQuestions.map(q => ({ id: q.id, type: q.type, text: q.questionText.substring(0, 50) + '...' }))
+    
+    const questions = getTopicQuestions();
+    
+    // Generar preguntas Verdadero/Falso
+    for (let i = 0; i < tfCount; i++) {
+      const qNum = mockQuestions.length + 1;
+      const q = questions.trueFalse[i % questions.trueFalse.length];
+      mockQuestions.push({
+        id: qNum.toString(),
+        type: 'TRUE_FALSE',
+        questionText: isEs ? q.q : q.q,
+        correctAnswer: q.a,
+        explanation: isEs ? q.e : q.e
       });
-      
-      return {
-        evaluationTitle: input.language === 'es' 
-          ? `Evaluación - ${input.topic.toUpperCase()}`
-          : `Evaluation - ${input.topic.toUpperCase()}`,
-        questions: mockQuestions
-      };
     }
     
-    return await generateEvaluationFlow(input);
+    // Generar preguntas Selección Simple
+    for (let i = 0; i < mcCount; i++) {
+      const qNum = mockQuestions.length + 1;
+      const q = questions.multipleChoice[i % questions.multipleChoice.length];
+      mockQuestions.push({
+        id: qNum.toString(),
+        type: 'MULTIPLE_CHOICE',
+        questionText: isEs ? q.q : q.q,
+        options: q.opts,
+        correctAnswerIndex: q.correct,
+        explanation: isEs 
+          ? `La respuesta correcta es "${q.opts[q.correct]}".`
+          : `The correct answer is "${q.opts[q.correct]}".`
+      });
+    }
+    
+    // Generar preguntas Selección Múltiple
+    for (let i = 0; i < msCount; i++) {
+      const qNum = mockQuestions.length + 1;
+      const q = questions.multipleSelection[i % questions.multipleSelection.length];
+      mockQuestions.push({
+        id: qNum.toString(),
+        type: 'MULTIPLE_SELECTION',
+        questionText: isEs ? q.q : q.q,
+        options: q.opts,
+        correctAnswerIndices: q.correct,
+        explanation: isEs
+          ? `Las opciones correctas son "${q.opts[q.correct[0]]}" y "${q.opts[q.correct[1]]}".`
+          : `The correct options are "${q.opts[q.correct[0]]}" and "${q.opts[q.correct[1]]}".`
+      });
+    }
+    
+    console.log('✅ Mock questions generated:', {
+      requested: questionCount,
+      generated: mockQuestions.length,
+      questions: mockQuestions.map(q => ({ id: q.id, type: q.type, text: q.questionText.substring(0, 50) + '...' }))
+    });
+    
+    return {
+      evaluationTitle: input.language === 'es' 
+        ? `Evaluación - ${input.topic.toUpperCase()}`
+        : `Evaluation - ${input.topic.toUpperCase()}`,
+      questions: mockQuestions
+    };
+    
   } catch (error) {
     console.error('Error generating evaluation content:', error);
     // Return fallback data

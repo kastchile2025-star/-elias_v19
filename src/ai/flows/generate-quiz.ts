@@ -14,6 +14,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { bookPDFs } from '@/lib/books-data';
+import { getOpenRouterClient, hasOpenRouterApiKey, OPENROUTER_MODELS } from '@/lib/openrouter-client';
 
 // Cache para contenido de PDFs (evita descargas repetidas)
 const pdfContentCache = new Map<string, { pages: string[]; timestamp: number }>();
@@ -4493,104 +4494,189 @@ export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQu
 
   const work = (async (): Promise<GenerateQuizOutput> => {
     try {
+      const isSpanish = input.language === 'es';
+      const titlePrefix = isMath 
+        ? (isSpanish ? 'PROBLEMAS DE MATEMÁTICAS' : 'MATH PROBLEMS')
+        : (isSpanish ? 'CUESTIONARIO' : 'QUIZ');
+      const topicUpper = input.topic.toUpperCase();
+      
       // =====================================================================
-      // MATEMÁTICAS: Usar la IA con prompt especializado para problemas matemáticos
+      // PRIORIDAD 1: OpenRouter (más confiable y económico)
       // =====================================================================
-      if (isMath) {
-        console.log('📐 [generate-quiz] Detectada asignatura de MATEMÁTICAS - Usando IA con prompt especializado para:', input.topic);
+      if (hasOpenRouterApiKey()) {
+        console.log('[generate-quiz] 🚀 Intentando con OpenRouter primero...');
+        const openRouterClient = getOpenRouterClient();
         
-        try {
-          // Intentar usar la IA para generar problemas matemáticos
-          const result = await generateQuizFlow({ ...input, _pdfContext: '', _pdfRefs: [] });
-          console.log('✅ [generate-quiz] Quiz de matemáticas generado con IA exitosamente');
-          return result;
-        } catch (mathErr) {
-          console.warn('[generate-quiz] Error generando quiz de matemáticas con IA:', mathErr);
-          // Si falla la IA, generar un fallback específico para el tema
-          const quizHtml = buildMathFallbackForTopic(input);
-          return { quiz: quizHtml };
-        }
-      }
+        if (openRouterClient) {
+          try {
+            const systemPrompt = isSpanish 
+              ? `Eres un experto educador y diseñador curricular. Genera cuestionarios educativos de alta calidad.`
+              : `You are an expert educator and curriculum designer. Generate high-quality educational quizzes.`;
+            
+            const userPrompt = isMath ? (isSpanish 
+              ? `Genera un cuestionario de 15 PROBLEMAS DE MATEMÁTICAS sobre "${input.topic}" para ${input.courseName}.
 
-      // Mock mode for development only when NO compatible key is present
-      const hasAnyKey = !!(process.env.GOOGLE_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY);
-      if (process.env.NODE_ENV === 'development' && !hasAnyKey) {
-        console.log('📝 Running generateQuiz in MOCK mode');
-        
-        // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        const isSpanish = input.language === 'es';
-        const titlePrefix = isSpanish ? 'CUESTIONARIO' : 'QUIZ';
-        const topicUpper = input.topic.toUpperCase();
-        
-        const mockQuestions = [
-          {
-            questionText: isSpanish ? `¿Cuál es el concepto más importante de ${input.topic}?` : `What is the most important concept of ${input.topic}?`,
-            expectedAnswer: isSpanish ? `El concepto más importante es la comprensión fundamental de los principios básicos que rigen ${input.topic}.` : `The most important concept is the fundamental understanding of the basic principles that govern ${input.topic}.`
-          },
-          {
-            questionText: isSpanish ? `¿Cómo se relaciona ${input.topic} con otros temas del curso?` : `How does ${input.topic} relate to other course topics?`,
-            expectedAnswer: isSpanish ? `${capitalizeFirstLetter(input.topic)} se conecta con múltiples áreas del conocimiento a través de sus aplicaciones prácticas.` : `${capitalizeFirstLetter(input.topic)} connects with multiple knowledge areas through its practical applications.`
-          },
-          {
-            questionText: isSpanish ? `¿Cuáles son las aplicaciones prácticas de ${input.topic}?` : `What are the practical applications of ${input.topic}?`,
-            expectedAnswer: isSpanish ? `Las aplicaciones incluyen resolver problemas cotidianos y comprender fenómenos naturales.` : `Applications include solving everyday problems and understanding natural phenomena.`
+Cada problema debe tener:
+1. Un enunciado claro (questionText) con emojis como 🔢, ➕, ➖, ✖️, ➗
+2. Una respuesta detallada (expectedAnswer) con:
+   - 📝 DESARROLLO: paso a paso
+   - ✅ RESPUESTA: resultado final
+   - 🔍 VERIFICACIÓN: comprobación
+
+Responde en JSON con formato:
+{
+  "quizTitle": "${titlePrefix} - ${topicUpper}",
+  "questions": [
+    {"questionText": "🔢 Problema 1: ...", "expectedAnswer": "📝 DESARROLLO:\\n...\\n✅ RESPUESTA: ..."}
+  ]
+}
+
+Responde SOLO con JSON válido.`
+              : `Generate a quiz with 15 MATH PROBLEMS about "${input.topic}" for ${input.courseName}.
+
+Each problem must have:
+1. A clear statement (questionText) with emojis like 🔢, ➕, ➖, ✖️, ➗
+2. A detailed answer (expectedAnswer) with step-by-step solution
+
+Respond in JSON format:
+{
+  "quizTitle": "${titlePrefix} - ${topicUpper}",
+  "questions": [
+    {"questionText": "🔢 Problem 1: ...", "expectedAnswer": "📝 SOLUTION:\\n...\\n✅ ANSWER: ..."}
+  ]
+}
+
+Respond ONLY with valid JSON.`)
+            : (isSpanish 
+              ? `Genera un cuestionario educativo de 15 preguntas abiertas sobre "${input.topic}" del libro "${input.bookTitle}" para ${input.courseName}.
+
+Cada pregunta debe:
+1. Ser clara y específica sobre el tema
+2. Tener una respuesta esperada detallada y educativa
+
+Responde en JSON con formato:
+{
+  "quizTitle": "${titlePrefix} - ${topicUpper}",
+  "questions": [
+    {"questionText": "1. ¿Pregunta sobre el tema?", "expectedAnswer": "Respuesta detallada y educativa..."}
+  ]
+}
+
+Responde SOLO con JSON válido.`
+              : `Generate an educational quiz with 15 open-ended questions about "${input.topic}" from the book "${input.bookTitle}" for ${input.courseName}.
+
+Each question must:
+1. Be clear and specific about the topic
+2. Have a detailed and educational expected answer
+
+Respond in JSON format:
+{
+  "quizTitle": "${titlePrefix} - ${topicUpper}",
+  "questions": [
+    {"questionText": "1. Question about the topic?", "expectedAnswer": "Detailed educational answer..."}
+  ]
+}
+
+Respond ONLY with valid JSON.`);
+            
+            const response = await openRouterClient.generateText(systemPrompt, userPrompt, {
+              model: OPENROUTER_MODELS.GPT_4O_MINI,
+              temperature: 0.7,
+              maxTokens: 6000,
+            });
+            
+            // Parsear JSON
+            let jsonStr = response.trim();
+            if (jsonStr.startsWith('```json')) jsonStr = jsonStr.slice(7);
+            if (jsonStr.startsWith('```')) jsonStr = jsonStr.slice(3);
+            if (jsonStr.endsWith('```')) jsonStr = jsonStr.slice(0, -3);
+            jsonStr = jsonStr.trim();
+            
+            const parsed = JSON.parse(jsonStr);
+            
+            if (parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+              console.log('[generate-quiz] ✅ OpenRouter generó', parsed.questions.length, 'preguntas exitosamente');
+              
+              // Formatear como HTML
+              let formattedQuizHtml = `<h2>${parsed.quizTitle || `${titlePrefix} - ${topicUpper}`}</h2>`;
+              formattedQuizHtml += `<p><strong>${isSpanish ? 'Libro:' : 'Book:'}</strong> ${input.bookTitle}</p>`;
+              formattedQuizHtml += `<p><strong>${isSpanish ? 'Curso:' : 'Course:'}</strong> ${input.courseName}</p>`;
+              formattedQuizHtml += `<br /><br />`;
+              
+              parsed.questions.forEach((q: any, index: number) => {
+                formattedQuizHtml += `<p style="margin-bottom: 1em;"><strong>${index + 1}. ${q.questionText}</strong></p>`;
+                const answerLabel = isMath 
+                  ? (isSpanish ? 'Desarrollo y Respuesta' : 'Solution and Answer')
+                  : (isSpanish ? 'Respuesta esperada' : 'Expected answer');
+                formattedQuizHtml += `<p style="margin-top: 0.5em; margin-bottom: 0.5em;"><strong>${answerLabel}:</strong></p>`;
+                const formattedAnswer = capitalizeFirstLetter(String(q.expectedAnswer || '').replace(/\n/g, '<br />'));
+                formattedQuizHtml += `<p style="margin-top: 0.25em; margin-bottom: 2em; text-align: justify;">${formattedAnswer}</p>`;
+                if (index < parsed.questions.length - 1) {
+                  formattedQuizHtml += '<hr style="margin-top: 1rem; margin-bottom: 1.5rem; border-top: 1px solid #e5e7eb;" />';
+                }
+              });
+              
+              return { quiz: formattedQuizHtml };
+            }
+          } catch (openRouterErr) {
+            console.warn('[generate-quiz] ⚠️ OpenRouter falló:', openRouterErr);
+            // Continuar con Google Gemini como fallback
           }
-        ];
-        
-        // Generate 15 questions by repeating and varying the mock questions
-        const questions = [];
-        for (let i = 0; i < 15; i++) {
-          const baseQuestion = mockQuestions[i % mockQuestions.length];
-          questions.push({
-            questionText: `${baseQuestion.questionText}`,
-            expectedAnswer: capitalizeFirstLetter(baseQuestion.expectedAnswer)
-          });
         }
+      }
+      
+      // =====================================================================
+      // PRIORIDAD 2: Google Gemini (fallback)
+      // =====================================================================
+      const hasGoogleKey = !!(process.env.GOOGLE_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY);
+      
+      if (hasGoogleKey) {
+        console.log('[generate-quiz] 🔄 Intentando con Google Gemini como fallback...');
         
-        const mockHtml = `
-          <div class="quiz-container">
-            <h1>${titlePrefix} - ${topicUpper}</h1>
-            <p><strong>${isSpanish ? 'Libro:' : 'Book:'}</strong> ${input.bookTitle}</p>
-            <p><strong>${isSpanish ? 'Curso:' : 'Course:'}</strong> ${input.courseName}</p>
-            
-            <br />
-            
-            ${questions.map((q, index) => `
-              <div class="question-block" style="margin-bottom: 2em;">
-                <p style="margin-bottom: 1em;"><strong>${index + 1}. ${q.questionText}</strong></p>
-                <div class="answer-space">
-                  <p style="margin-bottom: 0.5em;"><strong>${isSpanish ? 'Respuesta esperada:' : 'Expected answer:'}</strong></p>
-                  <p style="margin-bottom: 1.5em; text-align: justify;">${q.expectedAnswer}</p>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        
-        return { quiz: mockHtml };
-      }
+        // MATEMÁTICAS: Usar la IA con prompt especializado para problemas matemáticos
+        if (isMath) {
+          console.log('📐 [generate-quiz] Detectada asignatura de MATEMÁTICAS - Usando IA con prompt especializado para:', input.topic);
+          
+          try {
+            const result = await generateQuizFlow({ ...input, _pdfContext: '', _pdfRefs: [] });
+            console.log('✅ [generate-quiz] Quiz de matemáticas generado con Google AI exitosamente');
+            return result;
+          } catch (mathErr) {
+            console.warn('[generate-quiz] Error generando quiz de matemáticas con Google AI:', mathErr);
+          }
+        } else {
+          // Gather PDF context before calling the AI flow
+          let context = '';
+          let references: string[] = [];
+          try {
+            const ctx = await collectContextForInput(input);
+            context = ctx.context;
+            references = ctx.references;
+          } catch (ctxErr) {
+            console.warn('[generate-quiz] Context collection failed, continuing with empty context:', ctxErr);
+          }
 
-      // Gather PDF context before calling the AI flow
-      let context = '';
-      let references: string[] = [];
-      try {
-        const ctx = await collectContextForInput(input);
-        context = ctx.context;
-        references = ctx.references;
-      } catch (ctxErr) {
-        console.warn('[generate-quiz] Context collection failed, continuing with empty context:', ctxErr);
+          try {
+            return await generateQuizFlow({ ...input, _pdfContext: context, _pdfRefs: references });
+          } catch (err) {
+            const isRateLimited = isLikelyRateLimitError(err);
+            console.warn('[generate-quiz] Google AI quiz generation failed' + (isRateLimited ? ' (rate limited)' : '') + ':', err);
+          }
+        }
       }
-
-      try {
-        return await generateQuizFlow({ ...input, _pdfContext: context, _pdfRefs: references });
-      } catch (err) {
-        // Fallback (especialmente útil cuando el proveedor responde 429)
-        const isRateLimited = isLikelyRateLimitError(err);
-        console.warn('[generate-quiz] AI quiz generation failed' + (isRateLimited ? ' (rate limited)' : '') + ':', err);
-        return { quiz: buildFallbackQuizHtml(input, context) };
+      
+      // =====================================================================
+      // FALLBACK: Generar quiz desde banco de preguntas local
+      // =====================================================================
+      console.log('[generate-quiz] ⚠️ Usando fallback con banco de preguntas local');
+      
+      if (isMath) {
+        const quizHtml = buildMathFallbackForTopic(input);
+        return { quiz: quizHtml };
       }
+      
+      return { quiz: buildFallbackQuizHtml(input, '') };
+      
     } catch (unexpected) {
       console.warn('[generate-quiz] Unexpected error, using fallback quiz:', unexpected);
       return { quiz: buildFallbackQuizHtml(input, '') };
