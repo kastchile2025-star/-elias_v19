@@ -1157,12 +1157,12 @@ function generateMockSvg(structure: MindMapStructure, isHorizontal?: boolean): s
       // Subnodos (agrandados para mejor formato de texto)
       if (branch.children && branch.children.length > 0) {
         branch.children.forEach((child: MindMapNode, childIdx: number) => {
-          const subY = branchY + 140 + (childIdx * 90); // Más espacio
+          const subY = branchY + 150 + (childIdx * 110); // Aumentado espaciado de 90 a 110
           
-          svg += `<circle cx="${branchX}" cy="${subY}" r="50" 
-            fill="#ef4444" stroke="none"/>`; // Agrandado de 45 a 50
+          svg += `<circle cx="${branchX}" cy="${subY}" r="55" 
+            fill="#ef4444" stroke="none"/>`; // Agrandado de 50 a 55
           
-          const subLines = wrapText(child.label, 14); // Más caracteres para subnodos más grandes
+          const subLines = wrapText(child.label, 16); // Aumentado de 14 a 16 caracteres por línea
           const lineHeight = 14;
           const totalTextHeight = (subLines.length - 1) * lineHeight;
           const subStartY = subY - (totalTextHeight / 2);
@@ -1170,7 +1170,7 @@ function generateMockSvg(structure: MindMapStructure, isHorizontal?: boolean): s
           subLines.forEach((line, lineIdx) => {
             const yPosition = subStartY + (lineIdx * lineHeight);
             svg += `<text x="${branchX}" y="${yPosition}" 
-              font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+              font-family="Arial, sans-serif" font-size="13" font-weight="500" 
               fill="white" text-anchor="middle" dominant-baseline="middle">${line}</text>`; // Texto perfectamente centrado
           });
         });
@@ -1225,8 +1225,8 @@ function intelligentTextWrap(text: string, maxChars: number): string[] {
   
   if (currentLine) lines.push(currentLine);
   
-  // Máximo 3 líneas para mejor legibilidad
-  return lines.slice(0, 3);
+  // Máximo 4 líneas para subnodos más grandes - Aumentado de 3 a 4
+  return lines.slice(0, 4);
 }
 
 // Función de envoltura de texto ultra-simple para compatibilidad
@@ -1287,8 +1287,8 @@ function cleanTextWrap(text: string, maxChars: number): string[] {
   
   if (currentLine) lines.push(currentLine);
   
-  // Máximo 2 líneas para mantener legibilidad
-  return lines.slice(0, 2);
+  // Máximo 4 líneas para subnodos más grandes - Aumentado de 2 a 4
+  return lines.slice(0, 4);
 }
 
 // Función de utilidad mantenida para compatibilidad
@@ -1304,9 +1304,9 @@ function wrapText(text: string, maxLength: number): string[] {
  * Genera un SVG con diseño ultra-profesional inspirado en D3.js
  */
 function generateEnhancedSvg(structure: MindMapStructure, isHorizontal?: boolean): string {
-  // DISEÑO ULTRA-PROFESIONAL - CANVAS OPTIMIZADO PARA UNA PÁGINA
+  // DISEÑO ULTRA-PROFESIONAL - CANVAS OPTIMIZADO
   const width = isHorizontal ? 1200 : 900;
-  const height = isHorizontal ? 700 : 1000; // Reducido para caber en una página
+  const height = isHorizontal ? 700 : 1250; // Aumentado de 1100 a 1250 para separación adecuada entre subnodos
   
   // Paleta de colores profesional inspirada en D3.js Tableau10
   const colorScheme = [
@@ -1455,13 +1455,13 @@ function generateEnhancedSvg(structure: MindMapStructure, isHorizontal?: boolean
   } else {
     // DISEÑO VERTICAL PROFESIONAL - OPTIMIZADO PARA UNA PÁGINA
     const centerX = width / 2;
-    const startY = 80; // Reducido de 120 a 80
-    const centralR = 70; // Reducido de 85 a 70 para mejor proporción
+    const startY = 80;
+    const centralR = 70;
     const branches = structure.mainBranches;
     
     // PASO 1: ALGORITMO DE POSICIONAMIENTO INTELIGENTE
-    const branchY = startY + 180; // Reducido de 250 a 180
-    const totalBranchWidth = Math.min(width - 80, branches.length * 180); // Ajustado
+    const branchY = startY + 180;
+    const totalBranchWidth = Math.min(width - 80, branches.length * 180);
     const branchStartX = centerX - (totalBranchWidth / 2);
     const branchSpacing = totalBranchWidth / branches.length;
     
@@ -1475,14 +1475,14 @@ function generateEnhancedSvg(structure: MindMapStructure, isHorizontal?: boolean
         x2="${branchX}" y2="${branchY - 27}" class="connection-line" 
         stroke="${colors.line}" stroke-width="3"/>`;
       
-      // Líneas rama → subnodos
+      // Líneas rama → subnodos (sincronizado con PASO 4)
       if (branch.children && branch.children.length > 0) {
-        const subStartY = branchY + 90; // Sincronizado con PASO 4
-        const subSpacing = 75; // Sincronizado con PASO 4
+        const subStartY = branchY + 110; // Sincronizado con PASO 4
+        const subSpacing = 130; // Sincronizado con PASO 4 - Aumentado para mejor separación
         
         branch.children.forEach((child: MindMapNode, childIdx: number) => {
           const subY = subStartY + (childIdx * subSpacing);
-          const subR = 40; // Sincronizado con PASO 4
+          const subR = 55; // Sincronizado con PASO 4
           
           svg += `<line x1="${branchX}" y1="${branchY + 27}" 
             x2="${branchX}" y2="${subY - subR}" class="connection-line" 
@@ -1495,18 +1495,18 @@ function generateEnhancedSvg(structure: MindMapStructure, isHorizontal?: boolean
     svg += `<circle cx="${centerX}" cy="${startY}" r="${centralR}" 
       fill="${colorScheme[0]}" stroke="none" filter="url(#professionalShadow)"/>`;
     
-    const centralLines = intelligentTextWrap(structure.centralThemeLabel, 12); // Reducido de 16 a 12 para más líneas
-    const centralTextY = startY - ((centralLines.length - 1) * 16 / 2); // Reducido espaciado
+    const centralLines = intelligentTextWrap(structure.centralThemeLabel, 12);
+    const centralTextY = startY - ((centralLines.length - 1) * 16 / 2);
     centralLines.forEach((line: string, idx: number) => {
       svg += `<text x="${centerX}" y="${centralTextY + (idx * 16)}" class="professional-text central-text" 
-        style="font-size: 15px;">${line}</text>`; // Reducido de 22px a 15px
+        style="font-size: 15px;">${line}</text>`;
     });
     
     // PASO 3: RAMAS PRINCIPALES CON COLORES ÚNICOS
     branches.forEach((branch, idx) => {
       const branchX = branchStartX + (idx + 0.5) * branchSpacing;
-      const branchW = 150; // Reducido de 170 a 150
-      const branchH = 55;  // Reducido de 70 a 55
+      const branchW = 150;
+      const branchH = 55;
       const branchColor = colorScheme[idx + 1] || colorScheme[1];
       
       // Nodo rama profesional
@@ -1514,35 +1514,35 @@ function generateEnhancedSvg(structure: MindMapStructure, isHorizontal?: boolean
         width="${branchW}" height="${branchH}" rx="14" 
         fill="${branchColor}" stroke="none" filter="url(#professionalShadow)"/>`;
       
-      const branchLines = intelligentTextWrap(branch.label, 16); // Reducido de 18 a 16
+      const branchLines = intelligentTextWrap(branch.label, 16);
       const branchTextY = branchY - ((branchLines.length - 1) * 15 / 2);
       branchLines.forEach((line: string, lineIdx: number) => {
         svg += `<text x="${branchX}" y="${branchTextY + (lineIdx * 15)}" class="professional-text branch-text" 
-          style="font-size: 13px;">${line}</text>`; // Reducido de 16px a 13px
+          style="font-size: 13px;">${line}</text>`;
       });
       
-      // PASO 4: SUBNODOS OPTIMIZADOS PARA UNA PÁGINA
+      // PASO 4: SUBNODOS OPTIMIZADOS CON BUENA SEPARACIÓN
       if (branch.children && branch.children.length > 0) {
-        const subStartY = branchY + 90; // Reducido de 140 a 90
-        const subSpacing = 75; // Reducido de 110 a 75 para caber en una página
+        const subStartY = branchY + 110; // Espacio desde rama a primer subnodo
+        const subSpacing = 130; // Aumentado de 95 a 130 para buena separación entre círculos
         const subColor = colorScheme[7]; // Color consistente para subnodos
         
         branch.children.forEach((child: MindMapNode, childIdx: number) => {
           const subY = subStartY + (childIdx * subSpacing);
-          const subR = 40; // Reducido de 55 a 40
+          const subR = 55; // Radio para que quepa más texto
           
           // Subnodo profesional
           svg += `<circle cx="${branchX}" cy="${subY}" r="${subR}" 
             fill="${subColor}" stroke="none" filter="url(#professionalShadow)"/>`;
           
-          const subLines = intelligentTextWrap(child.label, 12); // Reducido de 14 a 12
-          const lineHeight = 13; // Reducido de 15 a 13
+          const subLines = intelligentTextWrap(child.label, 16);
+          const lineHeight = 14;
           const totalTextHeight = (subLines.length - 1) * lineHeight;
           const subTextY = subY - (totalTextHeight / 2);
           subLines.forEach((line: string, lineIdx: number) => {
             const yPosition = subTextY + (lineIdx * lineHeight);
             svg += `<text x="${branchX}" y="${yPosition}" class="professional-text sub-text" 
-              text-anchor="middle" dominant-baseline="middle" style="font-size: 11px;">${line}</text>`;
+              text-anchor="middle" dominant-baseline="middle" style="font-size: 12px;">${line}</text>`;
           });
         });
       }
