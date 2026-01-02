@@ -242,6 +242,16 @@ const adminCards = [
     colorClass: 'rose',
     showBadge: false,
   },
+  // Financiera para admin (gestión de pagos de todos los estudiantes)
+  {
+    titleKey: 'cardFinanceTitle',
+    descKey: 'cardFinanceDesc',
+    btnKey: 'cardFinanceBtn',
+    targetPage: '/dashboard/financiera',
+    icon: CreditCard,
+    colorClass: 'mint',
+    showBadge: false,
+  },
 ];
 
 // Tarjetas específicas para profesores

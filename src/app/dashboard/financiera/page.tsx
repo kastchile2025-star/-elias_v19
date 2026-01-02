@@ -62,7 +62,7 @@ export default function FinancieraPage() {
   const [selectedRecordIds, setSelectedRecordIds] = useState<Set<string>>(new Set()); // Para checkboxes
   const [loading, setLoading] = useState(true);
 
-  // Cargar estudiantes asignados al apoderado
+  // Cargar estudiantes: todos para admin, asignados para apoderado
   useEffect(() => {
     if (!user?.username) return;
 
@@ -70,7 +70,84 @@ export default function FinancieraPage() {
       const currentYear = new Date().getFullYear();
       const availableYears = LocalStorageManager.listYears() || [currentYear];
       
-      // Buscar guardian en todos los años disponibles
+      // Si el usuario es admin, cargar estudiantes de cursos específicos (ejemplo demo)
+      if (user.role === 'admin') {
+        let yearUsed = currentYear;
+        let allStudents: Student[] = [];
+        
+        // Cursos permitidos para demo: 1° Básico, 8° Básico, 3° Medio
+        const allowedCoursePatterns = [
+          /^1.*b[aá]sico/i,
+          /^8.*b[aá]sico/i,
+          /^3.*medio/i,
+          /^1ro.*b[aá]sico/i,
+          /^8vo.*b[aá]sico/i,
+          /^3ro.*medio/i,
+        ];
+        
+        const isCourseAllowed = (courseName: string | undefined) => {
+          if (!courseName) return false;
+          return allowedCoursePatterns.some(pattern => pattern.test(courseName));
+        };
+        
+        for (const year of [currentYear, ...availableYears.filter(y => y !== currentYear)]) {
+          const studentsForYear = LocalStorageManager.getStudentsForYear(year) || [];
+          const coursesForYear = LocalStorageManager.getCoursesForYear(year) || [];
+          const sectionsForYear = LocalStorageManager.getSectionsForYear(year) || [];
+          
+          if (studentsForYear.length > 0) {
+            yearUsed = year;
+            
+            for (const student of studentsForYear) {
+              // Evitar duplicados
+              if (allStudents.some(s => s.id === student.id)) continue;
+              
+              const course = coursesForYear.find((c: any) => c.id === student.courseId);
+              const section = sectionsForYear.find((s: any) => s.id === student.sectionId);
+              
+              // Solo incluir estudiantes de cursos permitidos
+              if (!isCourseAllowed(course?.name)) continue;
+              
+              allStudents.push({
+                id: student.id,
+                name: student.name || student.displayName || student.username,
+                username: student.username,
+                courseId: student.courseId,
+                sectionId: student.sectionId,
+                courseName: course?.name,
+                sectionName: section?.name,
+              });
+            }
+            break; // Usar solo el primer año con estudiantes
+          }
+        }
+        
+        // Fallback: buscar en smart-student-users si no hay estudiantes
+        if (allStudents.length === 0) {
+          const storedUsers = localStorage.getItem('smart-student-users');
+          if (storedUsers) {
+            const usersData = JSON.parse(storedUsers);
+            const studentUsers = usersData.filter((u: any) => u.role === 'student' || u.type === 'student');
+            for (const student of studentUsers) {
+              allStudents.push({
+                id: student.id,
+                name: student.name || student.displayName || student.username,
+                username: student.username,
+                courseId: student.courseId,
+                sectionId: student.sectionId,
+                courseName: undefined,
+                sectionName: undefined,
+              });
+            }
+          }
+        }
+        
+        setAssignedStudents(allStudents);
+        setLoading(false);
+        return;
+      }
+      
+      // Para apoderados: buscar guardian en todos los años disponibles
       let guardianData: any = null;
       let yearUsed = currentYear;
       
@@ -157,14 +234,18 @@ export default function FinancieraPage() {
     
     const year = 2025; // Solo año 2025
     const storageKey = `smart-student-payments-${year}`;
+    const isAdmin = user?.role === 'admin';
     let existingRecords: PaymentRecord[] = [];
     
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        existingRecords = JSON.parse(stored);
-      }
-    } catch {}
+    // Solo cargar desde localStorage para apoderados (no para admin)
+    if (!isAdmin) {
+      try {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          existingRecords = JSON.parse(stored);
+        }
+      } catch {}
+    }
     
     // Generar registros para todos los estudiantes asignados
     const allRecords: PaymentRecord[] = [];
@@ -205,10 +286,16 @@ export default function FinancieraPage() {
       allRecords.push(...studentRecords);
     }
     
-    // Guardar todos los registros
-    localStorage.setItem(storageKey, JSON.stringify(allRecords));
+    // Solo guardar en localStorage para apoderados (evitar exceder cuota con muchos estudiantes)
+    if (!isAdmin) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(allRecords));
+      } catch (e) {
+        console.warn('No se pudo guardar en localStorage (cuota excedida):', e);
+      }
+    }
     setAllPaymentRecords(allRecords);
-  }, [assignedStudents]);
+  }, [assignedStudents, user?.role]);
 
   // Filtrar registros según selección
   useEffect(() => {
@@ -577,7 +664,7 @@ export default function FinancieraPage() {
                 <div className="space-y-2">
                   <Label>{translate('financeStudent') || 'Estudiante'}</Label>
                   <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-green-300 dark:border-green-700 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Todos los estudiantes" />
                     </SelectTrigger>
                     <SelectContent>
@@ -602,7 +689,7 @@ export default function FinancieraPage() {
                 <div className="space-y-2">
                   <Label>{translate('financeYear') || 'Año'}</Label>
                   <Select value={selectedYear} onValueChange={setSelectedYear}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-green-300 dark:border-green-700 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Todos los años" />
                     </SelectTrigger>
                     <SelectContent>
@@ -616,7 +703,7 @@ export default function FinancieraPage() {
                 <div className="space-y-2">
                   <Label>{translate('financeConcept') || 'Concepto'}</Label>
                   <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-green-300 dark:border-green-700 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Todos los conceptos" />
                     </SelectTrigger>
                     <SelectContent>
