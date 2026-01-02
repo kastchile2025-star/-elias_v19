@@ -425,68 +425,106 @@ export default function EvaluacionPage() {
       totalQuestions: totalQuestions,
     };
 
-    try {
-      // Use user-specific localStorage key
-      const historyKey = `evaluationHistory_${user.username}`;
-      const existingHistoryString = localStorage.getItem(historyKey);
-      const existingHistory: EvaluationHistoryItem[] = existingHistoryString ? JSON.parse(existingHistoryString) : [];
-      
-      // Add new item and limit to last 50 evaluations to prevent quota exceeded
-      const updatedHistory = [newHistoryItem, ...existingHistory].slice(0, 50);
-      
-      localStorage.setItem(historyKey, JSON.stringify(updatedHistory));
-      console.log(`✅ Evaluation history saved. Total items: ${updatedHistory.length}`);
-    } catch (error) {
-      console.error("Failed to save evaluation history:", error);
-      
-      // If quota exceeded, try to clear old data and save again
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        try {
-          console.warn('🚨 LocalStorage quota exceeded. Clearing old evaluation history...');
-          
-          // Try to keep only the last 10 evaluations
-          const historyKey = `evaluationHistory_${user.username}`;
-          const existingHistoryString = localStorage.getItem(historyKey);
-          const existingHistory: EvaluationHistoryItem[] = existingHistoryString ? JSON.parse(existingHistoryString) : [];
-          const reducedHistory = [newHistoryItem, ...existingHistory.slice(0, 9)]; // Keep only 10 total
-          
-          localStorage.setItem(historyKey, JSON.stringify(reducedHistory));
-          console.log(`✅ Evaluation history saved with reduced size. Total items: ${reducedHistory.length}`);
-          
-          toast({
-            title: 'Historial limitado',
-            description: 'Se ha reducido el historial de evaluaciones para liberar espacio.',
-            variant: 'default',
-          });
-        } catch (secondError) {
-          console.error("Failed to save evaluation history even after cleanup:", secondError);
-          // If still fails, clear the entire history
-          try {
-            const historyKey = `evaluationHistory_${user.username}`;
-            localStorage.removeItem(historyKey);
-            localStorage.setItem(historyKey, JSON.stringify([newHistoryItem]));
-            console.log('✅ Evaluation history reset. Starting fresh with current evaluation.');
-            
-            toast({
-              title: 'Historial reiniciado',
-              description: 'Se ha reiniciado el historial de evaluaciones por falta de espacio.',
-              variant: 'default',
-            });
-          } catch (finalError) {
-            console.error("Complete failure to save evaluation history:", finalError);
-            toast({
-              title: translate('evalErrorSavingHistoryTitle') || 'Error',
-              description: translate('evalErrorSavingHistoryDesc') || 'No se pudo guardar el historial de evaluaciones.',
-              variant: 'destructive',
-            });
+    // Helper function to check if error is quota related
+    const isQuotaError = (err: unknown): boolean => {
+      if (err instanceof Error) {
+        return err.name === 'QuotaExceededError' || 
+               err.message.includes('quota') ||
+               err.message.includes('QUOTA_BYTES') ||
+               err.message.includes('storage');
+      }
+      return false;
+    };
+
+    // Helper function to safely save to localStorage with aggressive cleanup
+    const trySaveWithCleanup = (item: EvaluationHistoryItem, maxItems: number): boolean => {
+      try {
+        const historyKey = `evaluationHistory_${user.username}`;
+        const existingHistoryString = localStorage.getItem(historyKey);
+        const existingHistory: EvaluationHistoryItem[] = existingHistoryString ? JSON.parse(existingHistoryString) : [];
+        const updatedHistory = [item, ...existingHistory].slice(0, maxItems);
+        localStorage.setItem(historyKey, JSON.stringify(updatedHistory));
+        console.log(`✅ Evaluation history saved. Total items: ${updatedHistory.length}`);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // Helper function to clean other localStorage data
+    const cleanOtherLocalStorageData = () => {
+      try {
+        // Remove old/temporary localStorage keys that might be taking space
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (
+            key.startsWith('temp_') ||
+            key.startsWith('debug_') ||
+            key.includes('_old') ||
+            key.includes('_backup')
+          )) {
+            keysToRemove.push(key);
           }
         }
-      } else {
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log(`🧹 Cleaned ${keysToRemove.length} temporary localStorage keys`);
+      } catch (e) {
+        console.warn('Could not clean localStorage:', e);
+      }
+    };
+
+    try {
+      // First attempt: try to save with up to 50 items
+      if (trySaveWithCleanup(newHistoryItem, 50)) {
+        return; // Success!
+      }
+      
+      // If failed, try cleanup and reduce to 20 items
+      console.warn('🚨 LocalStorage may be full. Cleaning up...');
+      cleanOtherLocalStorageData();
+      
+      if (trySaveWithCleanup(newHistoryItem, 20)) {
         toast({
-          title: translate('evalErrorSavingHistoryTitle') || 'Error',
-          description: translate('evalErrorSavingHistoryDesc') || 'No se pudo guardar el historial de evaluaciones.',
-          variant: 'destructive',
+          title: 'Historial limitado',
+          description: 'Se ha reducido el historial de evaluaciones para liberar espacio.',
+          variant: 'default',
         });
+        return;
+      }
+      
+      // Try with just 5 items
+      if (trySaveWithCleanup(newHistoryItem, 5)) {
+        toast({
+          title: 'Historial limitado',
+          description: 'Se ha reducido el historial de evaluaciones para liberar espacio.',
+          variant: 'default',
+        });
+        return;
+      }
+      
+      // Final attempt: clear all history and save just this one
+      try {
+        const historyKey = `evaluationHistory_${user.username}`;
+        localStorage.removeItem(historyKey);
+        localStorage.setItem(historyKey, JSON.stringify([newHistoryItem]));
+        console.log('✅ Evaluation history reset. Starting fresh with current evaluation.');
+        toast({
+          title: 'Historial reiniciado',
+          description: 'Se ha reiniciado el historial de evaluaciones por falta de espacio.',
+          variant: 'default',
+        });
+        return;
+      } catch (e) {
+        console.error('Complete failure to save evaluation history:', e);
+        // Silent failure - don't show error toast, the evaluation was still completed
+        console.warn('⚠️ No se pudo guardar en historial local, pero la evaluación se completó correctamente.');
+      }
+    } catch (error) {
+      console.error("Failed to save evaluation history:", error);
+      // Only show error if it's not a quota issue (which was already handled)
+      if (!isQuotaError(error)) {
+        console.warn('⚠️ Error inesperado al guardar historial. La evaluación se completó correctamente.');
       }
     }
   }, [selectedCourse, selectedBook, selectedSubject, currentTopicForDisplay, user, toast, translate, currentUiLanguage]);
