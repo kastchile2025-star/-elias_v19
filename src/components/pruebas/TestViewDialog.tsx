@@ -158,6 +158,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
 
   // Fallback local: generar preguntas si no existen para evitar PDF vacío
   const questions: AnyQuestion[] = useMemo(() => {
+    console.log('[TestViewDialog] useMemo questions - test?.questions:', test?.questions?.length || 0, 'test?.id:', test?.id)
+    
     // Helpers de similitud y normalización
     const normalize = (s: string) => s.toLowerCase().replace(/[^a-záéíóúñü0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim()
     const tokenSet = (s: string) => new Set(normalize(s).split(' ').filter(w => !['el','la','los','las','de','del','y','o','u','en','sobre','según','lo','visto','en','clase','para','por','con','un','una','al','a','que','es','son','se','item','ítem'].includes(w)))
@@ -171,6 +173,7 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
     }
 
     if (test?.questions && test.questions.length > 0) {
+      console.log('[TestViewDialog] Usando preguntas del test:', test.questions.length)
       // Copiar y asegurar que DES no se repitan ni sean semejantes a TF/MC/MS
       const arr: AnyQuestion[] = JSON.parse(JSON.stringify(test.questions))
       const otherStems = arr
@@ -226,95 +229,25 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
       })
       return arr
     }
-    const counts = test?.counts || { tf: 1, mc: 1, ms: 1, des: 1 }
-    const topic = test?.topic || "Tema"
-    const makeId = (p: string) => `${p}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
-    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-    const cleanTopic = topic.trim()
-    const out: AnyQuestion[] = []
-    // isTooSimilar ya definido arriba
-    for (let i = 0; i < (counts.tf || 0); i++) {
-      const positive = Math.random() > 0.5
-      const text = positive
-        ? `${cap(cleanTopic)}: la afirmación ${i + 1} es correcta según lo visto en clase.`
-        : `${cap(cleanTopic)}: la afirmación ${i + 1} es incorrecta de acuerdo al contenido.`
-      out.push({ id: makeId("tf"), type: "tf", text, answer: positive })
-    }
-    for (let i = 0; i < (counts.mc || 0); i++) {
-      const stem = `Sobre ${cleanTopic}, seleccione la alternativa correcta (ítem ${i + 1}).`
-      const distractors = [
-        `Enfoque no asociado directamente a ${cleanTopic}.`,
-        `Aplicación parcial de ${cleanTopic}.`,
-        `Caso límite de ${cleanTopic}.`,
-      ]
-      const correct = `Definición o ejemplo preciso de ${cleanTopic}.`
-      const options = [...distractors]
-      const idx = Math.floor(Math.random() * (options.length + 1))
-      options.splice(idx, 0, correct)
-      out.push({ id: makeId("mc"), type: "mc", text: stem, options, correctIndex: idx })
-    }
-    for (let i = 0; i < (counts.ms || 0); i++) {
-      const stem = `Marque todas las opciones que corresponden a ${cleanTopic} (ítem ${i + 1}).`
-      const base = [
-        { text: `Propiedad clave de ${cleanTopic}.`, correct: true },
-        { text: `Característica secundaria de ${cleanTopic}.`, correct: true },
-        { text: `Idea común pero no esencial de ${cleanTopic}.`, correct: false },
-        { text: `Concepto no relacionado con ${cleanTopic}.`, correct: false },
-      ]
-      const shuffled = [...base].sort(() => Math.random() - 0.5)
-      out.push({ id: makeId("ms"), type: "ms", text: stem, options: shuffled })
-    }
-    // Desarrollo: generar prompts variados, no repetidos ni similares a TF/MC/MS
-    const existingStems: string[] = out.map((q: any) => q.text || q.prompt || '')
-    const pool = [
-      `Analiza en profundidad ${cleanTopic}, argumentando con al menos dos evidencias.`,
-      `Explica los conceptos centrales de ${cleanTopic} y ejemplifícalos en un caso real.`,
-      `Compara ${cleanTopic} con un proceso alternativo e identifica similitudes y diferencias sustantivas.`,
-      `Evalúa ventajas y limitaciones de ${cleanTopic} y propone mejoras justificadas.`,
-      `Relaciona ${cleanTopic} con situaciones de la vida cotidiana y elabora conclusiones fundamentadas.`,
-      `Propón un mapa conceptual de ${cleanTopic} y explica las relaciones entre sus elementos.`,
-      `Diseña un experimento simple para observar ${cleanTopic}: hipótesis, materiales, procedimiento y resultados esperados.`,
-      `Argumenta la relevancia de ${cleanTopic} para la salud/ambiente/sociedad con ejemplos concretos.`,
-      `Resume ${cleanTopic} en no más de cinco frases e incluye una conclusión propia justificada.`,
-      `Explica las principales causas y efectos asociados a ${cleanTopic} e ilustra con ejemplos.`,
-      `Describe un caso real relacionado con ${cleanTopic} y analiza causas, consecuencias y aprendizajes.`,
-      `Formula una pregunta de investigación sobre ${cleanTopic} y plantea una posible respuesta con argumentos.`,
-    ]
-    // barajar
-    const shuffled = [...pool].sort(() => Math.random() - 0.5)
-    const selected: string[] = []
-    for (const candidate of shuffled) {
-      if (selected.length >= (counts.des || 0)) break
-      // descartar si es similar a stems ya existentes (TF/MC/MS) o a otra DES seleccionada
-      const similarToExisting = existingStems.some(s => isTooSimilar(candidate, s))
-      const similarToSelected = selected.some(s => isTooSimilar(candidate, s))
-      if (!similarToExisting && !similarToSelected) selected.push(candidate)
-    }
-    // si aún faltan, generar variantes con pequeñas restricciones para diferenciarlas
-    const variantTags = [
-      'incluye un ejemplo local',
-      'agrega una fuente de consulta',
-      'indica al menos dos evidencias',
-      'concluye con una recomendación práctica',
-    ]
-    let vt = 0
-    while (selected.length < (counts.des || 0)) {
-      const base = pool[selected.length % pool.length]
-      const variant = `${base} (${variantTags[vt % variantTags.length]})`
-      vt++
-      const similarToExisting = existingStems.some(s => isTooSimilar(variant, s))
-      const similarToSelected = selected.some(s => isTooSimilar(variant, s))
-      if (!similarToExisting && !similarToSelected) selected.push(variant)
-      else if (vt > 12) { // escape
-        selected.push(`${cap(cleanTopic)}: análisis crítico con evidencia y conclusión personal.`)
-      }
-    }
-    selected.forEach((prompt) => out.push({ id: makeId('des'), type: 'des', prompt }))
-    return out
+    
+    // Si no hay preguntas del servidor, retornar array vacío
+    // Esto asegura que el indicador de carga se muestre mientras se generan las preguntas
+    console.log('[TestViewDialog] No hay preguntas del servidor, retornando array vacío')
+    return []
   }, [test?.questions, test?.counts, test?.topic])
 
   const handleExportPDF = async () => {
     try {
+      // Verificar que las preguntas estén disponibles antes de generar el PDF
+      if (!questions || questions.length === 0) {
+        console.warn('[TestViewDialog] No hay preguntas disponibles para generar el PDF')
+        alert('Espera un momento mientras se cargan las preguntas...')
+        return
+      }
+      
+      // Pequeña pausa para asegurar que el estado esté completamente actualizado
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
@@ -409,7 +342,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
       // Pinta el primer encabezado
       drawHeader(false)
 
-      const questions = (test?.questions || []) as AnyQuestion[]
+      // Usar las preguntas del useMemo (ya procesadas con fallback)
+      const questionsToRender = questions
       const letters = ['A','B','C','D','E','F']
 
       const boxPaddingX = 4
@@ -432,8 +366,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
         pdf.rect(x + 1.5, y + 1.5, 3, h - 3, 'F')
       }
 
-      for (let i = 0; i < questions.length; i++) {
-        const q: any = questions[i]
+      for (let i = 0; i < questionsToRender.length; i++) {
+        const q: any = questionsToRender[i]
         const num = i + 1
         const pts = q.type === 'tf' ? perQuestionPoints.tf
           : q.type === 'mc' ? perQuestionPoints.mc
@@ -543,6 +477,16 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
   // Exporta una versión respondida correctamente (clave de respuestas)
   const handleExportPDFAnswered = async () => {
     try {
+      // Verificar que las preguntas estén disponibles antes de generar el PDF
+      if (!questions || questions.length === 0) {
+        console.warn('[TestViewDialog] No hay preguntas disponibles para generar el PDF de clave')
+        alert('Espera un momento mientras se cargan las preguntas...')
+        return
+      }
+      
+      // Pequeña pausa para asegurar que el estado esté completamente actualizado
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
@@ -626,7 +570,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
 
       drawHeader(false)
 
-      const questions = (test?.questions || []) as AnyQuestion[]
+      // Usar las preguntas del useMemo (ya procesadas con fallback)
+      const questionsToRender = questions
       const letters = ['A','B','C','D','E','F']
       const boxPaddingX = 4
       const boxPaddingY = 4
@@ -645,8 +590,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
         pdf.rect(x + 1.5, y + 1.5, 3, h - 3, 'F')
       }
 
-      for (let i = 0; i < questions.length; i++) {
-        const q: any = questions[i]
+      for (let i = 0; i < questionsToRender.length; i++) {
+        const q: any = questionsToRender[i]
         const num = i + 1
         const pts = q.type === 'tf' ? perQuestionPoints.tf
           : q.type === 'mc' ? perQuestionPoints.mc
@@ -870,6 +815,16 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
   // 📄 NUEVO: Exportar PDF con una copia por estudiante del curso (incluye nombre y RUT)
   const handleExportPDFCourse = async () => {
     try {
+      // Verificar que las preguntas estén disponibles antes de generar el PDF
+      if (!questions || questions.length === 0) {
+        console.warn('[TestViewDialog] No hay preguntas disponibles para generar el PDF de curso')
+        alert('Espera un momento mientras se cargan las preguntas...')
+        return
+      }
+      
+      // Pequeña pausa para asegurar que el estado esté completamente actualizado
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Obtener estudiantes filtrados por sección
       const studentsInSection = filtered.filter((s: any) => s.name && s.name.trim())
       if (studentsInSection.length === 0) {
@@ -999,7 +954,8 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
         // Pinta el primer encabezado
         drawHeader(false)
 
-        const qs = (test?.questions || []) as AnyQuestion[]
+        // Usar las preguntas del useMemo (ya procesadas con fallback)
+        const qs = questions
         const letters = ['A','B','C','D','E','F']
         const boxPaddingX = 4
         const boxPaddingY = 4
@@ -1127,6 +1083,9 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
     }
   }
 
+  // Verificar si las preguntas están cargándose
+  const isLoading = !questions || questions.length === 0
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* Limitar alto y permitir desplazamiento para pruebas largas */}
@@ -1134,6 +1093,22 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
         <DialogHeader>
           <DialogTitle className="text-xl">Vista: {test?.title || "Prueba"}</DialogTitle>
         </DialogHeader>
+        
+        {/* Indicador de carga mientras se generan las preguntas */}
+        {isLoading && (
+          <div className="flex items-center justify-center p-8 bg-fuchsia-50 dark:bg-fuchsia-900/20 rounded-lg border border-fuchsia-200 dark:border-fuchsia-800">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-fuchsia-600"></div>
+              <p className="text-sm text-fuchsia-700 dark:text-fuchsia-300 font-medium">
+                Cargando preguntas...
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Por favor espera un momento mientras se genera el contenido de la prueba.
+              </p>
+            </div>
+          </div>
+        )}
+        
         <div className="mb-3 text-sm text-muted-foreground">
           {(() => {
             const counts = test?.counts || { tf: 0, mc: 0, ms: 0, des: 0 }
@@ -1150,21 +1125,24 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
             <Button
               variant="outline"
               onClick={handleExportPDF}
-              className="border-fuchsia-200 text-fuchsia-800 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800 font-medium"
+              disabled={!questions || questions.length === 0}
+              className={`border-fuchsia-200 text-fuchsia-800 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800 font-medium ${(!questions || questions.length === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               📄 Descargar PDF
             </Button>
             <Button
               variant="outline"
               onClick={handleExportPDFAnswered}
-              className="border-green-200 text-green-800 hover:bg-green-600 hover:text-white dark:border-green-800 font-medium"
+              disabled={!questions || questions.length === 0}
+              className={`border-green-200 text-green-800 hover:bg-green-600 hover:text-white dark:border-green-800 font-medium ${(!questions || questions.length === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               ✅ Revisado (PDF)
             </Button>
             <Button
               variant="outline"
               onClick={handleExportPDFCourse}
-              className="border-blue-200 text-blue-800 hover:bg-blue-600 hover:text-white dark:border-blue-800 font-medium"
+              disabled={!questions || questions.length === 0}
+              className={`border-blue-200 text-blue-800 hover:bg-blue-600 hover:text-white dark:border-blue-800 font-medium ${(!questions || questions.length === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               👥 PDF Curso
             </Button>
@@ -1223,9 +1201,18 @@ export default function TestViewDialog({ open, onOpenChange, test, onReview }: P
           {/* Separador entre información inicial y preguntas */}
           <div className="border-t-2 border-gray-300 dark:border-gray-300 print:border-black my-8"></div>
 
+          {/* Indicador de carga si no hay preguntas */}
+          {(!questions || questions.length === 0) && (
+            <div className="flex flex-col items-center justify-center py-16 space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-fuchsia-200 border-t-fuchsia-600"></div>
+              <p className="text-lg text-muted-foreground">Generando preguntas...</p>
+              <p className="text-sm text-muted-foreground">Por favor espere mientras se crean las preguntas de la prueba.</p>
+            </div>
+          )}
+
           {/* Preguntas con mayor separación */}
           <div className="space-y-8">
-            {(test?.questions || []).map((q, idx) => {
+            {questions.map((q, idx) => {
               const num = idx + 1
               const pts = (q as any).type === 'tf' ? perQuestionPoints.tf
                 : (q as any).type === 'mc' ? perQuestionPoints.mc

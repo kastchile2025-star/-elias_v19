@@ -30,7 +30,63 @@ type Props = {
     subjectName?: string
     topic?: string
     createdAt?: number
+    // Campos para calcular puntos por pregunta
+    counts?: { tf: number; mc: number; ms: number; des?: number }
+    weights?: { tf: number; mc: number; ms: number; des: number }
+    totalPoints?: number
   }
+}
+
+// 🆕 Calcular puntos por tipo de pregunta basándose en weights, totalPoints y counts
+function calculatePointsPerQuestionType(test?: Props['test']): { tf: number; mc: number; ms: number; des: number } {
+  // Preferir el conteo REAL según test.questions (más confiable que counts persistido)
+  const questions = Array.isArray(test?.questions) ? test!.questions : []
+  const countsFromQuestions = {
+    tf: questions.filter((q: any) => q?.type === 'tf').length,
+    mc: questions.filter((q: any) => q?.type === 'mc').length,
+    ms: questions.filter((q: any) => q?.type === 'ms').length,
+    des: questions.filter((q: any) => q?.type === 'des').length,
+  }
+
+  const fallbackCounts = test?.counts || { tf: 0, mc: 0, ms: 0, des: 0 }
+  const counts = (countsFromQuestions.tf + countsFromQuestions.mc + countsFromQuestions.ms + countsFromQuestions.des) > 0
+    ? countsFromQuestions
+    : ({ tf: fallbackCounts.tf || 0, mc: fallbackCounts.mc || 0, ms: fallbackCounts.ms || 0, des: (fallbackCounts as any).des || 0 })
+
+  const totalQuestions = (counts.tf || 0) + (counts.mc || 0) + (counts.ms || 0) + (counts.des || 0)
+  const totalPoints = (typeof test?.totalPoints === 'number' && test?.totalPoints > 0)
+    ? test.totalPoints
+    : totalQuestions // fallback: 1 punto por pregunta si no se definió
+
+  const activeTypes: Array<'tf'|'mc'|'ms'|'des'> = (['tf','mc','ms','des'] as const).filter((t) => (counts as any)[t] > 0)
+  if (activeTypes.length === 0) return { tf: 0, mc: 0, ms: 0, des: 0 }
+
+  const w = test?.weights || {}
+  let sumActive = activeTypes.reduce((acc, t) => acc + (Number((w as any)[t]) || 0), 0)
+  
+  // Si no hay pesos válidos, repartir equitativamente
+  const normalized: Record<'tf'|'mc'|'ms'|'des', number> = { tf: 0, mc: 0, ms: 0, des: 0 }
+  if (!sumActive || sumActive <= 0.0001) {
+    const eq = 1 / activeTypes.length
+    activeTypes.forEach((t) => { normalized[t] = eq })
+  } else {
+    activeTypes.forEach((t) => { normalized[t] = (Number((w as any)[t]) || 0) / sumActive })
+  }
+
+  const keys = ['tf','mc','ms','des'] as const
+  const perTypePoints: Record<'tf'|'mc'|'ms'|'des', number> = { tf: 0, mc: 0, ms: 0, des: 0 }
+  keys.forEach((t) => {
+    perTypePoints[t] = totalPoints * normalized[t]
+  })
+
+  const result: Record<'tf'|'mc'|'ms'|'des', number> = { tf: 0, mc: 0, ms: 0, des: 0 }
+  keys.forEach((t) => {
+    const c = (counts as any)[t] || 0
+    result[t] = c > 0 ? perTypePoints[t] / c : 0
+  })
+  
+  console.log('[OCR] 📊 Puntos por pregunta calculados:', result, 'TotalPoints:', totalPoints, 'Counts:', counts)
+  return result
 }
 
 type OCRResult = {
@@ -41,8 +97,12 @@ type OCRResult = {
 export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
   const { translate } = useLanguage()
   const [file, setFile] = useState<File | null>(null)
+  const [keyFile, setKeyFile] = useState<File | null>(null) // 🆕 Pauta / versión revisada (opcional)
   const [ocr, setOcr] = useState<OCRResult | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState<{ current: number; total: number } | null>(null) // 🆕 Progreso OCR
+  const [analyzingWithAI, setAnalyzingWithAI] = useState(false) // 🆕 Estado para análisis con IA
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null) // 🆕 Resultado del análisis con IA
   const [score, setScore] = useState<number | null>(null)
   const [editScore, setEditScore] = useState<number | null>(null)
   // Desglose por tipo: TF/MC/MS/DES
@@ -56,13 +116,14 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
   const [error, setError] = useState<string>("")
   const workerRef = useRef<any>(null)
   const [history, setHistory] = useState<ReviewRecord[]>([])
-  const [verification, setVerification] = useState<{ sameDocument: boolean; coverage: number; studentFound: boolean; studentId?: string | null }>({ sameDocument: false, coverage: 0, studentFound: false, studentId: null })
+  const [verification, setVerification] = useState<{ sameDocument: boolean; coverage: number; studentFound: boolean; studentId?: string | null; hasAnswers?: boolean }>({ sameDocument: false, coverage: 0, studentFound: false, studentId: null, hasAnswers: true })
   const [students, setStudents] = useState<any[]>([])
   const [manualAssignId, setManualAssignId] = useState<string>("")
   // Edición directa en historial
   const [editHistTs, setEditHistTs] = useState<number | null>(null)
   const [editHistScore, setEditHistScore] = useState<number | null>(null)
   const uploadInputRef = useRef<HTMLInputElement | null>(null)
+  const keyUploadInputRef = useRef<HTMLInputElement | null>(null)
   const [importing, setImporting] = useState(false)
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
   // Modal emergente para mensajes de estado (por requerimiento)
@@ -76,6 +137,9 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
     pct: number // porcentaje
     pts: number // puntos
     saved: boolean // si ya fue guardada
+    hasAnswers: boolean // 🆕 Si el estudiante realmente respondió
+    detectedAnswers?: Array<{ questionNum: number; detected: string | null }> // 🆕 Respuestas detectadas
+    questionsInOCR?: number // 🆕 Preguntas encontradas en OCR
   }>>([])
   const [savingGrades, setSavingGrades] = useState(false)
 
@@ -83,13 +147,17 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
     if (!open) {
       // reset al cerrar
       setFile(null)
+      setKeyFile(null)
       setOcr(null)
       setProcessing(false)
+      setOcrProgress(null) // 🆕 Reset progreso OCR
+      setAnalyzingWithAI(false)
+      setAiAnalysis(null)
       setScore(null)
   setEditScore(null)
       setStudentName("")
       setError("")
-      setVerification({ sameDocument: false, coverage: 0, studentFound: false, studentId: null })
+      setVerification({ sameDocument: false, coverage: 0, studentFound: false, studentId: null, hasAnswers: true })
     }
   }, [open])
 
@@ -293,6 +361,35 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
     return pages
   }
 
+  // 🆕 Convertir PDF a imágenes (una por página) para análisis por visión
+  const renderPdfToImages = async (file: File): Promise<Array<{ pageNum: number; dataUrl: string }>> => {
+    const pages: Array<{ pageNum: number; dataUrl: string }> = []
+    try {
+      const buf = await file.arrayBuffer()
+      const pdfjs: any = await ensurePdfJs()
+      const task = pdfjs.getDocument({ data: buf })
+      const doc = await task.promise
+      const totalPages = doc.numPages
+
+      for (let p = 1; p <= totalPages; p++) {
+        const page = await doc.getPage(p)
+        // Escala moderada + JPEG para reducir tamaño del payload
+        const viewport = page.getViewport({ scale: 1.6 })
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        if (!ctx) continue
+        canvas.width = Math.ceil(viewport.width)
+        canvas.height = Math.ceil(viewport.height)
+        await page.render({ canvasContext: ctx, viewport }).promise
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.78)
+        pages.push({ pageNum: p, dataUrl })
+      }
+    } catch (e) {
+      console.warn('[TestReview] Error renderPdfToImages:', e)
+    }
+    return pages
+  }
+
   const runOCR = useCallback(async () => {
     if (!file) return
     setProcessing(true)
@@ -307,15 +404,390 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       if (isCursoPDF) {
         // ========== MODO CURSO: Agrupar páginas por estudiante y calificar cada prueba completa ==========
         console.log('[OCR] 📚 Detectado PDF de CURSO - procesando múltiples estudiantes...')
-        const pages = await extractTextPerPage(file)
-        
-        if (pages.length === 0) {
-          setError('No se pudieron extraer páginas del PDF')
-          return
-        }
-        
         const qTot = Array.isArray(test?.questions) ? test!.questions.length : 0
-        const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints as number : qTot
+
+        // 🆕 Intentar modo visión primero (mejor para PDFs escaneados y marcas)
+        const pointsPerType = calculatePointsPerQuestionType(test)
+        let usedVision = false
+
+        try {
+          // Si hay pauta/revisada, analizarla primero para obtener respuestas correctas reales
+          let keyAnswerByQuestion = new Map<number, string | null>()
+          let keyPointsByQuestion = new Map<number, number | null>()
+          let keyQuestionsFound: number | null = null
+
+          if (keyFile) {
+            try {
+              const keyImages = await renderPdfToImages(keyFile)
+              if (keyImages.length > 0) {
+                const keyResp = await fetch('/api/analyze-ocr-vision', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    images: keyImages,
+                    questionsCount: qTot,
+                    title: `${test?.title || ''} (PAUTA)`,
+                    topic: test?.topic || '',
+                    subjectName: test?.subjectName || '',
+                  }),
+                })
+                const keyData = await keyResp.json()
+                if (keyData?.success && keyData?.analysis?.pages && Array.isArray(keyData.analysis.pages)) {
+                  keyQuestionsFound = typeof keyData.analysis.questionsFoundInDocument === 'number'
+                    ? keyData.analysis.questionsFoundInDocument
+                    : null
+
+                  // Unir respuestas de todas las páginas de la pauta
+                  for (const pg of keyData.analysis.pages) {
+                    const answers = Array.isArray(pg?.answers) ? pg.answers : []
+                    for (const a of answers) {
+                      const qn = Number(a?.questionNum)
+                      if (!Number.isFinite(qn) || qn <= 0) continue
+                      const det = a?.detected === null || a?.detected === undefined ? null : String(a.detected).trim()
+                      const pts = (a?.points === null || a?.points === undefined) ? null : Number(a.points)
+                      if (det) {
+                        if (!keyAnswerByQuestion.get(qn)) keyAnswerByQuestion.set(qn, det)
+                      } else {
+                        if (!keyAnswerByQuestion.has(qn)) keyAnswerByQuestion.set(qn, null)
+                      }
+                      if (Number.isFinite(pts) && (pts as number) > 0) {
+                        if (!keyPointsByQuestion.get(qn)) keyPointsByQuestion.set(qn, pts)
+                      } else {
+                        if (!keyPointsByQuestion.has(qn)) keyPointsByQuestion.set(qn, null)
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (keyErr) {
+              console.warn('[OCR/Vision] ⚠️ No se pudo analizar pauta; se continuará sin pauta:', keyErr)
+              keyAnswerByQuestion = new Map()
+              keyPointsByQuestion = new Map()
+              keyQuestionsFound = null
+            }
+          }
+
+          const imagePages = await renderPdfToImages(file)
+          if (imagePages.length > 0) {
+            // 🔍 PASO 1: Análisis inicial SOLO para identificar estudiantes (sin respuestas detalladas)
+            console.log('[OCR/Vision] 📋 PASO 1: Identificando estudiantes en cada página...')
+            const identResp = await fetch('/api/analyze-ocr-vision-identify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                images: imagePages,
+              }),
+            })
+
+            const identData = await identResp.json()
+            if (!identData?.success || !Array.isArray(identData?.pages)) {
+              console.warn('[OCR/Vision] ⚠️ No se pudo identificar estudiantes, fallback a texto')
+              throw new Error('No se pudo identificar estudiantes')
+            }
+
+            // Agrupar páginas por estudiante
+            const groups = new Map<string, {
+              studentName: string
+              studentRut: string
+              pageIndexes: number[]
+            }>()
+
+            for (let i = 0; i < identData.pages.length; i++) {
+              const page = identData.pages[i]
+              const name = String(page?.student?.name || '').trim()
+              const rut = String(page?.student?.rut || '').replace(/[\.\s]/g, '').toUpperCase().trim()
+              const key = rut || normalize(name) || `page-${i}`
+              if (!groups.has(key)) {
+                groups.set(key, { studentName: name, studentRut: rut, pageIndexes: [] })
+              }
+              groups.get(key)!.pageIndexes.push(i)
+            }
+
+            console.log(`[OCR/Vision] 📊 Identificados ${groups.size} estudiantes`)
+            setOcrProgress({ current: 0, total: groups.size })
+
+            // 📝 PASO 2: Procesar cada estudiante INDEPENDIENTEMENTE
+            let processedCount = 0
+            const preliminaryResults: Array<{
+              studentName: string
+              studentId: string | null
+              studentInfo: any
+              score: number
+              pct: number
+              pts: number
+              saved: boolean
+              hasAnswers: boolean
+              detectedAnswers?: Array<{ questionNum: number; detected: string | null }>
+              questionsInOCR?: number
+            }> = []
+
+            for (const [, group] of groups) {
+              console.log(`[OCR/Vision] 📄 Procesando estudiante: ${group.studentName}...`)
+              
+              // Extraer solo las imágenes de este estudiante
+              const studentImages = group.pageIndexes.map(idx => imagePages[idx])
+
+              // Analizar solo las páginas de ESTE estudiante
+              const visionResp = await fetch('/api/analyze-ocr-vision', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  images: studentImages,
+                  questionsCount: qTot,
+                  title: test?.title || '',
+                  topic: test?.topic || '',
+                  subjectName: test?.subjectName || '',
+                }),
+              })
+
+              const visionData = await visionResp.json()
+              if (!visionData?.success || !Array.isArray(visionData?.analysis?.pages)) {
+                console.warn(`[OCR/Vision] ⚠️ Error procesando estudiante ${group.studentName}`)
+                processedCount++
+                setOcrProgress({ current: processedCount, total: groups.size })
+                continue
+              }
+
+              usedVision = true
+
+              const docQuestionsFound = typeof visionData.analysis.questionsFoundInDocument === 'number'
+                ? visionData.analysis.questionsFoundInDocument
+                : null
+
+              // Procesar respuestas de este estudiante
+              const studentName = group.studentName
+              const studentInfo = findStudentInSection(studentName, test?.courseId, test?.sectionId)
+              
+              const answerByQuestion = new Map<number, string | null>()
+              const pointsByQuestion = new Map<number, number | null>()
+              let answeredCount = 0
+
+              // Procesar todas las páginas de este estudiante
+              for (const pg of visionData.analysis.pages) {
+                const answers = Array.isArray(pg.answers) ? pg.answers : []
+                for (const a of answers) {
+                  const qn = Number(a?.questionNum)
+                  if (!Number.isFinite(qn) || qn <= 0) continue
+                  
+                  // 🆕 VALIDACIÓN ANTI-ALUCINACIÓN: Solo si la evidencia CLARAMENTE indica vacío
+                  const evidence = (a?.evidence || '').toUpperCase()
+                  // Solo considerar vacío si:
+                  // - Empieza con EMPTY
+                  // - Contiene "SIN MARCA" o "SIN RESPUESTA"
+                  // - Contiene "AMBOS VACÍOS" o "AMBOS PARÉNTESIS VACÍOS"
+                  const isEmptyEvidence = evidence.startsWith('EMPTY') || 
+                                          evidence.includes('SIN MARCA') ||
+                                          evidence.includes('SIN RESPUESTA') ||
+                                          evidence.includes('AMBOS VACÍOS') ||
+                                          evidence.includes('AMBOS PARENTESIS VACIOS')
+                  
+                  let detected = a?.detected === null || a?.detected === undefined ? null : String(a.detected)
+                  
+                  // Si la evidencia dice vacío, forzar null
+                  if (isEmptyEvidence && detected !== null) {
+                    console.warn(`[OMR/Vision] ⚠️ P${qn}: Evidencia="${a?.evidence}" indica VACÍO pero detected="${detected}" → FORZANDO null`)
+                    detected = null
+                  }
+                  
+                  const pts = (a?.points === null || a?.points === undefined) ? null : Number(a.points)
+                  
+                  if (detected && String(detected).trim()) {
+                    console.log(`[OMR/Vision] ✏️ P${qn}: detected="${detected}" | evidence="${evidence}"`)
+                    if (!answerByQuestion.get(qn)) {
+                      answerByQuestion.set(qn, detected)
+                    }
+                  } else {
+                    console.log(`[OMR/Vision] ⬜ P${qn}: SIN RESPUESTA | evidence="${evidence}"`)
+                    if (!answerByQuestion.has(qn)) answerByQuestion.set(qn, null)
+                  }
+
+                  if (Number.isFinite(pts) && (pts as number) > 0) {
+                    if (!pointsByQuestion.get(qn)) pointsByQuestion.set(qn, pts)
+                  } else {
+                    if (!pointsByQuestion.has(qn)) pointsByQuestion.set(qn, null)
+                  }
+                }
+              }
+
+              // 🔁 RE-CHEQUEO AUTOMÁTICO (caso Sofía): si hay P1..P4 pero falta P5, pedir verificación focalizada
+              // Esto ataca el caso donde Gemini omite una pregunta aunque exista una marca clara.
+              const has1 = answerByQuestion.has(1)
+              const has2 = answerByQuestion.has(2)
+              const has3 = answerByQuestion.has(3)
+              const has4 = answerByQuestion.has(4)
+              const missing5 = !answerByQuestion.has(5) || answerByQuestion.get(5) === null
+              const shouldHave5 = (qTot && qTot >= 5) || (docQuestionsFound && docQuestionsFound >= 5)
+
+              if (has1 && has2 && has3 && has4 && missing5 && shouldHave5) {
+                try {
+                  const firstImg = Array.isArray(studentImages) && studentImages.length > 0 ? studentImages[0] : null
+                  if (firstImg?.dataUrl) {
+                    console.log(`[OCR/Vision] 🔁 Re-chequeo focalizado P5 para ${studentName}...`)
+                    const base64Data = String(firstImg.dataUrl).split(',')[1] || ''
+                    const recheckResp = await fetch('/api/analyze-ocr', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        imageBase64: base64Data,
+                        questions: test?.questions || [],
+                        pageNumber: firstImg.pageNum,
+                        focusQuestionNums: [5],
+                      }),
+                    })
+                    const recheckData = await recheckResp.json()
+                    const reAnswers = recheckData?.analysis?.answers || recheckData?.answers || []
+                    const hit = Array.isArray(reAnswers)
+                      ? reAnswers.find((x: any) => Number(x?.q ?? x?.questionNum) === 5)
+                      : null
+                    const val = hit?.val ?? hit?.detected ?? null
+                    if (val !== null && val !== undefined && String(val).trim() !== '') {
+                      console.log(`[OCR/Vision] ✅ Re-chequeo P5: val="${val}" evidence="${hit?.evidence || ''}"`)
+                      answerByQuestion.set(5, String(val))
+                    } else {
+                      console.log(`[OCR/Vision] ⬜ Re-chequeo P5: sigue sin respuesta (evidence="${hit?.evidence || ''}")`)
+                      if (!answerByQuestion.has(5)) answerByQuestion.set(5, null)
+                    }
+                  }
+                } catch (e) {
+                  console.warn('[OCR/Vision] ⚠️ Falló re-chequeo focalizado P5:', e)
+                }
+              }
+              
+              for (const v of answerByQuestion.values()) if (v) answeredCount++
+              const hasRealAnswers = answeredCount > 0
+
+              // Calificar: si hay pauta, comparar contra pauta; si no, comparar contra test.questions
+              let studentCorrect = 0
+              let studentPoints = 0
+              const detectedAnswersList: Array<{ questionNum: number; detected: string | null }> = []
+
+              const keyMaxQ = keyAnswerByQuestion.size > 0
+                ? Math.max(...Array.from(keyAnswerByQuestion.keys()))
+                : 0
+              const maxQ = keyMaxQ || (qTot > 0 ? qTot : (docQuestionsFound || 0))
+              const denom = maxQ > 0 ? maxQ : (docQuestionsFound || answerByQuestion.size || 1)
+
+              // Armar lista de detectadas (solo las presentes)
+              for (const [qn, det] of answerByQuestion.entries()) {
+                detectedAnswersList.push({ questionNum: qn, detected: det })
+              }
+              detectedAnswersList.sort((a, b) => a.questionNum - b.questionNum)
+
+              // Total posible de puntos: si la pauta trae puntos, sumarlos; si no, usar totalPoints del test
+              let totalPossiblePoints = 0
+              if (keyPointsByQuestion.size > 0) {
+                for (let qNum = 1; qNum <= denom; qNum++) {
+                  const kp = keyPointsByQuestion.get(qNum)
+                  if (typeof kp === 'number' && Number.isFinite(kp) && kp > 0) totalPossiblePoints += kp
+                }
+              }
+              if (totalPossiblePoints <= 0.0001) {
+                const qTotLocal = Array.isArray(test?.questions) ? test!.questions.length : denom
+                const totalPtsLocal = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints : qTotLocal
+                totalPossiblePoints = typeof totalPtsLocal === 'number' && totalPtsLocal > 0 ? totalPtsLocal : 0
+              }
+
+              for (let qNum = 1; qNum <= denom; qNum++) {
+                const detected = answerByQuestion.get(qNum)
+                if (!detected) continue
+
+                // Puntos: preferir pauta -> PDF estudiante -> fallback por tipo
+                const kp = keyPointsByQuestion.get(qNum)
+                const sp = pointsByQuestion.get(qNum)
+                const q = (test?.questions || [])[qNum - 1] as any
+                const fallbackPts = q?.type === 'tf' ? pointsPerType.tf
+                  : q?.type === 'mc' ? pointsPerType.mc
+                  : q?.type === 'ms' ? pointsPerType.ms
+                  : pointsPerType.des
+                const questionPts = (typeof kp === 'number' && kp > 0) ? kp
+                  : (typeof sp === 'number' && sp > 0) ? sp
+                  : fallbackPts
+
+                if (keyAnswerByQuestion.size > 0) {
+                  const correct = keyAnswerByQuestion.get(qNum)
+                  if (correct && String(detected).trim().toUpperCase() === String(correct).trim().toUpperCase()) {
+                    studentCorrect++
+                    studentPoints += questionPts
+                  }
+                  continue
+                }
+
+                // Sin pauta: usar claves del test
+                if (!q) continue
+                if (q?.type === 'tf') {
+                  const correct = q.answer ? 'V' : 'F'
+                  if (String(detected).toUpperCase() === correct) {
+                    studentCorrect++
+                    studentPoints += questionPts
+                  }
+                } else if (q?.type === 'mc') {
+                  const correct = String.fromCharCode(65 + q.correctIndex)
+                  if (String(detected).toUpperCase() === correct) {
+                    studentCorrect++
+                    studentPoints += questionPts
+                  }
+                } else if (q?.type === 'ms') {
+                  const correctLabels = (q.options || []).map((o: any, j: number) => o.correct ? String.fromCharCode(65 + j) : '').filter(Boolean)
+                  const detectedLabels = String(detected).split(',').map((l: string) => l.trim().toUpperCase()).filter(Boolean)
+                  if (correctLabels.length === detectedLabels.length && correctLabels.every((l: string) => detectedLabels.includes(l))) {
+                    studentCorrect++
+                    studentPoints += questionPts
+                  }
+                }
+              }
+
+              const pts = Math.round(studentPoints)
+              const pct = totalPossiblePoints > 0 ? Math.round((pts / totalPossiblePoints) * 100) : (denom > 0 ? Math.round((studentCorrect / denom) * 100) : 0)
+
+              preliminaryResults.push({
+                studentName,
+                studentId: studentInfo?.id || studentInfo?.username || null,
+                studentInfo,
+                score: studentCorrect,
+                pct,
+                pts,
+                saved: false,
+                hasAnswers: hasRealAnswers,
+                detectedAnswers: detectedAnswersList,
+                questionsInOCR: denom,
+              })
+
+              processedCount++
+              setOcrProgress({ current: processedCount, total: groups.size })
+            }
+
+            setPreliminaryGrades(preliminaryResults)
+            setOcrProgress(null)
+
+            if (processedCount > 0) {
+              const resumenTexto = preliminaryResults
+                .map(r => `• ${r.studentName}: ${r.hasAnswers ? `${r.pts} pts (${r.pct}%)` : '❌ Sin respuestas detectadas'}`)
+                .join('\n')
+
+              setStudentName('')
+              setScore(null)
+              setBreakdown(null)
+              setOcr({ text: `📋 PDF de Curso procesado (VISIÓN${keyAnswerByQuestion.size > 0 ? ' + PAUTA' : ''}): ${processedCount} estudiantes detectados.\n\n${resumenTexto}\n\n⚠️ Calificaciones PRELIMINARES. Presiona "Guardar Calificaciones" para confirmar y enviar notificaciones.` })
+              setVerification({ sameDocument: true, coverage: 0.9, studentFound: true, studentId: null, hasAnswers: true })
+              setEditScore(null)
+            } else {
+              setError('No se pudieron procesar estudiantes del PDF (visión).')
+            }
+
+            return
+          }
+        } catch (visionErr) {
+          console.warn('[OCR/Vision] ⚠️ Error usando visión, fallback a texto:', visionErr)
+        }
+
+        if (!usedVision) {
+          // ===== Fallback: flujo anterior (texto/OCR + IA texto) =====
+          const pages = await extractTextPerPage(file)
+
+          if (pages.length === 0) {
+            setError('No se pudieron extraer páginas del PDF')
+            return
+          }
         
         // 🔍 PASO 1: Identificar estudiantes únicos por nombre o RUT en ENCABEZADO de cada página
         type PageWithStudent = { pageNum: number; text: string; studentName: string; studentRut: string; studentInfo: any }
@@ -437,7 +909,13 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
         
         console.log(`[OCR] 📊 Detectados ${numStudents} estudiantes, ${totalPages} páginas total (≈${pagesPerStudent} páginas/estudiante)`)
         
-        // 🔍 PASO 3: Calificar cada estudiante usando TODAS sus páginas combinadas (PRELIMINAR)
+        // 🆕 Calcular puntos por tipo de pregunta ANTES de procesar estudiantes
+        const pointsPerType = calculatePointsPerQuestionType(test)
+        
+        // 🆕 Inicializar progreso
+        setOcrProgress({ current: 0, total: numStudents })
+        
+        // 🔍 PASO 3: Calificar cada estudiante usando IA (más preciso que OCR manual)
         let processedCount = 0
         const preliminaryResults: Array<{
           studentName: string
@@ -447,23 +925,267 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
           pct: number
           pts: number
           saved: boolean
+          hasAnswers: boolean // 🆕 Si realmente respondió
+          detectedAnswers?: Array<{ questionNum: number; detected: string | null }>
+          questionsInOCR?: number
         }> = []
+        
+        // 🆕 PASO 2.5: Renderizar PDF a imágenes (una vez para todos los estudiantes)
+        const pdfImages = await renderPdfToImages(file)
+        console.log(`[OCR/Vision] 🖼️ Renderizadas ${pdfImages.length} imágenes del PDF`)
         
         for (const [key, group] of studentGroups) {
           const { pages: studentPages, studentInfo, studentName } = group
           
-          // Combinar texto de todas las páginas del estudiante
-          const combinedText = studentPages.map(p => p.text).join('\n\n--- Página siguiente ---\n\n')
+          console.log(`[OCR] 📝 Calificando ${studentName} (${studentPages.length} páginas) usando VISIÓN...`)
           
-          console.log(`[OCR] 📝 Calificando ${studentName} (${studentPages.length} páginas)...`)
+          // 🤖 USAR GEMINI VISION para analizar cada página del estudiante
+          let studentCorrect = 0
+          let studentPts = 0
+          let hasRealAnswers = false
+          let detectedAnswersList: Array<{ questionNum: number; detected: string | null }> = []
+          let questionsFoundInOCR = 0
           
-          // Calificar la prueba completa del estudiante
-          const graded = autoGrade(combinedText, test?.questions || [])
-          const studentCorrect = graded.correct
-          const studentPct = qTot > 0 ? Math.round((Math.max(0, Math.min(studentCorrect, qTot)) / qTot) * 100) : 0
-          const studentPts = qTot > 0 ? Math.round((Math.max(0, Math.min(studentCorrect, qTot)) / qTot) * totalPts) : 0
+          try {
+            // 🆕 Analizar cada página del estudiante con VISIÓN
+            for (const studentPage of studentPages) {
+              const pdfImage = pdfImages.find(img => img.pageNum === studentPage.pageNum)
+              if (!pdfImage) {
+                console.warn(`[OCR/Vision] ⚠️ No se encontró imagen para página ${studentPage.pageNum}`)
+                continue
+              }
+              
+              // Extraer base64 sin el prefijo data:image/jpeg;base64,
+              const base64Data = pdfImage.dataUrl.split(',')[1]
+              
+              const aiResponse = await fetch('/api/analyze-ocr', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  imageBase64: base64Data,
+                  questions: test?.questions || [],
+                  studentName: studentName,
+                  expectedStudents: students,
+                  pageNumber: studentPage.pageNum
+                })
+              })
+              
+              const aiData = await aiResponse.json()
+              console.log(`[OMR] 🤖 Respuesta IA para ${studentName} página ${studentPage.pageNum}:`, JSON.stringify(aiData, null, 2))
+              
+              // 🆕 LOG CRUDO - Ver exactamente qué devuelve la IA para cada pregunta
+              if (aiData.success && aiData.analysis?.answers) {
+                console.log(`[OMR] 📋 RESPUESTAS CRUDAS para ${studentName}:`)
+                aiData.analysis.answers.forEach((a: any, i: number) => {
+                  console.log(`[OMR]   RAW[${i}]: q=${a.q ?? a.questionNum}, val="${a.val ?? a.detected}", evidence="${a.evidence}"`)
+                })
+              }
+              
+              if (aiData.success && aiData.analysis) {
+                const analysis = aiData.analysis
+                const pageQuestionsFound = analysis.questionsFound || analysis.questionsFoundInOCR || 0
+                questionsFoundInOCR += pageQuestionsFound
+                
+                // 🆕 LOG DETALLADO CON EVIDENCIA VISUAL
+                // Soporta formato con evidence (nuevo) y formatos legacy
+                const answers = analysis.answers || []
+                console.log(`[OMR] 📊 ${studentName} p${studentPage.pageNum}: IA encontró ${pageQuestionsFound} preguntas totales`)
+                console.log(`[OMR] 🔍 Confianza: ${analysis.confidence || analysis.confidenceLevel || 'N/A'}`)
+                
+                answers.forEach((ans: any, idx: number) => {
+                  const qNum = ans.q ?? ans.questionNum ?? idx + 1
+                  const val = ans.val ?? ans.detected ?? null
+                  const evidence = (ans.evidence || ans.visualEvidence || 'sin evidencia').toUpperCase()
+                  
+                  // 🆕 VALIDACIÓN: Solo si la evidencia CLARAMENTE indica vacío
+                  const isEmptyEvidence = evidence.startsWith('EMPTY') || 
+                                          evidence.includes('SIN MARCA') ||
+                                          evidence.includes('SIN RESPUESTA') ||
+                                          evidence.includes('AMBOS VACÍOS') ||
+                                          evidence.includes('AMBOS PARENTESIS VACIOS')
+                  
+                  if (isEmptyEvidence && val !== null) {
+                    console.warn(`[OMR] ⚠️ P${qNum}: Evidencia indica VACÍO pero val="${val}" - CORRIGIENDO a null`)
+                  }
+                  
+                  const finalVal = isEmptyEvidence ? null : val
+                  const status = finalVal ? '✏️ RESPONDIDA' : '⬜ EN BLANCO'
+                  console.log(`[OMR]   → P${qNum}: ${status} | Evidencia: "${ans.evidence || 'sin evidencia'}" | val="${finalVal || 'null'}"`)
+                  
+                  // Actualizar el valor en el array original para que el conteo sea correcto
+                  if (ans.val !== undefined) ans.val = finalVal
+                  if (ans.detected !== undefined) ans.detected = finalVal
+                })
+                
+                // Determinar si tiene respuestas en esta página (usando valores corregidos)
+                const answersWithResponse = answers.filter((a: any) => {
+                  const val = a.val ?? a.detected ?? null
+                  const evidence = (a.evidence || a.visualEvidence || '').toUpperCase()
+                  const isEmptyEvidence = evidence.startsWith('EMPTY') || 
+                                          evidence.includes('SIN MARCA') ||
+                                          evidence.includes('SIN RESPUESTA') ||
+                                          evidence.includes('AMBOS VACÍOS') ||
+                                          evidence.includes('AMBOS PARENTESIS VACIOS')
+                  // Si la evidencia dice vacío, NO contar como respondida
+                  if (isEmptyEvidence) return false
+                  return val !== null && val !== undefined && val !== ''
+                })
+                if (answersWithResponse.length > 0) {
+                  hasRealAnswers = true
+                }
+                
+                console.log(`[OMR] 📝 ${studentName} p${studentPage.pageNum}: ${answersWithResponse.length}/${pageQuestionsFound} preguntas respondidas (validadas)`)
+                
+                // Acumular respuestas detectadas de todas las páginas
+                // 🆕 Soporta formato con evidence y validación anti-alucinación
+                if (analysis.answers && Array.isArray(analysis.answers)) {
+                  for (const ans of analysis.answers) {
+                    const qNum = ans.q ?? ans.questionNum ?? 0
+                    let val = ans.val ?? ans.detected ?? null
+                    const evidence = ans.evidence || ans.visualEvidence || ''
+                    
+                    if (qNum === 0) continue
+                    
+                    // 🆕 VALIDACIÓN ANTI-ALUCINACIÓN: Solo si la evidencia CLARAMENTE indica vacío
+                    const evidenceUpper = evidence.toUpperCase()
+                    const isEmptyEvidence = evidenceUpper.startsWith('EMPTY') || 
+                                            evidenceUpper.includes('SIN MARCA') ||
+                                            evidenceUpper.includes('SIN RESPUESTA') ||
+                                            evidenceUpper.includes('AMBOS VACÍOS') ||
+                                            evidenceUpper.includes('AMBOS PARENTESIS VACIOS')
+                    if (isEmptyEvidence) {
+                      val = null
+                    }
+                    
+                    // Buscar si ya existe esta pregunta (en caso de páginas múltiples)
+                    const existingIdx = detectedAnswersList.findIndex(d => d.questionNum === qNum)
+                    if (existingIdx >= 0) {
+                      // Si ya existe y tiene respuesta, mantener la primera detectada
+                      if (!detectedAnswersList[existingIdx].detected && val) {
+                        detectedAnswersList[existingIdx].detected = val
+                      }
+                    } else {
+                      detectedAnswersList.push({
+                        questionNum: qNum,
+                        detected: val
+                      })
+                    }
+                  }
+                }
+                
+                // Contar respuestas correctas y sumar puntos de esta página
+                // 🆕 Con validación de evidencia anti-alucinación
+                if (analysis.answers && Array.isArray(analysis.answers)) {
+                  for (const rawAnswer of analysis.answers) {
+                    const qNum = rawAnswer.q ?? rawAnswer.questionNum ?? 0
+                    let val = rawAnswer.val ?? rawAnswer.detected ?? null
+                    const evidence = rawAnswer.evidence || rawAnswer.visualEvidence || ''
+                    
+                    // 🆕 VALIDACIÓN: Solo si la evidencia CLARAMENTE indica vacío
+                    const evidenceUpper2 = evidence.toUpperCase()
+                    const isEmptyEvidence2 = evidenceUpper2.startsWith('EMPTY') || 
+                                            evidenceUpper2.includes('SIN MARCA') ||
+                                            evidenceUpper2.includes('SIN RESPUESTA') ||
+                                            evidenceUpper2.includes('AMBOS VACÍOS') ||
+                                            evidenceUpper2.includes('AMBOS PARENTESIS VACIOS')
+                    if (isEmptyEvidence2) {
+                      console.log(`[OMR] 🚫 ${studentName} P${qNum}: Evidencia="${evidence}" → FORZANDO null (anti-alucinación)`)
+                      val = null
+                    }
+                    
+                    // VALIDACIÓN ESTRICTA: Solo procesar si val NO es null/undefined/vacío
+                    if (!val || (typeof val === 'string' && val.trim() === '')) {
+                      console.log(`[OMR] ⏭️ ${studentName} P${qNum}: sin respuesta (val=${val})`)
+                      continue
+                    }
+                    
+                    const qIndex = qNum - 1
+                    const q = (test?.questions || [])[qIndex] as any
+                    if (!q) {
+                      console.warn(`[OMR] ⚠️ ${studentName} P${qNum}: pregunta no existe en la prueba`)
+                      continue
+                    }
+                    
+                    // Obtener puntos según el TIPO de pregunta
+                    const questionPoints = q.type === 'tf' ? pointsPerType.tf
+                      : q.type === 'mc' ? pointsPerType.mc
+                      : q.type === 'ms' ? pointsPerType.ms
+                      : pointsPerType.des
+                    
+                    if (q.type === 'tf') {
+                      const correct = q.answer ? 'V' : 'F'
+                      const detected = typeof val === 'string' ? val.toUpperCase().trim() : ''
+                      
+                      // 🆕 VALIDACIÓN: Solo V o F son válidas
+                      if (detected !== 'V' && detected !== 'F') {
+                        console.warn(`[OMR] ⚠️ ${studentName} P${qNum}: respuesta inválida "${detected}" (esperaba V o F)`)
+                        continue
+                      }
+                      
+                      if (detected === correct) {
+                        studentCorrect++
+                        studentPts += questionPoints
+                        console.log(`[OMR] ✅ ${studentName} P${qNum}: ${detected} = correcta (+${questionPoints.toFixed(2)} pts)`)
+                      } else {
+                        console.log(`[OMR] ❌ ${studentName} P${qNum}: ${detected} != ${correct} (incorrecta, 0 pts)`)
+                      }
+                    } else if (q.type === 'mc') {
+                      const correct = String.fromCharCode(65 + q.correctIndex)
+                      const detected = typeof val === 'string' ? val.toUpperCase().trim() : ''
+                      
+                      if (detected === correct) {
+                        studentCorrect++
+                        studentPts += questionPoints
+                        console.log(`[OMR] ✅ ${studentName} P${qNum}: ${detected} = correcta (+${questionPoints.toFixed(2)} pts)`)
+                      } else {
+                        console.log(`[OMR] ❌ ${studentName} P${qNum}: ${detected} != ${correct} (incorrecta, 0 pts)`)
+                      }
+                    } else if (q.type === 'ms') {
+                      const correctLabels = q.options.map((o: any, j: number) => o.correct ? String.fromCharCode(65 + j) : '').filter(Boolean)
+                      const detectedLabels = (val || '').split(',').map((l: string) => l.trim().toUpperCase()).filter(Boolean)
+                      if (correctLabels.length === detectedLabels.length && correctLabels.every((l: string) => detectedLabels.includes(l))) {
+                        studentCorrect++
+                        studentPts += questionPoints
+                        console.log(`[OMR] ✅ ${studentName} P${qNum}: correcta (+${questionPoints.toFixed(2)} pts)`)
+                      } else {
+                        console.log(`[OMR] ❌ ${studentName} P${qNum}: incorrecta (0 pts)`)
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
+            // Redondear puntos finales del estudiante
+            studentPts = Math.round(studentPts)
+            console.log(`[OMR] 🎯 ${studentName}: ${studentCorrect}/${questionsFoundInOCR} correctas = ${studentPts} pts`)
+            
+          } catch (aiErr) {
+            console.warn(`[OMR] ⚠️ Error en IA para ${studentName}, usando fallback:`, aiErr)
+            // Fallback al método tradicional con texto
+            const combinedText = studentPages.map(p => p.text).join('\n\n--- Página siguiente ---\n\n')
+            const graded = autoGrade(combinedText, test?.questions || [])
+            studentCorrect = graded.correct
+            hasRealAnswers = graded.evidence > 0
+            // Calcular puntos en fallback usando puntos por tipo
+            let fallbackPoints = 0
+            for (let i = 0; i < studentCorrect && i < (test?.questions?.length || 0); i++) {
+              const q = (test?.questions || [])[i] as any
+              if (q) {
+                fallbackPoints += q.type === 'tf' ? pointsPerType.tf
+                  : q.type === 'mc' ? pointsPerType.mc
+                  : q.type === 'ms' ? pointsPerType.ms
+                  : pointsPerType.des
+              }
+            }
+            studentPts = Math.round(fallbackPoints)
+          }
           
-          console.log(`[OCR] ✅ ${studentName}: ${studentCorrect}/${qTot} correctas = ${studentPct}% (${studentPts} pts)`)
+          // Calcular porcentaje basado en preguntas encontradas en OCR (no en el total de la prueba)
+          const questionsToCount = questionsFoundInOCR > 0 ? questionsFoundInOCR : qTot
+          const studentPct = questionsToCount > 0 ? Math.round((studentCorrect / questionsToCount) * 100) : 0
+          
+          console.log(`[OCR] ${hasRealAnswers ? '✅' : '⚠️'} ${studentName}: ${studentCorrect}/${questionsFoundInOCR} correctas = ${studentPct}% (${studentPts} pts)`)
           
           // 📝 GUARDAR COMO PRELIMINAR (no guardar aún en localStorage ni enviar notificaciones)
           preliminaryResults.push({
@@ -473,29 +1195,38 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
             score: studentCorrect,
             pct: studentPct,
             pts: studentPts,
-            saved: false
+            saved: false,
+            hasAnswers: hasRealAnswers,
+            detectedAnswers: detectedAnswersList,
+            questionsInOCR: questionsFoundInOCR
           })
           
           processedCount++
+          // 🆕 Actualizar progreso OCR
+          setOcrProgress({ current: processedCount, total: numStudents })
         }
         
         // Guardar resultados preliminares en el estado
         setPreliminaryGrades(preliminaryResults)
         
+        // 🆕 Limpiar progreso OCR
+        setOcrProgress(null)
+        
         // Mostrar resumen general (NO mostrar nombre de estudiante individual)
         if (processedCount > 0) {
-          const resumenTexto = preliminaryResults.map(r => `• ${r.studentName}: ${r.pts} pts (${r.pct}%)`).join('\n')
+          const resumenTexto = preliminaryResults.map(r => `• ${r.studentName}: ${r.hasAnswers ? `${r.pts} pts (${r.pct}%)` : '❌ Sin respuestas detectadas'}`).join('\n')
           setStudentName('') // No mostrar nombre individual
           setScore(null)
           setBreakdown(null)
           setOcr({ text: `📋 PDF de Curso procesado: ${processedCount} estudiantes detectados.\n\n${resumenTexto}\n\n⚠️ Calificaciones PRELIMINARES. Presiona "Guardar Calificaciones" para confirmar y enviar notificaciones.` })
-          setVerification({ sameDocument: true, coverage: 0.8, studentFound: true, studentId: null })
+          setVerification({ sameDocument: true, coverage: 0.8, studentFound: true, studentId: null, hasAnswers: true })
           setEditScore(null)
         } else {
           setError('No se pudieron procesar estudiantes del PDF. Verifica que el PDF contenga las pruebas respondidas.')
         }
         
         return
+        }
       }
       
       // ========== MODO NORMAL: Un solo estudiante ==========
@@ -556,11 +1287,15 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       }
       // 2) Verificar si el estudiante existe en la sección del test
       const studentInfo = findStudentInSection(guessedName, test?.courseId, test?.sectionId)
-      setVerification({ sameDocument: sameDoc.isMatch, coverage: sameDoc.coverage, studentFound: !!studentInfo, studentId: studentInfo?.id || null })
   // 3) Calificar siempre (se mostrará como vista previa si no pasa la verificación)
   const graded = autoGrade(text, test?.questions || [])
   let computed: number | null = graded.correct
   setBreakdown(graded.breakdown)
+      
+      // 🆕 Verificar si realmente hay evidencia de respuestas marcadas
+      const hasRealAnswers = graded.evidence > 0
+      setVerification({ sameDocument: sameDoc.isMatch, coverage: sameDoc.coverage, studentFound: !!studentInfo, studentId: studentInfo?.id || null, hasAnswers: hasRealAnswers })
+      
       // Nota: detectamos si el documento parece una CLAVE, pero no forzamos 100%.
       // Esto evita falsos positivos cuando el archivo contiene la palabra "CLAVE" en el encabezado.
       // Si quieres calificar claves al 100% manualmente, podemos añadir un toggle en UI.
@@ -593,6 +1328,7 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
             sectionId: test?.sectionId || null,
             subjectId: test?.subjectId || null,
             title: test?.title || '',
+            skipEmail: true, // ⚠️ Evitar duplicación - el email se envía en saveAllPreliminaryGrades
           })
         } catch (e) {
           console.warn('[TestReview] No se pudo persistir la nota:', e)
@@ -617,6 +1353,10 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
         coverage: sameDoc.coverage,
         studentFound: !!studentInfo,
       })
+      
+      // 🤖 NUEVO: Analizar OCR con IA de Gemini automáticamente
+      analyzeWithAI(text, guessedName, studentInfo)
+      
     } catch (e: any) {
       console.error(e)
       setError(e?.message || "Error al procesar OCR")
@@ -624,6 +1364,118 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       setProcessing(false)
     }
   }, [file, ensureWorker, test?.questions, students])
+
+  // 🤖 NUEVO: Función para analizar OCR con IA de Gemini
+  const analyzeWithAI = useCallback(async (ocrText: string, detectedName: string, studentInfo: any) => {
+    if (!ocrText || ocrText.length < 50) return
+    
+    setAnalyzingWithAI(true)
+    try {
+      console.log('[AI Analysis] Enviando texto OCR a Gemini:', ocrText.substring(0, 500))
+      
+      const response = await fetch('/api/analyze-ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ocrText,
+          questions: test?.questions || [],
+          studentName: detectedName,
+          expectedStudents: students
+        })
+      })
+      
+      const data = await response.json()
+      console.log('[AI Analysis] Respuesta completa:', data)
+      
+      if (data.success && data.analysis) {
+        const analysis = data.analysis
+        setAiAnalysis(analysis)
+        
+        // 🆕 Verificar si el estudiante realmente respondió
+        const hasAnswers = analysis.hasAnswers !== false
+        setVerification(v => ({ ...v, hasAnswers }))
+        
+        // Si la IA detectó un nombre diferente, actualizarlo
+        if (analysis.studentDetected && !detectedName) {
+          setStudentName(analysis.studentDetected)
+        }
+        
+        // 🆕 USAR RESPUESTAS DE IA COMO PRINCIPAL si tiene confianza >= 50%
+        // Esto es más confiable que el procesamiento manual de OCR para V/F
+        if (analysis.answers && Array.isArray(analysis.answers) && analysis.confidence >= 50) {
+          const questions = test?.questions || []
+          let aiCorrect = 0
+          const bd = { tf: { correct: 0, total: 0 }, mc: { correct: 0, total: 0 }, ms: { correct: 0, total: 0 }, des: { correct: 0, total: 0 } }
+          
+          console.log('[AI Analysis] Procesando respuestas de IA...')
+          
+          for (let i = 0; i < questions.length; i++) {
+            const q = questions[i] as any
+            const aiAnswer = analysis.answers.find((a: any) => a.questionNum === i + 1)
+            
+            console.log(`[AI Analysis] Pregunta ${i + 1}: tipo=${q.type}, IA detectó="${aiAnswer?.detected}"`)
+            
+            if (q.type === 'tf') {
+              bd.tf.total++
+              const correct = q.answer ? 'V' : 'F'
+              const detected = aiAnswer?.detected?.toUpperCase()
+              
+              console.log(`[AI Analysis] TF #${i + 1}: correcta="${correct}", detectada="${detected}"`)
+              
+              // Solo sumar si es correcta - NO restar si es incorrecta
+              if (detected === correct) {
+                aiCorrect++
+                bd.tf.correct++
+                console.log(`[AI Analysis] ✅ Pregunta ${i + 1} CORRECTA`)
+              } else if (detected && detected !== correct) {
+                console.log(`[AI Analysis] ❌ Pregunta ${i + 1} incorrecta (no resta)`)
+              } else {
+                console.log(`[AI Analysis] ⚠️ Pregunta ${i + 1} sin respuesta detectada`)
+              }
+            } else if (q.type === 'mc') {
+              bd.mc.total++
+              const correct = String.fromCharCode(65 + q.correctIndex)
+              if (aiAnswer?.detected?.toUpperCase() === correct) {
+                aiCorrect++
+                bd.mc.correct++
+              }
+            } else if (q.type === 'ms') {
+              bd.ms.total++
+              // Para selección múltiple, verificar todas las opciones
+              const correctLabels = q.options.map((o: any, j: number) => o.correct ? String.fromCharCode(65 + j) : '').filter(Boolean)
+              const detectedLabels = (aiAnswer?.detected || '').split(',').map((l: string) => l.trim().toUpperCase()).filter(Boolean)
+              if (correctLabels.length === detectedLabels.length && correctLabels.every((l: string) => detectedLabels.includes(l))) {
+                aiCorrect++
+                bd.ms.correct++
+              }
+            } else if (q.type === 'des') {
+              bd.des.total++
+            }
+          }
+          
+          // 🆕 SIEMPRE actualizar con respuestas de IA si detectó respuestas
+          // La IA es más confiable que Tesseract para detectar marcas V/F
+          console.log(`[AI Analysis] Total correctas: ${aiCorrect}/${questions.length}, Confianza: ${analysis.confidence}%`)
+          
+          if (hasAnswers) {
+            setScore(aiCorrect)
+            setBreakdown(bd)
+            const qTot = questions.length
+            const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints : qTot
+            const pts = qTot > 0 ? Math.round((aiCorrect / qTot) * totalPts) : 0
+            setEditScore(pts)
+            console.log(`[AI Analysis] ✅ Score actualizado: ${aiCorrect} correctas = ${pts} pts`)
+          }
+        }
+        
+        console.log('[AI Analysis] Resultado:', analysis)
+      }
+    } catch (err) {
+      console.warn('[AI Analysis] Error:', err)
+    } finally {
+      setAnalyzingWithAI(false)
+    }
+  }, [test?.questions, students])
 
   // 💾 NUEVO: Guardar todas las calificaciones preliminares y enviar notificaciones
   const saveAllPreliminaryGrades = useCallback(async () => {
@@ -639,25 +1491,69 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       
       const baseTimestamp = Date.now()
       let savedCount = 0
+      let totalEmailsSent = 0
       
       for (let i = 0; i < preliminaryGrades.length; i++) {
         const grade = preliminaryGrades[i]
         if (grade.saved) continue // Ya guardada
         
-        const { studentName, studentId, studentInfo, score, pct, pts } = grade
+        const { studentName, studentId, studentInfo, score, pct, pts, hasAnswers } = grade
+        
+        // 🆕 Si no tiene respuestas detectadas, saltar (para evitar emails duplicados)
+        if (!hasAnswers) {
+          console.log(`[SaveGrades] ⏩ Saltando ${studentName}: sin respuestas detectadas`)
+          continue
+        }
+        
+        console.log(`[SaveGrades] 📝 Procesando ${studentName}...`, {
+          hasStudentInfo: !!studentInfo,
+          studentId,
+          hasAnswers
+        })
+        
+        // 🆕 Obtener ID efectivo ANTES de guardar (buscando por nombre si es necesario)
+        let effectiveStudentId = studentId || studentInfo?.id || studentInfo?.username
+        
+        if (!effectiveStudentId && studentName) {
+          try {
+            const savedYear = Number(localStorage.getItem('admin-selected-year') || '')
+            const currentYear = Number.isFinite(savedYear) && savedYear > 0 ? savedYear : new Date().getFullYear()
+            const studentsForYear = JSON.parse(localStorage.getItem(`smart-student-students-${currentYear}`) || '[]')
+            
+            const normalizedSearchName = studentName.toLowerCase().trim()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            
+            const foundStudent = studentsForYear.find((s: any) => {
+              const displayName = (s.displayName || s.name || s.username || '').toLowerCase().trim()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              return displayName === normalizedSearchName || 
+                     displayName.includes(normalizedSearchName) ||
+                     normalizedSearchName.includes(displayName)
+            })
+            
+            if (foundStudent) {
+              effectiveStudentId = foundStudent.id || foundStudent.username
+              console.log(`[SaveGrades] ✅ Estudiante encontrado por nombre en búsqueda inicial: ${foundStudent.displayName || foundStudent.username} (ID: ${effectiveStudentId})`)
+            }
+          } catch (err) {
+            console.error('[SaveGrades] ❌ Error buscando estudiante en búsqueda inicial:', err)
+          }
+        }
         
         // 1) Guardar calificación en localStorage (TestGrades)
-        if (studentInfo || studentId) {
+        // ⚠️ skipEmail=true porque el email se envía más abajo en esta misma función
+        if (effectiveStudentId) {
           try {
             upsertTestGrade({
               testId: test?.id || '',
-              studentId: String(studentId || studentInfo?.id || studentInfo?.username || ''),
+              studentId: String(effectiveStudentId),
               studentName: studentInfo?.displayName || studentInfo?.username || studentName || '',
               score: pct,
               courseId: test?.courseId || null,
               sectionId: test?.sectionId || null,
               subjectId: test?.subjectId || null,
               title: test?.title || '',
+              skipEmail: true, // ⚠️ Evitar duplicación de email
             })
           } catch (e) {
             console.warn(`[SaveGrades] No se pudo guardar nota de ${studentName}:`, e)
@@ -669,7 +1565,7 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
           testId: test?.id || '',
           uploadedAt: baseTimestamp + (i * 1000),
           studentName: studentName || '',
-          studentId: studentId || null,
+          studentId: effectiveStudentId || null,
           courseId: test?.courseId || null,
           sectionId: test?.sectionId || null,
           subjectId: test?.subjectId || null,
@@ -682,12 +1578,12 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
           rawPercent: pct,
           sameDocument: true,
           coverage: 0.8,
-          studentFound: !!studentInfo,
+          studentFound: !!effectiveStudentId,
         }
         
         const normName = normalize(studentName)
         const idx = reviewList.findIndex(r => 
-          (r.studentId && studentId && r.studentId === studentId) || 
+          (r.studentId && effectiveStudentId && r.studentId === effectiveStudentId) || 
           normalize(r.studentName || '') === normName
         )
         if (idx >= 0) {
@@ -697,25 +1593,107 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
         }
         
         // 3) Enviar notificación por email al estudiante y apoderado
-        if (studentId) {
+        // Ya tenemos effectiveStudentId calculado arriba
+        
+        if (effectiveStudentId) {
           try {
-            // Obtener nombre del curso/sección
+            // Obtener información del estudiante y apoderados con sus emails
+            const savedYear = Number(localStorage.getItem('admin-selected-year') || '')
+            const currentYear = Number.isFinite(savedYear) && savedYear > 0 ? savedYear : new Date().getFullYear()
+            
             let courseDisplayName = ''
+            let studentEmail = ''
+            const guardiansToNotify: Array<{ id: string; email: string; name: string }> = []
+            
+            console.log(`[SaveGrades] 🔍 Procesando notificaciones para: ${studentName} (ID: ${effectiveStudentId})`)
+            
             try {
-              const savedYear = Number(localStorage.getItem('admin-selected-year') || '')
-              const currentYear = Number.isFinite(savedYear) && savedYear > 0 ? savedYear : new Date().getFullYear()
               const studentsForYear = JSON.parse(localStorage.getItem(`smart-student-students-${currentYear}`) || '[]')
-              const studentData = studentsForYear.find((s: any) => String(s.id) === String(studentId) || String(s.username) === String(studentId))
-              if (studentData) {
-                courseDisplayName = `${studentData.course || ''} ${studentData.section || ''}`.trim()
+              console.log(`[SaveGrades] 📚 Total estudiantes en año ${currentYear}:`, studentsForYear.length)
+              
+              // Buscar por ID primero
+              let studentData = studentsForYear.find((s: any) => 
+                String(s.id) === String(effectiveStudentId) || 
+                String(s.username) === String(effectiveStudentId)
+              )
+              
+              // Si no se encuentra por ID, buscar por nombre normalizado
+              if (!studentData && studentName) {
+                const normalizedSearchName = studentName.toLowerCase().trim()
+                  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                studentData = studentsForYear.find((s: any) => {
+                  const displayName = (s.displayName || s.name || s.username || '').toLowerCase().trim()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                  return displayName === normalizedSearchName || 
+                         displayName.includes(normalizedSearchName) ||
+                         normalizedSearchName.includes(displayName)
+                })
+                if (studentData) {
+                  console.log(`[SaveGrades] ✅ Estudiante encontrado por nombre en notificaciones: ${studentData.displayName || studentData.username}`)
+                }
               }
-            } catch {}
+              
+              if (studentData) {
+                console.log(`[SaveGrades] ✅ Datos del estudiante encontrados para ${studentName}:`, {
+                  id: studentData.id,
+                  username: studentData.username,
+                  email: studentData.email,
+                  displayName: studentData.displayName
+                })
+                
+                courseDisplayName = `${studentData.course || ''} ${studentData.section || ''}`.trim()
+                studentEmail = studentData.email || ''
+                
+                if (!studentEmail) {
+                  console.warn(`[SaveGrades] ⚠️ Estudiante ${studentName} NO tiene email registrado`)
+                } else {
+                  console.log(`[SaveGrades] 📧 Email del estudiante: ${studentEmail}`)
+                }
+                
+                // Buscar apoderados de este estudiante
+                const guardians = JSON.parse(localStorage.getItem(`smart-student-guardians-${currentYear}`) || '[]')
+                console.log(`[SaveGrades] 👨‍👩‍👧 Total apoderados en sistema:`, guardians.length)
+                
+                const studentGuardians = guardians.filter((g: any) => 
+                  g.studentIds?.includes(effectiveStudentId) || 
+                  g.studentIds?.includes(studentData.id) ||
+                  g.studentIds?.includes(studentData.username) ||
+                  g.students?.some((s: any) => 
+                    String(s.id || s) === String(effectiveStudentId) ||
+                    String(s.id || s) === String(studentData.id) ||
+                    String(s.id || s) === String(studentData.username)
+                  )
+                )
+                
+                console.log(`[SaveGrades] 👨‍👩‍👧 Apoderados encontrados para ${studentName}:`, studentGuardians.length)
+                
+                studentGuardians.forEach((g: any) => {
+                  if (g.email && g.id) {
+                    guardiansToNotify.push({
+                      id: g.id,
+                      email: g.email,
+                      name: g.displayName || g.name || g.username || 'Apoderado'
+                    })
+                    console.log(`[SaveGrades] 📧 Apoderado: ${g.displayName || g.username} (${g.email})`)
+                  } else {
+                    console.warn(`[SaveGrades] ⚠️ Apoderado sin email:`, g.displayName || g.username)
+                  }
+                })
+              } else {
+                console.warn(`[SaveGrades] ❌ No se encontró estudiante con ID: ${effectiveStudentId} o nombre: ${studentName}`)
+              }
+            } catch (err) {
+              console.error('[SaveGrades] ❌ Error buscando datos del estudiante:', err)
+            }
+            
             if (!courseDisplayName) {
-              const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]')
-              const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]')
-              const sec = sections.find((s: any) => String(s.id) === String(test?.sectionId))
-              const course = courses.find((c: any) => String(c.id) === String(sec?.courseId))
-              courseDisplayName = `${course?.name || ''} ${sec?.name || ''}`.trim()
+              try {
+                const sections = JSON.parse(localStorage.getItem('smart-student-sections') || '[]')
+                const courses = JSON.parse(localStorage.getItem('smart-student-courses') || '[]')
+                const sec = sections.find((s: any) => String(s.id) === String(test?.sectionId))
+                const course = courses.find((c: any) => String(c.id) === String(sec?.courseId))
+                courseDisplayName = `${course?.name || ''} ${sec?.name || ''}`.trim()
+              } catch {}
             }
             
             // Mensaje motivacional
@@ -725,43 +1703,84 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
             else if (pct >= 50) motivationalMsg = '💪 ¡Sigue esforzándote! Puedes mejorar.'
             else motivationalMsg = '📚 No te desanimes, con práctica mejorarás.'
             
-            const recipientIds: string[] = [studentId]
-            // Buscar apoderados
-            try {
-              const savedYear = Number(localStorage.getItem('admin-selected-year') || '')
-              const currentYear = Number.isFinite(savedYear) && savedYear > 0 ? savedYear : new Date().getFullYear()
-              const guardians = JSON.parse(localStorage.getItem(`smart-student-guardians-${currentYear}`) || '[]')
-              const studentGuardians = guardians.filter((g: any) => 
-                g.studentIds?.includes(studentId) || 
-                g.students?.some((s: any) => String(s.id || s) === String(studentId))
-              )
-              studentGuardians.forEach((g: any) => {
-                if (g.id && !recipientIds.includes(g.id)) recipientIds.push(g.id)
-              })
-            } catch {}
+            const emailContent = {
+              title: `📊 Nueva calificación: ${test?.title || 'Prueba'}`,
+              content: `${studentName} obtuvo ${pts} pts (${pct}%) en la prueba "${test?.title || 'Prueba'}" de ${courseDisplayName}. ${motivationalMsg}`,
+              courseName: courseDisplayName,
+              taskTitle: test?.title || 'Prueba',
+              grade: pct,
+              feedback: `Puntaje: ${pts}/${totalPts} pts (${pct}%)`,
+            }
             
-            // Enviar email a cada destinatario
-            for (const recipientId of recipientIds) {
+            // Enviar email directamente al estudiante
+            if (studentEmail) {
               try {
-                await sendEmailOnNotification({
-                  userId: recipientId,
-                  type: 'grade_published',
-                  title: `📊 Nueva calificación: ${test?.title || 'Prueba'}`,
-                  body: `${studentName} obtuvo ${pts} pts (${pct}%) en la prueba "${test?.title || 'Prueba'}" de ${courseDisplayName}. ${motivationalMsg}`,
-                  data: {
-                    testId: test?.id,
-                    studentId,
-                    grade: pct,
-                    feedback: `Puntaje: ${pts}/${totalPts} pts (${pct}%)`,
-                  }
+                await fetch('/api/notifications/send-email', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    from: 'notificaciones@smartstudent.online',
+                    to: studentEmail,
+                    toName: studentName || 'Estudiante',
+                    subject: `📊 Nueva calificación: ${test?.title || 'Prueba'}`,
+                    type: 'grade_published',
+                    title: emailContent.title,
+                    content: emailContent.content,
+                    metadata: {
+                      courseName: emailContent.courseName,
+                      taskTitle: emailContent.taskTitle,
+                      grade: emailContent.grade,
+                      feedback: emailContent.feedback
+                    }
+                  })
                 })
+                console.log(`[SaveGrades] ✅ Email enviado a estudiante: ${studentEmail}`)
               } catch (emailErr) {
-                console.warn(`[SaveGrades] Error enviando email a ${recipientId}:`, emailErr)
+                console.warn(`[SaveGrades] Error enviando email a estudiante:`, emailErr)
               }
             }
+            
+            // Enviar email a cada apoderado
+            for (const guardian of guardiansToNotify) {
+              try {
+                await fetch('/api/notifications/send-email', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    from: 'notificaciones@smartstudent.online',
+                    to: guardian.email,
+                    toName: guardian.name,
+                    subject: `📊 Nueva calificación de ${studentName}: ${test?.title || 'Prueba'}`,
+                    type: 'grade_published',
+                    title: emailContent.title,
+                    content: emailContent.content,
+                    metadata: {
+                      courseName: emailContent.courseName,
+                      taskTitle: emailContent.taskTitle,
+                      grade: emailContent.grade,
+                      feedback: emailContent.feedback
+                    }
+                  })
+                })
+                console.log(`[SaveGrades] ✅ Email enviado a apoderado: ${guardian.email}`)
+              } catch (emailErr) {
+                console.warn(`[SaveGrades] Error enviando email a apoderado:`, emailErr)
+              }
+            }
+            
+            const totalEmails = (studentEmail ? 1 : 0) + guardiansToNotify.length
+            totalEmailsSent += totalEmails
+            if (totalEmails > 0) {
+              console.log(`[SaveGrades] ✅ Total de ${totalEmails} email(s) enviado(s) para ${studentName}`)
+            } else {
+              console.warn(`[SaveGrades] ⚠️ No se encontraron emails para ${studentName}`)
+            }
+            
           } catch (notifErr) {
             console.warn(`[SaveGrades] Error con notificaciones de ${studentName}:`, notifErr)
           }
+        } else {
+          console.warn(`[SaveGrades] ⚠️ No se pudo enviar email para ${studentName}: sin ID de estudiante`)
         }
         
         savedCount++
@@ -778,8 +1797,15 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       setPreliminaryGrades(prev => prev.map(g => ({ ...g, saved: true })))
       
       // Mostrar mensaje de éxito
-      setOcr({ text: `✅ ${savedCount} calificaciones guardadas y notificaciones enviadas exitosamente.` })
-      setStatusModal({ type: 'success', message: `✅ ${savedCount} calificaciones guardadas.\n📧 Notificaciones enviadas a estudiantes y apoderados.` })
+      const emailsMsg = totalEmailsSent > 0 
+        ? `\n📧 ${totalEmailsSent} notificaciones por email enviadas.` 
+        : '\n⚠️ No se enviaron emails (verifique que los estudiantes tengan email registrado).'
+      
+      setOcr({ text: `✅ ${savedCount} calificaciones guardadas exitosamente.${emailsMsg}` })
+      setStatusModal({ 
+        type: 'success', 
+        message: `✅ ${savedCount} calificaciones guardadas.${emailsMsg}` 
+      })
       
     } catch (err: any) {
       console.error('[SaveGrades] Error:', err)
@@ -793,6 +1819,12 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
     const f = e.target.files?.[0]
     if (!f) return
     setFile(f)
+  }
+
+  const handleKeyFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setKeyFile(f)
   }
 
   // ====== Exportación / Importación Excel ======
@@ -928,6 +1960,7 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
           sectionId: test.sectionId || null,
           subjectId: test.subjectId || null,
           title: test.title || '',
+          skipEmail: true, // ⚠️ Carga masiva manual - no enviar emails automáticamente
         })
         // Historial: si ya existe registro para el estudiante, sobrescribir último; si no, crear nuevo.
         const normName = normalize(studentName)
@@ -1013,10 +2046,44 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
             <span className="text-sm text-muted-foreground truncate">
               {file?.name || translate('testsReviewNoFile')}
             </span>
+
+            {/* 🆕 Selector opcional de pauta/revisada (para corregir contra la pauta real del PDF) */}
+            <input
+              id="review-key-file-input"
+              type="file"
+              accept="application/pdf,image/*"
+              onChange={handleKeyFile}
+              className="hidden"
+              ref={keyUploadInputRef}
+              aria-label="Seleccionar pauta (opcional)"
+            />
+            <label
+              htmlFor="review-key-file-input"
+              className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium bg-transparent text-fuchsia-300 hover:text-fuchsia-200 hover:border-fuchsia-300 cursor-pointer"
+              title="Seleccionar pauta / versión revisada (opcional)"
+            >
+              Pauta
+            </label>
+            {keyFile?.name && (
+              <span className="text-xs text-muted-foreground truncate max-w-[220px]" title={keyFile.name}>
+                {keyFile.name}
+              </span>
+            )}
+
             {/* Ejecutar OCR */}
-            <Button onClick={runOCR} disabled={!file || processing}>
-              {processing ? translate('testsReviewProcessing') : translate('testsReviewRunOCR')}
+            <Button onClick={runOCR} disabled={!file || processing || analyzingWithAI}>
+              {processing ? translate('testsReviewProcessing') : analyzingWithAI ? '🤖 Analizando con IA...' : translate('testsReviewRunOCR')}
             </Button>
+            {/* 🆕 Indicador de progreso OCR */}
+            {ocrProgress && (
+              <span className="text-xs font-medium text-blue-600 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-1 rounded-full animate-pulse">
+                {Math.round((ocrProgress.current / ocrProgress.total) * 100)}% ({ocrProgress.current}/{ocrProgress.total})
+              </span>
+            )}
+            {/* Indicador de análisis con IA */}
+            {analyzingWithAI && (
+              <span className="text-xs text-fuchsia-600 animate-pulse">🤖 Validando respuestas con Gemini...</span>
+            )}
             {/* Acciones Excel alineadas a la derecha */}
             <div className="ml-auto flex gap-2 items-center">
               <Button
@@ -1071,190 +2138,56 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
                   {verification.studentFound ? translate('testsReviewStudentInSection') : translate('testsReviewStudentNotInSection')}
                 </span>
               </div>
-              <div className="text-sm flex items-center gap-3 flex-wrap">
-                <div>
-                  <span className="font-medium">{translate('testsReviewScore')}</span>
-                  {(() => {
-                    const qTotal = test?.questions?.length || 0
-                    const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints : qTotal
-                    const pct = typeof score === 'number' && qTotal > 0 ? Math.round((score / qTotal) * 100) : null
-                    const pts = typeof score === 'number' && qTotal > 0 ? Math.round((score / qTotal) * totalPts) : null
-                    const badgeClass = typeof pct === 'number'
-                      ? pct >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      : 'bg-gray-100 text-gray-600'
-                    return (
-                      <span className={`ml-2 px-2 py-1 rounded text-sm font-medium ${badgeClass}`}>
-                        {typeof pts === 'number' ? `${pts} pts${pct !== null ? ` (${pct}%)` : ''}` : 'No calculado'}
-                      </span>
-                    )
-                  })()}
-                  {/* Distribución por tipo */}
-                  {breakdown && (
-                    <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">
-                      TF: {breakdown.tf.correct}/{breakdown.tf.total} · MC: {breakdown.mc.correct}/{breakdown.mc.total} · MS: {breakdown.ms.correct}/{breakdown.ms.total} · DES: {breakdown.des.correct}/{breakdown.des.total}
-                    </span>
-                  )}
+              {/* 🆕 Indicador de si el estudiante respondió */}
+              {verification.hasAnswers === false && (
+                <div className="flex items-center gap-2 text-xs bg-red-50 dark:bg-red-900/30 p-2 rounded border border-red-200 dark:border-red-800">
+                  <span className="text-red-600 dark:text-red-400">
+                    ❌ No se detectaron respuestas marcadas - El estudiante parece no haber respondido esta prueba
+                  </span>
                 </div>
-                {/* Editor de nota */}
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-muted-foreground">Editar puntaje (pts):</label>
-                  <Input
-                    type="number"
-                    className="h-8 w-24"
-          value={typeof editScore === 'number' ? editScore : ''}
-                    onChange={(e) => {
-                      const v = e.target.value
-                      if (v === '') return setEditScore(null)
-                      const num = Number(v)
-                      if (!Number.isNaN(num)) {
-            const qTot = Array.isArray(test?.questions) ? test!.questions.length : 0
-            const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints as number : qTot
-            const clamped = Math.max(0, Math.min(num, totalPts))
-                        setEditScore(clamped)
-                      }
-                    }}
-                    min={0}
-                    max={(() => { const qTot = Array.isArray(test?.questions) ? test!.questions.length : 0; const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints as number : qTot; return totalPts })()}
-                  />
-                  {/* Guardar cambios cuando ya hay estudiante detectado */}
-                  {verification.studentFound && typeof editScore === 'number' && (
-                    <Button size="sm" onClick={() => {
-                      if (!test?.id || !verification.studentId) return
-                      // Convertir puntos a respuestas correctas antes de guardar
-                      const qTot = Array.isArray(test?.questions) ? test!.questions.length : 0
-                      const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints as number : qTot
-                      const clampedPts = Math.max(0, Math.min(editScore, totalPts))
-                      const newCorrect = qTot > 0 ? Math.round((clampedPts / totalPts) * qTot) : 0
-                      // Guardar en porcentaje (0-100)
-                      upsertTestGrade({
-                        testId: test.id,
-                        studentId: String(verification.studentId),
-                        studentName: studentName || '',
-                        score: (qTot > 0 ? Math.round((Math.max(0, Math.min(newCorrect, qTot)) / qTot) * 100) : 0),
-                        courseId: test.courseId || null,
-                        sectionId: test.sectionId || null,
-                        subjectId: test.subjectId || null,
-                        title: test.title || '',
-                      })
-                      // Actualizar UI e historial
-                      setScore(newCorrect)
-                      setEditScore(clampedPts)
-                      try {
-                        updateLatestReviewScore({
-                          testId: test.id,
-                          studentId: String(verification.studentId),
-                          studentName: studentName || '',
-                          newScore: newCorrect,
-                          totalQuestions: Array.isArray(test?.questions) ? test.questions.length : null,
-                        })
-                        // Refrescar historial local inmediatamente
-                        const key = getReviewKey(test.id)
-                        const raw = localStorage.getItem(key)
-                        if (raw) {
-                          try {
-                            const arr: ReviewRecord[] = JSON.parse(raw)
-                            // Buscar último registro del estudiante por id o nombre y guardar rawPoints exactos
-                            const normName = normalize(studentName || '')
-                            const idx = arr.findIndex(r => (r.studentId && String(r.studentId) === String(verification.studentId)) || normalize(r.studentName) === normName)
-                            if (idx >= 0) {
-                              const tPts = (arr[idx].totalPoints ?? (test as any)?.totalPoints ?? qTot) as number
-                              arr[idx] = { ...arr[idx], rawPoints: clampedPts, totalPoints: tPts }
-                              localStorage.setItem(key, JSON.stringify(arr))
-                            }
-                            setHistory(JSON.parse(localStorage.getItem(key) || '[]'))
-                          } catch {
-                            setHistory(JSON.parse(raw))
-                          }
-                        }
-                      } catch {}
-                    }}>Guardar nota</Button>
+              )}
+              {/* 🆕 Resultado del análisis con IA */}
+              {aiAnalysis && (
+                <div className="text-xs bg-fuchsia-50 dark:bg-fuchsia-900/30 p-2 rounded border border-fuchsia-200 dark:border-fuchsia-800">
+                  <div className="font-medium text-fuchsia-700 dark:text-fuchsia-300 mb-1">🤖 Análisis IA (Gemini):</div>
+                  <div className="flex flex-wrap gap-2">
+                    <span>Confianza: <strong>{aiAnalysis.confidence || 0}%</strong></span>
+                    {aiAnalysis.hasAnswers === false && (
+                      <span className="text-red-600">⚠️ Sin respuestas detectadas</span>
+                    )}
+                    {aiAnalysis.studentDetected && (
+                      <span>Estudiante detectado: <strong>{aiAnalysis.studentDetected}</strong></span>
+                    )}
+                  </div>
+                  {aiAnalysis.observations && (
+                    <div className="mt-1 text-muted-foreground italic">{aiAnalysis.observations}</div>
                   )}
-                </div>
-              </div>
-              {!verification.studentFound && students.length > 0 && typeof editScore === 'number' && (
-                <div className="flex items-center gap-2 pt-2">
-                  <div className="text-xs">{translate('testsReviewAssignManual') || 'Asignar manualmente:'}</div>
-                  <Select value={manualAssignId} onValueChange={setManualAssignId}>
-                    <SelectTrigger className="h-8 w-60">
-                      <SelectValue placeholder={translate('testsReviewSelectStudent') || 'Seleccionar estudiante'} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {students
-                        .map(s => ({ s, sim: similarityByTokens(studentName || '', s.displayName || s.username || '') }))
-                        .sort((a, b) => b.sim - a.sim)
-                        .slice(0, 8)
-                        .map(({ s }) => (
-                          <SelectItem key={String(s.id || s.username)} value={String(s.id || s.username)}>
-                            {s.displayName || s.username}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                  <Button size="sm" disabled={!manualAssignId} onClick={() => {
-                    const chosen = students.find(s => String(s.id) === manualAssignId || String(s.username) === manualAssignId)
-                    if (!chosen || typeof editScore !== 'number' || !test?.id) return
-                    // Convertimos puntos a respuestas correctas antes de guardar
-                    const qTot = Array.isArray(test?.questions) ? test!.questions.length : 0
-                    const totalPts = typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints as number : qTot
-                    const clampedPts = Math.max(0, Math.min(editScore, totalPts))
-                    const newCorrect = qTot > 0 ? Math.round((clampedPts / totalPts) * qTot) : 0
-                    // Guardar en porcentaje (0-100)
-                    upsertTestGrade({
-                      testId: test.id,
-                      studentId: String(chosen.id || chosen.username),
-                      studentName: chosen.displayName || chosen.username,
-                      score: (qTot > 0 ? Math.round((Math.max(0, Math.min(newCorrect, qTot)) / qTot) * 100) : 0),
-                      courseId: test.courseId || null,
-                      sectionId: test.sectionId || null,
-                      subjectId: test.subjectId || null,
-                      title: test.title || '',
-                    })
-                    setVerification(v => ({ ...v, studentFound: true, studentId: String(chosen.id || chosen.username) }))
-                    setStudentName(chosen.displayName || chosen.username)
-                    setScore(newCorrect)
-                    setEditScore(clampedPts)
-                    try {
-                      // Si no existe historial previo del estudiante, crear un nuevo registro;
-                      // si existe, actualizar su último registro
-                      const key = getReviewKey(test.id)
-                      const list: ReviewRecord[] = JSON.parse(localStorage.getItem(key) || '[]')
-                      const existsForStudent = Array.isArray(list) && list.some(r => {
-                        const sidOk = r.studentId && String(r.studentId) === String(chosen.id || chosen.username)
-                        const nameOk = normalize(r.studentName || '') === normalize(chosen.displayName || chosen.username || '')
-                        return sidOk || nameOk
-                      })
-                      if (existsForStudent) {
-                        updateLatestReviewScore({
-                          testId: test.id,
-                          studentId: String(chosen.id || chosen.username),
-                          studentName: chosen.displayName || chosen.username,
-                          newScore: newCorrect,
-                          totalQuestions: Array.isArray(test?.questions) ? test.questions.length : null,
-                        })
-                      } else {
-                        persistReview({
-                          testId: test.id,
-                          uploadedAt: Date.now(),
-                          studentName: chosen.displayName || chosen.username,
-                          studentId: String(chosen.id || chosen.username),
-                          courseId: test.courseId || null,
-                          sectionId: test.sectionId || null,
-                          subjectId: test.subjectId || null,
-                          subjectName: test.subjectName || null,
-                          topic: test.topic || '',
-                          score: newCorrect,
-                          totalQuestions: Array.isArray(test?.questions) ? test.questions.length : null,
-                          totalPoints: typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints : (Array.isArray(test?.questions) ? test?.questions.length : null),
-                          rawPoints: clampedPts,
-                          sameDocument: false,
-                          coverage: 0,
-                          studentFound: true,
-                        })
-                      }
-                      const raw = localStorage.getItem(key)
-                      if (raw) setHistory(JSON.parse(raw))
-                    } catch {}
-                  }}>{translate('save') || 'Guardar'}</Button>
+                  {/* 🆕 Detalle de respuestas V/F detectadas */}
+                  {aiAnalysis.answers && Array.isArray(aiAnalysis.answers) && aiAnalysis.answers.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-fuchsia-200 dark:border-fuchsia-700">
+                      <div className="font-medium mb-1">Respuestas detectadas por IA:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {aiAnalysis.answers.map((ans: any, idx: number) => {
+                          const q = test?.questions?.[idx] as any
+                          const correct = q?.type === 'tf' ? (q.answer ? 'V' : 'F') : 
+                                          q?.type === 'mc' ? String.fromCharCode(65 + (q.correctIndex || 0)) : '?'
+                          const isCorrect = ans.detected?.toUpperCase() === correct
+                          return (
+                            <span
+                              key={idx}
+                              className={`px-1.5 py-0.5 rounded text-xs ${
+                                !ans.detected ? 'bg-gray-200 text-gray-600' :
+                                isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                              }`}
+                              title={`Pregunta ${ans.questionNum}: Detectada=${ans.detected || 'ninguna'}, Correcta=${correct}`}
+                            >
+                              #{ans.questionNum}: {ans.detected || '-'} {!ans.detected ? '❓' : isCorrect ? '✅' : '❌'}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               <details className="text-xs text-muted-foreground">
@@ -1269,11 +2202,11 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
             <div className="border-2 border-amber-400 rounded-md p-3 space-y-3 bg-amber-50 dark:bg-amber-950/30">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                  📋 Calificaciones Preliminares ({preliminaryGrades.length} estudiantes)
+                  📋 Calificaciones Preliminares ({preliminaryGrades.filter(g => g.hasAnswers !== false).length} estudiantes)
                 </div>
                 <Button 
                   onClick={saveAllPreliminaryGrades} 
-                  disabled={savingGrades || preliminaryGrades.every(g => g.saved)}
+                  disabled={savingGrades || preliminaryGrades.every(g => g.saved) || preliminaryGrades.filter(g => g.hasAnswers !== false).length === 0}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   {savingGrades ? '⏳ Guardando...' : '💾 Guardar Calificaciones y Notificar'}
@@ -1285,31 +2218,45 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
               <table className="w-full text-xs">
                 <thead className="text-muted-foreground">
                   <tr>
-                    <th className="text-left py-1 pr-2">Estudiante</th>
-                    <th className="text-center py-1 pr-2">Correctas</th>
-                    <th className="text-center py-1 pr-2">Puntos</th>
-                    <th className="text-center py-1 pr-2">Porcentaje</th>
-                    <th className="text-center py-1">Estado</th>
+                    <th className="text-left py-1 pr-2" style={{ width: '20%' }}>Estudiante</th>
+                    <th className="text-center py-1 px-2" style={{ width: '10%' }}>Correctas</th>
+                    <th className="text-center py-1 px-2" style={{ width: '10%' }}>Respondidas</th>
+                    <th className="text-center py-1 px-2" style={{ width: '10%' }}>Puntos</th>
+                    <th className="text-center py-1 px-2" style={{ width: '8%' }}>%</th>
+                    <th className="text-left py-1 px-2" style={{ width: '27%' }}>Respuestas Detectadas</th>
+                    <th className="text-center py-1" style={{ width: '15%' }}>Estado</th>
                   </tr>
                 </thead>
                 <tbody>
                   {preliminaryGrades.map((g, idx) => {
-                    const totalQuestions = test?.questions?.length || 0
+                    const questionsInOCR = g.questionsInOCR || 0
+                    const hasAnswers = g.hasAnswers !== false
+                    // 🆕 Calcular cuántas respondió (no vacías)
+                    const answeredCount = g.detectedAnswers?.filter(a => a.detected !== null && a.detected !== undefined).length || 0
                     return (
-                    <tr key={idx} className="border-t">
+                    <tr key={idx} className={`border-t ${!hasAnswers ? 'opacity-60 bg-gray-100 dark:bg-gray-800/50' : ''}`}>
                       <td className="py-1 pr-2">
                         <span className={g.studentInfo ? 'text-green-700' : 'text-amber-600'}>
                           {g.studentInfo ? '✅' : '⚠️'} {g.studentName || 'Sin nombre'}
                         </span>
+                        {!hasAnswers && <span className="ml-2 text-red-500 text-xs">(Sin respuestas)</span>}
                       </td>
-                      <td className="py-1 pr-2 text-center">
-                        <span className="font-mono">{g.score}/{totalQuestions}</span>
+                      <td className="py-1 px-2 text-center">
+                        <span className="font-mono text-green-700 dark:text-green-400" title="Respuestas correctas / Total de preguntas">
+                          {hasAnswers ? `${g.score}/${questionsInOCR}` : '-'}
+                        </span>
                       </td>
-                      <td className="py-1 pr-2 text-center">
+                      {/* 🆕 Nueva columna: Respondidas */}
+                      <td className="py-1 px-2 text-center">
+                        <span className="font-mono text-blue-700 dark:text-blue-400" title="Preguntas respondidas / Total de preguntas">
+                          {hasAnswers ? `${answeredCount}/${questionsInOCR}` : '-'}
+                        </span>
+                      </td>
+                      <td className="py-1 px-2 text-center">
                         <Input
                           type="number"
-                          className="h-6 w-16 text-xs text-center"
-                          value={g.pts}
+                          className="h-6 w-16 text-xs text-center mx-auto"
+                          value={hasAnswers ? g.pts : 0}
                           onChange={(e) => {
                             const newPts = Math.max(0, Math.min(Number(e.target.value) || 0, 
                               typeof (test as any)?.totalPoints === 'number' ? (test as any).totalPoints : (test?.questions?.length || 100)
@@ -1319,21 +2266,55 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
                             const newPct = totalPts > 0 ? Math.round((newPts / totalPts) * 100) : 0
                             const newScore = qTot > 0 ? Math.round((newPts / totalPts) * qTot) : 0
                             setPreliminaryGrades(prev => prev.map((p, i) => 
-                              i === idx ? { ...p, pts: newPts, pct: newPct, score: newScore } : p
+                              i === idx ? { ...p, pts: newPts, pct: newPct, score: newScore, hasAnswers: newPts > 0 || p.hasAnswers } : p
                             ))
                           }}
                           min={0}
                           disabled={g.saved}
                         />
                       </td>
-                      <td className="py-1 pr-2 text-center">
-                        <span className={`px-2 py-0.5 rounded ${g.pct >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {g.pct}%
-                        </span>
+                      <td className="py-1 px-2 text-center">
+                        {hasAnswers ? (
+                          <span className={`px-2 py-0.5 rounded ${g.pct >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {g.pct}%
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      {/* 🆕 Columna de respuestas detectadas */}
+                      <td className="py-1 px-2 text-left">
+                        {g.detectedAnswers && g.detectedAnswers.length > 0 ? (
+                          <div className="flex flex-wrap gap-0.5">
+                            {g.detectedAnswers.map((ans, ansIdx) => {
+                              const qIndex = ans.questionNum - 1
+                              const q = (test?.questions || [])[qIndex] as any
+                              const correctAnswer = q?.type === 'tf' ? (q.answer ? 'V' : 'F') : '?'
+                              const isCorrect = ans.detected?.toUpperCase() === correctAnswer
+                              const isEmpty = !ans.detected
+                              return (
+                                <span
+                                  key={ansIdx}
+                                  className={`px-1 py-0.5 rounded text-xs ${
+                                    isEmpty ? 'bg-gray-200 text-gray-500' :
+                                    isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                                  }`}
+                                  title={`P${ans.questionNum}: ${isEmpty ? 'Sin respuesta' : ans.detected} ${isEmpty ? '' : isCorrect ? '✅' : '❌'}`}
+                                >
+                                  {ans.questionNum}:{isEmpty ? '-' : ans.detected}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs">Sin datos</span>
+                        )}
                       </td>
                       <td className="py-1 text-center">
                         {g.saved ? (
                           <span className="text-green-600">✅ Guardado</span>
+                        ) : !hasAnswers ? (
+                          <span className="text-red-500">❌ Pendiente</span>
                         ) : (
                           <span className="text-amber-600">⏳ Pendiente</span>
                         )}
@@ -1792,77 +2773,181 @@ function autoGrade(text: string, questions: AnyQuestion[]): AutoGradeResult {
   const norm = normalize(text)
   const lines = raw.split(/\n+/)
   
-  // 🔍 DETECCIÓN MEJORADA DE MARCAS
-  // Las marcas pueden ser: X, cruz, círculo, raya, tachadura encima de la letra
-  // El OCR puede interpretar estas marcas de diferentes formas
+  // 🔍 DETECCIÓN ESTRICTA DE MARCAS
+  // Solo detectar marcas MUY CLARAS para evitar falsos positivos
+  // El problema anterior: patrones muy permisivos detectaban caracteres normales como marcas
   
-  // Símbolos que representan marcas de selección
-  const MARK_CHARS = 'xX✓✔●◉•■□▪▢◻◆▲☑☒✗✘╳'
-  const MARK_SCRIBBLE = MARK_CHARS + '-_/=|~*@#'
-  const escapedMarks = MARK_SCRIBBLE.replace(/[-\\^$.*+?()[\]{}|]/g, '\\$&')
-  const markClass = `[${escapedMarks}]`
-  
-  // 📌 NUEVA FUNCIÓN: Detectar qué alternativa tiene marca en una línea
-  // Busca patrones como: (X) A, A (X), [X] A, A [X], (A) con X encima, etc.
+  // 📌 FUNCIÓN MEJORADA: Detectar qué alternativa tiene marca en una línea
+  // Balance: Detectar marcas reales sin causar falsos positivos
   const detectMarkedOption = (line: string): string | null => {
     if (!line) return null
     const upper = line.toUpperCase()
     
-    // Patrones para detectar marca + letra de opción
-    // 1. Marca dentro de paréntesis seguido de letra: (X) A, [X] A
-    const markBeforeLetter = upper.match(new RegExp(`[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]\\s*([A-D])`, 'i'))
-    if (markBeforeLetter) return markBeforeLetter[1]
+    // MARCAS que OCR puede detectar para opciones múltiples
+    // Incluye variantes de ticks, X, círculos
+    const VALID_MARKS = 'X✓✔●◉☑☒✗✘O0/\\\\|V*·•-'
     
-    // 2. Letra seguida de marca en paréntesis: A (X), A [X]
-    const letterBeforeMark = upper.match(new RegExp(`([A-D])\\s*[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]`, 'i'))
-    if (letterBeforeMark) return letterBeforeMark[1]
-    
-    // 3. Letra con marca directamente: A X, XA, A-X (el estudiante tachó la letra)
-    const letterWithMark = upper.match(new RegExp(`([A-D])\\s*${markClass}+`, 'i'))
-    if (letterWithMark) return letterWithMark[1]
-    
-    // 4. Marca seguida de letra: X A, XA
-    const markWithLetter = upper.match(new RegExp(`${markClass}+\\s*([A-D])(?![A-Z])`, 'i'))
-    if (markWithLetter) return markWithLetter[1]
-    
-    // 5. Letra dentro de paréntesis con marca cercana: (A) X o X (A)
-    const letterInParenWithMark = upper.match(/\(\s*([A-D])\s*\)/i)
-    if (letterInParenWithMark && new RegExp(markClass, 'i').test(upper)) {
-      return letterInParenWithMark[1]
+    // 1. Buscar paréntesis con marca: A (X), A (✓), A (/)
+    for (const mark of VALID_MARKS) {
+      const escapedMark = mark.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      
+      // Letra seguida de paréntesis con marca: A (X)
+      const regex = new RegExp(`([A-D])\\s*\\(\\s*${escapedMark}\\s*\\)`, 'i')
+      const match = upper.match(regex)
+      if (match) return match[1]
+      
+      // Paréntesis con marca seguido de letra: (X) A
+      const regex2 = new RegExp(`\\(\\s*${escapedMark}\\s*\\)\\s*([A-D])`, 'i')
+      const match2 = upper.match(regex2)
+      if (match2) return match2[1]
     }
+    
+    // 2. Buscar paréntesis con contenido no vacío cerca de letra: A ( algo )
+    const letterWithContent = upper.match(/([A-D])\s*\(\s*([^\s\)]+)\s*\)/)
+    if (letterWithContent) return letterWithContent[1]
+    
+    const contentBeforeLetter = upper.match(/\(\s*([^\s\)]+)\s*\)\s*([A-D])/)
+    if (contentBeforeLetter) return contentBeforeLetter[2]
+    
+    // 3. Buscar corchetes con marca: A [X], [X] A
+    const bracketWithContent = upper.match(/([A-D])\s*\[\s*([^\s\]]+)\s*\]/)
+    if (bracketWithContent) return bracketWithContent[1]
+    
+    const contentBracketBeforeLetter = upper.match(/\[\s*([^\s\]]+)\s*\]\s*([A-D])/)
+    if (contentBracketBeforeLetter) return contentBracketBeforeLetter[2]
     
     return null
   }
   
-  // 📌 NUEVA FUNCIÓN: Detectar V o F marcado
+  // 📌 FUNCIÓN: Detectar V o F marcado en una línea
+  // Detecta marcas: 1) dentro del paréntesis V(X), 2) sobre/junto a la letra VX
   const detectMarkedTF = (line: string): 'V' | 'F' | null => {
     if (!line) return null
-    const upper = line.toUpperCase()
+    const lineUpper = line.toUpperCase()
     
-    // Patrones para V marcado
-    const vPatterns = [
-      new RegExp(`V\\s*[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]`, 'i'), // V (X), V [X]
-      new RegExp(`[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]\\s*V`, 'i'), // (X) V, [X] V
-      new RegExp(`V\\s*${markClass}+`, 'i'), // V X (marca al lado)
-      new RegExp(`${markClass}+\\s*V(?!ERD)`, 'i'), // X V (marca antes)
-    ]
+    // Solo procesar líneas que tengan V o F
+    if (!lineUpper.includes('V') && !lineUpper.includes('F')) return null
     
-    // Patrones para F marcado
-    const fPatterns = [
-      new RegExp(`F\\s*[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]`, 'i'), // F (X), F [X]
-      new RegExp(`[\\(\\[]\\s*${markClass}+\\s*[\\)\\]]\\s*F`, 'i'), // (X) F, [X] F
-      new RegExp(`F\\s*${markClass}+`, 'i'), // F X (marca al lado)
-      new RegExp(`${markClass}+\\s*F(?!ALS)`, 'i'), // X F (marca antes)
-    ]
+    // === CASO 1: Marca DENTRO del paréntesis ===
+    // Patrones muy flexibles para V(...) y F(...) con cualquier contenido
+    // Captura: V(X), V (X), V( X ), V (  X  ), etc.
+    const vContentMatch = lineUpper.match(/V\s*\(\s*([^\)]*)\s*\)/)
+    const fContentMatch = lineUpper.match(/F\s*\(\s*([^\)]*)\s*\)/)
     
-    const vMarked = vPatterns.some(p => p.test(upper))
-    const fMarked = fPatterns.some(p => p.test(upper))
+    const vContent = vContentMatch ? vContentMatch[1].trim() : ''
+    const fContent = fContentMatch ? fContentMatch[1].trim() : ''
     
-    // Si ambos están marcados (error del OCR), no podemos determinar
-    if (vMarked && fMarked) return null
-    if (vMarked) return 'V'
-    if (fMarked) return 'F'
+    // V tiene contenido no vacío, F está vacío o no existe
+    if (vContent.length > 0 && fContent.length === 0) {
+      console.log(`[detectMarkedTF] Detectado V con contenido: "${vContent}"`)
+      return 'V'
+    }
+    // F tiene contenido no vacío, V está vacío o no existe
+    if (fContent.length > 0 && vContent.length === 0) {
+      console.log(`[detectMarkedTF] Detectado F con contenido: "${fContent}"`)
+      return 'F'
+    }
+    
+    // Ambos tienen contenido - determinar cuál tiene marca real
+    if (vContent.length > 0 && fContent.length > 0) {
+      // Caracteres que son marcas válidas
+      const isMarkV = /^[X✓✔●◉☑☒✗✘O0\/\\|VY\-\*\(\)]+$/i.test(vContent)
+      const isMarkF = /^[X✓✔●◉☑☒✗✘O0\/\\|VY\-\*\(\)]+$/i.test(fContent)
+      if (isMarkV && !isMarkF) return 'V'
+      if (isMarkF && !isMarkV) return 'F'
+    }
+    
+    // === CASO 2: Marca directamente sobre V o F (sin paréntesis) ===
+    const markChars = '[X✓✔●◉☑☒✗✘O0\\/\\\\|\\-\\*xXoO]'
+    const vWithMark = new RegExp(`V\\s*${markChars}|${markChars}\\s*V(?![AE])`, 'i').test(lineUpper)
+    const fWithMark = new RegExp(`F\\s*${markChars}|${markChars}\\s*F(?![AUI])`, 'i').test(lineUpper)
+    
+    if (vWithMark && !fWithMark) return 'V'
+    if (fWithMark && !vWithMark) return 'F'
+    
     return null
+  }
+  
+  // 📌 NUEVO: Extraer TODAS las respuestas V/F del documento completo
+  // Busca TODOS los patrones V(...) y F(...) y los empareja secuencialmente
+  const extractAllTFResponses = (text: string): Array<'V' | 'F' | null> => {
+    const responses: Array<'V' | 'F' | null> = []
+    const upper = text.toUpperCase()
+    
+    // ESTRATEGIA PRINCIPAL: Buscar todos los V(...) y F(...) y emparejarlos
+    // Es más robusta que buscar pares en la misma línea
+    
+    // Buscar todas las ocurrencias de V(...) y F(...)
+    const vMatches: Array<{index: number, content: string}> = []
+    const fMatches: Array<{index: number, content: string}> = []
+    
+    const vPattern = /V\s*\(\s*([^\)]*)\s*\)/gi
+    const fPattern = /F\s*\(\s*([^\)]*)\s*\)/gi
+    
+    let vMatch
+    while ((vMatch = vPattern.exec(upper)) !== null) {
+      vMatches.push({ index: vMatch.index, content: vMatch[1].trim() })
+    }
+    
+    let fMatch
+    while ((fMatch = fPattern.exec(upper)) !== null) {
+      fMatches.push({ index: fMatch.index, content: fMatch[1].trim() })
+    }
+    
+    console.log('[extractAllTFResponses] V matches:', vMatches.length, vMatches.map(m => `"${m.content}"`))
+    console.log('[extractAllTFResponses] F matches:', fMatches.length, fMatches.map(m => `"${m.content}"`))
+    
+    // Emparejar V y F por proximidad (V siempre viene antes de F en cada pregunta)
+    let fIdx = 0
+    
+    for (const v of vMatches) {
+      // Buscar el F más cercano después de este V
+      while (fIdx < fMatches.length && fMatches[fIdx].index < v.index) {
+        fIdx++
+      }
+      if (fIdx < fMatches.length) {
+        const f = fMatches[fIdx]
+        const vContent = v.content
+        const fContent = f.content
+        
+        const vHasMark = vContent.length > 0
+        const fHasMark = fContent.length > 0
+        
+        console.log(`[extractAllTFResponses] Par: V("${vContent}") F("${fContent}")`)
+        
+        if (vHasMark && !fHasMark) {
+          responses.push('V')
+        } else if (fHasMark && !vHasMark) {
+          responses.push('F')
+        } else if (!vHasMark && !fHasMark) {
+          responses.push(null) // Sin respuesta
+        } else {
+          // Ambos tienen contenido - ver cuál es marca real
+          const isMarkV = /^[X✓✔●◉☑☒✗✘O0\/\\|VY\-\*]+$/i.test(vContent)
+          const isMarkF = /^[X✓✔●◉☑☒✗✘O0\/\\|VY\-\*]+$/i.test(fContent)
+          
+          if (isMarkV && !isMarkF) responses.push('V')
+          else if (isMarkF && !isMarkV) responses.push('F')
+          else responses.push(null)
+        }
+        
+        fIdx++ // Avanzar al siguiente F
+      }
+    }
+    
+    // Estrategia 2: Si no hay pares detectados, procesar línea por línea
+    if (responses.length === 0) {
+      const textLines = text.split(/\n+/)
+      for (const line of textLines) {
+        const result = detectMarkedTF(line)
+        if (result !== null) {
+          responses.push(result)
+        }
+      }
+    }
+    
+    console.log('[extractAllTFResponses] Total respuestas extraídas:', responses)
+    return responses
   }
   
   // 📌 BUSCAR PREGUNTAS POR NÚMERO
@@ -1899,6 +2984,13 @@ function autoGrade(text: string, questions: AnyQuestion[]): AutoGradeResult {
     ms: { correct: 0, total: 0 },
     des: { correct: 0, total: 0 },
   }
+  
+  // 🆕 PRE-EXTRAER todas las respuestas V/F del documento completo
+  // Esto funciona como respaldo cuando la búsqueda por contexto falla
+  const allTFResponses = extractAllTFResponses(raw)
+  let tfQuestionIndex = 0 // Índice para mapear respuestas extraídas a preguntas TF
+  
+  console.log('[AutoGrade] Respuestas V/F extraídas del documento:', allTFResponses)
   
   // Procesar preguntas una por una
   for (let qIdx = 0; qIdx < questions.length; qIdx++) {
@@ -1951,16 +3043,15 @@ function autoGrade(text: string, questions: AnyQuestion[]): AutoGradeResult {
         }
       }
       
-      // 3) Fallback: buscar cualquier V o F marcado
-      if (!detected) {
-        for (const line of lines) {
-          detected = detectMarkedTF(line)
-          if (detected) {
-            evidence++
-            break
-          }
+      // 3) RESPALDO: Usar las respuestas pre-extraídas del documento completo
+      if (!detected && tfQuestionIndex < allTFResponses.length) {
+        detected = allTFResponses[tfQuestionIndex]
+        if (detected) {
+          evidence++
+          console.log(`[TF #${qNum}] Usando respuesta pre-extraída: ${detected}`)
         }
       }
+      tfQuestionIndex++ // Avanzar al siguiente índice TF
       
       const isCorrectAnswer = detected === correctAnswer
       details.push({ questionNum: qNum, type: 'tf', detected, correct: correctAnswer, isCorrect: isCorrectAnswer })
@@ -2010,16 +3101,8 @@ function autoGrade(text: string, questions: AnyQuestion[]): AutoGradeResult {
         }
       }
       
-      // 3) Fallback: buscar cualquier opción marcada
-      if (!detected) {
-        for (const line of lines) {
-          detected = detectMarkedOption(line)
-          if (detected) {
-            evidence++
-            break
-          }
-        }
-      }
+      // ❌ ELIMINADO: Fallback que buscaba en TODAS las líneas (causaba falsos positivos)
+      // Si no encontramos marca clara en el contexto de la pregunta, NO asumir respuesta
       
       const isCorrectAnswer = detected?.toUpperCase() === correctLabel
       details.push({ questionNum: qNum, type: 'mc', detected, correct: correctLabel, isCorrect: isCorrectAnswer })
@@ -2222,7 +3305,7 @@ type TestGrade = {
   gradedAt: number
 }
 
-function upsertTestGrade(input: { testId: string; studentId: string; studentName: string; score: number; courseId: string | null; sectionId: string | null; subjectId: string | null; title?: string }) {
+function upsertTestGrade(input: { testId: string; studentId: string; studentName: string; score: number; courseId: string | null; sectionId: string | null; subjectId: string | null; title?: string; skipEmail?: boolean }) {
   try {
     const { LocalStorageManager } = require('@/lib/education-utils');
     const saved = Number(localStorage.getItem('admin-selected-year') || '');
@@ -2248,7 +3331,13 @@ function upsertTestGrade(input: { testId: string; studentId: string; studentName
     LocalStorageManager.setTestGradesForYear(year, list, { preferSession: true });
     try { window.dispatchEvent(new StorageEvent('storage', { key, newValue: JSON.stringify(list) })) } catch {}
     
-    // 📧 NUEVO: Enviar email al estudiante y apoderado cuando se califica una prueba
+    // 📧 Enviar email al estudiante y apoderado cuando se califica una prueba
+    // ⚠️ skipEmail=true cuando el email ya se envía desde otra función (ej: saveAllPreliminaryGrades)
+    if (input.skipEmail) {
+      console.log(`📧 [PRUEBA CALIFICADA] Email omitido (skipEmail=true) para ${input.studentName}`);
+      return;
+    }
+    
     try {
       const recipientIds: string[] = [input.studentId];
       

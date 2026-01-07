@@ -84,9 +84,11 @@ class EmailNotificationService {
 
   /**
    * Obtiene la información del usuario para enviar el email
+   * Busca en múltiples fuentes: usuarios generales, estudiantes y apoderados
    */
   getUserEmailInfo(userId: string): { email: string; name: string } | null {
     try {
+      // 1) Buscar en usuarios generales
       const storedUsers = localStorage.getItem('smart-student-users');
       if (storedUsers) {
         const users = JSON.parse(storedUsers);
@@ -98,6 +100,43 @@ class EmailNotificationService {
           };
         }
       }
+      
+      // 2) Buscar en estudiantes del año actual
+      const savedYear = Number(localStorage.getItem('admin-selected-year') || '');
+      const currentYear = Number.isFinite(savedYear) && savedYear > 0 ? savedYear : new Date().getFullYear();
+      
+      const storedStudents = localStorage.getItem(`smart-student-students-${currentYear}`);
+      if (storedStudents) {
+        const students = JSON.parse(storedStudents);
+        const student = students.find((s: any) => 
+          String(s.id) === String(userId) || 
+          String(s.username) === String(userId)
+        );
+        if (student && student.email) {
+          return {
+            email: student.email,
+            name: student.displayName || student.name || student.username || 'Estudiante'
+          };
+        }
+      }
+      
+      // 3) Buscar en apoderados del año actual
+      const storedGuardians = localStorage.getItem(`smart-student-guardians-${currentYear}`);
+      if (storedGuardians) {
+        const guardians = JSON.parse(storedGuardians);
+        const guardian = guardians.find((g: any) => 
+          String(g.id) === String(userId) || 
+          String(g.username) === String(userId)
+        );
+        if (guardian && guardian.email) {
+          return {
+            email: guardian.email,
+            name: guardian.displayName || guardian.name || guardian.username || 'Apoderado'
+          };
+        }
+      }
+      
+      console.log(`📧 [EMAIL SERVICE] No email found for userId: ${userId}`);
     } catch (error) {
       console.warn('⚠️ [EMAIL SERVICE] Error getting user email info:', error);
     }

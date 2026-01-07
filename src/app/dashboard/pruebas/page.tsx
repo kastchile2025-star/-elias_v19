@@ -170,6 +170,14 @@ export default function PruebasPage() {
 		}
 	}, [tests])
 
+	// Obtener la versión más actualizada del test seleccionado desde el array tests
+	const selectedTest = useMemo(() => {
+		if (!selected) return undefined
+		// Buscar el test actualizado en el array para obtener las questions más recientes
+		const updated = tests.find(t => t.id === selected.id)
+		return updated || selected
+	}, [selected, tests])
+
 	const handleOpenView = (t: TestItem) => { setSelected(t); setOpenView(true) }
 	const handleOpenReview = (t?: TestItem) => { if (t) setSelected(t); setOpenReview(true) }
 
@@ -177,40 +185,132 @@ export default function PruebasPage() {
 		try { const raw = localStorage.getItem(getReviewKey(id)); const arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) && arr.length > 0 } catch { return false }
 	}
 
-	// Generador local sencillo como fallback si falla el SSE
+	// Generador local mejorado con preguntas variadas y educativas
 	const generateLocalQuestions = (topic: string, counts?: { tf?: number; mc?: number; ms?: number; des?: number }, subjectName?: string) => {
 		const res: any[] = []
 		if (!counts) return res
 		const makeId = (p: string) => `${p}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+		const cleanTopic = (topic || 'el tema').trim()
+		const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 		
-		// Detectar si es matemáticas para generar problemas prácticos
-		const isMath = /matem[aá]tica|math|algebra|geometr[ií]a|aritm[eé]tica|c[aá]lculo|ecuacion|fracci[oó]n|porcentaje|trigonometr/i.test(topic + ' ' + (subjectName || ''))
+		// Detectar tipo de asignatura para personalizar preguntas
+		const isMath = /matem[aá]tica|math|algebra|geometr[ií]a|aritm[eé]tica|c[aá]lculo|ecuacion|fracci[oó]n|porcentaje|trigonometr|suma|resta|multiplic|divisi/i.test(topic + ' ' + (subjectName || ''))
+		const isScience = /ciencia|biolog[ií]a|qu[ií]mica|f[ií]sica|naturaleza|ambiente|ecolog|sistema|c[eé]lula|planeta|energ[ií]a/i.test(topic + ' ' + (subjectName || ''))
+		const isHistory = /historia|geograf[ií]a|social|civica|ciudadan|gobierno|pa[ií]s|cultura|civilizaci/i.test(topic + ' ' + (subjectName || ''))
+		const isLanguage = /lenguaje|literatura|español|gram[aá]tica|ortograf|lectura|escritura|comunicaci/i.test(topic + ' ' + (subjectName || ''))
 		
+		// Plantillas de preguntas V/F variadas según tipo
+		const tfTemplates = isMath ? [
+			{ text: `En ${cleanTopic}, el orden de los factores altera el producto.`, answer: false },
+			{ text: `Al realizar operaciones de ${cleanTopic}, siempre se debe respetar la jerarquía de operaciones.`, answer: true },
+			{ text: `En ${cleanTopic}, cualquier número multiplicado por cero da como resultado cero.`, answer: true },
+			{ text: `Las operaciones de ${cleanTopic} siempre dan un resultado mayor que los números originales.`, answer: false },
+			{ text: `En ${cleanTopic}, la propiedad conmutativa permite cambiar el orden de los números sin alterar el resultado.`, answer: true },
+			{ text: `Al resolver problemas de ${cleanTopic}, es importante identificar primero los datos del problema.`, answer: true },
+			{ text: `En ${cleanTopic}, la resta es una operación conmutativa.`, answer: false },
+			{ text: `Para verificar un resultado de ${cleanTopic}, podemos usar la operación inversa.`, answer: true },
+		] : isScience ? [
+			{ text: `${cap(cleanTopic)} es un proceso fundamental que ocurre en todos los seres vivos.`, answer: true },
+			{ text: `Los cambios en ${cleanTopic} pueden afectar a otros sistemas relacionados.`, answer: true },
+			{ text: `${cap(cleanTopic)} solo puede observarse en condiciones de laboratorio.`, answer: false },
+			{ text: `El estudio de ${cleanTopic} ayuda a comprender mejor nuestro entorno.`, answer: true },
+			{ text: `${cap(cleanTopic)} es un fenómeno que no tiene relación con la vida cotidiana.`, answer: false },
+			{ text: `Los científicos utilizan el método científico para estudiar ${cleanTopic}.`, answer: true },
+			{ text: `${cap(cleanTopic)} es un proceso que permanece siempre constante.`, answer: false },
+			{ text: `Comprender ${cleanTopic} es importante para el cuidado del medio ambiente.`, answer: true },
+		] : isHistory ? [
+			{ text: `Los eventos relacionados con ${cleanTopic} tuvieron impacto en la sociedad de su época.`, answer: true },
+			{ text: `${cap(cleanTopic)} es un tema que solo interesa a los historiadores profesionales.`, answer: false },
+			{ text: `El estudio de ${cleanTopic} nos ayuda a entender el presente.`, answer: true },
+			{ text: `Los cambios provocados por ${cleanTopic} fueron inmediatos y sin consecuencias posteriores.`, answer: false },
+			{ text: `${cap(cleanTopic)} involucró la participación de diferentes grupos sociales.`, answer: true },
+			{ text: `Podemos aprender lecciones valiosas del estudio de ${cleanTopic}.`, answer: true },
+			{ text: `${cap(cleanTopic)} no tiene ninguna relevancia para nuestra vida actual.`, answer: false },
+			{ text: `El análisis de ${cleanTopic} requiere considerar múltiples perspectivas.`, answer: true },
+		] : [
+			{ text: `El conocimiento de ${cleanTopic} es aplicable en situaciones de la vida real.`, answer: true },
+			{ text: `${cap(cleanTopic)} es un concepto que no tiene relación con otras áreas del conocimiento.`, answer: false },
+			{ text: `Comprender ${cleanTopic} requiere práctica y estudio constante.`, answer: true },
+			{ text: `${cap(cleanTopic)} puede ser entendido de una sola manera, sin interpretaciones.`, answer: false },
+			{ text: `El aprendizaje de ${cleanTopic} contribuye al desarrollo del pensamiento crítico.`, answer: true },
+			{ text: `${cap(cleanTopic)} es un tema que solo se estudia en el colegio.`, answer: false },
+			{ text: `Existen diferentes formas de aplicar los conceptos de ${cleanTopic}.`, answer: true },
+			{ text: `El dominio de ${cleanTopic} se logra únicamente memorizando definiciones.`, answer: false },
+		]
+		
+		// Barajar y seleccionar preguntas V/F
+		const shuffledTF = [...tfTemplates].sort(() => Math.random() - 0.5)
 		for (let i = 0; i < (counts.tf || 0); i++) {
-			res.push({ id: makeId('tf'), type: 'tf', text: `(${i + 1}) ${topic}: enunciado verdadero/falso`, answer: Math.random() > 0.5 })
+			const template = shuffledTF[i % shuffledTF.length]
+			res.push({ id: makeId('tf'), type: 'tf', text: template.text, answer: template.answer })
 		}
+		
+		// Plantillas de selección múltiple
+		const mcTemplates = isMath ? [
+			{ text: `¿Cuál es el primer paso recomendado al resolver un problema de ${cleanTopic}?`, options: ['Escribir la respuesta inmediatamente', 'Leer y comprender el problema', 'Usar la calculadora', 'Preguntar al profesor'], correctIndex: 1 },
+			{ text: `¿Qué propiedad matemática nos permite cambiar el orden de los números en ${cleanTopic}?`, options: ['Distributiva', 'Asociativa', 'Conmutativa', 'Inversa'], correctIndex: 2 },
+			{ text: `En ${cleanTopic}, ¿cuál operación debemos realizar primero según la jerarquía?`, options: ['Suma', 'Resta', 'Multiplicación o división', 'Cualquiera'], correctIndex: 2 },
+			{ text: `¿Cuál es la mejor estrategia para verificar un resultado en ${cleanTopic}?`, options: ['Confiar en el primer resultado', 'Realizar la operación inversa', 'No verificar', 'Preguntar a un compañero'], correctIndex: 1 },
+		] : isScience ? [
+			{ text: `¿Cuál es la importancia principal de estudiar ${cleanTopic}?`, options: ['No tiene importancia', 'Solo para aprobar exámenes', 'Comprender nuestro entorno', 'Es obligatorio'], correctIndex: 2 },
+			{ text: `¿Qué método utilizan los científicos para estudiar ${cleanTopic}?`, options: ['Adivinación', 'Método científico', 'Opiniones personales', 'Tradición oral'], correctIndex: 1 },
+			{ text: `¿Cómo se relaciona ${cleanTopic} con la vida cotidiana?`, options: ['No se relaciona', 'Solo en el laboratorio', 'En múltiples aspectos diarios', 'Solo en la escuela'], correctIndex: 2 },
+			{ text: `¿Qué actitud es más apropiada al estudiar ${cleanTopic}?`, options: ['Memorizar sin entender', 'Curiosidad y observación', 'Solo leer el libro', 'No hacer preguntas'], correctIndex: 1 },
+		] : [
+			{ text: `¿Por qué es importante aprender sobre ${cleanTopic}?`, options: ['Solo para las notas', 'Para el desarrollo personal', 'No es importante', 'Solo para el examen'], correctIndex: 1 },
+			{ text: `¿Cuál es la mejor forma de estudiar ${cleanTopic}?`, options: ['Memorizar todo', 'Comprender y practicar', 'Solo leer una vez', 'Copiar las respuestas'], correctIndex: 1 },
+			{ text: `¿Cómo podemos aplicar ${cleanTopic} en la vida real?`, options: ['No se puede aplicar', 'En diversas situaciones', 'Solo en el trabajo', 'Nunca se usa'], correctIndex: 1 },
+			{ text: `¿Qué habilidad desarrollamos al estudiar ${cleanTopic}?`, options: ['Ninguna', 'Pensamiento crítico', 'Solo memoria', 'Nada útil'], correctIndex: 1 },
+		]
+		
+		const shuffledMC = [...mcTemplates].sort(() => Math.random() - 0.5)
 		for (let i = 0; i < (counts.mc || 0); i++) {
-			const opts = ['Opción A', 'Opción B', 'Opción C']
-			const ci = Math.floor(Math.random() * (opts.length + 1))
-			opts.splice(ci, 0, 'Respuesta correcta')
-			res.push({ id: makeId('mc'), type: 'mc', text: `(${i + 1}) ${topic}: alternativa correcta`, options: opts, correctIndex: ci })
+			const template = shuffledMC[i % shuffledMC.length]
+			res.push({ id: makeId('mc'), type: 'mc', text: template.text, options: [...template.options], correctIndex: template.correctIndex })
 		}
+		
+		// Selección múltiple (varias correctas)
+		const msTemplates = [
+			{ text: `Selecciona todas las afirmaciones correctas sobre ${cleanTopic}:`, options: [
+				{ text: `Es importante para el aprendizaje`, correct: true },
+				{ text: `Se puede aplicar en la vida real`, correct: true },
+				{ text: `No tiene ninguna utilidad práctica`, correct: false },
+				{ text: `Solo sirve para aprobar exámenes`, correct: false },
+			]},
+			{ text: `¿Cuáles son características del estudio de ${cleanTopic}?`, options: [
+				{ text: `Requiere práctica constante`, correct: true },
+				{ text: `Se aprende de un día para otro`, correct: false },
+				{ text: `Desarrolla habilidades de pensamiento`, correct: true },
+				{ text: `Es completamente innecesario`, correct: false },
+			]},
+			{ text: `Marca las opciones que describen correctamente ${cleanTopic}:`, options: [
+				{ text: `Tiene aplicación en diferentes contextos`, correct: true },
+				{ text: `Es un tema aislado sin conexiones`, correct: false },
+				{ text: `Contribuye a la formación integral`, correct: true },
+				{ text: `Solo interesa a los expertos`, correct: false },
+			]},
+		]
+		
+		const shuffledMS = [...msTemplates].sort(() => Math.random() - 0.5)
 		for (let i = 0; i < (counts.ms || 0); i++) {
-			const arr = [
-				{ text: 'Correcta 1', correct: true },
-				{ text: 'Correcta 2', correct: true },
-				{ text: 'Incorrecta 1', correct: false },
-				{ text: 'Incorrecta 2', correct: false },
-			]
-			res.push({ id: makeId('ms'), type: 'ms', text: `(${i + 1}) ${topic}: seleccione todas las correctas`, options: arr.sort(() => Math.random() - 0.5) })
+			const template = shuffledMS[i % shuffledMS.length]
+			res.push({ id: makeId('ms'), type: 'ms', text: template.text, options: [...template.options].sort(() => Math.random() - 0.5) })
 		}
+		
+		// Preguntas de desarrollo
 		for (let i = 0; i < (counts.des || 0); i++) {
-			// Para matemáticas, generar problemas prácticos
 			if (isMath) {
 				const mathProblems = getMathProblemForTopic(topic, i + 1)
 				res.push({ id: makeId('des'), type: 'des', prompt: mathProblems })
 			} else {
-				res.push({ id: makeId('des'), type: 'des', prompt: `(${i + 1}) ${topic}: desarrolle una respuesta fundamentada` })
+				const desTemplates = [
+					`Explica con tus propias palabras qué es ${cleanTopic} y por qué es importante estudiarlo. Incluye al menos dos ejemplos.`,
+					`Describe cómo se relaciona ${cleanTopic} con situaciones de tu vida cotidiana. Fundamenta tu respuesta.`,
+					`Analiza las principales características de ${cleanTopic} y explica cómo estas se aplican en la práctica.`,
+					`¿Qué aprendiste sobre ${cleanTopic}? Menciona al menos tres aspectos importantes y explica cada uno.`,
+					`Compara ${cleanTopic} con otros temas que hayas estudiado. ¿Qué similitudes y diferencias encuentras?`,
+				]
+				res.push({ id: makeId('des'), type: 'des', prompt: desTemplates[i % desTemplates.length] })
 			}
 		}
 		return res
@@ -225,7 +325,9 @@ export default function PruebasPage() {
 			const problems = [
 				`Problema ${num}: María tiene 45 manzanas. Le regala 18 a su vecino y luego compra 27 más en el mercado. ¿Cuántas manzanas tiene ahora? Muestra el procedimiento completo.`,
 				`Problema ${num}: Un bus viaja con 38 pasajeros. En la primera parada bajan 12 y suben 9. En la segunda parada bajan 8 y suben 15. ¿Cuántos pasajeros hay al final? Desarrolla paso a paso.`,
-				`Problema ${num}: Pedro ahorra $125 el lunes, $89 el martes y gasta $67 el miércoles. ¿Cuánto dinero tiene? Explica tu procedimiento.`
+				`Problema ${num}: Pedro ahorra $125 el lunes, $89 el martes y gasta $67 el miércoles. ¿Cuánto dinero tiene? Explica tu procedimiento.`,
+				`Problema ${num}: En una biblioteca hay 234 libros de ciencia y 178 de historia. Si donan 95 libros más de literatura, ¿cuántos libros hay en total? Muestra todos los cálculos.`,
+				`Problema ${num}: Ana tiene 156 stickers. Le regala 42 a su hermano y 38 a su amiga. Luego su mamá le compra 65 más. ¿Cuántos stickers tiene ahora?`,
 			]
 			return problems[num % problems.length]
 		}
@@ -477,10 +579,24 @@ export default function PruebasPage() {
 										</span>
 									)}
 
-									<Button variant="outline" onClick={() => handleOpenView(t)} className="p-2 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800" aria-label={translate('testsBtnView')} title={translate('testsBtnView')}>
+									<Button 
+										variant="outline" 
+										onClick={() => handleOpenView(t)} 
+										disabled={t.status === 'generating'}
+										className={`p-2 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800 ${t.status === 'generating' ? 'opacity-50 cursor-not-allowed' : ''}`} 
+										aria-label={translate('testsBtnView')} 
+										title={t.status === 'generating' ? 'Generando prueba...' : translate('testsBtnView')}
+									>
 										<Eye className="size-4" />
 									</Button>
-									<Button variant="outline" onClick={() => handleOpenReview(t)} className="p-2 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800" aria-label={translate('testsReviewBtn')} title={translate('testsReviewBtn')}>
+									<Button 
+										variant="outline" 
+										onClick={() => handleOpenReview(t)} 
+										disabled={t.status === 'generating'}
+										className={`p-2 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800 ${t.status === 'generating' ? 'opacity-50 cursor-not-allowed' : ''}`} 
+										aria-label={translate('testsReviewBtn')} 
+										title={t.status === 'generating' ? 'Generando prueba...' : translate('testsReviewBtn')}
+									>
 										<FileSearch className="size-4" />
 									</Button>
 									<Button variant="outline" onClick={() => { setDeleteTarget(t); setDeleteOpen(true) }} className="p-2 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-600 hover:text-white dark:border-fuchsia-800" aria-label={translate('testsBtnDelete')} title={translate('testsBtnDelete')}>
@@ -494,8 +610,8 @@ export default function PruebasPage() {
 			</div>
 
 			{/* Modales */}
-			<TestViewDialog open={openView} onOpenChange={setOpenView} test={selected || undefined} onReview={() => handleOpenReview()} />
-			<TestReviewDialog open={openReview} onOpenChange={setOpenReview} test={selected || undefined} />
+			<TestViewDialog open={openView} onOpenChange={setOpenView} test={selectedTest} onReview={() => handleOpenReview()} />
+			<TestReviewDialog open={openReview} onOpenChange={setOpenReview} test={selectedTest} />
 
 			{/* Popup de confirmación de borrado */}
 			<AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
