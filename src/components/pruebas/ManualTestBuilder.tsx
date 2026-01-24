@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, X } from "lucide-react"
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, X, Download, FileKey, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
 import { useLanguage } from "@/contexts/language-context"
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import jsPDF from "jspdf"
 
 type AnalyzedQuestion = {
   id: string
@@ -58,8 +59,10 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
   // Estados de archivo
   const [file, setFile] = useState<File | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string>("")
+  const [generatingPDF, setGeneratingPDF] = useState<'key' | 'course' | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Estados de formulario (curso/sección/asignatura)
@@ -78,6 +81,9 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
   // Ponderación
   const [weights, setWeights] = useState<{ tf: number; mc: number; ms: number; des: number }>({ tf: 25, mc: 25, ms: 25, des: 25 })
   const [totalPoints, setTotalPoints] = useState<number>(100)
+  
+  // Tipos de preguntas seleccionados
+  const [selectedTypes, setSelectedTypes] = useState<Set<'tf' | 'mc' | 'ms' | 'des'>>(new Set())
   
   // Preview modal
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -230,16 +236,31 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
     setAnalyzing(true)
     setError("")
     setAnalysisResult(null)
+    setUploadProgress(0)
     
     try {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('language', language)
       
+      // Simular progreso de subida
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval)
+            return prev
+          }
+          return prev + Math.random() * 15
+        })
+      }, 200)
+      
       const response = await fetch('/api/tests/analyze-pdf', {
         method: 'POST',
         body: formData
       })
+      
+      clearInterval(progressInterval)
+      setUploadProgress(100)
       
       const result = await response.json()
       
@@ -280,10 +301,23 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
     }
   }, [file, language, topic, translate])
   
-  // Verificar validez
+  // Verificar validez - solo requiere al menos un tipo seleccionado
   const isValid = useMemo(() => {
-    return !!sectionId && !!subjectId && !!analysisResult?.success && analysisResult.questions.length > 0
-  }, [sectionId, subjectId, analysisResult])
+    return selectedTypes.size > 0 && !!analysisResult?.success && analysisResult.questions.length > 0
+  }, [selectedTypes, analysisResult])
+  
+  // Toggle selección de tipo
+  const toggleType = useCallback((type: 'tf' | 'mc' | 'ms' | 'des') => {
+    setSelectedTypes(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(type)) {
+        newSet.delete(type)
+      } else {
+        newSet.add(type)
+      }
+      return newSet
+    })
+  }, [])
   
   // Crear prueba
   const handleCreateTest = useCallback(() => {
@@ -297,11 +331,20 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
       const found = subjects.find((x: any) => String(x?.id) === String(subjectId))
       if (found?.name) return found.name
       const byName = subjects.find((x: any) => String(x?.name) === String(subjectId))
-      return byName?.name || subjectId
+      return byName?.name || subjectId || ''
     })()
     
+    // Filtrar preguntas por tipos seleccionados
+    const filteredQuestions = analysisResult.questions.filter(q => selectedTypes.has(q.type))
+    
+    // Recalcular counts basado en tipos seleccionados
+    const newCounts = { tf: 0, mc: 0, ms: 0, des: 0 }
+    filteredQuestions.forEach(q => {
+      newCounts[q.type]++
+    })
+    
     // Transformar preguntas al formato esperado
-    const questions = analysisResult.questions.map((q, idx) => {
+    const questions = filteredQuestions.map((q, idx) => {
       const base: any = {
         id: `${q.type}_${now}_${idx}`,
         type: q.type,
@@ -332,15 +375,15 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
       title,
       description: `Prueba creada desde PDF: ${file?.name || 'documento'}`,
       createdAt: now,
-      courseId,
-      sectionId,
-      subjectId,
+      courseId: courseId || '',
+      sectionId: sectionId || '',
+      subjectId: subjectId || '',
       subjectName: subjName,
       topic: topic || analysisResult.topic || title,
-      counts: analysisResult.counts,
+      counts: newCounts,
       weights,
       totalPoints,
-      total: analysisResult.totalQuestions,
+      total: filteredQuestions.length,
       questions,
       status: 'ready' as const,
       progress: 100,
@@ -359,12 +402,13 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
     setCourseId("")
     setSectionId("")
     setSubjectId("")
+    setSelectedTypes(new Set())
     setWeights({ tf: 25, mc: 25, ms: 25, des: 25 })
     setTotalPoints(100)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [isValid, analysisResult, user, subjects, subjectId, topic, file, courseId, sectionId, weights, totalPoints, onTestCreated])
+  }, [isValid, analysisResult, user, subjects, subjectId, topic, file, courseId, sectionId, weights, totalPoints, onTestCreated, selectedTypes])
   
   // Renderizar pregunta en preview
   const renderQuestionPreview = (q: AnalyzedQuestion, idx: number) => {
@@ -424,6 +468,258 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
       </div>
     )
   }
+
+  // Obtener nombre de curso/sección seleccionados
+  const selectedCourseSection = useMemo(() => {
+    const chip = courseSectionChips.find(c => c.sectionId === sectionId)
+    return chip?.label || ''
+  }, [courseSectionChips, sectionId])
+
+  const selectedSubjectName = useMemo(() => {
+    const chip = subjectChips.find(s => s.key === subjectId)
+    return chip?.label || ''
+  }, [subjectChips, subjectId])
+
+  // Calcular puntos por pregunta
+  const perQuestionPoints = useMemo(() => {
+    if (!analysisResult) return { tf: 0, mc: 0, ms: 0, des: 0 }
+    const counts = analysisResult.counts
+    const totalQ = (counts.tf || 0) + (counts.mc || 0) + (counts.ms || 0) + (counts.des || 0)
+    const tp = totalPoints || totalQ
+
+    const activeTypes = (['tf','mc','ms','des'] as const).filter(t => counts[t] > 0)
+    if (activeTypes.length === 0) return { tf: 0, mc: 0, ms: 0, des: 0 }
+
+    const sumActive = activeTypes.reduce((acc, t) => acc + (weights[t] || 0), 0)
+    const normalized: Record<string, number> = { tf: 0, mc: 0, ms: 0, des: 0 }
+    if (!sumActive) {
+      const eq = 1 / activeTypes.length
+      activeTypes.forEach(t => { normalized[t] = eq })
+    } else {
+      activeTypes.forEach(t => { normalized[t] = (weights[t] || 0) / sumActive })
+    }
+
+    const result: Record<string, number> = { tf: 0, mc: 0, ms: 0, des: 0 }
+    activeTypes.forEach(t => {
+      const c = counts[t] || 0
+      result[t] = c > 0 ? (tp * normalized[t]) / c : 0
+    })
+    return result as { tf: number; mc: number; ms: number; des: number }
+  }, [analysisResult, weights, totalPoints])
+
+  const fmtPts = (n?: number) => {
+    if (n == null || isNaN(n)) return ""
+    const r = Math.round((n + Number.EPSILON) * 100) / 100
+    if (Math.abs(r - Math.round(r)) < 1e-9) return String(Math.round(r))
+    return r.toFixed(1)
+  }
+
+  // Generar PDF para curso (sin respuestas)
+  const handleDownloadPDFCourse = useCallback(async () => {
+    if (!analysisResult?.questions?.length) return
+    setGeneratingPDF('course')
+    try {
+      await new Promise(r => setTimeout(r, 50))
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 15
+      const maxWidth = pageWidth - margin * 2
+      const lineH = 6
+      let y = margin
+      const letters = ['A','B','C','D','E','F']
+
+      const ensureSpace = (h: number) => {
+        if (y + h > pageHeight - margin) {
+          pdf.addPage()
+          y = margin
+        }
+      }
+
+      // Header
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(18)
+      const title = (analysisResult.title || topic || 'PRUEBA').toUpperCase()
+      pdf.text(title, pageWidth / 2, y, { align: 'center' })
+      y += 10
+
+      pdf.setFontSize(12)
+      pdf.text(`TEMA: ${topic || analysisResult.topic || '-'}`, margin, y)
+      y += 6
+      pdf.text(`CURSO: ${selectedCourseSection || '-'}`, margin, y)
+      y += 6
+      pdf.text(`ASIGNATURA: ${selectedSubjectName || '-'}`, margin, y)
+      y += 6
+      pdf.text(`PUNTAJE TOTAL: ${totalPoints} pts`, margin, y)
+      y += 8
+      pdf.setFont('helvetica', 'normal')
+      pdf.text('NOMBRE DEL ESTUDIANTE: ______________________________', margin, y)
+      y += 10
+      pdf.line(margin, y, pageWidth - margin, y)
+      y += 6
+
+      // Preguntas
+      analysisResult.questions.forEach((q, idx) => {
+        const pts = perQuestionPoints[q.type] || 0
+        const ptsLabel = pts ? ` (${fmtPts(pts)} pts)` : ''
+        const header = `${idx + 1}. ${q.text || q.prompt}${ptsLabel}`
+        const headerLines = pdf.splitTextToSize(header, maxWidth)
+        
+        let totalH = headerLines.length * lineH + 8
+        if (q.type === 'mc' && q.options) totalH += q.options.length * lineH
+        if (q.type === 'ms' && q.optionsWithCorrect) totalH += q.optionsWithCorrect.length * lineH
+        if (q.type === 'des') totalH += 7 * (lineH + 2)
+
+        ensureSpace(totalH)
+
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(11)
+        headerLines.forEach((l: string) => { pdf.text(l, margin, y); y += lineH })
+        y += 2
+
+        pdf.setFont('helvetica', 'normal')
+        if (q.type === 'tf') {
+          pdf.text('V (    )     F (    )', margin + 5, y)
+          y += lineH + 4
+        } else if (q.type === 'mc' && q.options) {
+          q.options.forEach((opt, optIdx) => {
+            pdf.text(`(${letters[optIdx] || optIdx + 1}) ${opt}`, margin + 5, y)
+            y += lineH
+          })
+          y += 4
+        } else if (q.type === 'ms' && q.optionsWithCorrect) {
+          q.optionsWithCorrect.forEach((opt, optIdx) => {
+            pdf.rect(margin + 5, y - 3, 3, 3)
+            pdf.text(`${letters[optIdx] || optIdx + 1}. ${opt.text}`, margin + 10, y)
+            y += lineH
+          })
+          y += 4
+        } else if (q.type === 'des') {
+          for (let k = 0; k < 7; k++) {
+            pdf.line(margin + 5, y, pageWidth - margin, y)
+            y += lineH + 2
+          }
+        }
+      })
+
+      const filename = `prueba-${(topic || 'manual').replace(/[^a-zA-Z0-9]/g, '_')}-curso.pdf`
+      pdf.save(filename)
+    } catch (err) {
+      console.error('Error generando PDF curso:', err)
+    } finally {
+      setGeneratingPDF(null)
+    }
+  }, [analysisResult, topic, selectedCourseSection, selectedSubjectName, totalPoints, perQuestionPoints])
+
+  // Generar PDF clave (con respuestas)
+  const handleDownloadPDFKey = useCallback(async () => {
+    if (!analysisResult?.questions?.length) return
+    setGeneratingPDF('key')
+    try {
+      await new Promise(r => setTimeout(r, 50))
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 15
+      const maxWidth = pageWidth - margin * 2
+      const lineH = 6
+      let y = margin
+      const letters = ['A','B','C','D','E','F']
+
+      const ensureSpace = (h: number) => {
+        if (y + h > pageHeight - margin) {
+          pdf.addPage()
+          y = margin
+        }
+      }
+
+      // Header
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(18)
+      const title = `${(analysisResult.title || topic || 'PRUEBA').toUpperCase()} — CLAVE`
+      pdf.text(title, pageWidth / 2, y, { align: 'center' })
+      y += 10
+
+      pdf.setFontSize(12)
+      pdf.text(`TEMA: ${topic || analysisResult.topic || '-'}`, margin, y)
+      y += 6
+      pdf.text(`CURSO: ${selectedCourseSection || '-'}`, margin, y)
+      y += 6
+      pdf.text(`ASIGNATURA: ${selectedSubjectName || '-'}`, margin, y)
+      y += 6
+      pdf.text(`PUNTAJE TOTAL: ${totalPoints} pts`, margin, y)
+      y += 10
+      pdf.line(margin, y, pageWidth - margin, y)
+      y += 6
+
+      // Preguntas con respuestas
+      analysisResult.questions.forEach((q, idx) => {
+        const pts = perQuestionPoints[q.type] || 0
+        const ptsLabel = pts ? ` (${fmtPts(pts)} pts)` : ''
+        const header = `${idx + 1}. ${q.text || q.prompt}${ptsLabel}`
+        const headerLines = pdf.splitTextToSize(header, maxWidth)
+        
+        let totalH = headerLines.length * lineH + 12
+        if (q.type === 'mc' && q.options) totalH += q.options.length * lineH
+        if (q.type === 'ms' && q.optionsWithCorrect) totalH += q.optionsWithCorrect.length * lineH
+
+        ensureSpace(totalH)
+
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(11)
+        headerLines.forEach((l: string) => { pdf.text(l, margin, y); y += lineH })
+        y += 2
+
+        pdf.setFont('helvetica', 'normal')
+        if (q.type === 'tf') {
+          const ans = q.answer ? 'VERDADERO' : 'FALSO'
+          pdf.setTextColor(0, 128, 0)
+          pdf.text(`Respuesta: ${ans}`, margin + 5, y)
+          pdf.setTextColor(0)
+          y += lineH + 4
+        } else if (q.type === 'mc' && q.options) {
+          q.options.forEach((opt, optIdx) => {
+            const isCorrect = optIdx === q.correctIndex
+            if (isCorrect) {
+              pdf.setTextColor(0, 128, 0)
+              pdf.setFont('helvetica', 'bold')
+            }
+            pdf.text(`(${letters[optIdx] || optIdx + 1}) ${opt}${isCorrect ? ' ✓' : ''}`, margin + 5, y)
+            pdf.setTextColor(0)
+            pdf.setFont('helvetica', 'normal')
+            y += lineH
+          })
+          y += 4
+        } else if (q.type === 'ms' && q.optionsWithCorrect) {
+          q.optionsWithCorrect.forEach((opt, optIdx) => {
+            if (opt.correct) {
+              pdf.setTextColor(0, 128, 0)
+              pdf.setFont('helvetica', 'bold')
+            }
+            pdf.text(`${opt.correct ? '☑' : '☐'} ${letters[optIdx] || optIdx + 1}. ${opt.text}`, margin + 5, y)
+            pdf.setTextColor(0)
+            pdf.setFont('helvetica', 'normal')
+            y += lineH
+          })
+          y += 4
+        } else if (q.type === 'des') {
+          pdf.setTextColor(100)
+          pdf.setFontSize(10)
+          pdf.text('(Pregunta de desarrollo - evaluar según rúbrica)', margin + 5, y)
+          pdf.setTextColor(0)
+          pdf.setFontSize(11)
+          y += lineH + 4
+        }
+      })
+
+      const filename = `prueba-${(topic || 'manual').replace(/[^a-zA-Z0-9]/g, '_')}-clave.pdf`
+      pdf.save(filename)
+    } catch (err) {
+      console.error('Error generando PDF clave:', err)
+    } finally {
+      setGeneratingPDF(null)
+    }
+  }, [analysisResult, topic, selectedCourseSection, selectedSubjectName, totalPoints, perQuestionPoints])
   
   return (
     <div className="space-y-4">
@@ -469,20 +765,38 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
       
       {/* Botón Analizar */}
       {file && !analysisResult && (
-        <Button
-          onClick={handleAnalyze}
-          disabled={analyzing}
-          className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white"
-        >
-          {analyzing ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {translate('testsManualAnalyzing')}
-            </>
-          ) : (
-            translate('testsManualAnalyzeBtn')
+        <div className="space-y-2">
+          <Button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white"
+          >
+            {analyzing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {translate('testsManualAnalyzing')}
+              </>
+            ) : (
+              translate('testsManualAnalyzeBtn')
+            )}
+          </Button>
+          
+          {/* Barra de progreso de subida */}
+          {analyzing && (
+            <div className="w-full">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>{language === 'es' ? 'Subiendo y analizando...' : 'Uploading and analyzing...'}</span>
+                <span>{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-fuchsia-600 transition-all duration-300 ease-out"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
           )}
-        </Button>
+        </div>
       )}
       
       {/* Error */}
@@ -507,160 +821,111 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
               <span className="text-muted-foreground">{translate('testsManualDetectedQuestions')}:</span>
               <span className="ml-2 font-medium">{analysisResult.totalQuestions}</span>
             </div>
-            {analysisResult.topic && (
-              <div>
-                <span className="text-muted-foreground">{translate('testsTopicLabel')}:</span>
-                <span className="ml-2 font-medium">{analysisResult.topic}</span>
-              </div>
-            )}
           </div>
           
-          {/* Desglose por tipo */}
-          <div className="flex flex-wrap gap-2">
-            {analysisResult.counts.tf > 0 && (
-              <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
-                {translate('testsTF')}: {analysisResult.counts.tf}
-              </span>
-            )}
-            {analysisResult.counts.mc > 0 && (
-              <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
-                {translate('testsMC')}: {analysisResult.counts.mc}
-              </span>
-            )}
-            {analysisResult.counts.ms > 0 && (
-              <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200">
-                {translate('testsMS')}: {analysisResult.counts.ms}
-              </span>
-            )}
-            {analysisResult.counts.des > 0 && (
-              <span className="text-xs px-2 py-1 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-200">
-                {translate('testsDES')}: {analysisResult.counts.des}
-              </span>
-            )}
-          </div>
-          
-          {/* Botón para ver preview */}
-          <Button
-            variant="outline"
-            onClick={() => setPreviewOpen(true)}
-            className="w-full border-fuchsia-200 text-fuchsia-800 hover:bg-fuchsia-100 dark:border-fuchsia-800 dark:text-fuchsia-200"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            {translate('testsManualPreview')}
-          </Button>
-        </div>
-      )}
-      
-      {/* Selección de Curso/Sección/Asignatura */}
-      {analysisResult?.success && (
-        <>
-          {/* Curso/Sección */}
-          <div className="space-y-2">
-            <label className="block text-xs font-medium">{translate('testsCourseLabel')}</label>
-            <div className="flex flex-wrap gap-2">
-              {courseSectionChips.map((c) => {
-                const selected = String(sectionId) === String(c.sectionId)
-                return (
-                  <button
-                    key={c.key}
-                    type="button"
-                    onClick={() => { setCourseId(String(c.courseId)); setSectionId(String(c.sectionId)); setSubjectId("") }}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs border transition-colors",
-                      selected
-                        ? "bg-fuchsia-600 text-white border-fuchsia-500"
-                        : "bg-muted text-foreground/80 border-transparent hover:bg-muted/80"
-                    )}
-                    title={c.label}
-                  >
-                    {c.label}
-                  </button>
-                )
-              })}
-              {courseSectionChips.length === 0 && (
-                <span className="text-xs text-muted-foreground">{translate('testsNoCourses')}</span>
-              )}
-            </div>
-          </div>
-          
-          {/* Asignatura */}
-          <div className="space-y-2">
-            <label className="block text-xs font-medium">{translate('testsSubjectLabel')}</label>
-            <div className="flex flex-wrap gap-2">
-              {sectionId === "" && (
-                <span className="text-xs text-muted-foreground">{translate('testsSelectCourseOrSectionHint')}</span>
-              )}
-              {sectionId !== "" && subjectChips.map((s) => {
-                const selected = String(subjectId) === String(s.key)
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => setSubjectId(String(s.key))}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs border transition-colors",
-                      selected
-                        ? "bg-fuchsia-600 text-white border-fuchsia-500"
-                        : "bg-muted text-foreground/80 border-transparent hover:bg-muted/80"
-                    )}
-                    title={s.label}
-                  >
-                    {s.label}
-                  </button>
-                )
-              })}
-              {sectionId && subjectChips.length === 0 && (
-                <span className="text-xs text-muted-foreground">{translate('testsNoSubjectsForSection')}</span>
-              )}
-            </div>
-          </div>
-          
-          {/* Tema (editable) */}
+          {/* Tema editable */}
           <div>
-            <label className="block text-xs font-medium mb-1">{translate('testsTopicLabel')}</label>
+            <label className="block text-xs font-medium mb-1">
+              {translate('testsTopicLabel')}
+            </label>
             <input
+              type="text"
               className="w-full rounded border bg-background p-2 text-sm"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder={translate('testsTopicPlaceholder')}
+              placeholder={language === 'es' ? 'Ej: Sumas y Restas' : 'E.g.: Addition and Subtraction'}
             />
           </div>
           
-          {/* Ponderación y puntaje */}
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="text-xs text-muted-foreground">
-              <div className="font-medium">{translate('testsWeightsLabel')}</div>
-              <div>
-                TF {weights.tf}% · MC {weights.mc}% · MS {weights.ms}% · DES {weights.des}%
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-medium mb-1">{translate('testsTotalPointsLabel')}</label>
-              <input
-                type="number"
-                min={1}
-                step={1}
-                className="w-28 rounded border bg-background p-2 text-sm"
-                value={totalPoints}
-                onChange={(e) => setTotalPoints(Math.max(1, Number(e.target.value || 0)))}
-              />
+          {/* Desglose por tipo - clickeables para seleccionar */}
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              {language === 'es' ? 'Selecciona los tipos de preguntas a incluir:' : 'Select question types to include:'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {analysisResult.counts.tf > 0 && (
+                <button
+                  type="button"
+                  onClick={() => toggleType('tf')}
+                  className={cn(
+                    "text-xs px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer",
+                    selectedTypes.has('tf')
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-blue-100 text-blue-800 border-transparent hover:border-blue-400 dark:bg-blue-900/30 dark:text-blue-200"
+                  )}
+                >
+                  {translate('testsTF')}: {analysisResult.counts.tf} {selectedTypes.has('tf') && '✓'}
+                </button>
+              )}
+              {analysisResult.counts.mc > 0 && (
+                <button
+                  type="button"
+                  onClick={() => toggleType('mc')}
+                  className={cn(
+                    "text-xs px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer",
+                    selectedTypes.has('mc')
+                      ? "bg-purple-600 text-white border-purple-600"
+                      : "bg-purple-100 text-purple-800 border-transparent hover:border-purple-400 dark:bg-purple-900/30 dark:text-purple-200"
+                  )}
+                >
+                  {translate('testsMC')}: {analysisResult.counts.mc} {selectedTypes.has('mc') && '✓'}
+                </button>
+              )}
+              {analysisResult.counts.ms > 0 && (
+                <button
+                  type="button"
+                  onClick={() => toggleType('ms')}
+                  className={cn(
+                    "text-xs px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer",
+                    selectedTypes.has('ms')
+                      ? "bg-orange-600 text-white border-orange-600"
+                      : "bg-orange-100 text-orange-800 border-transparent hover:border-orange-400 dark:bg-orange-900/30 dark:text-orange-200"
+                  )}
+                >
+                  {translate('testsMS')}: {analysisResult.counts.ms} {selectedTypes.has('ms') && '✓'}
+                </button>
+              )}
+              {analysisResult.counts.des > 0 && (
+                <button
+                  type="button"
+                  onClick={() => toggleType('des')}
+                  className={cn(
+                    "text-xs px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer",
+                    selectedTypes.has('des')
+                      ? "bg-teal-600 text-white border-teal-600"
+                      : "bg-teal-100 text-teal-800 border-transparent hover:border-teal-400 dark:bg-teal-900/30 dark:text-teal-200"
+                  )}
+                >
+                  {translate('testsDES')}: {analysisResult.counts.des} {selectedTypes.has('des') && '✓'}
+                </button>
+              )}
             </div>
           </div>
           
-          {/* Botón crear */}
-          <Button
-            onClick={handleCreateTest}
-            disabled={!isValid}
-            className={cn(
-              "w-full",
-              isValid
-                ? "bg-fuchsia-600 hover:bg-fuchsia-700 text-white"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            )}
-          >
-            {translate('testsManualConfirmCreate')}
-          </Button>
-        </>
+          {/* Botones de acción */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setPreviewOpen(true)}
+              className="border-fuchsia-300 text-fuchsia-700 hover:bg-fuchsia-50 dark:border-fuchsia-700 dark:text-fuchsia-300 dark:hover:bg-fuchsia-900/20"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              {translate('testsManualPreview')}
+            </Button>
+            <Button
+              onClick={handleCreateTest}
+              disabled={!isValid}
+              className={cn(
+                isValid
+                  ? "bg-fuchsia-600 hover:bg-fuchsia-700 text-white"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
+              )}
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              {language === 'es' ? 'Crear Prueba' : 'Create Test'}
+            </Button>
+          </div>
+        </div>
       )}
       
       {/* Modal de Preview */}

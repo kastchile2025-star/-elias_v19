@@ -172,7 +172,7 @@ export async function POST(request: Request) {
         console.log("[API Route] OpenRouter response received");
       } else {
         console.log("[API Route] 🤖 Using Gemini for question generation");
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
         const result = await model.generateContent(userPrompt);
         const response = await result.response;
         text = response.text();
