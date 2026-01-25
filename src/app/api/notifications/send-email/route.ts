@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
 
 /**
  * API para enviar notificaciones por email
@@ -7,35 +6,19 @@ import nodemailer from 'nodemailer';
  * 
  * Correo de envío: notificaciones@smartstudent.cl
  * 
- * Usando SMTP de Zoho Mail
+ * Usando Mailrelay API
  */
 
-// Configuración SMTP de Zoho
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.zoho.com';
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
-const SMTP_USER = process.env.SMTP_USER || 'notificaciones@smartstudent.cl';
-const SMTP_PASS = process.env.SMTP_PASS || '';
-const FROM_EMAIL = process.env.SMTP_USER || 'notificaciones@smartstudent.cl';
-
-/**
- * Crea el transportador de Nodemailer
- */
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_PORT === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
-};
+// Configuración de Mailrelay
+const MAILRELAY_API_KEY = process.env.MAILRELAY_API_KEY || '';
+const MAILRELAY_API_URL = process.env.MAILRELAY_API_URL || 'https://smartstudent.ip-zone.com/api/v1';
+const FROM_EMAIL = process.env.MAILRELAY_FROM_EMAIL || 'notificaciones@smartstudent.cl';
+const FROM_NAME = process.env.MAILRELAY_FROM_NAME || 'Smart Student';
 
 /**
- * Envía un email usando SMTP
+ * Envía un email usando Mailrelay API
  */
-const sendWithSMTP = async (emailData: {
+const sendWithMailrelay = async (emailData: {
   from: string;
   fromName: string;
   to: string;
@@ -44,24 +27,55 @@ const sendWithSMTP = async (emailData: {
   html: string;
 }): Promise<{ success: boolean; messageId?: string; error?: string }> => {
   try {
-    console.log('📧 [SMTP] Sending to:', emailData.to);
+    console.log('📧 [MAILRELAY] Sending to:', emailData.to);
     
-    const transporter = createTransporter();
-    
-    const info = await transporter.sendMail({
-      from: `"${emailData.fromName}" <${emailData.from}>`,
-      to: `"${emailData.toName}" <${emailData.to}>`,
-      subject: emailData.subject,
-      html: emailData.html,
+    if (!MAILRELAY_API_KEY) {
+      console.error('❌ [MAILRELAY] API key not configured');
+      return { 
+        success: false, 
+        error: 'Mailrelay API key not configured' 
+      };
+    }
+
+    const response = await fetch(`${MAILRELAY_API_URL}/send_emails`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': MAILRELAY_API_KEY,
+      },
+      body: JSON.stringify({
+        from: {
+          email: emailData.from,
+          name: emailData.fromName,
+        },
+        to: [
+          {
+            email: emailData.to,
+            name: emailData.toName,
+          }
+        ],
+        subject: emailData.subject,
+        html_part: emailData.html,
+      }),
     });
 
-    console.log('✅ [SMTP] Email sent successfully:', info.messageId);
-    return { 
-      success: true, 
-      messageId: info.messageId 
-    };
+    const result = await response.json();
+
+    if (response.ok && result.status !== 'error') {
+      console.log('✅ [MAILRELAY] Email sent successfully:', result.id || result);
+      return { 
+        success: true, 
+        messageId: result.id || 'sent' 
+      };
+    } else {
+      console.error('❌ [MAILRELAY] API error:', result);
+      return { 
+        success: false, 
+        error: result.message || result.error || 'Mailrelay API error' 
+      };
+    }
   } catch (error) {
-    console.error('❌ [SMTP] Exception:', error);
+    console.error('❌ [MAILRELAY] Exception:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error' 
@@ -103,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     const senderEmail = FROM_EMAIL;
 
-    console.log('📧 [SMTP] Processing email request:', {
+    console.log('📧 [MAILRELAY] Processing email request:', {
       from: senderEmail,
       to,
       subject,
@@ -123,10 +137,10 @@ export async function POST(request: NextRequest) {
       feedback: metadata?.feedback
     });
 
-    // Enviar con SMTP (Zoho)
-    const result = await sendWithSMTP({
+    // Enviar con Mailrelay API
+    const result = await sendWithMailrelay({
       from: senderEmail,
-      fromName: 'Smart Student',
+      fromName: FROM_NAME,
       to: to,
       toName: toName || 'Usuario',
       subject: subject,
@@ -134,18 +148,18 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.success) {
-      console.log('✅ [SMTP] Email sent successfully:', result.messageId);
+      console.log('✅ [MAILRELAY] Email sent successfully:', result.messageId);
       return NextResponse.json({
         success: true,
-        message: 'Email sent successfully via SMTP',
+        message: 'Email sent successfully via Mailrelay',
         messageId: result.messageId
       });
     } else {
-      console.error('❌ [SMTP] Failed to send email:', result.error);
+      console.error('❌ [MAILRELAY] Failed to send email:', result.error);
       return NextResponse.json(
         { 
           success: false,
-          error: 'Failed to send email via SMTP', 
+          error: 'Failed to send email via Mailrelay', 
           details: result.error
         },
         { status: 500 }
