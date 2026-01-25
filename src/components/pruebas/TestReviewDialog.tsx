@@ -2656,7 +2656,7 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    from: 'notificaciones@smartstudent.online',
+                    from: 'notificaciones@smartstudent.cl',
                     to: studentEmail,
                     toName: studentName || 'Estudiante',
                     subject: `📊 Nueva calificación: ${test?.title || 'Prueba'}`,
@@ -2684,7 +2684,7 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    from: 'notificaciones@smartstudent.online',
+                    from: 'notificaciones@smartstudent.cl',
                     to: guardian.email,
                     toName: guardian.name,
                     subject: `📊 Nueva calificación de ${studentName}: ${test?.title || 'Prueba'}`,

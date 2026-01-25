@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
  * API para enviar notificaciones por email
  * POST /api/notifications/send-email
  * 
- * Correo de envío: notificaciones@smartstudent.online
+ * Correo de envío: notificaciones@smartstudent.cl
  * 
  * Usando SMTP de Zoho Mail
  */
@@ -13,9 +13,9 @@ import nodemailer from 'nodemailer';
 // Configuración SMTP de Zoho
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.zoho.com';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
-const SMTP_USER = process.env.SMTP_USER || 'notificaciones@smartstudent.online';
+const SMTP_USER = process.env.SMTP_USER || 'notificaciones@smartstudent.cl';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const FROM_EMAIL = process.env.SMTP_USER || 'notificaciones@smartstudent.online';
+const FROM_EMAIL = process.env.SMTP_USER || 'notificaciones@smartstudent.cl';
 
 /**
  * Crea el transportador de Nodemailer
@@ -264,7 +264,7 @@ function generateEmailHtml(data: {
               ` : ''}
               
               <div style="margin-top: 35px; text-align: center;">
-                <a href="https://smartstudent.online/dashboard" 
+                <a href="https://smartstudent.cl/dashboard" 
                    style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
                   🚀 Ver en Smart Student
                 </a>
@@ -279,7 +279,7 @@ function generateEmailHtml(data: {
                 Este correo fue enviado automáticamente desde Smart Student.
               </p>
               <p style="color: #718096; margin: 12px 0 0 0; font-size: 12px;">
-                Para desactivar estas notificaciones, ve a tu <a href="https://smartstudent.online/dashboard/perfil" style="color: #90cdf4; text-decoration: none;">perfil</a>.
+                Para desactivar estas notificaciones, ve a tu <a href="https://smartstudent.cl/dashboard/perfil" style="color: #90cdf4; text-decoration: none;">perfil</a>.
               </p>
               <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #2d3748;">
                 <p style="color: #4a5568; margin: 0; font-size: 11px;">

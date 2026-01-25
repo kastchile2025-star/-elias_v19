@@ -336,7 +336,7 @@ export class UserService {
         body: JSON.stringify({ 
           emailNotificationsEnabled: enabled,
           notificationEmail: email,
-          senderEmail: 'notificaciones@smartstudent.online'
+          senderEmail: 'notificaciones@smartstudent.cl'
         }),
       });
 

@@ -4,7 +4,7 @@
  * Este servicio maneja el envío de notificaciones por correo electrónico
  * cuando un estudiante o apoderado tiene activada esta opción en su perfil.
  * 
- * Correo de envío: notificaciones@smartstudent.online
+ * Correo de envío: notificaciones@smartstudent.cl
  */
 
 // Tipos de notificaciones que pueden enviarse por email
@@ -42,7 +42,7 @@ export interface EmailNotificationResult {
   recipientEmail?: string;
 }
 
-const SENDER_EMAIL = 'notificaciones@smartstudent.online';
+const SENDER_EMAIL = 'notificaciones@smartstudent.cl';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 class EmailNotificationService {
@@ -430,7 +430,7 @@ class EmailNotificationService {
               ` : ''}
               
               <div style="margin-top: 30px; text-align: center;">
-                <a href="https://smartstudent.online/dashboard" 
+                <a href="https://smartstudent.cl/dashboard" 
                    style="display: inline-block; background-color: #3B82F6; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 500; font-size: 14px;">
                   Ver en Smart Student
                 </a>

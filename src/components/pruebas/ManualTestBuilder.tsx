@@ -823,26 +823,14 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
             </div>
           </div>
           
-          {/* Tema editable */}
-          <div>
-            <label className="block text-xs font-medium mb-1">
-              {translate('testsTopicLabel')}
-            </label>
-            <input
-              type="text"
-              className="w-full rounded border bg-background p-2 text-sm"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder={language === 'es' ? 'Ej: Sumas y Restas' : 'E.g.: Addition and Subtraction'}
-            />
-          </div>
-          
-          {/* Desglose por tipo - clickeables para seleccionar */}
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-              {language === 'es' ? 'Selecciona los tipos de preguntas a incluir:' : 'Select question types to include:'}
-            </p>
-            <div className="flex flex-wrap gap-2">
+          {/* Tipos de preguntas y tema en la misma fila */}
+          <div className="flex flex-wrap items-end gap-8">
+            {/* Desglose por tipo - clickeables para seleccionar */}
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">
+                {language === 'es' ? 'Selecciona los tipos de preguntas a incluir:' : 'Select question types to include:'}
+              </p>
+              <div className="flex flex-wrap gap-2">
               {analysisResult.counts.tf > 0 && (
                 <button
                   type="button"
@@ -899,6 +887,21 @@ export default function ManualTestBuilder({ onTestCreated }: Props) {
                   {translate('testsDES')}: {analysisResult.counts.des} {selectedTypes.has('des') && '✓'}
                 </button>
               )}
+              </div>
+            </div>
+            
+            {/* Tema editable - compacto a la derecha */}
+            <div className="flex-shrink-0">
+              <label className="block text-xs font-medium mb-1">
+                {translate('testsTopicLabel')}
+              </label>
+              <input
+                type="text"
+                className="w-[400px] rounded border bg-background p-2 text-sm"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder={language === 'es' ? 'Ej: Sumas y Restas' : 'E.g.: Addition and Subtraction'}
+              />
             </div>
           </div>
           

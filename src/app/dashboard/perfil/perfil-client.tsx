@@ -1911,7 +1911,7 @@ export default function PerfilClient() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                      {translate('profileNotificationsFrom')}: <span className="font-medium">notificaciones@smartstudent.online</span>
+                      {translate('profileNotificationsFrom')}: <span className="font-medium">notificaciones@smartstudent.cl</span>
                     </p>
                   </div>
 
