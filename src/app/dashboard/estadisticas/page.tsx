@@ -10815,7 +10815,7 @@ Formato: Una línea por insight. Si hay datos completos: máximo 6 insights. Si 
   if (adminCourse !== 'all' || selectedCourse !== 'all') activeFilterParts.push(t('specificCourse','Curso específico'));
       
       if (activeFilterParts.length > 0) {
-        pdf.text(`${(useLanguage().language === 'en') ? 'Filters' : 'Filtros'}: ${activeFilterParts.join(' • ')}`, margin, 70);
+        pdf.text(`${language === 'en' ? 'Filters' : 'Filtros'}: ${activeFilterParts.join(' • ')}`, margin, 70);
       }
       if (subjectFilter !== 'all') activeFilterParts.push(t('subject','Asignatura'));
 
