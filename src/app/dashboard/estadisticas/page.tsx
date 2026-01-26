@@ -10712,7 +10712,7 @@ Formato: Una línea por insight. Si hay datos completos: máximo 6 insights. Si 
 
       const container = document.getElementById('teacher-stats-container');
       if (!container) {
-  console.error('[stats] teacher-stats-container not found');
+        console.error('[stats] teacher-stats-container not found');
         return;
       }
 
@@ -10724,89 +10724,103 @@ Formato: Una línea por insight. Si hay datos completos: máximo 6 insights. Si 
 
       // Mostrar indicador de carga
       const loadingEl = document.createElement('div');
-      loadingEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.8);color:white;padding:20px;border-radius:8px;z-index:10000;font-family:system-ui';
-      loadingEl.textContent = 'Generando PDF...';
+      loadingEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);color:white;padding:24px 32px;border-radius:12px;z-index:10000;font-family:system-ui;font-size:16px;box-shadow:0 4px 20px rgba(0,0,0,0.5)';
+      loadingEl.textContent = '📊 Generando PDF...';
       document.body.appendChild(loadingEl);
 
-      // Ocultar temporalmente el botón de descarga y otros elementos no deseados
-      const downloadButton = container.querySelector('[data-download-button]') || container.querySelector('button:has(.lucide-download)');
-      const originalDisplays: Array<{ element: Element; display: string }> = [];
+      // Guardar estado original del scroll
+      const originalScrollTop = window.scrollY;
+      const originalScrollLeft = window.scrollX;
       
-      // Ocultar botones de descarga y elementos de navegación
-      const elementsToHide = container.querySelectorAll('button, .download-btn, [aria-label*="download"], [aria-label*="Download"]');
-      elementsToHide.forEach(el => {
-        const element = el as HTMLElement;
-        if (element.textContent?.toLowerCase().includes('download') || 
-            element.textContent?.toLowerCase().includes('descargar') ||
-            element.querySelector('.lucide-download')) {
-          originalDisplays.push({ element, display: element.style.display });
-          element.style.display = 'none';
-        }
-      });
+      // Scroll al inicio para capturar correctamente
+      window.scrollTo(0, 0);
+      
+      // Pequeña pausa para que el DOM se estabilice
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Optimizar captura para mejor calidad y compatibilidad con contenido dinámico
+      // Obtener el bounding rect del contenedor
+      const rect = container.getBoundingClientRect();
+      
+      // Optimizar captura - sin foreignObjectRendering para mejor compatibilidad
       const canvas = await html2canvas(container as HTMLElement, {
-        scale: 1.8, // Mejor calidad
-        backgroundColor: '#1e293b', // Color de fondo oscuro consistente
+        scale: 2, // Mejor calidad
+        backgroundColor: '#0f172a', // Color de fondo oscuro del tema
         useCORS: true,
         allowTaint: true,
-        foreignObjectRendering: true,
+        foreignObjectRendering: false, // Desactivar para mejor compatibilidad
         logging: false,
         width: container.scrollWidth,
         height: container.scrollHeight,
+        x: 0,
+        y: 0,
         scrollX: 0,
         scrollY: 0,
-        // Mejorar rendering de SVGs y gráficos
+        windowWidth: container.scrollWidth,
+        windowHeight: container.scrollHeight,
         onclone: (clonedDoc) => {
-          // Asegurar que los estilos se aplican correctamente
           const clonedContainer = clonedDoc.getElementById('teacher-stats-container');
           if (clonedContainer) {
+            // Asegurar visibilidad del contenido
             clonedContainer.style.transform = 'none';
-            clonedContainer.style.position = 'static';
-            clonedContainer.style.padding = '20px';
+            clonedContainer.style.position = 'relative';
+            clonedContainer.style.overflow = 'visible';
+            clonedContainer.style.opacity = '1';
+            clonedContainer.style.visibility = 'visible';
+            
+            // Asegurar que todos los hijos son visibles
+            const allElements = clonedContainer.querySelectorAll('*');
+            allElements.forEach((el) => {
+              const element = el as HTMLElement;
+              if (element.style) {
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+              }
+            });
           }
           
-          // Ocultar elementos no deseados en el clon también
-          const clonedElementsToHide = clonedDoc.querySelectorAll('button, .download-btn, [aria-label*="download"], [aria-label*="Download"]');
-          clonedElementsToHide.forEach(el => {
-            const element = el as HTMLElement;
-            if (element.textContent?.toLowerCase().includes('download') || 
-                element.textContent?.toLowerCase().includes('descargar') ||
-                element.querySelector('.lucide-download')) {
-              element.style.display = 'none';
+          // Ocultar botones de descarga en el clon
+          const buttonsToHide = clonedDoc.querySelectorAll('button');
+          buttonsToHide.forEach(btn => {
+            const button = btn as HTMLElement;
+            if (button.textContent?.toLowerCase().includes('descargar') || 
+                button.textContent?.toLowerCase().includes('download') ||
+                button.innerHTML?.includes('lucide-download') ||
+                button.innerHTML?.includes('Download')) {
+              button.style.display = 'none';
             }
           });
         }
       });
 
-      // Restaurar elementos ocultos
-      originalDisplays.forEach(({ element, display }) => {
-        (element as HTMLElement).style.display = display;
-      });
-
+      // Restaurar scroll original
+      window.scrollTo(originalScrollLeft, originalScrollTop);
+      
+      // Remover indicador de carga
       document.body.removeChild(loadingEl);
 
-      if (!canvas.width || !canvas.height) {
-        throw new Error('No se pudo capturar el contenido');
+      if (!canvas.width || !canvas.height || canvas.width < 100) {
+        throw new Error('No se pudo capturar el contenido correctamente');
       }
+      
+      console.log('[PDF] Canvas capturado:', canvas.width, 'x', canvas.height);
 
       // Agregar encabezado al PDF
-      pdf.setFillColor(30, 41, 59); // Color de fondo oscuro
+      pdf.setFillColor(15, 23, 42); // slate-900
       pdf.rect(0, 0, pageWidth, 80, 'F');
       
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(18);
+      pdf.setFontSize(20);
       pdf.setFont('helvetica', 'bold');
-  pdf.text((t('statisticsPageTitle','Estadísticas') + ' - Smart Student'), margin, 35);
+      pdf.text(t('statisticsPageTitle','Estadísticas') + ' - Smart Student', margin, 35);
       
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setFont('helvetica', 'normal');
-  const today = new Date().toLocaleDateString((language === 'en') ? 'en-US' : 'es-ES', { 
+      const today = new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
       });
-  pdf.text(`${(language === 'en') ? 'Generated on' : 'Generado el'} ${today}`, margin, 55);
+      pdf.text(`${language === 'en' ? 'Generated on' : 'Generado el'} ${today}`, margin, 55);
 
       // Filtros activos
       const activeFilterParts = [];
