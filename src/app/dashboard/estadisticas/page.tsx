@@ -11408,9 +11408,6 @@ Formato: Una línea por insight. Si hay datos completos: máximo 6 insights. Si 
               </div>
             );
           })()}
-          <Button className="home-card-button-green w-auto flex items-center gap-2" onClick={exportPDF}>
-            <Download className="w-4 h-4" /> {t('download', 'Descargar')}
-          </Button>
         </div>
       </div>
 
