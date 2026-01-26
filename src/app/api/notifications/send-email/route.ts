@@ -6,13 +6,13 @@ import { NextRequest, NextResponse } from 'next/server';
  * 
  * Correo de envío: notificaciones@smartstudent.cl
  * 
- * Usando Resend API
+ * Usando Resend API (3,000 emails/mes gratis)
  */
 
 // Configuración de Resend
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notificaciones@smartstudent.cl';
-const FROM_NAME = process.env.RESEND_FROM_NAME || 'Smart Student';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+const FROM_NAME = process.env.EMAIL_FROM_NAME || 'Smart Student';
 
 /**
  * Envía un email usando Resend API
@@ -32,7 +32,7 @@ const sendWithResend = async (emailData: {
       console.error('❌ [RESEND] API key not configured');
       return { 
         success: false, 
-        error: 'Resend API key not configured' 
+        error: 'Resend API key not configured. Set RESEND_API_KEY in .env.local' 
       };
     }
 
@@ -50,19 +50,27 @@ const sendWithResend = async (emailData: {
       }),
     });
 
-    const result = await response.json();
+    const responseText = await response.text();
+    console.log('📧 [RESEND] Response status:', response.status);
+    console.log('📧 [RESEND] Response:', responseText);
 
-    if (response.ok && result.id) {
+    if (response.ok) {
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        result = { id: 'sent' };
+      }
       console.log('✅ [RESEND] Email sent successfully:', result.id);
       return { 
         success: true, 
-        messageId: result.id 
+        messageId: result.id || 'sent' 
       };
     } else {
-      console.error('❌ [RESEND] API error:', result);
+      console.error('❌ [RESEND] API error:', responseText);
       return { 
         success: false, 
-        error: result.message || result.error || 'Resend API error' 
+        error: `Resend API error: ${response.status} - ${responseText}` 
       };
     }
   } catch (error) {
