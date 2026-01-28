@@ -1877,7 +1877,16 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
       
       // Agregar TODOS los resultados a preliminares
       if (allResults.length > 0) {
-        setAnalysisProgress({ step: '¡Análisis completado!', percent: 100 })
+        // 🔧 FIX: Verificar si al menos una página tiene respuestas detectadas
+        const hasAnyAnswers = allResults.some(r => r.hasAnswers)
+        
+        if (hasAnyAnswers) {
+          setAnalysisProgress({ step: '¡Análisis completado!', percent: 100 })
+        } else {
+          // Mostrar advertencia pero continuar
+          setAnalysisProgress({ step: '⚠️ Análisis completado (sin marcas detectadas)', percent: 100 })
+          console.warn('[Full Analysis] ⚠️ No se detectaron marcas en las respuestas. Los estudiantes se agregarán para revisión manual.')
+        }
         
         const questions = test?.questions || []
         const qTot = questions.length
@@ -1977,10 +1986,11 @@ export default function TestReviewDialog({ open, onOpenChange, test }: Props) {
           const newGrades = [...prev]
           
           for (const result of consolidatedResults) {
-            // Solo agregar si tiene respuestas detectadas
+            // 🔧 FIX: SIEMPRE agregar estudiantes detectados, incluso sin respuestas
+            // Antes: if (!result.hasAnswers) continue - esto saltaba estudiantes
+            // Ahora: los agregamos igual para que el profesor pueda revisarlos manualmente
             if (!result.hasAnswers) {
-              console.log(`[Full Analysis] ⏭️ Saltando ${result.studentName} - sin respuestas`)
-              continue
+              console.log(`[Full Analysis] ⚠️ ${result.studentName} - sin respuestas detectadas (se agregará para revisión manual)`)
             }
             
             // Buscar estudiante en la lista por nombre

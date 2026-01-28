@@ -660,7 +660,7 @@ const createMindMapFlow = ai.defineFlow(
     }
     
     const {media} = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-exp', 
+      model: 'googleai/gemini-2.0-flash', 
       prompt: actualPromptText, 
       config: {
         responseModalities: ['TEXT', 'IMAGE'], 

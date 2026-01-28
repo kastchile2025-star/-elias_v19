@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Usar gemini-2.5-flash - modelo más reciente y disponible
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    // Usar gemini-2.0-flash - modelo estable y disponible
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     // 1. LIMPIEZA CRÍTICA DEL BASE64
     // Si el string viene con "data:image/png;base64,..." hay que quitarlo.

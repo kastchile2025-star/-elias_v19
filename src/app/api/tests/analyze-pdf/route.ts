@@ -30,7 +30,7 @@ interface AnalysisResult {
 async function extractAndAnalyzePDF(base64Data: string, mimeType: string, language: 'es' | 'en'): Promise<AnalysisResult> {
   try {
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.0-flash',
       safetySettings: [
         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
         { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
