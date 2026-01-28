@@ -7,17 +7,96 @@ import nodemailer from 'nodemailer';
  * 
  * Correo de envío: notificaciones@smartstudent.cl
  * 
- * Usando Sender.net SMTP (15,000 emails/mes gratis) - PRINCIPAL
- * Fallback: Resend API (3,000 emails/mes gratis)
+ * Proveedores de email (en orden de prioridad):
+ * 1. Mailrelay (80,000 emails/mes) - PRINCIPAL
+ * 2. Sender.net SMTP (15,000 emails/mes) - FALLBACK 1
+ * 3. Resend API (3,000 emails/mes) - FALLBACK 2
  */
 
-// Configuración de Sender.net SMTP
+// Configuración de Mailrelay API - PRINCIPAL (80,000 emails/mes)
+const MAILRELAY_API_KEY = process.env.MAILRELAY_API_KEY || '_kszGyMZqGazPP8UpnFqCryzNmshyDvkXyDwv__y';
+const MAILRELAY_BASE_URL = process.env.MAILRELAY_BASE_URL || 'https://smartstudent1.ipzmarketing.com';
+
+// Configuración de Sender.net SMTP - FALLBACK 1
 const SENDER_SMTP_USER = process.env.SENDER_SMTP_USER || '';
 const SENDER_SMTP_PASS = process.env.SENDER_SMTP_PASS || '';
-// Configuración de Resend (fallback)
+
+// Configuración de Resend - FALLBACK 2
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+
 const FROM_EMAIL = process.env.EMAIL_FROM || 'notificaciones@smartstudent.cl';
 const FROM_NAME = process.env.EMAIL_FROM_NAME || 'Smart Student';
+
+/**
+ * Envía un email usando Mailrelay API - PRINCIPAL (80,000 emails/mes)
+ */
+const sendWithMailrelay = async (emailData: {
+  from: string;
+  fromName: string;
+  to: string;
+  toName: string;
+  subject: string;
+  html: string;
+}): Promise<{ success: boolean; messageId?: string; error?: string }> => {
+  try {
+    console.log('📧 [MAILRELAY] Sending to:', emailData.to);
+    
+    if (!MAILRELAY_API_KEY) {
+      console.warn('⚠️ [MAILRELAY] API key not configured, trying Sender.net...');
+      return { success: false, error: 'Mailrelay API key not configured' };
+    }
+
+    const response = await fetch(`${MAILRELAY_BASE_URL}/api/v1/send_emails`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': MAILRELAY_API_KEY,
+      },
+      body: JSON.stringify({
+        from: {
+          email: emailData.from,
+          name: emailData.fromName
+        },
+        to: [{
+          email: emailData.to,
+          name: emailData.toName
+        }],
+        subject: emailData.subject,
+        html_part: emailData.html
+      }),
+    });
+
+    const responseText = await response.text();
+    console.log('📧 [MAILRELAY] Response status:', response.status);
+    console.log('📧 [MAILRELAY] Response:', responseText);
+
+    if (response.ok || response.status === 201) {
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        result = { id: 'sent' };
+      }
+      console.log('✅ [MAILRELAY] Email sent successfully:', result.id || result.data?.id || 'sent');
+      return { 
+        success: true, 
+        messageId: result.id || result.data?.id || 'sent' 
+      };
+    } else {
+      console.error('❌ [MAILRELAY] API error:', responseText);
+      return { 
+        success: false, 
+        error: `Mailrelay API error: ${response.status} - ${responseText}` 
+      };
+    }
+  } catch (error) {
+    console.error('❌ [MAILRELAY] Exception:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+};
 
 // Crear transporter de nodemailer para Sender.net SMTP
 const createSenderTransporter = () => {
@@ -181,7 +260,7 @@ export async function POST(request: NextRequest) {
       to,
       subject,
       type,
-      provider: SENDER_SMTP_USER ? 'sender.net-smtp' : 'resend'
+      provider: 'mailrelay (principal)'
     });
 
     // Generar HTML del email
@@ -206,12 +285,24 @@ export async function POST(request: NextRequest) {
       html: htmlContent
     };
 
-    // 🆕 Intentar primero con Sender.net, fallback a Resend
-    let result = await sendWithSenderNet(emailPayload);
-    let usedProvider = 'sender.net';
+    // 🆕 Sistema de envío con fallback múltiple:
+    // 1. Mailrelay (80,000/mes) - PRINCIPAL
+    // 2. Sender.net (15,000/mes) - FALLBACK 1
+    // 3. Resend (3,000/mes) - FALLBACK 2
     
+    let result = await sendWithMailrelay(emailPayload);
+    let usedProvider = 'mailrelay';
+    
+    // Fallback 1: Sender.net
+    if (!result.success && SENDER_SMTP_USER) {
+      console.log('📧 [EMAIL] Mailrelay failed, trying Sender.net as fallback 1...');
+      result = await sendWithSenderNet(emailPayload);
+      usedProvider = 'sender.net';
+    }
+    
+    // Fallback 2: Resend
     if (!result.success && RESEND_API_KEY) {
-      console.log('📧 [EMAIL] Sender.net failed, trying Resend as fallback...');
+      console.log('📧 [EMAIL] Sender.net failed, trying Resend as fallback 2...');
       result = await sendWithResend(emailPayload);
       usedProvider = 'resend';
     }
